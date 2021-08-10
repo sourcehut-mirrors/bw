@@ -1,0 +1,512 @@
+
+At this time there is not much to do here. This thing just dispatches
+POSIX threads which do fairly worthless work. They compute a fibonacci
+number using a very horrific approach. The horror is the performance
+which is worse than most people can imagine. An excellent source of
+"worthless work" that can be thrown away while also providing a result
+easily verified. 
+
+At the moment one may do : 
+
+esther$ 
+esther$ /usr/bin/nice -n +15 ./main 8 44 2>&1 | grep '^DATA'
+DATA : thr(000) fib(33)   5317483024 nsec delta       147120 nsec
+DATA : thr(001) fib(26)    205581480 nsec delta       104954 nsec
+DATA : thr(002) fib(26)    131891707 nsec delta        98713 nsec
+DATA : thr(003) fib(22)     17535155 nsec delta      3002020 nsec
+DATA : thr(004) fib(40)  93194883912 nsec delta       757856 nsec
+DATA : thr(005) fib(39)  68574545691 nsec delta       100185 nsec
+DATA : thr(006) fib(37)  31546554237 nsec delta        98274 nsec
+DATA : thr(007) fib(41) 113178636102 nsec delta      2750507 nsec
+esther$ 
+
+Above we see that we requested 8 threads and that the upper range for
+the fibonacci sequence will be 44. Each thread does the task and we
+get timing data in nanoseconds. Above we see that fib(41) was computed
+in 113178636102 nsec. This is a number we can at least trust into the
+millisecond precision.  At least I hope so. This data above is from a
+very slow and very small computer with a VIA Eden Esther processor at
+the surprising clock rate of 400MHz. It is the slowest thing that I
+had running. An Intel i9 can compute the same result in 8.211 secs and
+that is while also dealing with 255 other simultaneous threads.
+
+An old Apple PowerMac with quad 2.5GHz cores is somewhat different :
+
+enceladus$ uname -a 
+Linux enceladus 5.12.12-genunix #1 SMP Mon Jun 21 22:06:24 EDT 2021 ppc64 GNU/Linux
+enceladus$ lscpu 
+Architecture:                    ppc64
+CPU op-mode(s):                  32-bit, 64-bit
+Byte Order:                      Big Endian
+CPU(s):                          4
+On-line CPU(s) list:             0-3
+Thread(s) per core:              1
+Core(s) per socket:              4
+Socket(s):                       1
+NUMA node(s):                    1
+Model:                           1.1 (pvr 0044 0101)
+Model name:                      PPC970MP, altivec supported
+CPU max MHz:                     2500.0000
+CPU min MHz:                     1250.0000
+L1d cache:                       128 KiB
+L1i cache:                       256 KiB
+L2 cache:                        4 MiB
+NUMA node0 CPU(s):               0-3
+Vulnerability Itlb multihit:     Not affected
+Vulnerability L1tf:              Vulnerable
+Vulnerability Mds:               Not affected
+Vulnerability Meltdown:          Vulnerable
+Vulnerability Spec store bypass: Vulnerable
+Vulnerability Spectre v1:        Mitigation; __user pointer sanitization
+Vulnerability Spectre v2:        Vulnerable
+Vulnerability Srbds:             Not affected
+Vulnerability Tsx async abort:   Not affected
+enceladus$ 
+
+enceladus$ /usr/bin/nice -n +15 ./dispatch 8 44 2>&1 | grep '^DATA'
+DATA : thr(000) fib(21)      1251483 nsec delta      1925497 nsec
+DATA : thr(001) fib(28)     40219353 nsec delta      2500223 nsec
+DATA : thr(002) fib(27)     22497769 nsec delta        63729 nsec
+DATA : thr(003) fib(42)  30499262020 nsec delta        61789 nsec
+DATA : thr(004) fib(41)  18870055750 nsec delta        64393 nsec
+DATA : thr(005) fib(34)    771491655 nsec delta        60449 nsec
+DATA : thr(006) fib(35)   1202863233 nsec delta       679929 nsec
+DATA : thr(007) fib(42)  30602367430 nsec delta       645777 nsec
+enceladus$ 
+
+The time delta data is gathered from a trivial nanosleep where one would
+expect that the requested timespec data should in fact be the period of
+time that happens with the nanosleep() call. However there is a delta of
+what was requested and what was actually measured. I question the value
+of this delta data : 
+
+enceladus$ /usr/bin/nice -n +15 ./dispatch 8 44 2>&1 | grep '^DATA'
+DATA : thr(000) fib(42)  30561102115 nsec delta      3197339 nsec
+DATA : thr(001) fib(27)     22200367 nsec delta        65346 nsec
+DATA : thr(002) fib(39)   7193388685 nsec delta      2796178 nsec
+DATA : thr(003) fib(30)    181532793 nsec delta      1585037 nsec
+DATA : thr(004) fib(24)      9318032 nsec delta       261205 nsec
+DATA : thr(005) fib(39)   7253150357 nsec delta        64466 nsec
+DATA : thr(006) fib(35)   1058838103 nsec delta        72394 nsec
+DATA : thr(007) fib(30)    182103978 nsec delta        64170 nsec
+enceladus$ 
+
+
+The heap gets used quite a bit and there are a multitude of calloc()
+calls with the usual collection of free() calls also : 
+
+esther$ valgrind --version 
+valgrind-3.16.1
+esther$ uname -a 
+Linux esther 5.10.0-7-686 #1 SMP Debian 5.10.40-1 (2021-05-28) i686 GNU/Linux
+esther$ cat /proc/cpuinfo 
+processor       : 0
+vendor_id       : CentaurHauls
+cpu family      : 6
+model           : 10
+model name      : VIA Esther processor 1200MHz
+stepping        : 9
+cpu MHz         : 400.000
+cache size      : 128 KB
+physical id     : 0
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+apicid          : 0
+initial apicid  : 0
+fdiv_bug        : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 1
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge cmov pat clflush acpi mmx fxsr sse sse2 tm nx cpuid pni est tm2 rng rng_en ace ace_en ace2 ace2_en phe phe_en pmm pmm_en
+bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit
+bogomips        : 799.97
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 32 bits virtual
+power management:
+
+esther$ 
+esther$ cat /proc/meminfo 
+MemTotal:         958312 kB
+MemFree:          146876 kB
+MemAvailable:     742224 kB
+Buffers:           49188 kB
+Cached:           656060 kB
+SwapCached:         1116 kB
+Active:           230292 kB
+Inactive:         513164 kB
+Active(anon):       1548 kB
+Inactive(anon):    37108 kB
+Active(file):     228744 kB
+Inactive(file):   476056 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+HighTotal:         84872 kB
+HighFree:           3176 kB
+LowTotal:         873440 kB
+LowFree:          143700 kB
+SwapTotal:       7812092 kB
+SwapFree:        7809764 kB
+Dirty:                 4 kB
+Writeback:             0 kB
+AnonPages:         37400 kB
+Mapped:            41636 kB
+Shmem:               452 kB
+KReclaimable:      32628 kB
+Slab:              45952 kB
+SReclaimable:      32628 kB
+SUnreclaim:        13324 kB
+KernelStack:         752 kB
+PageTables:          836 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     8291248 kB
+Committed_AS:     221300 kB
+VmallocTotal:     122880 kB
+VmallocUsed:        5160 kB
+VmallocChunk:          0 kB
+Percpu:              284 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:     16384 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       4096 kB
+Hugetlb:               0 kB
+DirectMap4k:       53240 kB
+DirectMap4M:      843776 kB
+esther$ 
+esther$ valgrind -s --leak-check=full --show-leak-kinds=all ./dispatch 4 38
+==3005== Memcheck, a memory error detector
+==3005== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3005== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
+==3005== Command: ./dispatch 4 38
+==3005== 
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = esther
+                     release = 5.10.0-7-686
+                     version = #1 SMP Debian 5.10.40-1 (2021-05-28)
+                     machine = i686
+                   page size = 4096
+               system memory = 981311488
+                             = 958312 kB
+                             = 935 MB
+                 avail pages = 26056
+                avail memory = 106725376
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+           system uptime    1 day   22 hours   35 mins    1 sec
+-------------------------------------------------------------------
+
+INFO : current time is Wed Jun 23 22:41:02 2021
+
+INFO : srand48() seed done.
+INFO : fibonacci max limit is 38
+INFO : we may create 4 threads
+INFO : tid       = 0x4b66790
+INFO : parm      = 0x4b667d0
+INFO : parm[00]  = 0x4b66810
+     :            ->thread_num      = 0
+     :            ->sleeper.tv_nsec = 195665558
+     :            ->fib_do          = 20
+INFO : parm[01]  = 0x4b66870
+     :            ->thread_num      = 1
+     :            ->sleeper.tv_nsec = 92903467
+     :            ->fib_do          = 24
+INFO : parm[02]  = 0x4b668d0
+     :            ->thread_num      = 2
+     :            ->sleeper.tv_nsec = 173572605
+     :            ->fib_do          = 34
+INFO : parm[03]  = 0x4b66930
+     :            ->thread_num      = 3
+     :            ->sleeper.tv_nsec = 73294448
+     :            ->fib_do          = 13
+
+INFO : thread  0 sleeping 195665558 nsec
+INFO : thread  2 sleeping 173572605 nsec
+INFO : thread  1 sleeping 92903467 nsec
+INFO : thread  3 sleeping 73294448 nsec
+INFO : thr  3 woke up after 90392294 nsec
+INFO : thr  1 woke up after 109429836 nsec
+thr  3 : fib(13 ) =          233
+INFO : thr  3 used 191193509 nsec for fib(13)
+INFO : thr  2 woke up after 382004368 nsec
+INFO : thr  0 woke up after 368990912 nsec
+thr  0 : fib(20 ) =         6765
+INFO : thr  0 used 303182074 nsec for fib(20)
+DATA : thr(000) fib(20)    303182074 nsec delta    173325354 nsec
+thr  1 : fib(24 ) =        46368
+INFO : thr  1 used 1325057891 nsec for fib(24)
+DATA : thr(001) fib(24)   1325057891 nsec delta     16526369 nsec
+thr  2 : fib(34 ) =      5702887
+INFO : thr  2 used 76033800641 nsec for fib(34)
+DATA : thr(002) fib(34)  76033800641 nsec delta    208431763 nsec
+DATA : thr(003) fib(13)    191193509 nsec delta     17097846 nsec
+main() reports that 4 threads terminated
+==3005== 
+==3005== HEAP SUMMARY:
+==3005==     in use at exit: 0 bytes in 0 blocks
+==3005==   total heap usage: 18 allocs, 18 frees, 6,351 bytes allocated
+==3005== 
+==3005== All heap blocks were freed -- no leaks are possible
+==3005== 
+==3005== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+esther$ 
+
+
+A test run on FreeBSD 14 with the dev release valgrind looks like : 
+
+europa$ 
+europa$ valgrind -s --leak-check=full --show-leak-kinds=all ./main 16 36
+==12195== Memcheck, a memory error detector
+==12195== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==12195== Using Valgrind-3.18.0.GIT and LibVEX; rerun with -h for copyright info
+==12195== Command: ./main 16 36
+==12195== 
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = europa
+                     release = 14.0-CURRENT
+                     version = FreeBSD 14.0-CURRENT #7: Mon Jun 14 22:32:42 GMT 2021     root@europa:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 14622040064
+                             = 14279336 kB
+                             = 13944 MB
+                 avail pages = 3569834
+                avail memory = 14622040064
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    9 days    7 hours   54 mins   26 secs
+-------------------------------------------------------------------
+
+INFO : current time is Thu Jun 24 11:49:50 2021
+
+INFO : srand48() seed done.
+INFO : fibonacci max limit is 36
+INFO : we may create 16 threads
+INFO : we may create 16 threads
+INFO : fib_max = 36
+INFO : parm[00]  = 0x54cdfc0
+     :            ->thread_num      = 0
+     :            ->sleeper.tv_nsec = 54058757
+     :            ->fib_do          = 33
+INFO : parm[01]  = 0x54ce040
+     :            ->thread_num      = 1
+     :            ->sleeper.tv_nsec = 53065315
+     :            ->fib_do          = 29
+INFO : parm[02]  = 0x54ce0c0
+     :            ->thread_num      = 2
+     :            ->sleeper.tv_nsec = 194838294
+     :            ->fib_do          = 21
+INFO : parm[03]  = 0x54ce140
+     :            ->thread_num      = 3
+     :            ->sleeper.tv_nsec = 190203424
+     :            ->fib_do          = 26
+INFO : parm[04]  = 0x54ce1c0
+     :            ->thread_num      = 4
+     :            ->sleeper.tv_nsec = 150311237
+     :            ->fib_do          = 12
+INFO : parm[05]  = 0x54ce240
+     :            ->thread_num      = 5
+     :            ->sleeper.tv_nsec = 228931330
+     :            ->fib_do          = 24
+INFO : parm[06]  = 0x54ce2c0
+     :            ->thread_num      = 6
+     :            ->sleeper.tv_nsec = 196100816
+     :            ->fib_do          = 20
+INFO : parm[07]  = 0x54ce340
+     :            ->thread_num      = 7
+     :            ->sleeper.tv_nsec = 67607712
+     :            ->fib_do          = 18
+INFO : parm[08]  = 0x54ce3c0
+     :            ->thread_num      = 8
+     :            ->sleeper.tv_nsec = 151647388
+     :            ->fib_do          = 30
+INFO : parm[09]  = 0x54ce440
+     :            ->thread_num      = 9
+     :            ->sleeper.tv_nsec = 91077484
+     :            ->fib_do          = 19
+INFO : parm[10]  = 0x54ce4c0
+     :            ->thread_num      = 10
+     :            ->sleeper.tv_nsec = 196925812
+     :            ->fib_do          = 22
+INFO : parm[11]  = 0x54ce540
+     :            ->thread_num      = 11
+     :            ->sleeper.tv_nsec = 151668746
+     :            ->fib_do          = 31
+INFO : parm[12]  = 0x54ce5c0
+     :            ->thread_num      = 12
+     :            ->sleeper.tv_nsec = 295247128
+     :            ->fib_do          = 23
+INFO : parm[13]  = 0x54ce640
+     :            ->thread_num      = 13
+     :            ->sleeper.tv_nsec = 257052178
+     :            ->fib_do          = 31
+INFO : parm[14]  = 0x54ce6c0
+     :            ->thread_num      = 14
+     :            ->sleeper.tv_nsec = 84146257
+     :            ->fib_do          = 33
+INFO : parm[15]  = 0x54ce740
+     :            ->thread_num      = 15
+     :            ->sleeper.tv_nsec = 74538916
+     :            ->fib_do          = 16
+
+INFO : thread  1 sleeping 53065315 nsec
+INFO : thread  3 sleeping 190203424 nsec
+INFO : thread  5 sleeping 228931330 nsec
+INFO : thread  7 sleeping 67607712 nsec
+INFO : thread  9 sleeping 91077484 nsec
+INFO : thread 10 sleeping 196925812 nsec
+INFO : thread 12 sleeping 295247128 nsec
+INFO : thread 15 sleeping 74538916 nsec
+INFO : thread  6 sleeping 196100816 nsec
+INFO : thread  8 sleeping 151647388 nsec
+INFO : thread  2 sleeping 194838294 nsec
+INFO : thread 11 sleeping 151668746 nsec
+INFO : thread  4 sleeping 150311237 nsec
+INFO : thread 13 sleeping 257052178 nsec
+INFO : thread 14 sleeping 84146257 nsec
+INFO : thread  0 sleeping 54058757 nsec
+INFO : thr  1 woke up after 58559338 nsec
+INFO : thr  7 woke up after 134186963 nsec
+thr  7 : fib(18 ) =         2584
+INFO : thr  7 used 47790830 nsec for fib(18)
+INFO : thr  5 woke up after 329976432 nsec
+INFO : thr 13 woke up after 426320340 nsec
+INFO : thr 15 woke up after 167318870 nsec
+thr 15 : fib(16 ) =          987
+INFO : thr 15 used 1571964257 nsec for fib(16)
+INFO : thr 10 woke up after 224045341 nsec
+thr 10 : fib(22 ) =        17711
+INFO : thr 10 used 26874439 nsec for fib(22)
+INFO : thr  6 woke up after 235455870 nsec
+thr  6 : fib(20 ) =         6765
+INFO : thr  6 used 10361757 nsec for fib(20)
+INFO : thr  3 woke up after 332562212 nsec
+thr  3 : fib(26 ) =       121393
+INFO : thr  3 used 189530770 nsec for fib(26)
+INFO : thr 12 woke up after 1297345001 nsec
+thr 12 : fib(23 ) =        28657
+INFO : thr 12 used 42127163 nsec for fib(23)
+INFO : thr 11 woke up after 165873047 nsec
+thr 11 : fib(31 ) =      1346269
+INFO : thr 11 used 2060821267 nsec for fib(31)
+INFO : thr  2 woke up after 213601965 nsec
+thr  2 : fib(21 ) =        10946
+INFO : thr  2 used 15254462 nsec for fib(21)
+INFO : thr  8 woke up after 165845942 nsec
+thr  8 : fib(30 ) =       832040
+INFO : thr  8 used 1252518494 nsec for fib(30)
+thr 13 : fib(31 ) =      1346269
+INFO : thr 13 used 5768477825 nsec for fib(31)
+INFO : thr  0 woke up after 165111918 nsec
+thr  0 : fib(33 ) =      3524578
+INFO : thr  0 used 5374161957 nsec for fib(33)
+thr  1 : fib(29 ) =       514229
+INFO : thr  1 used 11806992778 nsec for fib(29)
+INFO : thr 14 woke up after 213238806 nsec
+INFO : thr  4 woke up after 165358252 nsec
+thr  4 : fib(12 ) =          144
+INFO : thr  4 used 327466 nsec for fib(12)
+thr  5 : fib(24 ) =        46368
+INFO : thr  5 used 16665533557 nsec for fib(24)
+INFO : thr  9 woke up after 177534510 nsec
+thr  9 : fib(19 ) =         4181
+INFO : thr  9 used 5750130 nsec for fib(19)
+thr 14 : fib(33 ) =      3524578
+INFO : thr 14 used 5206755317 nsec for fib(33)
+DATA : thr(000) fib(33)   5374161957 nsec delta    111053161 nsec
+DATA : thr(001) fib(29)  11806992778 nsec delta      5494023 nsec
+DATA : thr(002) fib(21)     15254462 nsec delta     18763671 nsec
+DATA : thr(003) fib(26)    189530770 nsec delta    142358788 nsec
+DATA : thr(004) fib(12)       327466 nsec delta     15047015 nsec
+DATA : thr(005) fib(24)  16665533557 nsec delta    101045102 nsec
+DATA : thr(006) fib(20)     10361757 nsec delta     39355054 nsec
+DATA : thr(007) fib(18)     47790830 nsec delta     66579251 nsec
+DATA : thr(008) fib(30)   1252518494 nsec delta     14198554 nsec
+DATA : thr(009) fib(19)      5750130 nsec delta     86457026 nsec
+DATA : thr(010) fib(22)     26874439 nsec delta     27119529 nsec
+DATA : thr(011) fib(31)   2060821267 nsec delta     14204301 nsec
+DATA : thr(012) fib(23)     42127163 nsec delta   1002097873 nsec
+DATA : thr(013) fib(31)   5768477825 nsec delta    169268162 nsec
+DATA : thr(014) fib(33)   5206755317 nsec delta    129092549 nsec
+DATA : thr(015) fib(16)   1571964257 nsec delta     92779954 nsec
+main() reports that 16 threads terminated
+==12195== 
+==12195== HEAP SUMMARY:
+==12195==     in use at exit: 33,200 bytes in 35 blocks
+==12195==   total heap usage: 61 allocs, 26 frees, 137,858 bytes allocated
+==12195== 
+==12195== 64 bytes in 1 blocks are still reachable in loss record 1 of 5
+==12195==    at 0x48513D1: calloc (in /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so)
+==12195==    by 0x4875F32: ??? (in /lib/libthr.so.3)
+==12195==    by 0x486EF31: ??? (in /lib/libthr.so.3)
+==12195==    by 0x486E04C: ??? (in /lib/libthr.so.3)
+==12195==    by 0x400A06C: ??? (in /libexec/ld-elf.so.1)
+==12195==    by 0x4008C70: ??? (in /libexec/ld-elf.so.1)
+==12195==    by 0x4006378: ??? (in /libexec/ld-elf.so.1)
+==12195== 
+==12195== 1,024 bytes in 16 blocks are still reachable in loss record 2 of 5
+==12195==    at 0x48513D1: calloc (in /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so)
+==12195==    by 0x4875F32: ??? (in /lib/libthr.so.3)
+==12195==    by 0x486EF31: ??? (in /lib/libthr.so.3)
+==12195==    by 0x486BEDE: pthread_create (in /lib/libthr.so.3)
+==12195==    by 0x203653: dispatch (dispatch.c:139)
+==12195==    by 0x202EE7: main (main.c:184)
+==12195== 
+==12195== 1,648 bytes in 1 blocks are still reachable in loss record 3 of 5
+==12195==    at 0x48513D1: calloc (in /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so)
+==12195==    by 0x486EF20: ??? (in /lib/libthr.so.3)
+==12195==    by 0x486E04C: ??? (in /lib/libthr.so.3)
+==12195==    by 0x400A06C: ??? (in /libexec/ld-elf.so.1)
+==12195==    by 0x4008C70: ??? (in /libexec/ld-elf.so.1)
+==12195==    by 0x4006378: ??? (in /libexec/ld-elf.so.1)
+==12195== 
+==12195== 26,368 bytes in 16 blocks are still reachable in loss record 5 of 5
+==12195==    at 0x48513D1: calloc (in /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so)
+==12195==    by 0x486EF20: ??? (in /lib/libthr.so.3)
+==12195==    by 0x486BEDE: pthread_create (in /lib/libthr.so.3)
+==12195==    by 0x203653: dispatch (dispatch.c:139)
+==12195==    by 0x202EE7: main (main.c:184)
+==12195== 
+==12195== LEAK SUMMARY:
+==12195==    definitely lost: 0 bytes in 0 blocks
+==12195==    indirectly lost: 0 bytes in 0 blocks
+==12195==      possibly lost: 0 bytes in 0 blocks
+==12195==    still reachable: 29,104 bytes in 34 blocks
+==12195==         suppressed: 4,096 bytes in 1 blocks
+==12195== 
+==12195== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+--12195-- 
+--12195-- used_suppression:      1 MEMCHECK-LIBC-REACHABLE /usr/local/libexec/valgrind/default.supp:589 suppressed: 4,096 bytes in 1 blocks
+==12195== 
+==12195== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+europa$ 
+
+

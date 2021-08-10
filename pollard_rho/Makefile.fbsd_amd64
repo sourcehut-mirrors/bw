@@ -1,0 +1,26 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
+	-Wno-missing-prototypes -Wno-padded -fno-fast-math -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LDIR=/opt/bw/lib
+IDIR=/opt/bw/include
+LIBS=-lgmp -lmpfr
+
+SRCS = pr_mpfr_quiet.c ../sysinfo/ru.c ../sysinfo/sysinfo.c ../sysinfo/sysmem.c
+OBJS = pr_mpfr_quiet.o ../sysinfo/ru.o ../sysinfo/sysinfo.o ../sysinfo/sysmem.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+pr_mpfr_quiet: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) pr_mpfr_quiet

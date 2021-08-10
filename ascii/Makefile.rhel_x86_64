@@ -1,0 +1,29 @@
+
+# CC=/opt/bw/gcc9/bin/x86_64-redhat-linux-gcc-9.2.0 
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
+	-pedantic -pedantic-errors \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double -mno-mmx \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS= -lm
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+
+SRCS = argv_dump.c bin_printf.c ../sysinfo/sysinfo.c ../sysinfo/sysmem.c
+OBJS = argv_dump.o bin_printf.o ../sysinfo/sysinfo.o ../sysinfo/sysmem.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+argv_dump: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) argv_dump

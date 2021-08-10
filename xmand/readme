@@ -1,0 +1,1167 @@
+
+
+good luck and set your phasers on stun : 
+
+ ./xmand 65356 4398046511104 -1.9999991175874234 0.0 4 
+
+Example should be something like : 
+
+
+mars$ 
+mars$ /usr/bin/time -p /usr/bin/nice -n +15 ./xmand 32768 137438953472 -6.3378386953274912e-02 +9.7988834095119159e-01 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = mars
+                     release = 5.10.0-7-686
+                     version = #1 SMP Debian 5.10.40-1 (2021-05-28)
+                     machine = i686
+                   page size = 4096
+               system memory = 782856192
+                             = 764508 kB
+                             = 746 MB
+                 avail pages = 121027
+                avail memory = 495726592
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour   19 mins   57 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( -6.33783869532749e-02 , +9.79888340951192e-01 )
+      magnify = +1.374389534720e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 625  , 547  ]
+vbox  [ 009 , 007 ]
+fp64( +1.99218750e-01 , -4.49218750e-02 )  
+ select = -6.337838695038e-02, +9.798883409505e-01  
+bailout = 32768             
+magnify = 1.3743895347e+11
+ centre = -6.337838695327e-02, +9.798883409512e-01  
+[mand] =   430869590085 nsec   4.308696e+02 sec
+
+click at 624 545 
+raw  [ 495  , 589  ]
+vbox  [ 007 , 006 ]
+fp64( -5.46875000e-02 , -1.26953125e-01 )  
+ select = -6.337838695407e-02, +9.798883409493e-01  
+bailout = 32768             
+magnify = 1.3743895347e+11
+ centre = -6.337838695327e-02, +9.798883409512e-01  
+[mand] =    10059739777 nsec   1.005974e+01 sec
+
+click at 494 587 
+raw  [ 495  , 589  ]
+right click
+click at 494 587 
+raw  [ 495  , 589  ]
+right click
+
+
+
+real 455.14
+user 430.49
+sys 1.96
+mars$ 
+
+
+alpha $ 
+alpha $ /usr/bin/time -p /usr/bin/nice -n +15 ./xmand 32768 137438953472 -6.3378386953274912e-02 +9.7988834095119159e-01 4
+-------------------------------------------------------------------
+                 system name = SunOS
+                   node name = alpha
+                     release = 5.10
+                     version = Generic_150400-65
+                     machine = sun4u
+                   page size = 8192
+               system memory = 4294967296
+                             = 4194304 kB
+                             = 4096 MB
+                             = 4 GB
+                 avail pages = 503071
+                avail memory = 4121157632
+         clock ticks per sec = 100
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime   58 days   22 hours   35 mins   46 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( -6.33783869532749e-02 , +9.79888340951192e-01 )
+      magnify = +1.374389534720e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 4
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 705  , 566  ]
+vbox  [ 010 , 007 ]
+fp64( +3.55468750e-01 , -8.20312500e-02 )  
+ select = -6.337838694810e-02, +9.798883409500e-01  
+bailout = 32768             
+magnify = 1.3743895347e+11
+ centre = -6.337838695327e-02, +9.798883409512e-01  
+[mand] =   112686043300 nsec   1.126860e+02 sec
+
+click at 704 564 
+raw  [ 453  , 479  ]
+right click
+click at 452 477 
+raw  [ 453  , 479  ]
+right click
+
+
+
+
+real 317.34
+user 107.76
+sys 0.06
+alpha $ 
+styx$ 
+styx$ /usr/bin/time -p /usr/bin/nice -n +15 ./xmand 32768 137438953472 -6.3378386953274912e-02 +9.7988834095119159e-01 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = styx
+                     release = 4.19.0-17-amd64
+                     version = #1 SMP Debian 4.19.194-2 (2021-06-21)
+                     machine = x86_64
+                   page size = 4096
+               system memory = 16402391040
+                             = 16017960 kB
+                             = 15642 MB
+                 avail pages = 2901317
+                avail memory = 11883794432
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    4 hours   51 mins   21 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( -6.33783869532749e-02 , +9.79888340951192e-01 )
+      magnify = +1.374389534720e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 780  , 532  ]
+vbox  [ 012 , 007 ]
+fp64( +5.01953125e-01 , -1.56250000e-02 )  
+ select = -6.337838694597e-02, +9.798883409510e-01  
+bailout = 32768             
+magnify = 1.3743895347e+11
+ centre = -6.337838695327e-02, +9.798883409512e-01  
+[mand] =    98244164380 nsec   9.824416e+01 sec
+
+click at 779 530 
+raw  [ 725  , 573  ]
+right click
+click at 724 571 
+raw  [ 725  , 573  ]
+right click
+
+
+
+real 100.23
+user 97.94
+sys 0.10
+styx$ 
+
+europa$ 
+europa$ /usr/bin/time -p /usr/bin/nice -n +15 ./xmand 32768 137438953472 -6.3378386953274912e-02 +9.7988834095119159e-01 4
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = europa
+                     release = 14.0-CURRENT
+                     version = FreeBSD 14.0-CURRENT #2: Mon Jul 12 13:07:16 GMT 2021     root@europa:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 14617845760
+                             = 14275240 kB
+                             = 13940 MB
+                 avail pages = 3568810
+                avail memory = 14617845760
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    6 days   13 hours   31 mins   16 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( -6.33783869532749e-02 , +9.79888340951192e-01 )
+      magnify = +1.374389534720e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 730  , 605  ]
+vbox  [ 011 , 006 ]
+fp64( +4.04296875e-01 , -1.58203125e-01 )  
+ select = -6.337838694739e-02, +9.798883409489e-01  
+bailout = 32768             
+magnify = 1.3743895347e+11
+ centre = -6.337838695327e-02, +9.798883409512e-01  
+[mand] =    82150485761 nsec   8.215049e+01 sec
+
+click at 729 603 
+raw  [ 525  , 533  ]
+right click
+click at 524 531 
+raw  [ 525  , 533  ]
+right click
+
+
+
+real 87.77
+user 82.00
+sys 0.08
+europa$ 
+
+enceladus$ 
+enceladus$ /usr/bin/time -p /usr/bin/nice -n +15 ./xmand 32768 137438953472 -6.3378386953274912e-02 +9.7988834095119159e-01 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = enceladus
+                     release = 5.14.0-rc2-genunix
+                     version = #1 SMP Sun Jul 18 23:51:34 GMT 2021
+                     machine = ppc64
+                   page size = 65536
+               system memory = 8379891712
+                             = 8183488 kB
+                             = 7991 MB
+                 avail pages = 120899
+                avail memory = 7923236864
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour   48 mins    9 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( -6.33783869532749e-02 , +9.79888340951192e-01 )
+      magnify = +1.374389534720e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 590  , 564  ]
+vbox  [ 009 , 007 ]
+fp64( +1.30859375e-01 , -7.81250000e-02 )  
+ select = -6.337838695137e-02, +9.798883409501e-01  
+bailout = 32768             
+magnify = 1.3743895347e+11
+ centre = -6.337838695327e-02, +9.798883409512e-01  
+[mand] =   117656852014 nsec   1.176569e+02 sec
+
+click at 589 562 
+raw  [ 538  , 535  ]
+right click
+click at 537 533 
+raw  [ 538  , 535  ]
+right click
+
+
+
+real 132.92
+user 116.69
+sys 0.25
+enceladus$ 
+
+
+enceladus$ 
+enceladus$ ./xmand 65356 4398046511104 -1.9999991175874234 0.0 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = enceladus
+                     release = 5.13.0-rc1-genunix
+                     version = #1 SMP Mon May 10 17:39:36 EDT 2021
+                     machine = ppc64
+                   page size = 65536
+               system memory = 8316715008
+                             = 8121792 kB
+                             = 7931 MB
+                 avail pages = 115063
+                avail memory = 7540768768
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    3 hours   19 mins   20 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 65356
+pthread_limit = 4
+    translate = ( -1.99999911758742e+00 , +0.00000000000000e+00 )
+      magnify = +4.398046511104e+12
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 360  , 573  ]
+vbox  [ 005 , 007 ]
+fp64( -3.18359375e-01 , -9.57031250e-02 )  
+ select = -1.999999117588e+00, -4.352074256531e-14  
+bailout = 65356             
+magnify = 4.3980465111e+12
+ centre = -1.999999117587e+00, +0.000000000000e+00  
+[mand] =   128550315533 nsec   1.285503e+02 sec
+
+click at 359 571 
+raw  [ 506  , 588  ]
+inv  [  495 ,  448 ]  
+fp64( +4.83398438e-01 , +4.37500000e-01 )
+vbox  [ 007 , 007 ]
+f+64( -3.32031250e-02 , -1.25000000e-01 )
+c = ( -1.9999991175874385e+00, -5.6843418860808015e-14 )
+pixel_real_w = +8.881784197001e-16
+pixel_imag_h = +8.881784197001e-16
+[join] =            240 nsec   2.400000e-07 sec
+[plot] =    44518476986 nsec   4.451848e+01 sec
+click at 505 586 
+raw  [ 1350 , 739  ]
+click at 1349 737 
+raw  [ 1356 , 788  ]
+click at 1355 786 
+raw  [ 491  , 641  ]
+right click
+click at 490 639 
+raw  [ 491  , 641  ]
+right click
+
+
+
+otherwise 
+
+
+The slowest you can imagine : 
+
+esther$ ./xmand 8192 8796093022208 -7.2614533691790717e-02 -9.7002421590019661e-01 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = esther
+                     release = 5.12.0-genunix
+                     version = #1 Tue Apr 27 07:55:31 GMT 2021
+                     machine = i686
+                   page size = 4096
+               system memory = 185528320
+                             = 181180 kB
+                             = 176 MB
+                 avail pages = 4954
+                avail memory = 20291584
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+           system uptime   736 sec
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 4
+    translate = ( -7.26145336917907e-02 , -9.70024215900197e-01 )
+      magnify = +8.796093022208e+12
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 523  , 524  ]
+inv  [  512 ,  512 ]  
+fp64( +5.00000000e-01 , +5.00000000e-01 )
+vbox  [ 008 , 008 ]
+f+64( +0.00000000e+00 , +0.00000000e+00 )
+c = ( -7.2614533691790717e-02, -9.7002421590019661e-01 )
+pixel_real_w = +4.440892098501e-16
+pixel_imag_h = +4.440892098501e-16
+[ t01 ] : 16 -> 31
+[ t03 ] : 48 -> 63
+[ t00 ] : 0  -> 15
+[ t02 ] : 32 -> 47
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =     3613314229 nsec   3.613314e+00 sec
+[plot] =    33321173978 nsec   3.332117e+01 sec
+click at 522 522 
+raw  [ 1353 , 737  ]
+click at 1352 735 
+raw  [ 1357 , 788  ]
+click at 1356 786 
+raw  [ 487  , 556  ]
+inv  [  476 ,  480 ]  
+fp64( +4.64843750e-01 , +4.68750000e-01 )
+vbox  [ 007 , 007 ]
+f+64( -7.03125000e-02 , -6.25000000e-02 )
+c = ( -7.2614533691806704e-02, -9.7002421590021082e-01 )
+pixel_real_w = +4.440892098501e-16
+pixel_imag_h = +4.440892098501e-16
+[ t03 ] : 48 -> 63
+[ t02 ] : 32 -> 47
+[ t01 ] : 16 -> 31
+[ t00 ] : 0  -> 15
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =     3597532131 nsec   3.597532e+00 sec
+[plot] =    33164926021 nsec   3.316493e+01 sec
+click at 486 554 
+raw  [ 334  , 832  ]
+vbox  [ 005 , 003 ]
+fp64( -3.69140625e-01 , -6.01562500e-01 )  
+ select = -7.261453369187e-02, -9.700242159003e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =   897456785183 nsec   8.974568e+02 sec
+
+click at 333 830 
+raw  [ 523  , 523  ]
+vbox  [ 008 , 008 ]
+fp64( +0.00000000e+00 , +1.95312500e-03 )  
+ select = -7.261453369179e-02, -9.700242159002e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =    35800940017 nsec   3.580094e+01 sec
+
+click at 522 521 
+raw  [ 620  , 498  ]
+right click
+click at 619 496 
+raw  [ 620  , 498  ]
+right click
+
+
+Slow but not crazy slow : 
+
+mars$ ./xmand 8192 8796093022208 -7.2614533691790717e-02 -9.7002421590019661e-01 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = mars
+                     release = 5.12.0-genunix
+                     version = #1 SMP Mon Apr 26 19:28:33 GMT 2021
+                     machine = i686
+                   page size = 4096
+               system memory = 781467648
+                             = 763152 kB
+                             = 745 MB
+                 avail pages = 122431
+                avail memory = 501477376
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day   13 hours   24 mins    0 sec
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 4
+    translate = ( -7.26145336917907e-02 , -9.70024215900197e-01 )
+      magnify = +8.796093022208e+12
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 523  , 524  ]
+inv  [  512 ,  512 ]  
+fp64( +5.00000000e-01 , +5.00000000e-01 )
+vbox  [ 008 , 008 ]
+f+64( +0.00000000e+00 , +0.00000000e+00 )
+c = ( -7.2614533691790717e-02, -9.7002421590019661e-01 )
+pixel_real_w = +4.440892098501e-16
+pixel_imag_h = +4.440892098501e-16
+[ t00 ] : 0  -> 15
+[ t03 ] : 48 -> 63
+[ t02 ] : 32 -> 47
+[ t01 ] : 16 -> 31
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =      506835838 nsec   5.068358e-01 sec
+[plot] =     8768752658 nsec   8.768753e+00 sec
+click at 522 522 
+raw  [ 467  , 580  ]
+inv  [  456 ,  456 ]  
+fp64( +4.45312500e-01 , +4.45312500e-01 )
+vbox  [ 007 , 007 ]
+f+64( -1.09375000e-01 , -1.09375000e-01 )
+c = ( -7.2614533691815586e-02, -9.7002421590022148e-01 )
+pixel_real_w = +4.440892098501e-16
+pixel_imag_h = +4.440892098501e-16
+[ t00 ] : 0  -> 15
+[ t03 ] : 48 -> 63
+[ t01 ] : 16 -> 31
+[ t02 ] : 32 -> 47
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =      505242656 nsec   5.052427e-01 sec
+[plot] =     8875214490 nsec   8.875214e+00 sec
+click at 466 578 
+raw  [ 45   , 990  ]
+vbox  [ 000 , 000 ]
+fp64( -9.33593750e-01 , -9.10156250e-01 )  
+ select = -7.261453369200e-02, -9.700242159004e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =   235784915833 nsec   2.357849e+02 sec
+
+click at 44 988 
+raw  [ 525  , 523  ]
+right click
+click at 524 521 
+raw  [ 525  , 523  ]
+right click
+
+
+And now for something completely different : 
+
+enceladus$ ./xmand 8192 8796093022208 -7.2614533691790717e-02 -9.7002421590019661e-01 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = enceladus
+                     release = 5.12.0-genunix
+                     version = #1 SMP Mon Apr 26 19:05:19 GMT 2021
+                     machine = ppc64
+                   page size = 65536
+               system memory = 8383561728
+                             = 8187072 kB
+                             = 7995 MB
+                 avail pages = 121018
+                avail memory = 7931035648
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    1 hour   53 mins   46 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 4
+    translate = ( -7.26145336917907e-02 , -9.70024215900197e-01 )
+      magnify = +8.796093022208e+12
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 523  , 524  ]
+inv  [  512 ,  512 ]  
+fp64( +5.00000000e-01 , +5.00000000e-01 )
+vbox  [ 008 , 008 ]
+f+64( +0.00000000e+00 , +0.00000000e+00 )
+c = ( -7.2614533691790717e-02, -9.7002421590019661e-01 )
+pixel_real_w = +4.440892098501e-16
+pixel_imag_h = +4.440892098501e-16
+[ t00 ] : 0  -> 15
+[ t01 ] : 16 -> 31
+[ t02 ] : 32 -> 47
+[ t03 ] : 48 -> 63
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =       80267971 nsec   8.026797e-02 sec
+[plot] =     2408793312 nsec   2.408793e+00 sec
+click at 522 522 
+raw  [ 461  , 586  ]
+inv  [  450 ,  450 ]  
+fp64( +4.39453125e-01 , +4.39453125e-01 )
+vbox  [ 007 , 007 ]
+f+64( -1.21093750e-01 , -1.21093750e-01 )
+c = ( -7.2614533691818250e-02, -9.7002421590022414e-01 )
+pixel_real_w = +4.440892098501e-16
+pixel_imag_h = +4.440892098501e-16
+[ t00 ] : 0  -> 15
+[ t01 ] : 16 -> 31
+[ t02 ] : 32 -> 47
+[ t03 ] : 48 -> 63
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =       79394162 nsec   7.939416e-02 sec
+[plot] =     2398816401 nsec   2.398816e+00 sec
+click at 460 584 
+raw  [ 50   , 997  ]
+vbox  [ 000 , 000 ]
+fp64( -9.23828125e-01 , -9.23828125e-01 )  
+ select = -7.261453369200e-02, -9.700242159004e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =    63563231351 nsec   6.356323e+01 sec
+
+click at 49 995 
+raw  [ 519  , 576  ]
+vbox  [ 007 , 007 ]
+fp64( -7.81250000e-03 , -1.01562500e-01 )  
+ select = -7.261453369179e-02, -9.700242159002e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =     2633764854 nsec   2.633765e+00 sec
+
+click at 518 574 
+raw  [ 519  , 576  ]
+right click
+click at 518 574 
+raw  [ 519  , 576  ]
+right click
+
+
+
+
+
+deimos$ 
+deimos$ ./xmand 8192 8796093022208 -7.2614533691790717e-02 -9.7002421590019661e-01 8
+-------------------------------------------------------------
+           system name = Linux
+             node name = deimos
+               release = 5.11.0-genunix
+               version = #1 SMP Mon Feb 15 10:07:16 UTC 2021
+               machine = x86_64
+             page size = 4096
+         system memory = 16659963904
+                       = 16269496 kB
+                       = 15888 MB
+           avail pages = 3795321
+          avail memory = 15545634816
+   clock ticks per sec = 100
+       threads support = 200809
+         POSIX Version = 200809
+                endian = little endian
+ sizeof(unsigned long) = 8
+ sizeof(unsigned long long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 8
+    translate = ( -7.26145336917907e-02 , -9.70024215900197e-01 )
+      magnify = +8.796093022208e+12
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 523  , 524  ]
+vbox  [ 008 , 008 ]
+fp64( +0.00000000e+00 , +0.00000000e+00 )  
+ select = -7.261453369179e-02, -9.700242159002e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =    11221075706 nsec   1.122108e+01 sec
+
+click at 522 522 
+raw  [ 523  , 524  ]
+vbox  [ 008 , 008 ]
+fp64( +0.00000000e+00 , +0.00000000e+00 )  
+ select = -7.261453369179e-02, -9.700242159002e-01  
+bailout = 8192              
+magnify = 8.7960930222e+12
+ centre = -7.261453369179e-02, -9.700242159002e-01  
+[mand] =     2267271828 nsec   2.267272e+00 sec
+
+
+
+
+On a Red Hat enterprise Linux server : 
+
+$ ./xmand 8192 32768 -1.7685585021972656e+00 -8.5449218750000000e-04 4
+-------------------------------------------------------------
+           system name = Linux
+             node name = boe13.genunix.com
+               release = 3.10.0-693.el7.x86_64
+               version = #1 SMP Thu Jul 6 19:56:57 EDT 2017
+               machine = x86_64
+             page size = 4096
+         system memory = 8194654208
+                       = 8002592 kB
+                       = 7815 MB
+           avail pages = 699604
+          avail memory = 2865577984
+   clock ticks per sec = 100
+       threads support = 200809
+         POSIX Version = 200809
+                endian = little endian
+ sizeof(unsigned long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+
+    mand_bail = 8192
+pthread_limit = 4
+    translate = ( -1.76855850219727e+00 , -8.54492187500000e-04 )
+      magnify = +3.276800000000e+04
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 447  , 580  ]
+vbox  [ 006 , 007 ]
+fp64( -1.48437500e-01 , -1.09375000e-01 )  
+ select = -1.768567562103e+00, -8.611679077148e-04  
+bailout = 8192              
+magnify = 3.2768000000e+04
+ centre = -1.768558502197e+00, -8.544921875000e-04  
+[mand] =    24776651864 nsec   2.477665e+01 sec
+
+boe13$ ./xmand 8192 524288 -1.7685902118682861 -8.1157684326171875e-04 8
+-------------------------------------------------------------
+           system name = Linux
+             node name = boe13.genunix.com
+               release = 3.10.0-693.el7.x86_64
+               version = #1 SMP Thu Jul 6 19:56:57 EDT 2017
+               machine = x86_64
+             page size = 4096
+         system memory = 8194654208
+                       = 8002592 kB
+                       = 7815 MB
+           avail pages = 699487
+          avail memory = 2865098752
+   clock ticks per sec = 100
+       threads support = 200809
+         POSIX Version = 200809
+                endian = little endian
+ sizeof(unsigned long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+
+    mand_bail = 8192
+pthread_limit = 8
+    translate = ( -1.76859021186829e+00 , -8.11576843261719e-04 )
+      magnify = +5.242880000000e+05
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 503  , 621  ]
+vbox  [ 007 , 006 ]
+fp64( -3.90625000e-02 , -1.89453125e-01 )  
+ select = -1.768590360880e+00, -8.122995495796e-04  
+bailout = 8192              
+magnify = 5.2428800000e+05
+ centre = -1.768590211868e+00, -8.115768432617e-04  
+[mand] =    16925189902 nsec   1.692519e+01 sec
+
+click at 502 619 
+raw  [ 532  , 674  ]
+vbox  [ 008 , 005 ]
+fp64( +1.75781250e-02 , -2.92968750e-01 )  
+ select = -1.768590144813e+00, -8.126944303513e-04  
+bailout = 8192              
+magnify = 5.2428800000e+05
+ centre = -1.768590211868e+00, -8.115768432617e-04  
+[mand] =     1960893363 nsec   1.960893e+00 sec
+
+click at 531 672 
+raw  [ 561  , 582  ]
+right click
+click at 560 580 
+raw  [ 561  , 582  ]
+right click
+
+
+
+
+
+etc etc etc 
+
+./xmand 16384 65536  -3.003381645104e-01 +6.553186601230e-01 4
+
+./xmand 16384 1048576 -3.00335318388593e-01 +6.55315903408228e-01 4
+
+-----------
+
+A few pretty examples : 
+
+vesta$ 
+vesta$ ./xmand 32768 8388608 -3.003289289773e-01 +6.553147248923e-01 4
+
+
+C_nix$ ./xmand 4096 4096 -3.004150390625e-01 +6.553039550781e-01 4 
+
+Extreme magnification sample : 
+
+desdemona$ 
+desdemona$ ./xmand 65536 8388608000000 -0.19854143828576293 -1.1001370431512842 8
+
+Also ...
+
+
+./xmand 4096 250000 +2.833992242813e-01 +9.314656257627e-03
+
+Pentium II debian Linux server says : 
+
+[mand] =    57259796465 nsec   5.725980e+01 sec
+
+
+============================================================
+
+Horrifically slow example on ye VIA Eden Esther machine :
+
+    magnify = pow( 2.0, 16.0);
+    obs_x_width = 4.0 / magnify;
+    obs_y_height = 4.0 / magnify;
+    real_translate = -7.622470855713e-01;
+    imag_translate = -8.939456939698e-02;
+
+C_esther$ ./xmand 
+c = ( -7.622639536858e-01 , -8.941692113877e-02 )
+[mand] =     473607757867 nsec
+click at 239 897 
+right click
+click at 550 459 
+right click
+
+
+Somewhat faster Intel i7 based machine : 
+
+C_styx$ ./xmand 
+c = ( -7.622631192207e-01 , -8.941584825516e-02 )
+[mand] =       5902325304 nsec
+click at 253 879 
+right click
+click at 524 626 
+right click
+
+
+
+------- heavy duty numerical load example ------------------------
+
+Note : we modified the code to allow for 2^20 mandlebrot height
+
+vesta$ ./xmand 1048576 262144 -7.499252259685e-01 -1.213768124597e-02 16
+
+    mand_bail = 1048576
+pthread_limit = 16
+    translate = ( -7.499252259685e-01 , -1.213768124597e-02 )
+      magnify = +2.621440000000e+05
+
+vbox  [ 009 , 009 ]
+[mand] =  1460730489327 nsec   1.460730e+03 sec
+
+click at 638 441 
+vbox  [ 015 , 015 ]
+c = ( -7.499181479169e-01 , -1.213052868860e-02 )
+[ t00 ] : 0  -> 3 
+[ t01 ] : 4  -> 7 
+[ t02 ] : 8  -> 11
+[ t03 ] : 12 -> 15
+[ t04 ] : 16 -> 19
+[ t05 ] : 20 -> 23
+[ t08 ] : 32 -> 35
+[ t09 ] : 36 -> 39
+[ t14 ] : 56 -> 59
+[ t15 ] : 60 -> 63
+[ t10 ] : 40 -> 43
+[ t07 ] : 28 -> 31
+[ t06 ] : 24 -> 27
+[ t13 ] : 52 -> 55
+[ t12 ] : 48 -> 51
+[ t11 ] : 44 -> 47
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+PTHRD: join 4 done
+PTHRD: join 5 done
+PTHRD: join 6 done
+PTHRD: join 7 done
+PTHRD: join 8 done
+PTHRD: join 9 done
+PTHRD: join 10 done
+PTHRD: join 11 done
+PTHRD: join 12 done
+PTHRD: join 13 done
+PTHRD: join 14 done
+PTHRD: join 15 done
+[join] =    11238069953 nsec   1.123807e+01 sec
+
+vesta$ 
+
+
+
+C_styx$ ./xmand 65536 512000000 -7.499297771722e-01 -1.213009420507e-02 8 
+
+    mand_bail = 65536
+pthread_limit = 8
+    translate = ( -7.499297771722e-01 , -1.213009420507e-02 )
+      magnify = +5.120000000000e+08
+
+vbox  [ 008 , 008 ]
+[mand] =   410197205841 nsec   4.101972e+02 sec
+
+
+============================================================
+
+
+orcus$ 
+orcus$ ./xmand 16384 68719476736 -1.768589934745 -8.109974477292e-04 16
+-------------------------------------------------------------
+           system name = FreeBSD
+             node name = orcus
+               release = 14.0-CURRENT
+               version = FreeBSD 14.0-CURRENT #0 main-n244640-2373acbbb77d: Sat Feb  6 01:47:10 GMT 2021     root@orcus:/usr/obj/usr/src/amd64.amd64/sys/GENERIC-NODEBUG
+               machine = amd64
+             page size = 4096
+         system memory = 17138401280
+                       = 16736720 kB
+                       = 16344 MB
+           avail pages = 4184180
+          avail memory = 17138401280
+   clock ticks per sec = 128
+       threads support = 200112
+         POSIX Version = 200112
+                endian = little endian
+ sizeof(unsigned long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 16384
+pthread_limit = 16
+    translate = ( -1.76858993474500e+00 , -8.10997447729200e-04 )
+      magnify = +6.871947673600e+10
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 524  , 524  ]
+vbox  [ 008 , 008 ]
+fp64( +1.95312500e-03 , +0.00000000e+00 )  
+ select = -1.768589934745e+00, -8.109974477292e-04  
+bailout = 16384             
+magnify = 6.8719476736e+10
+ centre = -1.768589934745e+00, -8.109974477292e-04  
+[mand] =    14826131927 nsec   1.482613e+01 sec
+
+click at 523 522 
+raw  [ 542  , 503  ]
+vbox  [ 008 , 008 ]
+fp64( +3.71093750e-02 , +4.10156250e-02 )  
+ select = -1.768589934744e+00, -8.109974465355e-04  
+bailout = 16384             
+magnify = 6.8719476736e+10
+ centre = -1.768589934745e+00, -8.109974477292e-04  
+[mand] =     2178061074 nsec   2.178061e+00 sec
+
+click at 541 501 
+raw  [ 539  , 605  ]
+right click
+click at 538 603 
+raw  [ 539  , 605  ]
+right click
+
+

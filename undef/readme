@@ -1,0 +1,32 @@
+
+Expect nothing but strange behavior from this and the LLVM/Clang
+compiler has plenty to say about this : 
+
+amalthea$ 
+amalthea$ make -f Makefile.fbsd_amd64
+/usr/bin/cc -c -o undef.o undef.c -std=iso9899:1999 -pedantic -pedantic-errors -Weverything  -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0  -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE  -D_XOPEN_SOURCE=600
+undef.c:42:34: warning: adding 'int' to a string does not append to the string [-Wstring-plus-int]
+    const char *s = "\0fedcba9X" + 9;
+                    ~~~~~~~~~~~~~^~~
+undef.c:42:34: note: use array indexing to silence this warning
+    const char *s = "\0fedcba9X" + 9;
+                                 ^
+                    &            [  ]
+undef.c:37:14: warning: unused parameter 'argc' [-Wunused-parameter]
+int main(int argc, char **argv)
+             ^
+undef.c:37:27: warning: unused parameter 'argv' [-Wunused-parameter]
+int main(int argc, char **argv)
+                          ^
+undef.c:40:30: warning: unsequenced modification and access to 'i' [-Wunsequenced]
+    printf("%d%d%d%d\n", i, i++, i, i++);
+                         ~   ^
+4 warnings generated.
+/usr/bin/cc -o undef undef.o -std=iso9899:1999 -pedantic -pedantic-errors -Weverything  -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0  -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE  -D_XOPEN_SOURCE=600
+amalthea$
+
+gee ... just a few warnings. 
+
+However it compiles and that means it works .. right?  :)
+
+

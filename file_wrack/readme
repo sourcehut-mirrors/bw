@@ -1,0 +1,56 @@
+
+
+note that the results are messed up on arm : 
+
+
+
+arm$ 
+arm$ ./fg wtf.dat 
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = tinkerboard
+                     release = 4.4.132+
+                     version = #8 SMP Thu Aug 13 08:51:08 UTC 2020
+                     machine = armv7l
+                   page size = 4096
+               system memory = 2106646528
+                             = 2057272 kB
+                             = 2009 MB
+                 avail pages = 9178262494593998848
+                avail memory = 1846431744
+         clock ticks per sec = 100
+             threads support = 9178263008957169665
+               POSIX Version = 9178263180755861505
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+
+INFO : current time is Wed Mar 31 12:26:07 2021
+     : three UNIX times of the file are :
+     : ctime(&buffer.st_atime) = Tue Sep 28 12:34:56 1971
+     :              .st_mtime) = Tue Sep 28 12:34:56 1971
+     :              .st_ctime) = Wed Mar 31 12:23:26 2021
+This will be ugly
+fwrite_ret =    1  and ftell_pos = 18    
+no really ... it will be ugly
+fwrite_ret =    1  and ftell_pos = 48    
+told ya so
+fwrite_ret =    1  and ftell_pos = 59    
+fwrite_ret =    1  and ftell_pos = 62     EOF
+
+INFO : ftell_pos = 62    
+INFO : we did hit EOF
+INFO : file wtf.dat is now closed
+
+
+INFO : three UNIX times are now :
+     : ctime(&buffer.st_atime) = Tue Sep 28 12:34:56 1971
+     :              .st_mtime) = Tue Sep 28 12:34:56 1971
+     :              .st_ctime) = Wed Mar 31 12:23:26 2021
+EOFarm$ 
+
+

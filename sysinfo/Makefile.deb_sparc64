@@ -1,0 +1,27 @@
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -fno-builtin -g \
+	-m64 -O0 -mno-app-regs -mhard-float -mhard-quad-float \
+	-mcpu=ultrasparc -mno-vis -mno-vis2 -mno-vis3 -mno-vis4 \
+	-mno-vis4b -mfsmuld -mmemory-model=tso
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lm
+
+SRCS = report.c sysinfo.c
+
+OBJS = report.o sysinfo.o
+
+.PHONY: all
+all: report
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report

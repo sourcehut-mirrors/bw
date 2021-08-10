@@ -1,0 +1,28 @@
+desdamona$ 
+desdamona$ patch --backup --input ./Makefile_fbsd.patch
+Hmm...  Looks like a unified diff to me...
+The text leading up to this was:
+--------------------------
+|diff --git a/xmand/Makefile.fbsd_amd64 b/xmand/Makefile.fbsd_amd64
+|index 3b101ac..f3702c8 100644
+|--- a/xmand/Makefile.fbsd_amd64
+|+++ b/xmand/Makefile.fbsd_amd64
+--------------------------
+Patching file Makefile.fbsd_amd64 using Plan A...
+Hunk #1 succeeded at 12.
+Hunk #2 succeeded at 23.
+Hunk #3 succeeded at 31.
+Hmm...  The next patch looks like a unified diff to me...
+The text leading up to this was:
+--------------------------
+|diff --git a/xmand/Makefile.fbsd_amd64_fast b/xmand/Makefile.fbsd_amd64_fast
+|index 5a05362..cd69245 100644
+|--- a/xmand/Makefile.fbsd_amd64_fast
+|+++ b/xmand/Makefile.fbsd_amd64_fast
+--------------------------
+Patching file Makefile.fbsd_amd64_fast using Plan A...
+Hunk #1 succeeded at 12.
+Hunk #2 succeeded at 21.
+done
+desdamona$ 
+

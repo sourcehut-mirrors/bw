@@ -1,0 +1,29 @@
+
+# CC=/opt/bw/gcc9/bin/x86_64-redhat-linux-gcc-9.2.0 
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
+	-pedantic -pedantic-errors \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double -mno-mmx \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS= -lm -lgmp -lmpfr
+LDIR=/opt/bw/lib
+IDIR=/opt/bw/include
+
+SRCS = trap_test.c mpfr_check_flags.c ../sysinfo/sysinfo.c
+OBJS = trap_test.o mpfr_check_flags.o ../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+trap_test: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) trap_test

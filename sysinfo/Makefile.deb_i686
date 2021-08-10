@@ -1,0 +1,30 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m32 -g -O0 -fno-builtin \
+	-march=i586 -mtune=i586 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -mno-fancy-math-387 -malign-double \
+	-m128bit-long-double -mlong-double-80 -mregparm=0 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+	-mno-sse
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600 -D_REENTRANT
+
+LIBS = -lm
+
+SRCS = report.c sysinfo.c
+
+OBJS = report.o sysinfo.o
+
+.PHONY: all
+all: report
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report

@@ -1,0 +1,5 @@
+CFLAGS= -std=iso9899:1999 \
+	-march=rv64imafdc -mabi=lp64d \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -O3
+
+.include "fbsd_common.mk"

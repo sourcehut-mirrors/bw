@@ -1,0 +1,22 @@
+CC?=		/usr/bin/cc
+
+CFLAGS=		-I$(IDIR) -std=iso9899:1999 -m64 -g -O0 \
+		-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
+		-Weverything -Wno-reserved-id-macro -Wno-unused-macros
+
+CPPFLAGS=	-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+		-D_XOPEN_SOURCE=600
+
+LIBS=		-lm
+
+OBJS=		sierpinski.o
+
+.PHONY: all
+all: sierpinski
+
+sierpinski: $(OBJS)
+	$(CC) -o sierpinski $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) sierpinski

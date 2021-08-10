@@ -1,0 +1,24 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -Wno-padded \
+	-m64 -g -O0 -fno-fast-math -fno-builtin
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LDIR=/usr/local/lib
+IDIR=.
+
+SRCS = shatest.c hmac.c sha1.c sha224-256.c sha384-512.c usha.c
+OBJS = shatest.o hmac.o sha1.o sha224-256.o sha384-512.o usha.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+shatest: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) shatest

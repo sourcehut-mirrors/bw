@@ -1,0 +1,30 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic \
+	-pedantic-errors -fno-builtin -fno-fast-math -mhard-float \
+	-mno-app-regs -mflat -mhard-quad-float \
+	-mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
+	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany \
+	-mmemory-model=tso
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lm -lgmp -lmpfr
+
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
+
+SRCS = trap_test.c mpfr_check_flags.c ../sysinfo/sysinfo.c
+OBJS = trap_test.o mpfr_check_flags.o ../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+trap_test: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) trap_test

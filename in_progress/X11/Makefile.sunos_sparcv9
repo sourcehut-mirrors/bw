@@ -1,0 +1,37 @@
+
+CC=/usr/bin/c99
+
+CFLAGS= -I$(IDIR) -Xc -g -errfmt=error -erroff=%none \
+	-xmemalign=8s -errshort=full -xstrconst -xildoff -m64 -xnolibmil \
+	-xcode=pic32 -xregs=no%appl -xlibmieee -ftrap=%none -xarch=sparc -mc \
+	-xs -xbuiltin=%none -xdebugformat=dwarf -xunroll=1
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lX11 -lm -lrt
+LDIR=/opt/bw/lib
+IDIR=/opt/bw/include
+RPATH=/opt/bw/lib
+
+SRCS =  ./cursor.c ../../xwin/x_error_handler.c \
+	../../xwin/create_gc.c \
+	../../xwin/create_borderless_topwin.c \
+	../../sysinfo/sysmem.c ../../sysinfo/sysinfo.c
+
+
+OBJS = ./cursor.o \
+	../../xwin/x_error_handler.o \
+	../../xwin/create_gc.o \
+	../../xwin/create_borderless_topwin.o \
+	../../sysinfo/sysmem.o ../../sysinfo/sysinfo.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I. -I$(IDIR)
+
+cursor: cursor.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) -R$(RPATH) $(LIBS)
+
+clean:
+	rm -f $(OBJS) cursor.o cursor
+

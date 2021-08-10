@@ -1,0 +1,43 @@
+
+# CC=/opt/bw/gcc9/bin/x86_64-redhat-linux-gcc-9.2.0 
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
+	-pedantic -pedantic-errors \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double -mno-mmx \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lX11 -lrt -lm -lpthread
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+
+SRCS = ./mandel_col.c ./linear_inter.c ./mbrot.c \
+	./mbrot.c ./mbrot_vbox_pthread.c \
+	../xwin/x_error_handler.c \
+	../xwin/create_gc.c \
+	../xwin/create_borderless_topwin.c \
+	../time_and_date/timediff.c \
+	../sysinfo/sysmem.c ../sysinfo/sysinfo.c
+
+OBJS = ./mandel_col.o ./linear_inter.o \
+	./mbrot.o ./mbrot_vbox_pthread.o \
+	../xwin/x_error_handler.o \
+	../xwin/create_gc.o \
+	../xwin/create_borderless_topwin.o \
+	../time_and_date/timediff.o \
+	../sysinfo/sysmem.o ../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR)  $(CPPFLAGS)
+
+xmand: xmand.o $(OBJS)
+	$(CC) -o $@ xmand.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) xmand.o xmand

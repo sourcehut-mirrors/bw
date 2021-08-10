@@ -1,0 +1,53 @@
+diff --git a/.gitignore b/.gitignore
+index 8102e14..204d370 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -14,3 +14,7 @@
+ /ray_trace/obs_point
+ /sierpinski/s
+ /sierpinski/s.o
++/time_and_date/date_list
++/time_and_date/date_list.o
++/time_and_date/print_date.o
++/time_and_date/valid_date.o
+diff --git a/time_and_date/Makefile.fbsd_amd64 b/time_and_date/Makefile.fbsd_amd64
+index 80db0d4..c7b3135 100644
+--- a/time_and_date/Makefile.fbsd_amd64
++++ b/time_and_date/Makefile.fbsd_amd64
+@@ -1,24 +1,22 @@
++CC?=		/usr/bin/cc
+ 
+-CC=/usr/bin/cc
++CFLAGS=		-std=iso9899:1999 -m64 -g -O0 \
++		-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
++		-Weverything -Wno-reserved-id-macro -Wno-unused-macros
+ 
+-CFLAGS= -std=iso9899:1999 -m64 -g -O0 \
+-	-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
+-	-Weverything -Wno-reserved-id-macro -Wno-unused-macros
++CPPFLAGS=	-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
++		-D_XOPEN_SOURCE=600
+ 
+-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+-	-D_XOPEN_SOURCE=600
++LIBS=		-lrt
+ 
+-LIBS = -lrt
++OBJS=		date_list.o print_date.o timediff.o valid_date.o
+ 
+-SRCS = date_list.c print_date.c timediff.c valid_date.c
+-
+-OBJS = date_list.o print_date.o timediff.o valid_date.o
+-
+-%.o: %.c
+-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
++.PHONY: all
++all: date_list
+ 
+ date_list: $(OBJS)
+-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
++	$(CC) -o date_list $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+ 
++.PHONY: clean
+ clean:
+ 	rm -f $(OBJS) date_list

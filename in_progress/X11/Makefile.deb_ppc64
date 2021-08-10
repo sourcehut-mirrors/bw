@@ -1,0 +1,39 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -g -O0 -fno-builtin -m64 \
+	-mcpu=970 -mno-altivec -mno-isel -mno-vsx \
+	-mno-crypto -mno-htm -mno-quad-memory-atomic -mfull-toc \
+	-mno-multiple -mupdate -mno-avoid-indexed-addresses \
+	-mno-dlmzb -mno-bit-align -mno-strict-align -mbig -mregnames \
+	-mno-recip -fno-unsafe-math-optimizations -pedantic-errors \
+	-Wall
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lX11 -lrt -lm
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+
+SRCS= ../../xwin/x_error_handler.c \
+ ../../xwin/create_gc.c \
+ ../../xwin/create_borderless_topwin.c \
+ ../../sysinfo/sysmem.c \
+ ../../sysinfo/sysinfo.c
+
+OBJS= ../../xwin/x_error_handler.o \
+ ../../xwin/create_gc.o \
+ ../../xwin/create_borderless_topwin.o \
+ ../../sysinfo/sysmem.o \
+ ../../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR)  $(CPPFLAGS)
+
+cursor: cursor.o $(OBJS)
+	$(CC) -o $@ cursor.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) cursor.o cursor

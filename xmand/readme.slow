@@ -1,0 +1,240 @@
+
+esther$ 
+esther$ ./xmand 8192 1048576 -1.7685893774032593 -8.2373619079589844e-04  4 
+-------------------------------------------------------------
+           system name = Linux
+             node name = esther
+               release = 5.11.0-rc6-genunix
+               version = #1 SMP Wed Feb 3 11:01:18 UTC 2021
+               machine = i686
+             page size = 4096
+         system memory = 181186560
+                       = 176940 kB
+                       = 172 MB
+           avail pages = 2064
+          avail memory = 8454144
+   clock ticks per sec = 100
+       threads support = 200809
+         POSIX Version = 200809
+                endian = little endian
+ sizeof(unsigned long) = 4
+           sizeof(int) = 4
+         sizeof(void*) = 4
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 4
+    translate = ( -1.76858937740326e+00 , -8.23736190795898e-04 )
+      magnify = +1.048576000000e+06
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 525  , 522  ]
+vbox  [ 008 , 008 ]
+fp64( +3.90625000e-03 , +3.90625000e-03 )  
+ select = -1.768589369953e+00, -8.237287402153e-04  
+bailout = 8192              
+magnify = 1.0485760000e+06
+ centre = -1.768589377403e+00, -8.237361907959e-04  
+[mand] =   391956554532 nsec   3.919566e+02 sec
+
+click at 524 520 
+raw  [ 537  , 506  ]
+vbox  [ 008 , 008 ]
+fp64( +2.73437500e-02 , +3.51562500e-02 )  
+ select = -1.768589325249e+00, -8.236691355705e-04  
+bailout = 8192              
+magnify = 1.0485760000e+06
+ centre = -1.768589377403e+00, -8.237361907959e-04  
+[mand] =    31763514738 nsec   3.176351e+01 sec
+
+click at 536 504 
+raw  [ 540  , 509  ]
+right click
+click at 539 507 
+raw  [ 540  , 509  ]
+right click
+
+
+On Debian Linux sparc64 with a single old processor : 
+
+ceres$ 
+ceres$ uname -a 
+Linux ceres 5.10.0-1-sparc64 #1 Debian 5.10.5-1 (2021-01-09) sparc64 GNU/Linux
+ceres$ cat /proc/version 
+Linux version 5.10.0-1-sparc64 (debian-kernel@lists.debian.org) (gcc-10 (Debian 10.2.1-5) 10.2.1 20210108, GNU ld (GNU Binutils for Debian) 2.35.1) #1 Debian 5.10.5-1 (2021-01-09)
+ceres$ cat /proc/cpuinfo 
+cpu             : TI UltraSparc IIi (Sabre)
+fpu             : UltraSparc IIi integrated FPU
+pmu             : ultra12
+prom            : OBP 3.10.27 2000/06/22 16:45
+type            : sun4u
+ncpus probed    : 1
+ncpus active    : 1
+D$ parity tl1   : 0
+I$ parity tl1   : 0
+Cpu0ClkTck      : 000000001a3a21fe
+cpucaps         : flush,stbar,swap,muldiv,v9,mul32,div32,v8plus,vis
+MMU Type        : Spitfire
+MMU PGSZs       : 8K,64K,512K,4MB
+ceres$ head /proc/meminfo 
+MemTotal:        1016688 kB
+MemFree:          100184 kB
+MemAvailable:     806040 kB
+Buffers:           53032 kB
+Cached:           760968 kB
+SwapCached:            8 kB
+Active:           176768 kB
+Inactive:         656152 kB
+Active(anon):        512 kB
+Inactive(anon):    19224 kB
+ceres$ 
+ceres$ 
+
+ceres$ ./xmand 8192 256000 -1.7565955963134765e+00 -1.8295278930664061e-02 32
+-------------------------------------------------------------
+           system name = Linux
+             node name = ceres
+               release = 5.10.0-1-sparc64
+               version = #1 Debian 5.10.5-1 (2021-01-09)
+               machine = sparc64
+             page size = 8192
+          avail memory = 1041088512
+                       = 1016688 kB
+                       = 992 MB
+                endian = big endian
+ sizeof(unsigned long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 32
+    translate = ( -1.75659559631348e+00 , -1.82952789306641e-02 )
+      magnify = +2.560000000000e+05
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 528  , 519  ]
+vbox  [ 008 , 008 ]
+fp64( +9.76562500e-03 , +9.76562500e-03 )  
+ select = -1.756595520020e+00, -1.829520263672e-02  
+bailout = 8192              
+magnify = 2.5600000000e+05
+ centre = -1.756595596313e+00, -1.829527893066e-02  
+[mand] =    38454562691 nsec   3.845456e+01 sec
+
+click at 527 517 
+raw  [ 528  , 519  ]
+inv  [  517 ,  517 ]  
+fp64( +5.04882812e-01 , +5.04882812e-01 )
+vbox  [ 008 , 008 ]
+f+64( +9.76562500e-03 , +9.76562500e-03 )
+c = ( -1.7565955200195311e+00, -1.8295202636718747e-02 )
+pixel_real_w = +1.525878906250e-08
+pixel_imag_h = +1.525878906250e-08
+[ t03 ] : 6  -> 7 
+[ t02 ] : 4  -> 5 
+[ t01 ] : 2  -> 3 
+[ t00 ] : 0  -> 1 
+[ t05 ] : 10 -> 11
+[ t06 ] : 12 -> 13
+[ t04 ] : 8  -> 9 
+[ t07 ] : 14 -> 15
+[ t08 ] : 16 -> 17
+[ t09 ] : 18 -> 19
+[ t10 ] : 20 -> 21
+[ t11 ] : 22 -> 23
+[ t12 ] : 24 -> 25
+[ t13 ] : 26 -> 27
+[ t14 ] : 28 -> 29
+[ t15 ] : 30 -> 31
+[ t16 ] : 32 -> 33
+[ t17 ] : 34 -> 35
+[ t18 ] : 36 -> 37
+[ t19 ] : 38 -> 39
+[ t20 ] : 40 -> 41
+[ t21 ] : 42 -> 43
+[ t22 ] : 44 -> 45
+[ t23 ] : 46 -> 47
+[ t24 ] : 48 -> 49
+[ t25 ] : 50 -> 51
+[ t26 ] : 52 -> 53
+[ t27 ] : 54 -> 55
+[ t28 ] : 56 -> 57
+[ t29 ] : 58 -> 59
+[ t30 ] : 60 -> 61
+[ t31 ] : 62 -> 63
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+PTHRD: join 4 done
+PTHRD: join 5 done
+PTHRD: join 6 done
+PTHRD: join 7 done
+PTHRD: join 8 done
+PTHRD: join 9 done
+PTHRD: join 10 done
+PTHRD: join 11 done
+PTHRD: join 12 done
+PTHRD: join 13 done
+PTHRD: join 14 done
+PTHRD: join 15 done
+PTHRD: join 16 done
+PTHRD: join 17 done
+PTHRD: join 18 done
+PTHRD: join 19 done
+PTHRD: join 20 done
+PTHRD: join 21 done
+PTHRD: join 22 done
+PTHRD: join 23 done
+PTHRD: join 24 done
+PTHRD: join 25 done
+PTHRD: join 26 done
+PTHRD: join 27 done
+PTHRD: join 28 done
+PTHRD: join 29 done
+PTHRD: join 30 done
+PTHRD: join 31 done
+[join] =     1312952470 nsec   1.312952e+00 sec
+[plot] =    11558761754 nsec   1.155876e+01 sec
+click at 527 517 
+raw  [ 532  , 512  ]
+right click
+click at 531 510 
+raw  [ 532  , 512  ]
+right click
+
+
+=======================================================================
+
+$ ./xmand 1048576 262144 -7.499252259685e-01 -1.213768124597e-02 16

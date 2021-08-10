@@ -1,0 +1,31 @@
+
+On some systems the uptime may be wildly wrong : 
+
+alpha $ uptime 
+  6:52pm  up 16 day(s), 20:02,  5 users,  load average: 0.03, 0.02, 0.02
+alpha $ ./report 
+-------------------------------------------------------------------
+                 system name = SunOS
+                   node name = alpha
+                     release = 5.10
+                     version = Generic_150400-65
+                     machine = sun4u
+                   page size = 8192
+               system memory = 4294967296
+                             = 4194304 kB
+                             = 4096 MB
+                             = 4 GB
+                 avail pages = 499968
+                avail memory = 4095737856
+         clock ticks per sec = 100
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime   52 days    0 hour   20 mins   48 secs
+-------------------------------------------------------------------
+alpha $ 

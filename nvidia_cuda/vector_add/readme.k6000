@@ -1,0 +1,6 @@
+
+C_deimos$ 
+C_deimos$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o vaddd.o vaddd.cu 
+C_deimos$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o vaddd vaddd.o -lgomp
+C_deimos$ 
+

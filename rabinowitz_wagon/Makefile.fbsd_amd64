@@ -1,0 +1,27 @@
+CC?=		/usr/bin/cc
+
+LOCALBASE!=	if [ -d /opt/bw ]; then    \
+			echo "/opt/bw/";   \
+		else                       \
+			echo "/usr/local"; \
+		fi
+
+CFLAGS=		-std=iso9899:1999 -m64 -g -O0 \
+		-fno-fast-math -fno-builtin -I$(LOCALBASE)/include
+
+CPPFLAGS=	-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+		-D_XOPEN_SOURCE=600
+
+LIBS=		-lm -lgmp
+
+OBJS=		rw.o
+
+.PHONY: all
+all: rw
+
+rw: $(OBJS)
+	$(CC) -o rw $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LOCALBASE)/lib $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) rw

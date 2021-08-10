@@ -1,0 +1,21 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+SRCS = undef.c
+OBJS = undef.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+undef: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) undef

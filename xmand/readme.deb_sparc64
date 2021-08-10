@@ -1,0 +1,93 @@
+
+C_ceres$ 
+C_ceres$ /usr/bin/nice -n +15 ./xmand 8192 8388608 -1.5018836557869402 -2.2962689399724239e-05 4
+-------------------------------------------------------------
+           system name = Linux
+             node name = ceres
+               release = 5.9.0-2-sparc64
+               version = #1 Debian 5.9.6-1 (2020-11-08)
+               machine = sparc64
+             page size = 8192
+          avail memory = 1042079744
+                       = 1017656 kB
+                       = 993 MB
+                endian = big endian
+ sizeof(unsigned long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 4
+    translate = ( -1.50188365578694e+00 , -2.29626893997242e-05 )
+      magnify = +8.388608000000e+06
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 495  , 550  ]
+inv  [  484 ,  486 ]  
+fp64( +4.72656250e-01 , +4.74609375e-01 )
+vbox  [ 007 , 007 ]
+f+64( -5.46875000e-02 , -5.07812500e-02 )
+c = ( -1.5018836688254562e+00, -2.2974796593194240e-05 )
+pixel_real_w = +4.656612873077e-10
+pixel_imag_h = +4.656612873077e-10
+[ t02 ] : 32 -> 47
+[ t03 ] : 48 -> 63
+[ t01 ] : 16 -> 31
+[ t00 ] : 0  -> 15
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =      425480173 nsec   4.254802e-01 sec
+[plot] =     3872956006 nsec   3.872956e+00 sec
+click at 494 548 
+raw  [ 1355 , 738  ]
+click at 1354 736 
+raw  [ 1357 , 785  ]
+click at 1356 783 
+raw  [ 558  , 752  ]
+vbox  [ 008 , 004 ]
+fp64( +6.83593750e-02 , -4.45312500e-01 )  
+ select = -1.501883639489e+00, -2.306886017323e-05  
+bailout = 8192              
+magnify = 8.3886080000e+06
+ centre = -1.501883655787e+00, -2.296268939972e-05  
+[mand] =   301576050217 nsec   3.015761e+02 sec
+
+click at 557 750 
+raw  [ 553  , 688  ]
+vbox  [ 008 , 005 ]
+fp64( +5.85937500e-02 , -3.20312500e-01 )  
+ select = -1.501883641817e+00, -2.303905785084e-05  
+bailout = 8192              
+magnify = 8.3886080000e+06
+ centre = -1.501883655787e+00, -2.296268939972e-05  
+[mand] =    12363130364 nsec   1.236313e+01 sec
+
+click at 552 686 
+raw  [ 553  , 688  ]
+right click
+click at 552 686 
+raw  [ 553  , 688  ]
+right click
+
+
+
+C_ceres$ 
+

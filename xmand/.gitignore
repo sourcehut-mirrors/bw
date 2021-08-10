@@ -1,0 +1,14 @@
+/xmand/linear_inter.o
+/xmand/mandel_col.o
+/xmand/mbrot.o
+/xmand/mbrot_vbox_pthread.o
+/xmand/xmand
+/xmand/xmand.o
+/xwin/create_borderless_topwin.o
+/xwin/create_gc.o
+/xwin/x_error_handler.o
+/time_and_date/timediff.o
+/sysinfo/sysmem.o
+/sysinfo/sysinfo.o
+/ray_trace/obs_point.o
+/ray_trace/obs_point

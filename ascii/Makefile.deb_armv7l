@@ -1,0 +1,24 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -fno-builtin -g -march=armv7-a \
+	-mtune=cortex-a17 -mfpu=vfpv4-d16 -mstructure-size-boundary=32 \
+	-marm -mtls-dialect=gnu2 -pedantic -mno-sched-prolog -mlittle-endian
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lm
+
+SRCS = ./argv_dump.c ../sysinfo/sysmem.c ../sysinfo/sysinfo.c
+
+OBJS = ./argv_dump.o ../sysinfo/sysmem.o ../sysinfo/sysinfo.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+argv_dump: argv_dump.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) argv_dump.o argv_dump

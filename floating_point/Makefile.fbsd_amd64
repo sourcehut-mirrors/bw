@@ -1,0 +1,23 @@
+CC?=		/usr/bin/cc
+
+CFLAGS=		-std=iso9899:1999 -m64 -g -O0 -fno-builtin \
+		-fno-fast-math -pedantic -pedantic-errors \
+		-Weverything -Wno-reserved-id-macro
+
+CPPFLAGS=	-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+		-D_XOPEN_SOURCE=600
+
+LIBS=		-lm
+
+OBJS=		fp64_inexact.o \
+		../sysinfo/sysinfo.o
+
+.PHONY: all
+all: fp64_inexact
+
+fp64_inexact: $(OBJS)
+	$(CC) -o fp64_inexact $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) fp64_inexact

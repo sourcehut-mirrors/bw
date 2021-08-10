@@ -1,0 +1,19 @@
+
+After a pile of messing around on 16 May 2021 we have a 
+must better looking output and we track the hailstones :
+
+
+mars$ ./collatz 8842233                                                                       
+----------------------------------------------------------------
+       start   path_len    max_at                 max  hailstone
+----------------------------------------------------------------
+     8842233        579       166      60342610919632        215
+mars$ 
+
+where : 
+
+https://mathworld.wolfram.com/HailstoneNumber.html
+
+
+be sure to look at 63728127 
+

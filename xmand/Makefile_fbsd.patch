@@ -1,0 +1,85 @@
+diff --git a/xmand/Makefile.fbsd_amd64 b/xmand/Makefile.fbsd_amd64
+index 3b101ac..f3702c8 100644
+--- a/xmand/Makefile.fbsd_amd64
++++ b/xmand/Makefile.fbsd_amd64
+@@ -12,8 +12,9 @@ LIBS = -lX11 -lrt -lm -lpthread
+ LDIR=/usr/local/lib
+ IDIR=/usr/local/include
+ 
+-SRCS = ./mandel_col.c \
+-	./linear_inter.c \
++LIBS = -lX11 -lrt -lm -lpthread
++
++SRCS = ./mandel_col.c ./linear_inter.c ./mbrot.c \
+ 	./mbrot.c ./mbrot_vbox_pthread.c \
+ 	../xwin/x_error_handler.c \
+ 	../xwin/create_gc.c \
+@@ -22,8 +23,7 @@ SRCS = ./mandel_col.c \
+ 	../sysinfo/sysmem.c ../sysinfo/sysinfo.c
+ 
+ 
+-OBJS = ./mandel_col.o \
+-	./linear_inter.o \
++OBJS = ./mandel_col.o ./linear_inter.o \
+ 	./mbrot.o ./mbrot_vbox_pthread.o \
+ 	../xwin/x_error_handler.o \
+ 	../xwin/create_gc.o \
+@@ -31,12 +31,11 @@ OBJS = ./mandel_col.o \
+ 	../time_and_date/timediff.o \
+ 	../sysinfo/sysmem.o ../sysinfo/sysinfo.o
+ 
+-%.o: %.c
+-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I. -I$(IDIR)
++.c.o:
++	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR)  $(CPPFLAGS)
+ 
+ xmand: xmand.o $(OBJS)
+-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
++	$(CC) -o $@ xmand.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+ 
+ clean:
+ 	rm -f $(OBJS) xmand.o xmand
+-
+diff --git a/xmand/Makefile.fbsd_amd64_fast b/xmand/Makefile.fbsd_amd64_fast
+index 5a05362..cd69245 100644
+--- a/xmand/Makefile.fbsd_amd64_fast
++++ b/xmand/Makefile.fbsd_amd64_fast
+@@ -12,9 +12,8 @@ LIBS = -lX11 -lrt -lm -lpthread
+ LDIR=/usr/local/lib
+ IDIR=/usr/local/include
+ 
+-SRCS = ./mandel_col.c \
+-	./linear_inter.c \
+-	./mbrot.c \
++SRCS = ./mandel_col.c ./linear_inter.c \
++	./mbrot.c ./mbrot_vbox_pthread.c \
+ 	../xwin/x_error_handler.c \
+ 	../xwin/create_gc.c \
+ 	../xwin/create_borderless_topwin.c \
+@@ -22,21 +21,19 @@ SRCS = ./mandel_col.c \
+ 	../sysinfo/sysmem.c ../sysinfo/sysinfo.c
+ 
+ 
+-OBJS = ./mandel_col.o \
+-	./linear_inter.o \
+-	./mbrot.o \
++OBJS = ./mandel_col.o ./linear_inter.o \
++	./mbrot.o ./mbrot_vbox_pthread.o \
+ 	../xwin/x_error_handler.o \
+ 	../xwin/create_gc.o \
+ 	../xwin/create_borderless_topwin.o \
+ 	../time_and_date/timediff.o \
+ 	../sysinfo/sysmem.o ../sysinfo/sysinfo.o
+ 
+-%.o: %.c
+-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
++.c.o:
++	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+ 
+ xmand: xmand.o $(OBJS)
+-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
++	$(CC) -o $@ xmand.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+ 
+ clean:
+ 	rm -f $(OBJS) xmand.o xmand
+-

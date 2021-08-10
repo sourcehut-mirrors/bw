@@ -1,0 +1,26 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 -pedantic \
+	-pedantic-errors -fno-builtin -fno-fast-math -mhard-float \
+	-mno-app-regs -mflat -mhard-quad-float \
+	-mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
+	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany \
+	-mmemory-model=tso
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+SRCS = bfuk.c
+
+OBJS = bfuk.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+bfuk: $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) bfuk

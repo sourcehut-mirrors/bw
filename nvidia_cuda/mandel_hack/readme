@@ -1,0 +1,103 @@
+
+
+C_nix$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_30,code=sm_30 -c -o mandel_hack.o mandel_hack.cu 
+C_nix$ nvcc -ccbin g++ -m64 -gencode arch=compute_30,code=sm_30 -o mandel_hack mandel_hack.o -lgomp
+
+
+Te see the GPU and CPU disagreements from a log file : 
+
+/usr/bin/printf "\ndelta    real                   imaginary              height\n--------------------------------------------------------------\n"; grep '^[0-9]' K4200_16M_samples.log | awk '{printf("%-5s   %-22s %-22s  %s\n", $14, $4, $6, $9)}' | sort -nr | head -20; /usr/bin/printf "\n--------------------------------------------------------------\n\n"
+
+
+In order to get IEEE754-2008 precision compliance on the GPU use : 
+
+ieee754$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_30,code=sm_30 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o mandel_hack.o mandel_hack.cu 
+
+ieee754$ nvcc -ccbin g++ -m64 -gencode arch=compute_30,code=sm_30 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o mandel_hack mandel_hack.o -lgomp
+
+
+Monitor activity with : 
+
+nvidia-smi -q -d POWER,TEMPERATURE,MEMORY,PIDS -i 0 -l 10
+
+
+interesting test case regions :
+
+         b=8192     m=8388608     -1.5018879696731058         -2.1867454051976436e-05 
+           8192       8388608     -1.5018836557869402         -2.2962689399724239e-05
+           8192       8388608     -1.5018876567487207         -2.1137297153477901e-05
+           8192      33554432     -1.501888789004             -2.420670352877e-05
+           8192      16777216     -6.0897140204906464e-01     -6.0948126018047333e-01
+           8192       1048576     -6.0897189378738403e-01     -6.0948026180267334e-01
+
+
+
+nb: nvidia-smi -q -d POWER,TEMPERATURE,MEMORY,PIDS -i 0 -l 5
+
+
+
+============= load test data ================
+
+
+C_deimos$ ./xmand 1048576 8388608 -1.5018879696731058 -2.1867454051976436e-05 8
+-------------------------------------------------------------
+           system name = Linux
+             node name = deimos
+               release = 4.19.0-14-amd64
+               version = #1 SMP Debian 4.19.171-2 (2021-01-30)
+               machine = x86_64
+             page size = 4096
+         system memory = 16690036736
+                       = 16298864 kB
+                       = 15916 MB
+           avail pages = 3552312
+          avail memory = 14550269952
+   clock ticks per sec = 100
+       threads support = 200809
+         POSIX Version = 200809
+                endian = little endian
+ sizeof(unsigned long) = 8
+ sizeof(unsigned long long) = 8
+           sizeof(int) = 4
+         sizeof(void*) = 8
+     fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 1048576
+pthread_limit = 8
+    translate = ( -1.50188796967311e+00 , -2.18674540519764e-05 )
+      magnify = +8.388608000000e+06
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 523  , 524  ]
+vbox  [ 008 , 008 ]
+fp64( +0.00000000e+00 , +0.00000000e+00 )  
+ select = -1.501887969673e+00, -2.186745405198e-05  
+bailout = 1048576           
+magnify = 8.3886080000e+06
+ centre = -1.501887969673e+00, -2.186745405198e-05  
+[mand] =    38107584009 nsec   3.810758e+01 sec
+
+click at 522 522 
+raw  [ 492  , 454  ]
+right click
+click at 491 452 
+raw  [ 492  , 454  ]
+right click
+
+
+

@@ -1,0 +1,56 @@
+
+FreeBSD tends to report : 
+
+ {
+    st_dev = 635284480195933068,
+    st_ino = 5337,
+    st_nlink = 1,
+    st_mode = 33188,
+    st_padding0 = 0,
+    st_uid = 16411,
+    st_gid = 20002, 
+    st_padding1 = 0,
+    st_rdev = 18446744073709551615,
+    st_atim = { tv_sec = 1617157250,
+                tv_nsec = 104886000 },
+    st_mtim = { tv_sec = 1617148380,
+                tv_nsec = 619529000 },
+    st_ctim = { tv_sec = 1617154372,
+                tv_nsec = 687003000 },
+    st_birthtim = { tv_sec = 1617148298,
+                    tv_nsec = 659562000 },
+    st_size = 746,
+    st_blocks = 2,
+    st_blksize = 4096,
+    st_flags = 2048,
+    st_gen = 0, 
+    st_spare = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0} }
+
+Solaris 10 reports : 
+
+status_buffer = {
+    st_dev     = 1099511693329U
+    st_ino     = 7503508U
+    st_mode    = 33188U
+    st_nlink   = 1U
+    st_uid     = 16411
+    st_gid     = 20002
+    st_rdev    = 18446744073709551615U
+    st_size    = 746
+    st_atim    = {
+        __tv_sec  = 1617157653
+        __tv_nsec = 708586100
+    }
+    st_mtim    = {
+        __tv_sec  = 1617157653
+        __tv_nsec = 577572700
+    }
+    st_ctim    = {
+        __tv_sec  = 1617157653
+        __tv_nsec = 577572700
+    }
+    st_blksize = 1024
+    st_blocks  = 4
+    st_fstype  = "zfs"
+}
+

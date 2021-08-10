@@ -1,0 +1,20 @@
+
+alpha$ 
+alpha$ echo $PYTHON 
+/opt/bw/bin/python3
+alpha$ 
+alpha$ $PYTHON --version 
+Python 3.7.8
+alpha$ 
+alpha$ $PYTHON py_test_module.py 
+main line
+module name: __main__
+parent process: 10215
+process id: 14400
+function f
+module name: __main__
+parent process: 14400
+process id: 14401
+hello bob
+alpha$ 
+

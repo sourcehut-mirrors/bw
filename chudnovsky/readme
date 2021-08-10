@@ -1,0 +1,30 @@
+
+This is a very well commented chunk of code that implements the
+Chudnovsky algorithm which you can read about here : 
+
+    https://en.wikipedia.org/wiki/Chudnovsky_algorithm
+
+You may also, if you are brave, read a detailed proof here :
+
+    https://arxiv.org/abs/1809.00533
+
+For fun and happy happy joy joy feelings feel free to run this
+chud with 2048 bits of precision and 16 loops to get a value 
+estimate of pi that is correct to 226 digits after the decimal
+point.  Just do ./chud 2048 16 and watch.
+
+Expect some clean up and a better readme real soon now, 
+
+    Dennis Clarke 
+
+
+ps: At some point I may re-write this thing to automagically
+    adjust internal precision for all computations in order
+    to get a better result. Maybe.  See Pollard Rho code for
+    and example of this sort of precision adjustment stuff.
+
+
+NOTE: a snazzy implementation can be seen in marian_check_pi.c
+      where we get the bit precision automagically revised in
+      a while loop.  I DID NOT WRITE THAT and YES IT WORKS!
+

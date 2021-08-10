@@ -1,0 +1,9 @@
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -pedantic -fno-builtin -g -m64 \
+	-mcpu=970 -mcall-freebsd -mno-altivec -mno-isel -mno-vsx \
+	-mno-crypto -mno-htm -mno-quad-memory-atomic -mfull-toc \
+	-mno-multiple -mupdate -mno-avoid-indexed-addresses \
+	-ffp-contract=off -mno-mulhw \
+	-mno-dlmzb -mno-bit-align -mno-strict-align -mbig -mregnames \
+	-mno-recip -fno-unsafe-math-optimizations
+
+.include "fbsd_common.mk"

@@ -1,0 +1,10 @@
+
+
+This is the most unreadable and un-supportable hack awk sed tr 
+trash you have seen lately ...
+
+
+rhel$ 
+rhel$ rm -f $TMPDIR/barf.sh; cat /proc/modules | awk 'BEGIN{print"#!/bin/sh\nrm -f \044TMPDIR/module_sort.sh\n/usr/bin/printf \042#!/bin/bash\\n\042 > \044TMPDIR/module_sort.sh\nchmod 0750 \044TMPDIR/module_sort.sh\n"}{ print "/usr/bin/printf \047echo \\047  16i \047 >> \044TMPDIR/module_sort.sh\necho \047" $6 "\047 | sed \047s\057^0x\057\057\047 | tr \042\133:lower:\135\042 \042\133:upper:\135\042 | tr -d \047\134012\047 >> \044TMPDIR/module_sort.sh\n/usr/bin/printf \047 pq\\047 | dc | tr -d \\047\\134012\\047\\n\047 >> \044TMPDIR/module_sort.sh\n/usr/bin/printf \047/usr/bin/printf \\047 " $1 "\\\\n\\047\134n\047 >> \044TMPDIR/module_sort.sh\n" }END{print"\nls -lap \044TMPDIR/module_sort.sh\n"}' > $TMPDIR/barf.sh ; chmod 755 $TMPDIR/barf.sh; $TMPDIR/barf.sh ; $TMPDIR/module_sort.sh | sort -n  
+
+

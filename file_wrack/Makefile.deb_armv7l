@@ -1,0 +1,21 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -fno-builtin -g -march=armv7-a \
+	-mtune=cortex-a17 -mfpu=vfpv4-d16 -mstructure-size-boundary=32 \
+	-marm -mtls-dialect=gnu2 -pedantic -mno-sched-prolog -mlittle-endian
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+
+LIBS = -lm
+SRCS = fg.c ../sysinfo/sysinfo.c
+OBJS = fg.o ../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+fg: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) fg

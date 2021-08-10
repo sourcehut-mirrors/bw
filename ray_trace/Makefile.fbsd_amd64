@@ -1,0 +1,5 @@
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 \
+	-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
+	-Weverything -Wno-reserved-id-macro -Wno-unused-macros
+
+.include "fbsd_common.mk"
