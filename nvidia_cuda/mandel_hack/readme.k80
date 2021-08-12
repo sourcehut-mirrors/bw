@@ -1,0 +1,74 @@
+
+Modified code
+
+// Nvidia Tesla K80 (12Gb)
+
+-------------------------------------------------------------
+        system name = Linux
+          node name = devtest-mandelhack
+            release = 5.4.0-1046-azure
+            version = #48~18.04.1-Ubuntu SMP Tue Apr 13 19:41:38 UTC 2021
+            machine = x86_64
+          page size = 4096
+       avail memory = 118156840960
+                    = 115387540 kB
+                    = 112683 MB
+-------------------------------------------------------------
+==15648== NVPROF is profiling process 15648, command: ./mandel_hack
+DBUG : at 136 in mandel_hack.cu
+INFO : number of host CPUs:	12
+INFO : number of CUDA devices:	2
+     :    0: Tesla K80
+     :    1: Tesla K80
+INFO : firing off 16777216 cuda core code chunks
+     : mem size of double data array is 134217728 bytes
+     : mem size of uint32_t height array is 67108864 bytes
+
+-----------------------------------------------------------
+     : random data load 447542493 nsecs
+==15648== Warning: Auto boost enabled on device 0. Profiling results may be inconsistent.
+     : cudaMalloc device_r 254940858 nsecs
+     : cudaMalloc device_i 342903 nsecs
+DBUG : at 239 in mandel_hack.cu
+     : cudaMalloc device_mval 251203 nsecs
+DBUG : at 261 in mandel_hack.cu
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 22390325nsecs
+DBUG : at 300 in mandel_hack.cu
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 22389025 nsecs
+INFO : CUDA kernel launch with 16384 blocks of 1024 threads
+DBUG : at 341 in mandel_hack.cu
+INFO : done.
+     : gpu_mbrot time delta 51400 nsecs
+DBUG : at 366 in mandel_hack.cu
+INFO : Copy result from device to host done.
+     : copy device result done 29488495 nsecs
+DBUG : at 400 in mandel_hack.cu
+     : Total error count = 469108
+     : Total delta error = 95698737
+     : Mean error = 204.001495
+     : data check done 170750788570 nsecs
+INFO : host memory free and we are done
+==15648== Profiling application: ./mandel_hack
+==15648== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   95.55%  1.56371s         1  1.56371s  1.56371s  1.56371s  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    2.73%  44.692ms         2  22.346ms  22.291ms  22.400ms  [CUDA memcpy HtoD]
+                    1.72%  28.165ms         1  28.165ms  28.165ms  28.165ms  [CUDA memcpy DtoH]
+      API calls:   81.51%  1.56401s         6  260.67ms  4.1000us  1.56372s  cudaDeviceSynchronize
+                   13.32%  255.52ms         3  85.173ms  250.60us  254.93ms  cudaMalloc
+                    3.87%  74.180ms         3  24.727ms  22.358ms  29.463ms  cudaMemcpy
+                    1.17%  22.472ms         3  7.4905ms  355.70us  11.091ms  cudaFree
+                    0.05%  904.61us         2  452.31us  444.41us  460.21us  cuDeviceTotalMem
+                    0.03%  578.51us         1  578.51us  578.51us  578.51us  cudaDeviceReset
+                    0.03%  560.11us       202  2.7720us     100ns  120.60us  cuDeviceGetAttribute
+                    0.03%  531.11us         2  265.55us  255.00us  276.10us  cudaGetDeviceProperties
+                    0.00%  65.200us         2  32.600us  29.100us  36.100us  cuDeviceGetName
+                    0.00%  41.000us         1  41.000us  41.000us  41.000us  cudaLaunchKernel
+                    0.00%  14.600us         2  7.3000us  2.0000us  12.600us  cuDeviceGetPCIBusId
+                    0.00%  1.8000us         4     450ns     200ns     900ns  cuDeviceGet
+                    0.00%  1.6000us         3     533ns     200ns     900ns  cuDeviceGetCount
+                    0.00%     700ns         2     350ns     300ns     400ns  cuDeviceGetUuid
+                    0.00%     700ns         1     700ns     700ns     700ns  cudaGetDeviceCount
+                    0.00%     400ns         1     400ns     400ns     400ns  cudaGetLastError
