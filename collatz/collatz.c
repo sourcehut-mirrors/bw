@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
     printf ("--------------------------------");
     printf ("--------------------------------\n");
 
+    /* 
     for ( k = number; k > 0; k-- ) {
         clatz.c0 = k;
         if ( collatz( &clatz ) == EXIT_FAILURE ) {
@@ -83,6 +84,13 @@ int main(int argc, char *argv[])
         }
         c_out(&clatz);
     }
+    */
+
+    if ( collatz( &clatz ) == EXIT_FAILURE ) {
+        fprintf(stderr,"FAIL : something bad happened\n");
+        return EXIT_FAILURE;
+    }
+    c_out(&clatz);
 
     return EXIT_SUCCESS;
 

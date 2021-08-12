@@ -97,6 +97,11 @@ int collatz(collatz_type *cdat)
          *                   cdat->path_height, cdat->path_len );
          */
 
+        printf ("debug : number = %16" PRIu64 " max_height = ", number);
+        printf ("%16" PRIu64 " path_len = %16" PRIu64"\n",
+                            cdat->path_height, cdat->path_len );
+
+
     }
 
     return EXIT_SUCCESS;
