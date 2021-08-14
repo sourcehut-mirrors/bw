@@ -38,6 +38,9 @@ q_type *q_create() {
                     __FILE__, __LINE__ );
         }
         perror("FAIL ");
+        /* NOTE : it is very nasty to bail out this way and
+         * really we should return a NULL pointer and let
+         * the caller handle a smooth exit procedure. */
         exit ( EXIT_FAILURE );
     }
 
@@ -84,7 +87,7 @@ q_type *q_create() {
      *
      */
     errno = 0;
-    q->mutex = calloc( (size_t) 1, (size_t)sizeof(pthread_mutex_t));
+    q->mutex = calloc((size_t) 1, (size_t)sizeof(pthread_mutex_t));
 
     if ( q->mutex == NULL ) {
         if ( errno == ENOMEM ) {
@@ -99,7 +102,7 @@ q_type *q_create() {
     }
 
     errno = 0;
-    q->mutex_attr = calloc( (size_t) 1, (size_t)sizeof(pthread_mutexattr_t));
+    q->mutex_attr = calloc((size_t) 1, (size_t)sizeof(pthread_mutexattr_t));
 
     if ( q->mutex_attr == NULL ) {
         if ( errno == ENOMEM ) {

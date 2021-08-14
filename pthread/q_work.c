@@ -33,35 +33,11 @@
  * and operating system and kernel and memory etc. */
 int sysinfo(int verbose);
 
-/* we also try to get an idea on resource usage but a lot
- * of the basic data is not supported on all systems. Such
- * is life. */
-int ru(void);
-
 /* we need some sort of a worker thread that does at least
  * something that looks like work. It should take in a
  * pointer to a work queue. However pthread_create expects
  * void pointers */
 void *do_some_array_thing ( void *work_q );
-
-/* NOTE : 8 Oct 2020
- * we may want this someday but not yet and not today ....
- *
- * we need some global way to signal to the threads that there
- * may be work for them in the queue. We also need to signal
- * to the worker threads that there is no work and they can
- * shut down cleanly. We may also receive information from the
- * threads to let us know that they are working.
- *
- * The "work flag" may have two valid values :
- * 
- *    0 - zero indicates to the thread to stop operations
- *
- *    1 - one indicates that the thread may do work
- * 
- *
-int work_flag[THREAD_LIMIT];
-*/
 
 int main(int argc, char **argv) {
 
@@ -71,13 +47,6 @@ int main(int argc, char **argv) {
     /* how many elements to calloc into the arrays? */
     size_t req_element_num;
     struct timespec now_time;
-
-    /* TODO set up a collection of flags that indicate that a thread
-     *      is working or not.
-     * memset( &working, 0x00, (size_t)(THREAD_LIMIT) * sizeof( int ) );
-     *
-     * We may never never that.
-     */
 
     setlocale( LC_ALL, "C" );
     sysinfo(VERBOSE);
@@ -97,7 +66,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,"     : usage %s num_pthreads ",argv[0]);
         fprintf(stderr," array_cnt\n");
         fprintf(stderr,"     : num_pthreads number of POSIX threads\n");
-        fprintf(stderr,"     : array_cnt isthe number of elements\n");
+        fprintf(stderr,"     : array_cnt is the number of elements\n");
         fprintf(stderr,"     : inside the test arrays.\n");
         return EXIT_FAILURE;
     } else {
@@ -152,9 +121,7 @@ int main(int argc, char **argv) {
     }
 
     /* create our custom queue for holding task information */
-    printf ( "INFO : about to call q_create()\n");
     q_type *my_q = q_create();
-    printf ( "     : my_q now exists at %p\n\n", my_q);
 
     thread_parm_t *make_work;
     /* make plenty of work where the queue has more work elements
@@ -176,8 +143,12 @@ int main(int argc, char **argv) {
                         __FILE__, __LINE__ );
             }
             perror("FAIL ");
-            /* TODO we need a smooth fail where we backout the previous
-             * memory calloc calls if this is j>0 */
+            /* TODO we need a smooth fail if j>0
+             *
+             * If we do get a calloc() error and j>0 then we have some
+             * elements in our queue my_q. Those now need to be cleanly
+             * made free() along with the final destruction of the my_q.
+             * */
             return EXIT_FAILURE;
         }
 
@@ -201,27 +172,41 @@ int main(int argc, char **argv) {
     errno = 0;
     if ( pthread_attr_init(attr) == ENOMEM ) {
         fprintf(stderr,"FAIL : ENOMEM from pthread_attr_init\n");
-        perror("FAIL : ENOMEM");
+        perror("FAIL : ");
         return EXIT_FAILURE;
     }
 
-    /* system-wide contention or process contention?
+    /* PTHREAD_SCOPE_PROCESS or PTHREAD_SCOPE_SYSTEM
      *
-     * PTHREAD_SCOPE_PROCESS or PTHREAD_SCOPE_SYSTEM
+     * After carefully looking into the FreeBSD sources we
+     * know that lib/libthr/thread/thr_attr.c does exactly 
+     * not a damn thing with this flag. It seems to be in
+     * perfect agreement with the OpenGroup docs which also
+     * say nothing about this flag. 
      *
-     * which is not documented much of anywhere that I have
-     * seen .. yet.
+     * https://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html
+     *
+     * NOTE : we have two possible failure conditions
+     *
+     *        [EINVAL]  Invalid value for attr.
+     *
+     *        [ENOTSUP] Invalid or unsupported value
+     *                  for contentionscope.
+     *
+     * per Steve Wills :
+     *     any time you see the word "unspecified" in
+     *     a *specification* you know you're in for some fun...
      */
     errno = 0;
-    if ( pthread_attr_setscope( attr,
-                                PTHREAD_SCOPE_PROCESS )
-
-            == EINVAL) {
-
+    pthread_err = pthread_attr_setscope(attr, PTHREAD_SCOPE_PROCESS);
+    if ( pthread_err == EINVAL ) {
         fprintf(stderr,"FAIL : pthread_attr_setscope\n");
-        perror("FAIL : EINVAL");
+        perror("FAIL : Invalid value for attr");
         return EXIT_FAILURE;
-
+    } else if ( pthread_err == ENOTSUP ) {
+        fprintf(stderr,"FAIL : pthread_attr_setscope\n");
+        perror("FAIL : Invalid or unsupported value");
+        return EXIT_FAILURE;
     }
 
     /* From pthread_attr_setdetachstate :
@@ -236,26 +221,13 @@ int main(int argc, char **argv) {
      *    detachstate attribute is PTHREAD_CREATE_JOINABLE.
      */
     errno = 0;
-    if ( pthread_attr_setdetachstate( attr,
-                                      PTHREAD_CREATE_JOINABLE )
-
-            == EINVAL) {
-
+    if ( pthread_attr_setdetachstate( attr, PTHREAD_CREATE_JOINABLE ) == EINVAL) {
         fprintf(stderr,"FAIL : pthread_attr_setdetachstate\n");
         perror("FAIL : EINVAL");
         return EXIT_FAILURE;
-
     }
 
     for ( j=0; j < num_pthreads; j++ ) {
-
-        /* this flag indicates to the worker_thread[j] that it may
-         * do work *
-         *
-         *      work_flag[j] = 1;
-         *
-         */
-
         errno = 0;
         pthread_err = pthread_create( &worker_thread[j], attr,
                                       do_some_array_thing,
@@ -274,7 +246,6 @@ int main(int argc, char **argv) {
          *             set the required scheduling parameters or schedul-
          *             ing policy.
          */
-
         if ( pthread_err == EAGAIN ) {
             fprintf(stderr,"FAIL : EAGAIN system lacked resources\n");
             perror("FAIL : EAGAIN");
@@ -288,7 +259,6 @@ int main(int argc, char **argv) {
            perror("FAIL : EPERM");
            return EXIT_FAILURE;
         }
-
     }
 
     for ( j=0; j < num_pthreads; j++ ) {
@@ -297,19 +267,19 @@ int main(int argc, char **argv) {
         printf("join of thread %i is now complete\n", j );
     }
 
-    /* Really we should check the length of the queue before we
+    /* TODO check if the queue is empty.
+     *
+     * Really we should check the length of the queue before we
      * drop the hammer here and destroy whatever queue we have.
      * AT this point we have NO DAMN clue if the work in the queue
-     * actually was all done. TODO check if the queue is empty. */
+     * actually was all done. */
     printf ( "     : q_destroy(my_q) says %i items were thrown away\n",
                                                      q_destroy(my_q) );
 
     free( attr );
     attr = NULL;
 
-    ru();
-
-    return ( EXIT_SUCCESS );
+    return EXIT_SUCCESS;
 
 }
 

@@ -23,7 +23,7 @@ int q_destroy(q_type *q) {
     int err_trap_flag, destroyed_item_count = 0;
     q_item *tmp;
 
-    /* set the mutex as locked */
+    /* lock the mutex */
     pthread_mutex_lock ( q->mutex );
 
     if ( q->head != NULL ) {

@@ -1,5 +1,13 @@
 
 
+This is a almost at the limit : 
+
+ ./xmand 32768 35184372088832 -6.3378386963316991e-02 +9.7988834095918365e-01 8
+
+FP64 only allows for 53 bits of data and we used a lot. 
+
+------------------------------------------------------------------------------
+
 good luck and set your phasers on stun : 
 
  ./xmand 65356 4398046511104 -1.9999991175874234 0.0 4 
