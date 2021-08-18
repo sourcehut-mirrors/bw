@@ -21,12 +21,12 @@ SRCS = xray.c \
 	../xwin/create_gc.c \
 	../xwin/create_borderless_topwin.c \
 	../time_and_date/timediff.c \
-	../complex_vector/intercept.c \
-	../complex_vector/intercept_point.c \
+	../complex_vector/icept.c \
+	../complex_vector/surface_icept_pt.c \
 	../complex_vector/gradient.c \
-	../complex_vector/check_status.c \
 	../complex_vector/cplex_add.c \
 	../complex_vector/cplex_check.c \
+	../complex_vector/cplex_vec_check.c \
 	../complex_vector/cplex_div.c \
 	../complex_vector/cplex_mag.c \
 	../complex_vector/cplex_mult.c \
@@ -46,19 +46,21 @@ SRCS = xray.c \
 	../complex_vector/cplex_vec_cross.c \
 	../complex_vector/cplex_cramer.c \
 	../complex_vector/cplex_det.c \
-	../pthread/sysmem.c ../pthread/sysinfo.c
+	../complex_vector/line_plane_icept.c \
+	../sysinfo/sysmem.c ../sysinfo/sysinfo.c \
+	../sysinfo/ru.c
 
-
-OBJS = ../xwin/x_error_handler.o \
+OBJS = xray.o \
+	../xwin/x_error_handler.o \
 	../xwin/create_gc.o \
 	../xwin/create_borderless_topwin.o \
 	../time_and_date/timediff.o \
-	../complex_vector/intercept.o \
-	../complex_vector/intercept_point.o \
+	../complex_vector/icept.o \
+	../complex_vector/surface_icept_pt.o \
 	../complex_vector/gradient.o \
-	../complex_vector/check_status.o \
 	../complex_vector/cplex_add.o \
 	../complex_vector/cplex_check.o \
+	../complex_vector/cplex_vec_check.o \
 	../complex_vector/cplex_div.o \
 	../complex_vector/cplex_mag.o \
 	../complex_vector/cplex_mult.o \
@@ -78,7 +80,9 @@ OBJS = ../xwin/x_error_handler.o \
 	../complex_vector/cplex_vec_cross.o \
 	../complex_vector/cplex_cramer.o \
 	../complex_vector/cplex_det.o \
-	../pthread/sysmem.o ../pthread/sysinfo.o
+	../complex_vector/line_plane_icept.o \
+	../sysinfo/sysmem.o ../sysinfo/sysinfo.o \
+	../sysinfo/ru.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(CMPLEX_DIR) -I$(IDIR)
@@ -88,4 +92,3 @@ xray: xray.o $(OBJS)
 
 clean:
 	rm -f $(OBJS) xray.o xray
-

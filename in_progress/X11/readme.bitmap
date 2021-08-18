@@ -1,0 +1,7 @@
+
+
+just use 
+
+bitmap -geometry 1024x1024+10+10 -fg green -bg black +proportional fid
+
+

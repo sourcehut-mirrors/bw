@@ -1,5 +1,5 @@
 /*
- * foo.c  some X11 calls to maybe make a cursor
+ * cursor.c X11 calls to make a cursor
  *
  * Copyright (C) Dennis Clarke 2021
  *
@@ -73,8 +73,8 @@ int sysinfo(int verbose);
 
 /* we offset the window from the upper left corner of the root
  * X11 display */
-#define SCREEN_X_OFFSET 20
-#define SCREEN_Y_OFFSET 20
+#define SCREEN_X_OFFSET 10
+#define SCREEN_Y_OFFSET 10
 
 int main(int argc, char **argv)
 {
@@ -198,17 +198,38 @@ int main(int argc, char **argv)
     win0_attribs.background_pixmap = None;
     win0_attribs.backing_store = Always;
 
+    /* thanks again to great people mariang */
+    int keybrd_mask = (KeyPressMask | KeyReleaseMask);
+    int button_mask = (ButtonPressMask | ButtonReleaseMask);
+    int window_mask = (EnterWindowMask | LeaveWindowMask);
+    int motion_mask = (PointerMotionMask | ButtonMotionMask);
+    int event_mask = (button_mask | window_mask );
+
+    win0_attribs.event_mask = event_mask; 
+
     win0_attribs.border_pixel = BlackPixel(dsp, screen_num);
 
+    /* as seen in https://www.x.org/releases/X11R7.7/doc/libX11/libX11/libX11.html#Window_Attributes
+     *
+     *  Both InputOutput and InputOnly windows have the following common
+     *  attributes, which are the only attributes of an InputOnly window:
+     *
+     *       win-gravity, event-mask, do-not-propagate-mask,
+     *       override-redirect, cursor
+     *
+     * If you specify any other attributes for an InputOnly window, a
+     * BadMatch error results.
+     */
     unsigned long wtf = CWBackPixel | CWBorderPixel | CWEventMask;
+    wtf = CWOverrideRedirect;
 
     /* second to last parameter was CWOverrideRedirect but now 
-     * we try WTF ?? */
+     * we try wtf ?? */
     win0 = XCreateWindow(dsp,
                          RootWindow(dsp, DefaultScreen(dsp)),
                          offset_x, offset_y, width, height, 0,
                          CopyFromParent, CopyFromParent,
-                         CopyFromParent, wtf,
+                         CopyFromParent, CWOverrideRedirect,
                          &win0_attribs);
 
     XSizeHints wmsize;
@@ -571,6 +592,7 @@ int main(int argc, char **argv)
     XFlush(dsp);
 
 
+    /* this is not really useful but fun to look at anyways */
     int pixmap_format_count;
     XPixmapFormatValues *list_of_pixmap_formats = XListPixmapFormats(dsp, &pixmap_format_count);
     if ( pixmap_format_count != 0 ) {
@@ -585,6 +607,8 @@ int main(int argc, char **argv)
         printf ("------------------------------------------------\n");
     }
 
+    /* this is a horror show with four possible ways to define
+     * binary data order for bitmap and image data */
     int image_byte_order = ImageByteOrder(dsp);
     printf ("    ImageByteOrder returns ");
     if ( image_byte_order == LSBFirst ) {
@@ -655,11 +679,19 @@ int main(int argc, char **argv)
 
         mouse_x_raw = mouse_x;
         mouse_y_raw = mouse_y;
+
+        /* possibly redundant given that we specified this earlier */
         XSetForeground(dsp, gc0, green.pixel);
         sprintf(buf,"raw  [ %-4i , %-4i ]", mouse_x_raw, mouse_y_raw);
         fprintf(stderr,"%s\n", buf);
 
 
+        /* gee .. how many times shall we do this ? duh
+         *
+         * TODO however for fun we can use the scroll wheel to
+         * adjust red green or blue pixel values just for 
+         * silly kicks ...
+         * */
         XSetForeground(dsp, gc0, green.pixel);
 
         XDrawImageString( dsp, win0, gc0,
@@ -684,19 +716,20 @@ int main(int argc, char **argv)
             double angle, some_x, some_y;
             int radius_count = 0;
 
+            /* for the heck of it 64 pixel radius */
             for ( radius_count = 0; radius_count < 64; radius_count++ ) {
-                for ( p = 0; p < 360; p++ ) {
+                for ( p = 0; p < 720; p++ ) {
 
                      /* quick hack convert from tens of degrees to
                       * radians should be (p)( ( 2 x pi )/360 ) */
 
-                    angle = 2.0 * M_PI * p / 360.0;
+                    angle = 2.0 * M_PI * p / 720.0;
                     some_x = radius_count * cos(angle);
                     some_y = radius_count * sin(angle);
 
-                    hack_me_baby.pixel = ( ( (unsigned long)p & 0xff ) << 16 )
+                    hack_me_baby.pixel = ( ( (unsigned long)(p/2) & 0xff ) << 16 )
                                        + ( ( (unsigned long)radius_count ) << 8 )
-                                       + ( ( (unsigned long)(255.0 * ( (float)p/360.0f ))) & 0xff);
+                                       + ( ( (unsigned long)(255.0 * ( (float)p/720.0f ))) & 0xff);
 
                     XSetForeground(dsp, gc0, hack_me_baby.pixel);
 
@@ -800,7 +833,8 @@ int main(int argc, char **argv)
             printf("roll down\n");
         } else {
 
-            /*
+            /* grap grab grab me babay ? maybe .. does this work ??
+             *
             if ( ( mouse_x < 10 ) || ( mouse_x > 1034 )
                     ||
                  ( mouse_y < 10 ) || ( mouse_y > 1034 ) ) {
