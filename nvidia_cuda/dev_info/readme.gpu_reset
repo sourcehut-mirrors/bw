@@ -1,0 +1,13 @@
+
+
+root@deimos:~# 
+root@deimos:~# nvidia-smi -pm 1                     
+Persistence mode is already Enabled for GPU 00000000:01:00.0.
+All done.
+root@deimos:~# 
+root@deimos:~# nvidia-smi --gpu-reset
+GPU 00000000:01:00.0 was successfully reset.
+All done.
+root@deimos:~#
+
+
