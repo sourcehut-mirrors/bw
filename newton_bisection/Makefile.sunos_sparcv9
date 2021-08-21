@@ -1,0 +1,27 @@
+
+CC=/opt/developerstudio12.6/bin/c99
+
+CFLAGS= -Xc -g -errfmt=error -erroff=%none -xmemalign=8s -errshort=full \
+	-xstrconst -xildoff -m64 -xnolibmil -xcode=pic32 -xregs=no%appl \
+	-xlibmieee -ftrap=%none -xarch=sparc -mc -xs -xbuiltin=%none \
+	-xdebugformat=dwarf -xunroll=1
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lm
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
+LD_OPTIONS=-L/opt/bw/lib
+LD_RUN_PATH=/opt/bw/lib
+
+OBJ = excel_bisect.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+
+excel_bisect: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -R$(LDIR) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f *.o excel_bisect
