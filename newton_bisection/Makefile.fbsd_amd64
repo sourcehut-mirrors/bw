@@ -1,0 +1,25 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+LIBS= -lm
+
+SRCS = excel_bisect.c
+OBJS = excel_bisect.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+excel_bisect: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) excel_bisect
