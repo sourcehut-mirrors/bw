@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <locale.h>
 #include <float.h>
-#include "math.h"
+#include <math.h>
 
 /******************************************************************
  * Using the typical financial calculation for Pv ( present value ) 
@@ -99,15 +99,17 @@
  *
  ******************************************************************/
 
-long double rootfind( long double left, long double right, long double tol, int *nper,
-                 long double *pmt, long double *pv, int *count );
+double rootfind(double left, double right,
+                double tol, int *nper,
+                double *pmt, double *pv,
+                int *count );
 
-long double f( long double x, int *nper, long double *pmt, long double *pv );
+double f(double x, int *nper,double *pmt,double *pv );
 
 int main( int argc, char *argv[] ) {
 
     int32_t num;
-    long double left, right, tol, root;
+    double left, right, tol, root;
 
     /* nper   The total number of payment periods in an annuity.
      * pmt    The payment made each period and cannot change over
@@ -118,50 +120,39 @@ int main( int argc, char *argv[] ) {
      */
 
     int32_t nper, pper;
-    long double pmt, pv;
+    double pmt, pv;
 
     /* Assume 12 payments per period unless argv[4] exists */
-    pper = (int32_t) 12;
+    pper = 12;
 
     if ( argc > 1 ) {
-
         nper = (int32_t) strtol( argv[1], (char **)NULL, 10);
-        pmt = strtold( argv[2], (char **)NULL);
-        pv = strtold( argv[3], (char **)NULL);
+        pmt = strtod( argv[2], (char **)NULL);
+        pv = strtod( argv[3], (char **)NULL);
 
         if ( pmt > 0.0 ) { 
             printf ( "WARN : pmt should be a negative number.\n" );
-            pmt = pmt * (long double) -1.0;
+            pmt = -1.0 * pmt;
             printf ( "     : adjusted pmt to now be %12.4lf\n", pmt );
         }
 
         if ( argc > 4 ) {
-            pper = (int32_t) strtold( argv[4], (char **)NULL);
+            pper = (int32_t) atoi( argv[4] );
         }
-            
     } else {
-
-        printf ( "Enter the total number of payment periods : n\n" );
-        scanf ( "%i", &nper );
-
-        printf ( "Enter the payment made each period : pmt\n" );
-        scanf ( "%lf", &pmt );
-
-        if ( pmt > 0.0 ) { 
-            printf ( "WARN : pmt should be a negative number.\n" );
-            pmt = pmt * (long double) -1.0;
-            printf ( "     : adjusted pmt to now be %8.2lf\n", pmt );
-        }
-
-        printf ( "Enter the present value : pv\n" );
-        scanf ( "%lf", &pv );
-
+        printf ( "FAIL : gimme some data dammmmit !\n");
+        return EXIT_FAILURE;
     }
 
-    left = (long double)  0.00001;
-    right = (long double) 1.0;
+    left = 0.00001;
+    right = 1.0;
 
-    /* tol = (long double) 0.0000001; */
+    printf ("INFO : we have \n       nper = %i\n", nper);
+    printf ("       pmt = %g\n", pmt);
+    printf ("       pv = %g\n", pv);
+    printf ("       pper = %i\n", pper);
+
+    /* tol = (double) 0.0000001; */
 
 
     /* Programmers have the right to be ignorant of many details of your
@@ -169,21 +160,21 @@ int main( int argc, char *argv[] ) {
      * --Kernighan and Plauger, _Software Tools_  */
 
 
-    /* tol = (long double) 0.000000000000001;  */
-    tol = (long double) DBL_MIN;
+    /* tol = (double) 0.000000000000001;  */
+    /* tol = (double) DBL_MIN; */
 
-    if ( tol > 0.01 ) { 
-        printf ( "try again with a tolerance that is small.\n" );
-        return ( EXIT_FAILURE );
-    }
+    tol = 0.0000001;
 
-    if( f(left, &nper, &pmt, &pv) * f(right, &nper, &pmt, &pv) >=0 ) {
+    if ( (  f(left, &nper, &pmt, &pv)
+          * f(right, &nper, &pmt, &pv) )  >= 0.0 ) {
+
         printf ( "No solution in range 0 to 1.\n" );
-        if ( fabsl( pmt *( (long double) nper ) ) < pv ) {
+
+        if ( fabs( pmt * ( (double) nper ) ) < pv ) {
             printf ( "Also %i payments of %lf is less than %lf\n",
-                            nper, ( (long double) -1.0 * pmt ), pv );
+                            nper, ( (double) -1.0 * pmt ), pv );
         }
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
 
     num=0;
@@ -191,36 +182,37 @@ int main( int argc, char *argv[] ) {
     root = rootfind( left, right, tol, &nper, &pmt, &pv, &num );
 
     printf ( "%d iter:", num );
-    printf ( " rate = %-12.10lf", root );
-    printf ( " equates to %-8.4lf%% rate on %i per period\n",
-                  root * ((long double) pper) * (long double) 100.0, pper );
+    printf ( " rate = %-12.10f", root );
+    printf ( " equates to %-8.4f%% rate on %i per period\n",
+                  root * ((double) pper) * (double) 100.0, pper );
 
-    return ( EXIT_SUCCESS );
+    return EXIT_SUCCESS;
 
 }
 
-long double rootfind( long double left, long double right, long double tol, int32_t *nper,
-                 long double *pmt, long double *pv, int32_t *count ) {
+double rootfind(double left, double right,
+                double tol, int32_t *nper,
+                double *pmt, double *pv, int32_t *count ) {
 
-    long double p; /* p is middle of left and right */
+    double p = 0.0; /* p is middle of left and right */
 
     /* this loop should exit when the interval < tol */
-    while( fabsl(left-right) > tol) { 
+    while( fabs(left-right) > tol) { 
         p = ( left + right ) / 2.0;
 
-        if ( fabsl(f(p, nper, pmt, pv)) < tol ) {
+        if ( fabs(f(p, nper, pmt, pv)) < tol ) {
             /* close enough to zero */
             return p;
         }
 
-        if ( f(p, nper, pmt, pv)*f(right, nper, pmt, pv) < 0.0 ) {
+        if ( ( f(p, nper, pmt, pv)*f(right, nper, pmt, pv) ) < 0.0 ) {
             left=p;
         } else {
             right=p;
         }
 
         (*count)++;
-        printf ( "c = %2i    p = %-18.14lf\n", *count, p );
+        printf ( "c = %2i    p = %-18.14f\n", *count, p );
 
         if ( *count > 64 ) {
             /* bail out */
@@ -230,7 +222,7 @@ long double rootfind( long double left, long double right, long double tol, int3
     return p;
 }
 
-long double f( long double r, int32_t *nper, long double *pmt, long double *pv ) {
+double f(double r, int32_t *nper, double *pmt, double *pv) {
     /*****************************************************************
      *
      *    Pv = present value such as 15596.68
@@ -242,13 +234,13 @@ long double f( long double r, int32_t *nper, long double *pmt, long double *pv )
      *           + 15596.68
      *
      *****************************************************************/
-    long double present_value = *pv;
-    long double payment = *pmt;
-    long double n = *nper;
+    double present_value = *pv;
+    double payment = *pmt;
+    double n = *nper;
 
-    return ( payment * ( powl( ( 1 + r ), n ) - 1 )
+    return ( payment * ( pow( ( 1.0 + r ), n ) - 1.0 )
              /
-            ( r * powl( ( 1 + r ), n ) ) + present_value );
+            ( r * pow( ( 1.0 + r ), n ) ) + present_value );
 
 }
 
