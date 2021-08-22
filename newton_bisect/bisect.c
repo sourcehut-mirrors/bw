@@ -254,7 +254,7 @@ double rootfind(double left, double right,
                 double *pmt, double *pv, int *count) {
 
     /* we need a midpoint value between left and right */
-    double p;
+    double p = 0.0;
 
     /* this loop should exit when the error epsilon < tol */
     while( fabs(left-right) > tol) { 

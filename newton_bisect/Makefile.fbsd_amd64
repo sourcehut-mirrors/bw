@@ -12,14 +12,14 @@ LDIR=/usr/local/lib
 IDIR=/usr/local/include
 LIBS= -lm
 
-SRCS = excel_bisect.c
-OBJS = excel_bisect.o
+SRCS = bisect.c
+OBJS = bisect.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
 
-excel_bisect: $(OBJS)
+bisect: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 clean:
-	rm -f $(OBJS) excel_bisect
+	rm -f $(OBJS) bisect
