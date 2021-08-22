@@ -15,13 +15,13 @@ LDIR=/opt/bw/lib
 LD_OPTIONS=-L/opt/bw/lib
 LD_RUN_PATH=/opt/bw/lib
 
-OBJ = excel_bisect.o
+OBJ = bisect.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
 
-excel_bisect: $(OBJ)
+bisect: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -R$(LDIR) -L$(LDIR) $(LIBS)
 
 clean:
-	rm -f *.o excel_bisect
+	rm -f *.o bisect
