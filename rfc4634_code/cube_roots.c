@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
     int j = 0;
     int k = 0;
     char *hex_char = calloc(32,sizeof(unsigned char));
+    char *buf = calloc(32,sizeof(unsigned char));
 
     /* prime numbers to use */
     int p[80] = {   2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
@@ -118,13 +119,7 @@ int main(int argc, char *argv[])
              "431D67C49C100D4C", "4CC5D4BECB3E42B6", "597F299CFC657E2A",
              "5FCB6FAB3AD6FAEC", "6C44198C4A475817" };
 
-    char *buf = setlocale ( LC_ALL, "POSIX" );
-    if ( buf == NULL ) {
-       fprintf (stderr,"FAIL : setlocale fail\n");
-       return EXIT_FAILURE;
-    }
-    free(buf);
-    buf = calloc(32,sizeof(unsigned char));
+    setlocale ( LC_ALL, "POSIX" );
 
     /* Why the 64-bit double precision data type fails.
      * -----------------------------------------------------------------
@@ -167,7 +162,8 @@ int main(int argc, char *argv[])
         }
         if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
-        memset(buf, 0, 32);
+        buf[0] = '\0';
+        /* memset(buf, 0, 32); */
     }
 
     printf ("---------------- 128-bit double type? -------------\n");
@@ -199,6 +195,7 @@ int main(int argc, char *argv[])
         }
         if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
+        buf[0] = '\0';
     }
 
     free(buf);
