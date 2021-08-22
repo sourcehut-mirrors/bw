@@ -181,8 +181,9 @@ int main(int argc, char *argv[])
      * a decent risc machine that can do IEEE-754 floating
      * point in the correct 128-bit datatype.
      */
-    for ( j=0; j<8; j++ ) {
-        cuberoot_ld = expl(logl((long double)p[j])/3.0L);
+    for ( j=70; j<80; j++ ) {
+        /* cuberoot_ld = expl(logl((long double)p[j])/3.0L); */
+        cuberoot_ld = cbrtl((long double)p[j]);
         printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld,hpf[j]);
         frac_ld = ( cuberoot_ld - floorl(cuberoot_ld) ) * 16.0L;
         for ( k=0; k<16; k++ ) {
