@@ -1,0 +1,46 @@
+
+?? MOST LIKELY DOES NOT DO WHAT YOU THINK IT DOES ??
+
+I can not recall what this was for and I also see that
+the target residual value is not used at all. So this 
+needs some thinking and digging before I bother to look
+at the numbers it spews out.
+
+
+Strange things are afoot : 
+
+phobos$ ./rv_pmt_num 0.202600838664204675 12 60 -736.61 -16239.95 0.15 80
+
+REF Amort ( for APR calc ) = 33599.0004104667
+guess_direction = 1
+INFO : guess_bracket = 32
+INFO : g=112 before loop.
+INFO : c=  0  g=112   dir= -1
+     : direction change.
+     : bracket = 16
+INFO : c=  1  g= 96   dir= -1
+INFO : c=  2  g= 80   dir=  1
+     : direction change.
+     : bracket = 8
+INFO : c=  3  g= 88   dir= -1
+     : direction change.
+     : bracket = 4
+INFO : c=  4  g= 84   dir= -1
+INFO : c=  5  g= 80   dir=  1
+     : direction change.
+     : bracket = 2
+INFO : c=  6  g= 82   dir= -1
+     : direction change.
+     : bracket = 1
+INFO : n= 81 perfect.
+phobos$ 
+phobos$ 
+phobos$ ./rv_pmt_num 0.202600838664204675 12 60 -736.61 -16239.95 0.15 81
+
+REF Amort ( for APR calc ) = 33599.0004104667
+guess_direction = 0
+
+initial guess perfect at n = 81
+phobos$ 
+
+
