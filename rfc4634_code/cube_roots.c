@@ -28,7 +28,7 @@
  * 4cc5d4becb3e42b6 597f299cfc657e2a 5fcb6fab3ad6faec 6c44198c4a475817
  *
  * This is a hack attempt to generate those from floating point data.
- * Copyright (C) Dennis Clarke 2019
+ * Copyright (C) Dennis Clarke 2021
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,19 +151,18 @@ int main(int argc, char *argv[])
     for ( j=0; j<8; j++ ) {
         cuberoot = exp(log((double)p[j])/3.0);
         printf ("  %3i    %-28.20e    %s    ", p[j], cuberoot, hpf[j]);
-        frac = ( cuberoot - floor(cuberoot) ) * 16.0;
+        frac = ( cuberoot - trunc(cuberoot) ) * 16.0;
         for ( k=0; k<16; k++ ) {
             snprintf(hex_char, 2, "%1X", (int)frac);
             printf ("%s", hex_char);
             strncat(buf, hex_char, 1);
             hex_char[0] = '\0';
-            frac = frac - floor(frac);
+            frac = frac - trunc(frac);
             frac = frac * 16.0;
         }
         if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
         buf[0] = '\0';
-        /* memset(buf, 0, 32); */
     }
 
     printf ("---------------- 128-bit double type? -------------\n");
