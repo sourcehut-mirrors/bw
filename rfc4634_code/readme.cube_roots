@@ -85,6 +85,103 @@ up to 14 due to the 0.999999999999994174... fractional component.
 
 The result above is 7137449123EF65CD with the final hex digit
 being clearly a "D" value for 13.  The correct value should 
-be 7137449123EF65CE where the trailing "E" is the result off
-reasonable rounding. 
+be 7137449123EF65CE where the trailing "E" is the result of
+the x86 extended precision bullshit datatype only giving us
+63 bits and not the 64 we need.
+
+------------------------------------------------------------------------------
+-------------- a closer look at the 80-bit x86 extended precision bullshit 
+
+
+After a close look at the x86 80-bit extended precision data for a trivial
+cube root we see that there is no way possible to get 64-bits of fractional
+data. 
+
+within a debugger we may look at the actual in memory data for cube root
+of 3.0 thus :  ( note that gg is an alias for gdb with a dumb term )
+
+phobos$ gg cube_roots
+Reading symbols from cube_roots...
+(gdb) break 184
+Breakpoint 1 at 0x20282e: file cube_roots.c, line 184.
+(gdb) run
+Starting program: /usr/home/dclarke/pgm/bw/rfc4634_code/cube_roots 
+
+Expect this to fail terribly as we lose precision
+There is no way to squeeze 64 bits out of 53 bits.
+---------------- 64-bit double type ---------------
+    p    64-bit cube root                Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.25992104989487319067e+00      428A2F98D728AE22    428A2F98D728B000    ERROR
+    3    1.44224957030740830177e+00      7137449123EF65CD    7137449123EF6000    ERROR
+    5    1.70997594667669705615e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D4000    ERROR
+    7    1.91293118277238916036e+00      E9B5DBA58189DBBC    E9B5DBA58189E000    ERROR
+   11    2.22398009056931567073e+00      3956C25BF348B538    3956C25BF348C000    ERROR
+   13    2.35133468772075771014e+00      59F111F1B605D019    59F111F1B605E000    ERROR
+   17    2.57128159065823513885e+00      923F82A4AF194F9B    923F82A4AF194000    ERROR
+   19    2.66840164872194485213e+00      AB1C5ED5DA6D8118    AB1C5ED5DA6D8000    ERROR
+---------------- 128-bit double type? -------------
+    p    128-bit cube root                           Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffe810) at cube_roots.c:184
+184             cuberoot_ld = cbrtl((long double)p[j]);
+(gdb) cont
+Continuing.
+    2    1.25992104989487316475411243787974e+00      428A2F98D728AE22    428A2F98D728AE22
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffe810) at cube_roots.c:184
+184             cuberoot_ld = cbrtl((long double)p[j]);
+(gdb) next
+185             printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld,hpf[j]);
+(gdb) print cuberoot_ld 
+$1 = 1.44224957030740838233
+(gdb) print &cuberoot_ld 
+$2 = (long double *) 0x7fffffffe770
+(gdb) x/16xb 0x7fffffffe770
+0x7fffffffe770: 0xe7    0xb2    0xf7    0x91    0x48    0xa2    0x9b    0xb8
+0x7fffffffe778: 0xff    0x3f    0xff    0xff    0xff    0x7f    0x00    0x00
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 56268] will be killed.
+
+Quit anyway? (y or n) y
+phobos$ 
+
+Above we see that the floating point value for the cube root of 3.0 is about 
+somewhere in the vicinity of 1.44224957030740838233 which is in memory at
+address 0x7fffffffe770.  This is 10 bytes or 80-bits in little endian order
+and this the actual data is : 
+
+    0xe7  0xb2  0xf7  0x91  0x48  0xa2  0x9b  0xb8  0xff  0x3f   
+
+Which we can reverse and see as : 3FFFB89BA24891F7B2E7
+
+The old desktop calc tool will give us the bits and we must be careful to
+note that the leading nibble is 3 where 0011 binary is needed : 
+
+phobos$ echo ' 16i 2o 3FFFB89BA24891F7B2E7 pq' | dc 
+11111111111111101110001001101110100010010010001001000111110111101100101110011\
+1
+ 
+ 
+Thus the full binary data is :
+
+            0011 1111 1111 1111 1011 1000 1001 1011 1010 0010 0100 1000 1001 0001 1111 0111 1011 0010 1110 0111
+                                ^ Normalized value. 
+
+A close look at the hexadecimal data reveals that the final digit is in fact E : 
+
+                                 0111 0001  0011 0111 0100 0100 1001 0001 0010 0011 1110 1111 0110 0101 1100 111   
+                                    7    1     3    7    4    4    9    1    2    3    E    F    6    5    C    D 
+
+We know from RFC-4634 that the correct fractional hex data for the cube root of 3.0 is 
+the byte sequence 7137449123EF65CD and clearly we have lost a bit of data from the above.
+
+Thus the x86 hardware can not, ever, correctly compute the RFC-4634 data. Any attempt to
+do so results in an error : 
+
+
+    3    1.44224957030740838232873296531622e+00      7137449123EF65CD    7137449123EF65CE    ERROR
 
