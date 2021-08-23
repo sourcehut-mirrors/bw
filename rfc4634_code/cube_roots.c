@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
                   179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
                   233, 239, 241, 251, 257, 263, 269, 271, 277, 281,
                   283, 293, 307, 311, 313, 317, 331, 337, 347, 349,
-                  373, 379, 383, 389, 397, 401, 409, 419, 421, 431 };
+                  353, 359, 367, 373, 379, 383, 389, 397, 401, 409 };
 
     /* this is clunky but gets the job done.
      *
@@ -181,11 +181,10 @@ int main(int argc, char *argv[])
      * a decent risc machine that can do IEEE-754 floating
      * point in the correct 128-bit datatype.
      */
-    for ( j=70; j<80; j++ ) {
-        /* cuberoot_ld = expl(logl((long double)p[j])/3.0L); */
+    for ( j=0; j<80; j++ ) {
         cuberoot_ld = cbrtl((long double)p[j]);
         printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld,hpf[j]);
-        frac_ld = ( cuberoot_ld - floorl(cuberoot_ld) ) * 16.0L;
+        frac_ld = ( cuberoot_ld - truncl(cuberoot_ld) ) * 16.0L;
         for ( k=0; k<16; k++ ) {
             snprintf(hex_char, 2, "%1X", (int)frac_ld);
             printf ("%s", hex_char);
