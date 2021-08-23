@@ -1,5 +1,7 @@
 /*
- * cube_roots.c  RFC-4634 section 5.2 states : 
+ * cube_roots.c  demonstrate that x86/AMD64 hardware can not compute
+ *               the RFC-4634 section 5.2 reference data.
+ *
  * SHA-384 and SHA-512 use the same sequence of eighty constant 64-bit
  * words, K0, K1, ... K79.  These words represent the first sixty-four
  * bits of the fractional parts of the cube roots of the first eighty
@@ -66,6 +68,10 @@
 #include <locale.h>
 #include <math.h>
 
+#define VERBOSE 1
+
+int sysinfo(int verbose);
+
 int main(int argc, char *argv[]) 
 {
 
@@ -120,6 +126,7 @@ int main(int argc, char *argv[])
              "5FCB6FAB3AD6FAEC", "6C44198C4A475817" };
 
     setlocale ( LC_ALL, "POSIX" );
+    sysinfo(VERBOSE);
 
     /* Why the 64-bit double precision data type fails.
      * -----------------------------------------------------------------
@@ -145,6 +152,7 @@ int main(int argc, char *argv[])
 
     printf ("\nExpect this to fail terribly as we lose precision\n");
     printf ("There is no way to squeeze 64 bits out of 53 bits.\n");
+    printf ("The 64-bit double floating point type always fails.\n");
     printf ("---------------- 64-bit double type ---------------\n");
     printf ("    p    64-bit cube root                Reference Hex       Computed Hex\n");
     printf ("-------------------------------------------------------------------------\n");
@@ -165,8 +173,10 @@ int main(int argc, char *argv[])
         buf[0] = '\0';
     }
 
-    printf ("---------------- 128-bit double type? -------------\n");
-    printf ("    p    128-bit cube root                           Reference Hex       Computed Hex\n");
+    printf ("\nWe shall attempt to use 128-bit long double.\n");
+    printf ("Note that x86/AMD64 hardware has no such implementation.\n");
+    printf ("------------------- long double type? -------------\n");
+    printf ("    p    128-bit cube root?                          Reference Hex       Computed Hex\n");
     printf ("-----------------------------------------------------------------------------------------\n");
     /* note that Intel and AMD64 x86 hardware can not handle
      * the IEEE-754(2008) floating point standard. We are lucky
