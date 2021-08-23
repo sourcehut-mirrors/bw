@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
     long double frac_ld, cuberoot_ld = 0.0L;
     int j = 0;
     int k = 0;
+    char *hex_char = calloc(32,sizeof(unsigned char));
 
     /* prime numbers to use */
     int p[80] = {   2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
@@ -122,6 +123,8 @@ int main(int argc, char *argv[])
        fprintf (stderr,"FAIL : setlocale fail\n");
        return EXIT_FAILURE;
     }
+    free(buf);
+    buf = calloc(32,sizeof(unsigned char));
 
     /* Why the 64-bit double precision data type fails.
      * -----------------------------------------------------------------
@@ -146,6 +149,7 @@ int main(int argc, char *argv[])
      */
 
     printf ("\nExpect this to fail terribly as we lose precision\n");
+    printf ("There is no way to squeeze 64 bits out of 53 bits.\n");
     printf ("---------------- 64-bit double type ---------------\n");
     printf ("    p    64-bit cube root                Reference Hex       Computed Hex\n");
     printf ("-------------------------------------------------------------------------\n");
@@ -153,17 +157,19 @@ int main(int argc, char *argv[])
         cuberoot = exp(log((double)p[j])/3.0);
         printf ("  %3i    %-28.20e    %s    ", p[j], cuberoot, hpf[j]);
         frac = ( cuberoot - floor(cuberoot) ) * 16.0;
-        /* printf ("\n\n            frac = %-28.20e\n\n", frac); */
         for ( k=0; k<16; k++ ) {
-            /* printf ("\n\n            %i        %i\n",k,(int)frac); */
-            printf ("%1X", (int)frac);
+            snprintf(hex_char, 2, "%1X", (int)frac);
+            printf ("%s", hex_char);
+            strncat(buf, hex_char, 1);
+            hex_char[0] = '\0';
             frac = frac - floor(frac);
             frac = frac * 16.0;
         }
+        if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
+        memset(buf, 0, 32);
     }
 
-    printf ("\nIf you are on x86 hardware this may not work.\n");
     printf ("---------------- 128-bit double type? -------------\n");
     printf ("    p    128-bit cube root                           Reference Hex       Computed Hex\n");
     printf ("-----------------------------------------------------------------------------------------\n");
@@ -182,15 +188,24 @@ int main(int argc, char *argv[])
     for ( j=0; j<8; j++ ) {
         cuberoot_ld = expl(logl((long double)p[j])/3.0L);
         printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld,hpf[j]);
-
         frac_ld = ( cuberoot_ld - floorl(cuberoot_ld) ) * 16.0L;
         for ( k=0; k<16; k++ ) {
-            printf ("%1X", (int)frac_ld);
+            snprintf(hex_char, 2, "%1X", (int)frac_ld);
+            printf ("%s", hex_char);
+            strncat(buf, hex_char, 1);
+            hex_char[0] = '\0';
             frac_ld = frac_ld - floorl(frac_ld);
             frac_ld = frac_ld * 16.0L;
         }
+        if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
     }
+
+    free(buf);
+    buf = NULL;
+
+    free(hex_char);
+    hex_char = NULL;
 
     return EXIT_SUCCESS;
 
