@@ -1,0 +1,130 @@
+
+
+
+see https://www.ibm.com/docs/en/aix/7.1?topic=sepl-128-bit-long-double-floating-point-data-type
+
+Implementing the 128- bit long double format
+
+A 128-bit long double number consists of an ordered pair of 64-bit double-precision numbers. The first member of the ordered pair contains the high-order part of the number, and the second member contains the low-order part. The value of the long double quantity is the sum of the two 64-bit numbers.
+
+Each of the two 64-bit numbers is itself a double-precision floating-point number with a sign, exponent, and significand. The low-order member has a magnitude that is less than 1 unit in the last place of the high part, so the values of the two 64-bit numbers do not overlap and the entire significand of the low-order number adds precision beyond the high-order number.
+
+
+
+enceladus$ 
+enceladus$ gg cube_roots
+Reading symbols from cube_roots...
+(gdb) break 194
+Breakpoint 1 at 0x24a4: file cube_roots.c, line 194.
+(gdb) run
+Starting program: /home/dclarke/pgm/bw/rfc4634_code/cube_roots 
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = enceladus
+                     release = 5.14.0-rc2-genunix
+                     version = #1 SMP Sun Jul 18 23:51:34 GMT 2021
+                     machine = ppc64
+                   page size = 65536
+               system memory = 8379891712
+                             = 8183488 kB
+                             = 7991 MB
+                 avail pages = 117471
+                avail memory = 7698579456
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour    6 mins   57 secs
+-------------------------------------------------------------------
+
+Expect this to fail terribly as we lose precision
+There is no way to squeeze 64 bits out of 53 bits.
+The 64-bit double floating point type always fails.
+---------------- 64-bit double type ---------------
+    p    64-bit cube root                Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.25992104989487319067e+00      428A2F98D728AE22    428A2F98D728B000    ERROR
+    3    1.44224957030740852382e+00      7137449123EF65CD    7137449123EF7000    ERROR
+    5    1.70997594667669705615e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D4000    ERROR
+    7    1.91293118277238916036e+00      E9B5DBA58189DBBC    E9B5DBA58189E000    ERROR
+   11    2.22398009056931567073e+00      3956C25BF348B538    3956C25BF348C000    ERROR
+   13    2.35133468772075771014e+00      59F111F1B605D019    59F111F1B605E000    ERROR
+   17    2.57128159065823513885e+00      923F82A4AF194F9B    923F82A4AF194000    ERROR
+   19    2.66840164872194485213e+00      AB1C5ED5DA6D8118    AB1C5ED5DA6D8000    ERROR
+
+We shall attempt to use 128-bit long double.
+Note that x86/AMD64 hardware has no such implementation.
+------------------- long double type? -------------
+    p    128-bit cube root?                          Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+
+Breakpoint 1, main (argc=1, argv=0x7ffffffff728) at cube_roots.c:194
+194             cuberoot_ld = cbrtl((long double)p[j]);
+(gdb) cont
+Continuing.
+    2    1.25992104989487316476721060727822e+00      428A2F98D728AE22    428A2F98D728AE22
+
+Breakpoint 1, main (argc=1, argv=0x7ffffffff728) at cube_roots.c:194
+194             cuberoot_ld = cbrtl((long double)p[j]);
+(gdb) next 
+195             printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld,hpf[j]);
+(gdb) print &cuberoot_ld
+$1 = (long double *) 0x7fffffffee90
+(gdb) print sizeof(cuberoot_ld)
+$2 = 16
+(gdb) x/16xb 0x7fffffffee90
+0x7fffffffee90: 0x3f    0xf7    0x13    0x74    0x49    0x12    0x3e    0xf6
+0x7fffffffee98: 0x3c    0x97    0x37    0x79    0xfc    0x5b    0x15    0xb9
+(gdb) 
+0x7fffffffeea0: 0x00    0x00    0x00    0x01    0x00    0x03    0x02    0xa0
+0x7fffffffeea8: 0x00    0x00    0x00    0x01    0x00    0x03    0x02    0xd0
+(gdb) print cuberoot_ld
+$3 = 1.4422495703074083823216383107801
+(gdb) next
+196             frac_ld = ( cuberoot_ld - truncl(cuberoot_ld) ) * 16.0L;
+(gdb) next
+197             for ( k=0; k<16; k++ ) {
+(gdb) cont
+Continuing.
+    3    1.44224957030740838232163831078010e+00      7137449123EF65CD    7137449123EF65CD
+
+Breakpoint 1, main (argc=1, argv=0x7ffffffff728) at cube_roots.c:194
+194             cuberoot_ld = cbrtl((long double)p[j]);
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 777] will be killed.
+
+Quit anyway? (y or n) y
+enceladus$ 
+enceladus$     1.44224957030740838232163831078010e+00   ^C
+enceladus$     1.44224957030740838232163831078011e+00  ^C
+enceladus$     1.44224957030740838232163831078011e+00  ^C
+enceladus$ 
+enceladus$ 3f f7  13  74   49  12   3e  f6  3c 97 37 79 fc 5b 15 b9 ^C
+enceladus$ 
+enceladus$ 0xffffffff7ffff730:      0x3fff 0x7137 0x4491 0x23ef 0x65cd 0xde7f 0x16c5 0x6e33
+-bash: 0xffffffff7ffff730:: command not found
+enceladus$ 
+enceladus$ 
+enceladus$ 
+enceladus$ SPARC64  0x3fff 0x7137 0x4491 0x23ef 0x65cd 0xde7f 0x16c5 0x6e33  ^C
+enceladus$ PPC64      3ff7    137   4491   23ef   6    3c 97 37 79 fc 5b 15 b9   ^C
+enceladus$ PPC64      3ff    7137   4491   23ef   6    3c 97 37 79 fc 5b 15 b9  ^C
+enceladus$ 
+enceladus$    5    c    d    d    e    7    f    1    6    c    5    6    e    3    3  ^C
+enceladus$ 0101 1100 1101 1101 1110 0111 1111 0001 0110 1100 0101 0110 1110 0011 0011 ^C
+enceladus$ 
+enceladus$ 
+enceladus$ 
+enceladus$ PPC64   3ff 7  13  74   49  12   3e  f6   +     3c 97 37 79 fc 5b 15 b9  ^C
+enceladus$ 
+enceladus$        0 011 1111 1111 s and exponent         0 011 1100 1001  s and exponent ^C
+enceladus$           1023 - offset1023= 0                   512 + 256 + 128 + 64 + 8 +1 = 969 - offset1023= -54 ^C
+enceladus$ 
+
