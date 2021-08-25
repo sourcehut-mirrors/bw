@@ -356,7 +356,6 @@ int sysinfo(int verbose) {
 
         printf ( "                             = %" PRIu64 " MB\n",
                                                       sysmem/1048576 );
-#endif
 
         /* If the available system memory is a perfect number aligned on
          * a gigabyte boundary then we report it. Otherwise, this makes
@@ -372,6 +371,7 @@ int sysinfo(int verbose) {
                                                         sysmem >> 30 );
 
         }
+#endif
 
         if ( verbose ) {
 #ifndef __MVS__
