@@ -60,6 +60,7 @@ int sysinfo(int verbose) {
     struct timespec uptime;
     long uptime_day, uptime_hour, uptime_min, uptime_sec;
  
+#ifndef __MVS__
     errno = 0;
     err_flag = sysconf(_SC_PHYS_PAGES);
     if ( err_flag < 0 ){
@@ -68,6 +69,7 @@ int sysinfo(int verbose) {
     }
     /* none of these are working on 32-bit arm */
     uint64_t pages = (uint64_t) err_flag;
+#endif
 
     errno = 0;
     err_flag = sysconf(_SC_PAGE_SIZE);
@@ -154,6 +156,7 @@ int sysinfo(int verbose) {
             return EXIT_FAILURE;
         }
 #else
+#ifndef __MVS__
         err_flag = sysconf(_SC_AVPHYS_PAGES);
         if ( err_flag < 0 ){
             perror("sysconf(_SC_AVPHYS_PAGES) : ");
@@ -161,7 +164,11 @@ int sysinfo(int verbose) {
         }
         pages_avail = (uint64_t)err_flag;
 #endif
+#endif
+
+#ifdef __MVS__
         avail_memory = pages_avail * pagesize;
+#endif
         clock_ticks_sec = (uint64_t)sysconf(_SC_CLK_TCK);
         errno = 0;
         err_flag = sysconf(_SC_VERSION);
@@ -340,6 +347,7 @@ int sysinfo(int verbose) {
         printf ( "                     release = %s\n", uname_data.release );
         printf ( "                     version = %s\n", uname_data.version );
         printf ( "                     machine = %s\n", uname_data.machine );
+#ifndef __MVS__
         printf ( "                   page size = %" PRIu64 "\n", pagesize );
         printf ( "               system memory = %" PRIu64 "\n", sysmem );
         printf ( "                             = %" PRIu64 " kB\n",
@@ -347,6 +355,7 @@ int sysinfo(int verbose) {
 
         printf ( "                             = %" PRIu64 " MB\n",
                                                       sysmem/1048576 );
+#endif
 
         /* If the available system memory is a perfect number aligned on
          * a gigabyte boundary then we report it. Otherwise, this makes
@@ -364,9 +373,11 @@ int sysinfo(int verbose) {
         }
 
         if ( verbose ) {
+#ifndef __MVS__
             printf("                 avail pages = %" PRIu64 "\n", pages_avail);
             printf("                avail memory = %" PRIu64 "\n", avail_memory);
             printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
+#endif
 
             printf("             threads support = %" PRIu64 "\n", threads);
             printf("               POSIX Version = %" PRIu64 "\n", version);
