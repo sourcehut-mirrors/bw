@@ -2,6 +2,9 @@
  * cube_roots.c  demonstrate that x86/AMD64 hardware can not compute
  *               the RFC-4634 section 5.2 reference data.
  *
+ * See section 5.2 Functions and Constants Used at :
+ * https://datatracker.ietf.org/doc/html/rfc4634#section-5.2
+ *
  * SHA-384 and SHA-512 use the same sequence of eighty constant 64-bit
  * words, K0, K1, ... K79.  These words represent the first sixty-four
  * bits of the fractional parts of the cube roots of the first eighty
@@ -28,6 +31,23 @@
  * 06f067aa72176fba 0a637dc5a2c898a6 113f9804bef90dae 1b710b35131c471b
  * 28db77f523047d84 32caab7b40c72493 3c9ebe0a15c9bebc 431d67c49c100d4c
  * 4cc5d4becb3e42b6 597f299cfc657e2a 5fcb6fab3ad6faec 6c44198c4a475817
+ *
+ * Also see Section 6.3 SHA-384 and SHA-512 Initialization
+ * https://datatracker.ietf.org/doc/html/rfc4634#section-6.3
+ *
+ * For SHA-512, the initial hash value, H(0), consists of the following
+ * eight 64-bit words, in hex.  These words were obtained by taking the
+ * first sixty-four bits of the fractional parts of the square roots of
+ * the first eight prime numbers.
+ *
+ *      H(0)0 = 6a09e667f3bcc908
+ *      H(0)1 = bb67ae8584caa73b
+ *      H(0)2 = 3c6ef372fe94f82b
+ *      H(0)3 = a54ff53a5f1d36f1
+ *      H(0)4 = 510e527fade682d1
+ *      H(0)5 = 9b05688c2b3e6c1f
+ *      H(0)6 = 1f83d9abfb41bd6b
+ *      H(0)7 = 5be0cd19137e2179
  *
  * This is a hack attempt to generate those from floating point data.
  * Copyright (C) Dennis Clarke 2021
@@ -77,6 +97,9 @@ int main(int argc, char *argv[])
 
     double frac, cuberoot = 0.0;
     long double frac_ld, cuberoot_ld = 0.0L;
+    double squareroot = 0.0;
+    long double squareroot_ld = 0.0L;
+
     int j = 0;
     int k = 0;
     char *hex_char = calloc(32,sizeof(unsigned char));
@@ -92,11 +115,9 @@ int main(int argc, char *argv[])
                   283, 293, 307, 311, 313, 317, 331, 337, 347, 349,
                   353, 359, 367, 373, 379, 383, 389, 397, 401, 409 };
 
-    /* this is clunky but gets the job done.
-     *
-     * our reference list of hex prime fractions as described
-     * in the comments above. */
-    char **hpf = (char *[]) {
+    /* This is our reference list of hex prime fractions as described
+     * for the cube roots.  See the comments above. */
+    char **cube_root_hex = (char *[]) {
              "428A2F98D728AE22", "7137449123EF65CD", "B5C0FBCFEC4D3B2F",
              "E9B5DBA58189DBBC", "3956C25BF348B538", "59F111F1B605D019",
              "923F82A4AF194F9B", "AB1C5ED5DA6D8118", "D807AA98A3030242",
@@ -124,6 +145,11 @@ int main(int argc, char *argv[])
              "28DB77F523047D84", "32CAAB7B40C72493", "3C9EBE0A15C9BEBC",
              "431D67C49C100D4C", "4CC5D4BECB3E42B6", "597F299CFC657E2A",
              "5FCB6FAB3AD6FAEC", "6C44198C4A475817" };
+
+    char **square_root_hex = (char *[]) {
+             "6A09E667F3BCC908", "BB67AE8584CAA73B", "3C6EF372FE94F82B",
+             "A54FF53A5F1D36F1", "510E527FADE682D1", "9B05688C2B3E6C1F",
+             "1F83D9ABFB41BD6B", "5BE0CD19137E2179" };
 
     setlocale ( LC_ALL, "POSIX" );
     sysinfo(VERBOSE);
@@ -154,11 +180,32 @@ int main(int argc, char *argv[])
     printf ("There is no way to squeeze 64 bits out of 53 bits.\n");
     printf ("The 64-bit double floating point type always fails.\n");
     printf ("---------------- 64-bit double type ---------------\n");
+    printf ("    p    64-bit square root              Reference Hex       Computed Hex\n");
+    printf ("-------------------------------------------------------------------------\n");
+    for ( j=0; j<8; j++ ) {
+        /* For the sake of fun and no other good reason lets use logarithms */
+        squareroot = exp(log((double)p[j])/2.0);
+        printf ("  %3i    %-28.20e    %s    ", p[j], squareroot, square_root_hex[j]);
+        frac = ( squareroot - trunc(squareroot) ) * 16.0;
+        for ( k=0; k<16; k++ ) {
+            snprintf(hex_char, 2, "%1X", (int)frac);
+            printf ("%s", hex_char);
+            strncat(buf, hex_char, 1);
+            hex_char[0] = '\0';
+            frac = frac - trunc(frac);
+            frac = frac * 16.0;
+        }
+        if ( strncmp(square_root_hex[j], buf, 16) != 0 ) printf ("    ERROR");
+        printf ("\n");
+        buf[0] = '\0';
+    }
+    printf ("-------------------------------------------------------------------------\n");
     printf ("    p    64-bit cube root                Reference Hex       Computed Hex\n");
     printf ("-------------------------------------------------------------------------\n");
     for ( j=0; j<8; j++ ) {
+        /* For the sake of fun and no other good reason lets use logarithms */
         cuberoot = exp(log((double)p[j])/3.0);
-        printf ("  %3i    %-28.20e    %s    ", p[j], cuberoot, hpf[j]);
+        printf ("  %3i    %-28.20e    %s    ", p[j], cuberoot, cube_root_hex[j]);
         frac = ( cuberoot - trunc(cuberoot) ) * 16.0;
         for ( k=0; k<16; k++ ) {
             snprintf(hex_char, 2, "%1X", (int)frac);
@@ -168,31 +215,54 @@ int main(int argc, char *argv[])
             frac = frac - trunc(frac);
             frac = frac * 16.0;
         }
-        if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
+        if ( strncmp(cube_root_hex[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
         buf[0] = '\0';
     }
 
     printf ("\nWe shall attempt to use 128-bit long double.\n");
-    printf ("Note that x86/AMD64 hardware has no such implementation.\n");
-    printf ("------------------- long double type? -------------\n");
-    printf ("    p    128-bit cube root?                          Reference Hex       Computed Hex\n");
-    printf ("-----------------------------------------------------------------------------------------\n");
-    /* note that Intel and AMD64 x86 hardware can not handle
+    /* Note that Intel and AMD64 x86 hardware can not handle
      * the IEEE-754(2008) floating point standard. We are lucky
      * if we get 80 bits from that trash. Use gdb to confirm
      * that a large chunk of the long double data type is just
      * empty zero bits that mean nothing and provide nothing.
+     * In general, most implementations on x86 hardware will 
+     * use a full 16 bytes of memory for a long double but you
+     * only get 10 bytes used. Six bytes are just wasted.
      * To be as clear as possible the 80-bit x86 "extended"
-     * precision data type in not in the IEEE-754 standard at
-     * all. We just can not expect to get reasonable bits out
-     * of memory on x86 style hardware. Just give up and get
-     * a decent risc machine that can do IEEE-754 floating
-     * point in the correct 128-bit datatype.
+     * precision data type is not in the IEEE-754 standard at
+     * all. We just can not expect to get 64 data bits out
+     * of memory on x86 style hardware.
+     *
+     * Note that IBM POWER, RISC-V, arm64 and even the old
+     * DEC Alpha can provide a working implementation.
      */
+    printf ("Note that x86/AMD64 hardware has no such implementation.\n");
+    printf ("------------------- long double type? -------------\n");
+    printf ("    p    128-bit square root?                        Reference Hex       Computed Hex\n");
+    printf ("-----------------------------------------------------------------------------------------\n");
+    for ( j=0; j<8; j++ ) {
+        squareroot_ld = sqrtl((long double)p[j]);
+        printf ("  %3i    %-40.32Le    %s    ", p[j], squareroot_ld, square_root_hex[j]);
+        frac_ld = ( squareroot_ld - truncl(squareroot_ld) ) * 16.0L;
+        for ( k=0; k<16; k++ ) {
+            snprintf(hex_char, 2, "%1X", (int)frac_ld);
+            printf ("%s", hex_char);
+            strncat(buf, hex_char, 1);
+            hex_char[0] = '\0';
+            frac_ld = frac_ld - floorl(frac_ld);
+            frac_ld = frac_ld * 16.0L;
+        }
+        if ( strncmp(square_root_hex[j], buf, 16) != 0 ) printf ("    ERROR");
+        printf ("\n");
+        buf[0] = '\0';
+    }
+    printf ("-----------------------------------------------------------------------------------------\n");
+    printf ("    p    128-bit cube root?                          Reference Hex       Computed Hex\n");
+    printf ("-----------------------------------------------------------------------------------------\n");
     for ( j=0; j<80; j++ ) {
         cuberoot_ld = cbrtl((long double)p[j]);
-        printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld,hpf[j]);
+        printf ("  %3i    %-40.32Le    %s    ", p[j], cuberoot_ld, cube_root_hex[j]);
         frac_ld = ( cuberoot_ld - truncl(cuberoot_ld) ) * 16.0L;
         for ( k=0; k<16; k++ ) {
             snprintf(hex_char, 2, "%1X", (int)frac_ld);
@@ -202,7 +272,7 @@ int main(int argc, char *argv[])
             frac_ld = frac_ld - floorl(frac_ld);
             frac_ld = frac_ld * 16.0L;
         }
-        if ( strncmp(hpf[j], buf, 16) != 0 ) printf ("    ERROR");
+        if ( strncmp(cube_root_hex[j], buf, 16) != 0 ) printf ("    ERROR");
         printf ("\n");
         buf[0] = '\0';
     }
