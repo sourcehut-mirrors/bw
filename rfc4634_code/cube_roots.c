@@ -236,6 +236,57 @@ int main(int argc, char *argv[])
      *
      * Note that IBM POWER, RISC-V, arm64 and even the old
      * DEC Alpha can provide a working implementation.
+     *
+     * We have reasonable data to represent the square root
+     * of 2 as : 
+     *
+     *    FP128 : 0x3fff6a09e667f3bcc908b2fb1366ea95
+     *
+     * There we see the full 128-bit floating point data. On
+     * a little endian machine we would expect the trailing
+     * byte 0x95 to appear in the lowest address byte of a
+     * reasonable FP128 datatype. Clearly the big endian
+     * machines will have the sign bit and then seven of the
+     * exponent bits first. Namely the 0x3f will be in the
+     * lowest byte of the FP128 address space.
+     *
+     * Some IBM Power systems, regardless if they are big or
+     * little endian, may implement a somewhat irregular type
+     * for the 128-bit floating point wherein the data is
+     * represented as the sum of two 64-bit double floating
+     * point numbers. The lowest order 64-bit component will
+     * be offset by sufficient bits such that there is no data
+     * overlap with the uppermost component. However, this has
+     * the drawback that the 64-bit floating point datatype 
+     * will use a sign bit and exponent bits in both the upper
+     * and lower FP64 representations. Thus we lose some bits
+     * of data compared with the standard FP128. Lets look at
+     * the square root of 2 in this IBM format : 
+     *
+     *     upper FP64 : 0x3ff6a09e667f3bcd
+     *     lower FP64 : 0xbc9bdd3413b26456
+     *
+     * At first glance this appears to be abundantly wrong when
+     * compared to the FP128 data above. However when the sign
+     * bit and exponent bits are removed from the lower FP64
+     * segment we will actually get precisely the same data with
+     * the obvious exception being that we have 12 fewer bits.
+     *
+     * We may accept that the data bits in the upper FP64 are
+     * identical to the full FP128 data bits with the obvious
+     * exception being the trailing lowest order byte 0xcd.
+     * The data bits in the lower order FP64 may be expressed
+     * along with the lowest byte from the upper FP64 thus :
+     *
+     *     upper FP64 final byte 0xcd = 1100 1101
+     *
+     *     low order FP64 data bits with the leading implied
+     *     one bit thus : 
+     *
+     *        implied bit53 and data =  1 0xbdd3413b26456
+     *
+     *  1 
+     *
      */
     printf ("Note that x86/AMD64 hardware has no such implementation.\n");
     printf ("------------------- long double type? -------------\n");

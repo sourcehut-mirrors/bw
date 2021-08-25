@@ -128,3 +128,42 @@ enceladus$        0 011 1111 1111 s and exponent         0 011 1100 1001  s and 
 enceladus$           1023 - offset1023= 0                   512 + 256 + 128 + 64 + 8 +1 = 969 - offset1023= -54 ^C
 enceladus$ 
 
+
+Looking at the square root of 3 : 
+
+(gdb) print squareroot_ld
+$2 = 1.73205080756887729352744634150586
+(gdb) x/16xb &squareroot_ld
+0x7fffffffee50: 0x3f    0xfb    0xb6    0x7a    0xe8    0x58    0x4c    0xaa
+0x7fffffffee58: 0x3c    0x9c    0xec    0x95    0xd0    0xb5    0xc1    0xe2
+
+
+       upper FP64 =  3ffbb67ae8584caa
+       lower FP64 =  3c9cec95d0b5c1e2
+
+actual lower data bits : 
+
+                 1 cec95d0b5c1e2
+
+         1     c     e     c     9     5     d     0     b     5     c     1     e     2
+         1  1100  1110  1100  1001  0101  1101  0000  1011  0101  1100  0001  1110  0010
+
+repack those as : 
+
+         1110 0111 0110 0100 1010 1110 1000 0101 1010 1110 0000 1111 0001 0
+            e    7    6    4    a    e    8    5    a    e    0    f    1 0??
+
+append those to the end of the upper FP64 data bits : 
+
+      1 bb67ae8584caae764ae85ae0f1 ????
+
+
+
+
+
+
+
+
+
+
+
