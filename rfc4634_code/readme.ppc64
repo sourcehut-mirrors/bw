@@ -173,3 +173,15 @@ The final bits being :
 
 this match the final FP64 bits  0111 1000 1xxxxxxxx <-- data lost in the x bits 
 
+--------------- square root of 2 --------------
+
+(gdb) print sizeof(squareroot_ld)
+$1 = 16
+(gdb) print &squareroot_ld
+$2 = (long double *) 0x7fffffffee50
+(gdb) x/16xb 0x7fffffffee50
+0x7fffffffee50: 0x3f    0xf6    0xa0    0x9e    0x66    0x7f    0x3b    0xcd
+0x7fffffffee58: 0xbc    0x9b    0xdd    0x34    0x13    0xb2    0x64    0x56
+
+Clearly this is the sum of a positive upper FP64 and a negative lower FP64.
+

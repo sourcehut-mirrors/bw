@@ -409,6 +409,7 @@ int sysinfo(int verbose) {
                 break;
         }
 
+#ifndef __MVS__
         errno = 0;
         err_flag = sysconf(_SC_MONOTONIC_CLOCK);
         if ( err_flag > 0 ) {
@@ -446,6 +447,7 @@ int sysinfo(int verbose) {
             printf("WAT : sysconf(_SC_MONOTONIC_CLOCK) returns %i\n", err_flag);
             perror("WAT : ");
         }
+#endif
 
         printf ( "----------------------------------" );
         printf ( "---------------------------------" );
