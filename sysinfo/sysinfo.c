@@ -60,6 +60,7 @@ int sysinfo(int verbose) {
     struct timespec uptime;
     long uptime_day, uptime_hour, uptime_min, uptime_sec;
  
+    uint64_t pages = 0;
 #ifndef __MVS__
     errno = 0;
     err_flag = sysconf(_SC_PHYS_PAGES);
@@ -68,7 +69,7 @@ int sysinfo(int verbose) {
         return EXIT_FAILURE;
     }
     /* none of these are working on 32-bit arm */
-    uint64_t pages = (uint64_t) err_flag;
+    pages = err_flag;
 #endif
 
     errno = 0;
