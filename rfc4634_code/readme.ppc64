@@ -138,10 +138,12 @@ $2 = 1.73205080756887729352744634150586
 0x7fffffffee58: 0x3c    0x9c    0xec    0x95    0xd0    0xb5    0xc1    0xe2
 
 
-       upper FP64 =  3ffbb67ae8584caa
-       lower FP64 =  3c9cec95d0b5c1e2
+FP64 components with a separation from sign and exponent bits :
 
-actual lower data bits : 
+       upper FP64 =  3ff bb67ae8584caa
+       lower FP64 =  3c9 cec95d0b5c1e2
+
+Actual lower data bits with the implied leading 1 bit : 
 
                  1 cec95d0b5c1e2
 
@@ -150,20 +152,24 @@ actual lower data bits :
 
 repack those as : 
 
-         1110 0111 0110 0100 1010 1110 1000 0101 1010 1110 0000 1111 0001 0
-            e    7    6    4    a    e    8    5    a    e    0    f    1 0??
+         111 0011 1011 0010 0101 0111 0100 0010 1101 0111 0000 0111 1000 1
+           7    3    b    2    5    7    4    2    d    7    0    7    8 with a trailing 1 bit
 
 append those to the end of the upper FP64 data bits : 
 
-      1 bb67ae8584caae764ae85ae0f1 ????
+                bb67ae8584caa 73b25742d7078 with a trailing 1 bit
 
+from a true FP128 system :
 
+squareroot_ld = 1.73205080756887729352744634150587232e+00
+(dbx) print &squareroot_ld
+&squareroot_ld = 0xffffffff7ffff710
+(dbx) x 0xffffffff7ffff710/8x
+0xffffffff7ffff710:      0x3fff 0xbb67 0xae85 0x84ca 0xa73b 0x2574 0x2d70 0x78b8
 
+The final bits being : 
 
+                       0x78b8 = 0111 1000 1011 1000
 
-
-
-
-
-
+this match the final FP64 bits  0111 1000 1xxxxxxxx <-- data lost in the x bits 
 
