@@ -1,0 +1,282 @@
+
+Thus far only x86 systems and 32-bit weird linaro arm fails. 
+The Linaro 32-bit stuff on ASUS Tinkerboard fails everywhere.
+
+On a DEC Alpha server however we get good results.
+
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = AlphaPowered
+                     release = 5.10.0-7-alpha-generic
+                     version = #1 Debian 5.10.40-1 (2021-05-28)
+                     machine = alpha
+                   page size = 8192
+               system memory = 1039843328
+                             = 1015472 kB
+                             = 991 MB
+                 avail pages = 97997
+                avail memory = 802791424
+         clock ticks per sec = 1024
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour   27 mins   53 secs
+-------------------------------------------------------------------
+
+
+@AlphaPowered:~/bw/rfc4634_code$ uname -a
+Linux AlphaPowered 5.10.0-7-alpha-generic #1 Debian 5.10.40-1 (2021-05-28) alpha GNU/Linux
+@AlphaPowered:~/bw/rfc4634_code$ cat /proc/cpuinfo
+cpu                     : Alpha
+cpu model               : EV56
+cpu variation           : 7
+cpu revision            : 0
+cpu serial number       :
+system type             : EB164
+system variation        : LX164
+system revision         : 0
+system serial number    :
+cycle frequency [Hz]    : 666489600 est.
+timer frequency [Hz]    : 1024.00
+page size [bytes]       : 8192
+phys. address bits      : 40
+max. addr. space #      : 127
+BogoMIPS                : 1320.52
+kernel unaligned acc    : 0 (pc=0,va=0)
+user unaligned acc      : 0 (pc=0,va=0)
+platform string         : Digital AlphaPC 164LX 666 MHz
+cpus detected           : 1
+L1 Icache               : 8K, 1-way, 32b line
+L1 Dcache               : 8K, 1-way, 32b line
+L2 cache                : 96K, 3-way, 64b line
+L3 cache                : 2048K, 1-way, 64b line
+@AlphaPowered:~/bw/rfc4634_code$ 
+
+CFLAGS= -std=iso9899:1999 -g -O0 -pedantic -pedantic-errors \
+        -fno-builtin -fno-fast-math \
+        -mcpu=native -mtune=native \
+        -mno-soft-float -mfp-regs \
+        -mfp-trap-mode=sui -mfp-rounding-mode=d -mtrap-precision=i \
+        -mieee-conformant \
+        -mno-bwx -mno-cix -mno-fix -mno-max \
+        -mfloat-ieee
+
+
+
+@AlphaPowered:~/bw/rfc4634_code$ ./cube_roots
+
+Expect this to fail terribly as we lose precision
+There is no way to squeeze 64 bits out of 53 bits.
+The 64-bit double floating point type always fails.
+---------------- 64-bit double type ---------------
+    p    64-bit cube root                Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.25992104989487319067e+00      428A2F98D728AE22    428A2F98D728B000    ERROR
+    3    1.44224957030740852382e+00      7137449123EF65CD    7137449123EF7000    ERROR
+    5    1.70997594667669705615e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D4000    ERROR
+    7    1.91293118277238916036e+00      E9B5DBA58189DBBC    E9B5DBA58189E000    ERROR
+   11    2.22398009056931567073e+00      3956C25BF348B538    3956C25BF348C000    ERROR
+   13    2.35133468772075771014e+00      59F111F1B605D019    59F111F1B605E000    ERROR
+   17    2.57128159065823513885e+00      923F82A4AF194F9B    923F82A4AF194000    ERROR
+   19    2.66840164872194485213e+00      AB1C5ED5DA6D8118    AB1C5ED5DA6D8000    ERROR
+
+We shall attempt to use 128-bit long double.
+Note that x86/AMD64 hardware has no such implementation.
+------------------- long double type? -------------
+    p    128-bit cube root?                          Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+    2    1.25992104989487316476721060727823e+00      428A2F98D728AE22    428A2F98D728AE22
+    3    1.44224957030740838232163831078011e+00      7137449123EF65CD    7137449123EF65CD
+.
+.
+.
+  397    7.34959659655250694085874570720610e+00      597F299CFC657E2A    597F299CFC657E2A
+  401    7.37419794016281208889501988513615e+00      5FCB6FAB3AD6FAEC    5FCB6FAB3AD6FAEC
+  409    7.42291412043621556943756042877506e+00      6C44198C4A475817    6C44198C4A475817
+@AlphaPowered:~/bw/rfc4634_code$
+
+
+on IBM POWER8 
+
+  all perfect as expected. The same is true for IBM Power970 ppc64.
+
+also the little Raspberry Pi 4 is perfect.
+
+pi@rpi:~/bw/rfc4634_code $ cat /proc/cpuinfo | grep Model
+Model  : Raspberry Pi 4 Model B Rev 1.1
+pi@rpi:~/bw/rfc4634_code $ ./cube_roots 
+
+Expect this to fail terribly as we lose precision
+There is no way to squeeze 64 bits out of 53 bits.
+---------------- 64-bit double type ---------------
+    p    64-bit cube root                Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.25992104989487319067e+00      428A2F98D728AE22    428A2F98D728B000    ERROR
+    3    1.44224957030740852382e+00      7137449123EF65CD    7137449123EF7000    ERROR
+    5    1.70997594667669705615e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D4000    ERROR
+    7    1.91293118277238916036e+00      E9B5DBA58189DBBC    E9B5DBA58189E000    ERROR
+   11    2.22398009056931567073e+00      3956C25BF348B538    3956C25BF348C000    ERROR
+   13    2.35133468772075771014e+00      59F111F1B605D019    59F111F1B605E000    ERROR
+   17    2.57128159065823513885e+00      923F82A4AF194F9B    923F82A4AF194000    ERROR
+   19    2.66840164872194485213e+00      AB1C5ED5DA6D8118    AB1C5ED5DA6D8000    ERROR
+---------------- 128-bit double type? -------------
+    p    128-bit cube root                           Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+    2    1.25992104989487316476721060727823e+00      428A2F98D728AE22    428A2F98D728AE22
+    3    1.44224957030740838232163831078011e+00      7137449123EF65CD    7137449123EF65CD
+    5    1.70997594667669698935310887254386e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D3B2F
+.
+.
+.
+  397    7.34959659655250694085874570720610e+00      597F299CFC657E2A    597F299CFC657E2A
+  401    7.37419794016281208889501988513615e+00      5FCB6FAB3AD6FAEC    5FCB6FAB3AD6FAEC
+  409    7.42291412043621556943756042877506e+00      6C44198C4A475817    6C44198C4A475817
+
+
+on IBM z/OS mainframe : 
+
+-------------------------------------------------------------------
+                 system name = OS/390
+                   node name = S0W1
+                     release = 27.00
+                     version = 04
+                     machine = 1090
+                             = 0 GB
+             threads support = 200112
+               POSIX Version = 199009
+                      endian = big endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+
+Expect this to fail terribly as we lose precision
+There is no way to squeeze 64 bits out of 53 bits.
+The 64-bit double floating point type always fails.
+---------------- 64-bit double type ---------------
+    p    64-bit square root              Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.41421356237309500000e+00      6A09E667F3BCC908    6A09E667F3BCD000    ERROR
+    3    1.73205080756887700000e+00      BB67AE8584CAA73B    BB67AE8584CAB000    ERROR
+    5    2.23606797749979000000e+00      3C6EF372FE94F82B    3C6EF372FE94F000    ERROR
+    7    2.64575131106459000000e+00      A54FF53A5F1D36F1    A54FF53A5F1D3000    ERROR
+   11    3.31662479035539900000e+00      510E527FADE682D1    510E527FADE66000    ERROR
+   13    3.60555127546398900000e+00      9B05688C2B3E6C1F    9B05688C2B3E7000    ERROR
+   17    4.12310562561766100000e+00      1F83D9ABFB41BD6B    1F83D9ABFB41D000    ERROR
+   19    4.35889894354067300000e+00      5BE0CD19137E2179    5BE0CD19137E0000    ERROR
+-------------------------------------------------------------------------
+    p    64-bit cube root                Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.25992104989487300000e+00      428A2F98D728AE22    428A2F98D728B000    ERROR
+    3    1.44224957030740800000e+00      7137449123EF65CD    7137449123EF6000    ERROR
+    5    1.70997594667669700000e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D3000    ERROR
+    7    1.91293118277238900000e+00      E9B5DBA58189DBBC    E9B5DBA58189D000    ERROR
+   11    2.22398009056931500000e+00      3956C25BF348B538    3956C25BF348B000    ERROR
+   13    2.35133468772075700000e+00      59F111F1B605D019    59F111F1B605D000    ERROR
+   17    2.57128159065823500000e+00      923F82A4AF194F9B    923F82A4AF195000    ERROR
+   19    2.66840164872194500000e+00      AB1C5ED5DA6D8118    AB1C5ED5DA6D8000    ERROR
+
+We shall attempt to use 128-bit long double.
+Note that x86/AMD64 hardware has no such implementation.
+------------------- long double type? -------------
+    p    128-bit square root?                        Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+    2    1.41421356237309504880168872420970e+00      6A09E667F3BCC908    6A09E667F3BCC908
+    3    1.73205080756887729352744634150587e+00      BB67AE8584CAA73B    BB67AE8584CAA73B
+    5    2.23606797749978969640917366873128e+00      3C6EF372FE94F82B    3C6EF372FE94F82B
+    7    2.64575131106459059050161575363926e+00      A54FF53A5F1D36F1    A54FF53A5F1D36F1
+   11    3.31662479035539984911493273667069e+00      510E527FADE682D1    510E527FADE682D1
+   13    3.60555127546398929311922126747050e+00      9B05688C2B3E6C1F    9B05688C2B3E6C1F
+   17    4.12310562561766054982140985597408e+00      1F83D9ABFB41BD6B    1F83D9ABFB41BD6B
+   19    4.35889894354067355223698198385962e+00      5BE0CD19137E2179    5BE0CD19137E2179
+-----------------------------------------------------------------------------------------
+    p    128-bit cube root?                          Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+    2    1.25992104989487316476721060727823e+00      428A2F98D728AE22    428A2F98D728AE22
+    3    1.44224957030740838232163831078011e+00      7137449123EF65CD    7137449123EF65CD
+    5    1.70997594667669698935310887254386e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D3B2F
+.
+.
+.
+  397    7.34959659655250694085874570720610e+00      597F299CFC657E2A    597F299CFC657E2A
+  401    7.37419794016281208889501988513615e+00      5FCB6FAB3AD6FAEC    5FCB6FAB3AD6FAEC
+  409    7.42291412043621556943756042877506e+00      6C44198C4A475817    6C44198C4A475817
+
+Also as 64-bit mode on that z/OS 
+
+-------------------------------------------------------------------
+                 system name = OS/390
+                   node name = S0W1
+                     release = 27.00
+                     version = 04
+                     machine = 1090
+             threads support = 200112
+               POSIX Version = 199009
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+
+Expect this to fail terribly as we lose precision
+There is no way to squeeze 64 bits out of 53 bits.
+The 64-bit double floating point type always fails.
+---------------- 64-bit double type ---------------
+    p    64-bit square root              Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.41421356237309492343e+00      6A09E667F3BCC908    6A09E667F3BCC000    ERROR
+    3    1.73205080756887741522e+00      BB67AE8584CAA73B    BB67AE8584CAB000    ERROR
+    5    2.23606797749978936096e+00      3C6EF372FE94F82B    3C6EF372FE94E000    ERROR
+    7    2.64575131106459071617e+00      A54FF53A5F1D36F1    A54FF53A5F1D4000    ERROR
+   11    3.31662479035540025407e+00      510E527FADE682D1    510E527FADE6A000    ERROR
+   13    3.60555127546398912486e+00      9B05688C2B3E6C1F    9B05688C2B3E6000    ERROR
+   17    4.12310562561766058565e+00      1F83D9ABFB41BD6B    1F83D9ABFB41C000    ERROR
+   19    4.35889894354067308768e+00      5BE0CD19137E2179    5BE0CD19137E0000    ERROR
+-------------------------------------------------------------------------
+    p    64-bit cube root                Reference Hex       Computed Hex
+-------------------------------------------------------------------------
+    2    1.25992104989487319067e+00      428A2F98D728AE22    428A2F98D728B000    ERROR
+    3    1.44224957030740852382e+00      7137449123EF65CD    7137449123EF7000    ERROR
+    5    1.70997594667669705615e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D4000    ERROR
+    7    1.91293118277238916036e+00      E9B5DBA58189DBBC    E9B5DBA58189E000    ERROR
+   11    2.22398009056931567073e+00      3956C25BF348B538    3956C25BF348C000    ERROR
+   13    2.35133468772075771014e+00      59F111F1B605D019    59F111F1B605E000    ERROR
+   17    2.57128159065823513885e+00      923F82A4AF194F9B    923F82A4AF194000    ERROR
+   19    2.66840164872194485213e+00      AB1C5ED5DA6D8118    AB1C5ED5DA6D8000    ERROR
+
+We shall attempt to use 128-bit long double.
+Note that x86/AMD64 hardware has no such implementation.
+------------------- long double type? -------------
+    p    128-bit square root?                        Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+    2    1.41421356237309504880168872420970e+00      6A09E667F3BCC908    6A09E667F3BCC908
+    3    1.73205080756887729352744634150587e+00      BB67AE8584CAA73B    BB67AE8584CAA73B
+    5    2.23606797749978969640917366873128e+00      3C6EF372FE94F82B    3C6EF372FE94F82B
+    7    2.64575131106459059050161575363926e+00      A54FF53A5F1D36F1    A54FF53A5F1D36F1
+   11    3.31662479035539984911493273667069e+00      510E527FADE682D1    510E527FADE682D1
+   13    3.60555127546398929311922126747050e+00      9B05688C2B3E6C1F    9B05688C2B3E6C1F
+   17    4.12310562561766054982140985597408e+00      1F83D9ABFB41BD6B    1F83D9ABFB41BD6B
+   19    4.35889894354067355223698198385962e+00      5BE0CD19137E2179    5BE0CD19137E2179
+-----------------------------------------------------------------------------------------
+    p    128-bit cube root?                          Reference Hex       Computed Hex
+-----------------------------------------------------------------------------------------
+    2    1.25992104989487316476721060727823e+00      428A2F98D728AE22    428A2F98D728AE22
+    3    1.44224957030740838232163831078011e+00      7137449123EF65CD    7137449123EF65CD
+    5    1.70997594667669698935310887254386e+00      B5C0FBCFEC4D3B2F    B5C0FBCFEC4D3B2F
+.
+.
+.
+  397    7.34959659655250694085874570720610e+00      597F299CFC657E2A    597F299CFC657E2A
+  401    7.37419794016281208889501988513615e+00      5FCB6FAB3AD6FAEC    5FCB6FAB3AD6FAEC
+  409    7.42291412043621556943756042877506e+00      6C44198C4A475817    6C44198C4A475817
+
+
