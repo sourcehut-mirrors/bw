@@ -14,3 +14,46 @@ f
 vesta$ 
 
 
+Possible problem with rump.c
+----------------------------------
+
+** Disclaimer:  This assumes that 'tmp' is a 128-bit float. **
+
+At line 302 we have:
+
+    tmp[5] = 121.0L * b * b * b * b - 2.0L;
+
+tmp[5] would contain the value 145173518207904485374
+
+Keep in mind precedence.  You probably wanted to calculate -121 * b^4 - 2 here.
+
+If you did tmp[5] would contain -145173518207904485378
+
+(Notice the sign and last digit change.)
+
+If we go to line 338 where tmp[5] is used:
+
+    tmp[1] = tmp[3] - tmp[4] - tmp[5];
+
+If you used the original positive value it would
+calculate tmp[1] with the number 
+in tmp[5] as -145173518207904485374.
+That last digit error is not so good.
+
+I think that I'd modify line 302 as:
+
+    tmp[5] = -121.0L * b * b * b * b - 2.0L;
+
+and line 338 as:
+
+    tmp[1] = tmp[3] - tmp[4] + tmp[5];
+
+Obviously it would alter the calculation and the number that is
+printed at line 395.
+
+(I'm kinda bias towards that if you used say a __float128 data type
+to store the intermediate calculations, it would probably start to
+fail at line 374 where we have to calculate and store a 37 significant
+digit number.  I'm not quite sure we have enough bits to cleanly
+store it(?) Maybe a > __float141 data type...)
+
