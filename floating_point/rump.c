@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -289,7 +289,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
      *
      *      + 5.5 * b^8 + ( a / ( 2 * b ) ) */
 
-    tmp[5] = 121.0L * b * b * b * b - 2.0L;
+    tmp[5] = 121.0L * b * b * b * b;
     fpe_raised = fetestexcept(FE_ALL_EXCEPT);
     if ( fpe_raised != 0 ) {
         printf("INFO : FP Exception raised is");
@@ -314,29 +314,29 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
     }
-    printf("     : done tmp[5] = 121.0 * b * b * b * b - 2.0\n");
+    printf("     : done tmp[5] = 121.0 * b * b * b * b\n");
     printf("     : tmp[5] = %-+42.36Le\n", tmp[5]);
 
     if ( feclearexcept(FE_ALL_EXCEPT) == 0 ) {
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
-    /* f= 333.75 * b^6 + a^2 * ( 11 * a^2 * b^2 - b^6 - 121 * b^4 - 2 )
+    /* f= 333.75 * b^6 + a^2 * ( 11 * a^2 * b^2 - b^6 - 121 * b^4        - 2 )
      *    ^ tmp[0] ^             ^.. tmp[3] ..^   tmp[4]  ^.. tmp[5]^
      *
      *
      *      + 5.5 * b^8 + ( a / ( 2 * b ) ) */
 
-    tmp[1] = tmp[3] - tmp[4] - tmp[5];
+    tmp[1] = tmp[3] - tmp[4] - tmp[5] - 2.0L;
     fpe_raised = fetestexcept(FE_ALL_EXCEPT);
     if ( fpe_raised != 0 ) {
         printf("INFO : FP Exception raised is");
@@ -350,19 +350,19 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
     }
-    printf("     : done tmp[1] = tmp[3] - tmp[4] - tmp[5]\n");
+    printf("     : done tmp[1] = tmp[3] - tmp[4] - tmp[5] - 2\n");
     printf("     : tmp[1] = %-+42.36Le\n", tmp[1]);
 
     if ( feclearexcept(FE_ALL_EXCEPT) == 0 ) {
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -386,20 +386,29 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
     }
     printf("     : done tmp[6] = tmp[1] * a * a\n");
-    printf("     : tmp[6] = %-+42.36Le\n", tmp[6]);
-    printf("     : correct= -7917111779274712207494296608131179134\n");
+    printf("     : tmp[6] = %-+44.38Le\n", tmp[6]);
+    printf("     : correct=  -7917111779274712207494296608131179134\n");
+
+
+    printf("WARN : this is a labour of lost bits from here on ...\n\n");
+
+    /* everything from here on is just not going to work even
+     * with a 128 bit floating point data type on the right
+     * sort of hardware.  We need more bits of precision! */
+
+
 
     if ( feclearexcept(FE_ALL_EXCEPT) == 0 ) {
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -424,7 +433,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -457,7 +466,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -476,7 +485,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -494,7 +503,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -515,7 +524,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -533,7 +542,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -555,7 +564,7 @@ int main(int argc, char **argv)
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
         printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
     printf("\n");
 
@@ -573,7 +582,7 @@ int main(int argc, char **argv)
             printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
         } else {
             printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     } else {
         printf("     : precise result\n");
@@ -582,7 +591,7 @@ int main(int argc, char **argv)
     printf("     : tmp[10] = %-+42.36Le\n", tmp[10]);
 
 
-    return ( EXIT_SUCCESS );
+    return EXIT_SUCCESS;
 
 }
 
