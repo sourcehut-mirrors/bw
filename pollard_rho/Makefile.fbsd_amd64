@@ -13,8 +13,8 @@ LDIR=/opt/bw/lib
 IDIR=/opt/bw/include
 LIBS=-lgmp -lmpfr
 
-SRCS = pr_mpfr_quiet.c ../sysinfo/ru.c ../sysinfo/sysinfo.c ../sysinfo/sysmem.c
-OBJS = pr_mpfr_quiet.o ../sysinfo/ru.o ../sysinfo/sysinfo.o ../sysinfo/sysmem.o
+SRCS = pr_mpfr_quiet.c ../sysinfo/sysinfo.c
+OBJS = pr_mpfr_quiet.o ../sysinfo/sysinfo.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
