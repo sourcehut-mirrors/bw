@@ -144,8 +144,8 @@ int main(int argc, char **argv)
             fprintf(stderr," precision ignored : %s\n", endptr);
         }
 
-        if (bit_prec>1023){
-            bit_prec = 1024;
+        if (bit_prec>8191){
+            bit_prec = 8192;
             printf("\nWARNING : limit precision to 1024 bits.\n");
         }
 
@@ -262,14 +262,11 @@ int main(int argc, char **argv)
 
     /* add in the components to a final accumulator */
     mpfr_add(final, t0, t9, MPFR_RNDN);
-    mpfr_printf ("          = %.Re\n", final);
     mpfr_add(final, final, t10, MPFR_RNDN);
-    mpfr_printf ("          = %.Re\n", final);
     mpfr_add(final, final, t12, MPFR_RNDN);
     mpfr_printf ("\n\n    final = %.Re\n", final);
 
-    printf ("  correct = -8.2739605994682136814116509547981629199903311578438481991777e-01\n");
-
+    printf("  correct = -8.2739605994682136814116509547981629199903311578438481991781e-01\n");
 
     mpfr_clears( a, b, 
                  t0, t1, t2, t3, t4, t5, t6,
