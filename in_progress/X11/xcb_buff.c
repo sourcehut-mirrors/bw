@@ -1,18 +1,19 @@
 
+/* example code lifted off rosetta code literally */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <xcb/xcb.h>
 
-int    main ()
-{
-    xcb_connection_t    * c;
-    xcb_screen_t        * screen;
+int main (int argc, char **argv) {
+    xcb_connection_t    *c;
+    xcb_screen_t        *screen;
     xcb_drawable_t       win;
     xcb_gcontext_t       foreground;
     xcb_gcontext_t       background;
-    xcb_generic_event_t * e;
+    xcb_generic_event_t *e;
     uint32_t             mask = 0;
     uint32_t             values[2];
 
@@ -51,7 +52,7 @@ int    main ()
     mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
     values[0] = screen->white_pixel;
     values[1] = XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS;
-    xcb_create_window (c,                             /* connection    */
+    xcb_create_window (c,          /* connection    */
     XCB_COPY_FROM_PARENT,          /* depth         */
     win,                           /* window Id     */
     screen->root,                  /* parent window */
