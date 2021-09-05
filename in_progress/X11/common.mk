@@ -10,7 +10,6 @@ IDIR?=		/usr/local/include
 OBJS=		../../xwin/x_error_handler.o \
 		../../xwin/create_gc.o \
 		../../xwin/create_borderless_topwin.o \
-		../../sysinfo/sysmem.o \
 		../../sysinfo/sysinfo.o
 
 .PHONY: all

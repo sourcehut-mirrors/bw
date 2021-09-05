@@ -55,6 +55,13 @@
 
 #define VERBOSE 1
 
+void
+draw_a_circle (XColor hack_me_baby, XColor yellow, Display * dsp,
+        Window win0, GC gc0, int mouse_x, int mouse_y);
+
+void
+draw_text_on_screen (Display * dsp, Window win0, int mouse_x, int mouse_y);
+
 Window create_borderless_topwin(Display *dsp,
                          unsigned int width, unsigned int height,
                          int x, int y,
@@ -88,8 +95,9 @@ int main(int argc, char **argv)
     Font type_font;
 
     Pixmap cursor_pixmap, cursor_mask_pixmap;
-    int x_hot_return_cursor, y_hot_return_cursor;
-    int x_hot_return_mask_cursor, y_hot_return_mask_cursor;
+    unsigned int x_hot_return_cursor, y_hot_return_cursor;
+    int bitmap_x_hot_return_cursor, bitmap_y_hot_return_cursor;
+    int bitmap_mask_x_hot_return_cursor, bitmap_mask_y_hot_return_cursor;
     unsigned int width_return_cursor, height_return_cursor;
     unsigned int width_return_mask_cursor, height_return_mask_cursor;
     int cursor_err_flag = 0;
@@ -203,7 +211,7 @@ int main(int argc, char **argv)
     int button_mask = (ButtonPressMask | ButtonReleaseMask);
     int window_mask = (EnterWindowMask | LeaveWindowMask);
     int motion_mask = (PointerMotionMask | ButtonMotionMask);
-    int event_mask = (button_mask | window_mask );
+    int event_mask  = (keybrd_mask | button_mask | window_mask );
 
     win0_attribs.event_mask = event_mask; 
 
@@ -223,8 +231,8 @@ int main(int argc, char **argv)
     unsigned long wtf = CWBackPixel | CWBorderPixel | CWEventMask;
     wtf = CWOverrideRedirect;
 
-    /* second to last parameter was CWOverrideRedirect but now 
-     * we try wtf ?? */
+    /* second to last parameter is CWOverrideRedirect but if we
+     * try wtf then this tosses an error ?? for unknown reasons */
     win0 = XCreateWindow(dsp,
                          RootWindow(dsp, DefaultScreen(dsp)),
                          offset_x, offset_y, width, height, 0,
@@ -278,8 +286,8 @@ int main(int argc, char **argv)
                                        &width_return_cursor,
                                        &height_return_cursor,
                                        &cursor_pixmap,
-                                       &x_hot_return_cursor,
-                                       &y_hot_return_cursor);
+                                       &bitmap_x_hot_return_cursor,
+                                       &bitmap_y_hot_return_cursor);
 
     if ( cursor_err_flag != BitmapSuccess ) {
         fprintf (stderr,"dBUG : bitmap fails to load %i\n",
@@ -292,16 +300,16 @@ int main(int argc, char **argv)
                                                   height_return_cursor);
 
         printf ("INFO : cursor_pixmap      hotspot = ( %2i, %2i )\n",
-                                                   x_hot_return_cursor,
-                                                   y_hot_return_cursor);
+                                                   bitmap_x_hot_return_cursor,
+                                                   bitmap_y_hot_return_cursor);
     }
 
     cursor_err_flag = XReadBitmapFile( dsp, win0, "./x32m",
                                        &width_return_mask_cursor,
                                        &height_return_mask_cursor,
                                        &cursor_mask_pixmap,
-                                       &x_hot_return_mask_cursor,
-                                       &y_hot_return_mask_cursor);
+                                       &bitmap_mask_x_hot_return_cursor,
+                                       &bitmap_mask_y_hot_return_cursor);
 
     if ( cursor_err_flag != BitmapSuccess ) {
         fprintf (stderr,"dBUG : mask bitmap fails to load %i\n", cursor_err_flag );
@@ -313,8 +321,8 @@ int main(int argc, char **argv)
                                                   height_return_cursor);
 
         printf ("INFO : cursor_mask_pixmap hotspot = ( %2i, %2i )\n",
-                                                   x_hot_return_cursor,
-                                                   y_hot_return_cursor);
+                                                   bitmap_mask_x_hot_return_cursor,
+                                                   bitmap_mask_y_hot_return_cursor);
     }
 
 
@@ -484,8 +492,13 @@ int main(int argc, char **argv)
 
     /* TODO the third to last parameter may confine the pointer to win0
      * or it may be left as None */
+
+/* We DO NOT NEED to grab the pointer before we click on the window */
+/* MarianG
+
     XGrabPointer(dsp, win0, False, ButtonPressMask, GrabModeAsync,
                            GrabModeAsync, None, None, CurrentTime);
+*/
 
     XSelectInput(dsp, win0, ButtonPressMask | KeyPressMask);
 
@@ -642,29 +655,61 @@ int main(int argc, char **argv)
 
         switch(event.type){
 
+            case EnterNotify:
+                printf("Grabbing pointer\n");
+                XSelectInput(dsp, win0, event_mask);
+                break;
+
+            case LeaveNotify:
+                printf ("Releasing pointer\n");
+                XSelectInput(dsp, win0, window_mask);
+                XUngrabPointer (dsp, CurrentTime);
+                break;
+
             case ButtonPress:
+                XSetForeground (dsp, gc0, green.pixel);
+                sprintf (buf, "raw  [ %-4i , %-4i ]", mouse_x, mouse_y);
+                fprintf (stderr, "%s\n", buf);
+
+                XDrawImageString (dsp, win0, gc0,
+                                      (20 + left_count * 140) % 900,
+                                      (20 + right_count * 20) % 900, buf,
+                                      (int) strlen (buf));
+
                 switch(event.xbutton.button){
+
                     case Button1: /* left mouse button */
+                        printf ("left click\n");
                         button=Button1;
                         left_count += 1;
                         break;
 
                     case Button2: /* middle mouse scroll button */
+                        printf ("Middle click\n");
                         button=Button2;
                         mid_count += 1;
+
+                        draw_a_circle (hack_me_baby, yellow, dsp, win0, gc0, mouse_x, mouse_y);
+
                         break;
 
                     case Button3: /* right mouse button */
+                        printf ("right click\n");
                         button=Button3;
                         right_count += 1;
+
+                        draw_text_on_screen (dsp, win0, mouse_x, mouse_y);
+
                         break;
 
                     case Button4: /* mouse scroll wheel up */
+                        printf ("roll up\n");
                         button=Button4;
                         roll_up_count += 1;
                         break;
 
                     case Button5: /* mouse scroll wheel down */
+                        printf ("roll down\n");
                         button=Button5;
                         roll_dn_count += 1;
                         break;
@@ -673,76 +718,28 @@ int main(int argc, char **argv)
                         break;
                 }
             break;
+
+            case KeyPress:
+                printf ("'%c' was pressed\n", XLookupKeysym (&event.xkey, 0));
+                break;
+
+            case KeyRelease:
+            case ButtonRelease:
+                printf ("Key / Button released\n");
+
         default:
             break;
+        }
+
+        if (event.type != KeyRelease && event.type != ButtonRelease) {
+            printf ("event registered, while mouse was at %d %d \n", mouse_x, mouse_y);
         }
 
         mouse_x_raw = mouse_x;
         mouse_y_raw = mouse_y;
 
-        /* possibly redundant given that we specified this earlier */
-        XSetForeground(dsp, gc0, green.pixel);
-        sprintf(buf,"raw  [ %-4i , %-4i ]", mouse_x_raw, mouse_y_raw);
-        fprintf(stderr,"%s\n", buf);
-
-
-        /* gee .. how many times shall we do this ? duh
-         *
-         * TODO however for fun we can use the scroll wheel to
-         * adjust red green or blue pixel values just for 
-         * silly kicks ...
-         * */
-        XSetForeground(dsp, gc0, green.pixel);
-
-        XDrawImageString( dsp, win0, gc0,
-                          (20 + left_count*140)%900,
-                          (20 + right_count*20)%900
-                          , buf, (int)strlen(buf));
-
-        /* check left mouse button first */
-        if ( button == Button1 ){
-            printf("left click\n");
-        } else if ( button == Button2 ) {
-            printf("middle click\n");
-
-            /* TODO hack a circle of colours
-             *
-             * XColor.pixel = (((unsigned long)XColor.red) << 16)
-             *               + (((unsigned long)XColor.green) << 8)
-             *               + (unsigned long)XColor.blue;
-             */
-            /* X11 load test where we fire a ton of XLib calls */
-
-            double angle, some_x, some_y;
-            int radius_count = 0;
-
-            /* for the heck of it 64 pixel radius */
-            for ( radius_count = 0; radius_count < 64; radius_count++ ) {
-                for ( p = 0; p < 720; p++ ) {
-
-                     /* quick hack convert from tens of degrees to
-                      * radians should be (p)( ( 2 x pi )/360 ) */
-
-                    angle = 2.0 * M_PI * p / 720.0;
-                    some_x = radius_count * cos(angle);
-                    some_y = radius_count * sin(angle);
-
-                    hack_me_baby.pixel = ( ( (unsigned long)(p/2) & 0xff ) << 16 )
-                                       + ( ( (unsigned long)radius_count ) << 8 )
-                                       + ( ( (unsigned long)(255.0 * ( (float)p/720.0f ))) & 0xff);
-
-                    XSetForeground(dsp, gc0, hack_me_baby.pixel);
-
-                    XDrawPoint(dsp, win0, gc0, mouse_x + (int)some_x, mouse_y + (int)some_y);
-
-                }
-                XFlush(dsp);
-            }
-
-            XSetForeground(dsp, gc0, yellow.pixel);
-
-        } else if ( button == Button3 ) {
-            printf("right click\n");
+        if ( button == Button3 ) {
+            printf("try XGetImage() due to button3 right click\n");
             /*
              *  XImage *XGetImage(display, d, x, y, width,
              *                    height, plane_mask, format)
@@ -827,37 +824,9 @@ int main(int argc, char **argv)
              *           int dest_x, dest_y;
              */
 
-        } else if ( button == Button4 ) {
-            printf("roll up\n");
-        } else if ( button == Button5 ) {
-            printf("roll down\n");
-        } else {
-
-            /* grap grab grab me babay ? maybe .. does this work ??
-             *
-            if ( ( mouse_x < 10 ) || ( mouse_x > 1034 )
-                    ||
-                 ( mouse_y < 10 ) || ( mouse_y > 1034 ) ) {
-
-                XUngrabPointer(dsp, CurrentTime);
-                printf("INFO : mouse ungrabbed maybe\n");
-
-            } else {
-
-                XGrabPointer(dsp, win0, False, ButtonPressMask,
-                             GrabModeAsync, GrabModeAsync,
-                             win0, None, CurrentTime);
-
-                printf("INFO : mouse grabbed again maybe\n");
-
-            }
-            */
-
-            printf("A key was pressed.\n");
-
         }
 
-        printf("click at %d %d \n", mouse_x, mouse_y);
+        /* printf("click at %d %d \n", mouse_x, mouse_y); */
 
     }
 
@@ -878,5 +847,154 @@ cleanup:
     if ( list_of_pixmap_formats  != NULL ) XFree(list_of_pixmap_formats);
 
     return EXIT_SUCCESS;
+
 }
+
+void
+draw_a_circle (XColor hack_me_baby,
+               XColor yellow, Display * dsp,
+               Window win0, GC gc0,
+               int mouse_x, int mouse_y) {
+
+    /* TODO hack a circle of colours
+     *
+     * we may do this sort of thing and hope it works however
+     * it is not really correct :
+     *
+     * XColor.pixel = (((unsigned long)XColor.red) << 16)
+     *               + (((unsigned long)XColor.green) << 8)
+     *               + (unsigned long)XColor.blue;
+     */
+
+    int p;
+    double angle, some_x, some_y;
+    int radius_count = 0;
+
+    /* for the heck of it 64 pixel radius */
+    for (radius_count = 0; radius_count < 64; radius_count++) {
+        for (p = 0; p < 720; p++) {
+
+            /* quick hack convert from tens of degrees to
+             * radians should be (p)( ( 2 x pi )/360 ) */
+
+            angle = 2.0 * M_PI * p / 720.0;
+            some_x = radius_count * cos (angle);
+            some_y = radius_count * sin (angle);
+
+            hack_me_baby.pixel =
+                (((unsigned long) (p / 2) & 0xff) << 16) +
+                (((unsigned long) radius_count) << 8) +
+                (((unsigned long) (255.0 * ((float) p / 720.0))) & 0xff);
+
+            XSetForeground (dsp, gc0, hack_me_baby.pixel);
+
+            XDrawPoint (dsp, win0, gc0, mouse_x + (int) some_x, mouse_y + (int) some_y);
+
+        }
+
+        XFlush (dsp);
+
+    }
+
+    XSetForeground (dsp, gc0, yellow.pixel);
+
+}
+
+void
+draw_text_on_screen (Display * dsp, Window win0, int mouse_x, int mouse_y)
+{
+    /*
+     *  XImage *XGetImage(display, d, x, y, width,
+     *                    height, plane_mask, format)
+     *
+     *  Display *display;
+     *  Drawable d;
+     *  int x, y;
+     *  unsigned int width, height;
+     *  unsigned long plane_mask;
+     *  int format;
+     */
+    XImage *foobar = NULL;
+    foobar =
+ XGetImage (dsp, win0, mouse_x, mouse_y, 64, 64, AllPlanes, ZPixmap);
+
+    if (foobar != NULL)
+    {
+
+ printf ("foobar = %p\n", foobar);
+
+ printf ("foobar.width  = %i\n", foobar->width);
+ printf ("foobar.height = %i\n", foobar->height);
+
+ printf ("foobar.byte_order       = ");
+ if (foobar->byte_order == LSBFirst)
+ {
+     printf ("LSBFirst\n");
+ }
+ else
+ {
+     printf ("MSBFirst\n");
+ }
+
+ printf ("foobar.bitmap_bit_order = ");
+ if (foobar->bitmap_bit_order == LSBFirst)
+ {
+     printf ("LSBFirst\n");
+ }
+ else
+ {
+     printf ("MSBFirst\n");
+ }
+
+ printf ("foobar.bitmap_unit       = %i\n", foobar->bitmap_unit);
+
+ /* we never should be looking at the raw image data anyways
+  *
+  *    bad bad abd crap do not do this damn it 
+  *
+  */
+
+ /*
+    int offset = 0;
+    if ( foobar->bitmap_unit%8 == 0 ) {
+
+    printf("foobar.bitmap_unit/8 = %i\n", foobar->bitmap_unit / 8 );
+    printf("\n-----------------------------");
+    printf ("\n");
+    for ( p = 0; p < foobar->width; p++ )
+    for ( q = 0; q < foobar->height; q++ )
+    {
+    if ( offset%16 == 0 ) printf ("\n%08x    ", offset);
+    printf (" %02x", (uint8_t) *((foobar->data)+offset));
+    offset += 1;
+    }
+    }
+    printf ("\n-----------------------------\n");
+
+  */
+
+ /* we love that this is totally ass different from XFreeFOO() */
+ //XDestroyImage(foobar);
+ /* free(foobar); */
+ foobar = NULL;
+
+    }
+
+    /* TODO what the heck does this do ?
+     *
+     *     XImage *XGetSubImage(display, d, x, y, width, height,
+     *                          plane_mask, format, dest_image,
+     *                          dest_x, dest_y)
+     *
+     *           Display *display;
+     *           Drawable d;
+     *           int x, y;
+     *           unsigned int width, height;
+     *           unsigned long plane_mask;
+     *           int format;
+     *           XImage *dest_image;
+     *           int dest_x, dest_y;
+     */
+}
+
 

@@ -69,7 +69,7 @@ int sysinfo(int verbose) {
         return EXIT_FAILURE;
     }
     /* none of these are working on 32-bit arm */
-    pages = err_flag;
+    pages = (uint64_t)err_flag;
 #endif
 
     errno = 0;
