@@ -1,0 +1,37 @@
+
+europa$ 
+europa$ echo $CFLAGS 
+-std=iso9899:1999 -m64 -g -O0 -fno-builtin -fno-fast-math -pedantic -pedantic-errors -Weverything -Wno-reserved-id-macro -Wno-double-promotion -Wno-implicit-float-conversion -Wno-missing-prototypes
+europa$ 
+europa$ CFLAGS=$CFLAGS\ \-Wno-documentation
+europa$ export CFLAGS 
+europa$ 
+europa$ 
+europa$ 
+europa$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -c -o xcb_buff.o xcb_buff.c
+In file included from xcb_buff.c:6:
+In file included from /usr/local/include/xcb/xcb.h:205:
+/usr/local/include/xcb/xproto.h:5674:4: warning: unknown command tag name [-Wdocumentation-unknown-command]
+ * \n
+   ^~
+xcb_buff.c:20:26: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to
+      'uint8_t' (aka 'unsigned char') [-Wimplicit-int-conversion]
+    uint8_t string_len = strlen(string);
+            ~~~~~~~~~~   ^~~~~~~~~~~~~~
+2 warnings generated.
+europa$ 
+
+europa$ 
+europa$ $CC $CFLAGS $CPPFLAGS -L/usr/local/lib -o xcb_buff xcb_buff.o -lxcb
+europa$ 
+europa$ 
+europa$ ldd  xcb_buff
+xcb_buff:
+        libxcb.so.1 => /usr/local/lib/libxcb.so.1 (0x800245000)
+        libc.so.7 => /lib/libc.so.7 (0x800272000)
+        libXau.so.6 => /usr/local/lib/libXau.so.6 (0x800692000)
+        libXdmcp.so.6 => /usr/local/lib/libXdmcp.so.6 (0x800698000)
+        libthr.so.3 => /lib/libthr.so.3 (0x8006a0000)
+europa$ 
+
+
