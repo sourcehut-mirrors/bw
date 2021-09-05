@@ -325,6 +325,17 @@ int main(int argc, char **argv)
                                                    bitmap_mask_y_hot_return_cursor);
     }
 
+    /* for the sake of being really pedantic we should check that the
+     * cursor image and cursor mask image both have the same hot spot */
+    if ( ( bitmap_x_hot_return_cursor != bitmap_mask_x_hot_return_cursor )
+            ||
+         ( bitmap_y_hot_return_cursor != bitmap_mask_y_hot_return_cursor ) ) {
+        printf ("WARN : the bitmap image and bitmap mask have diff hotspot\n");
+        printf ("     : we shall assume the bitmap image is correct and ignore\n");
+        printf ("     : the bitmap mask hotspot data\n");
+    }
+    x_hot_return_cursor = (unsigned int)bitmap_x_hot_return_cursor;
+    y_hot_return_cursor = (unsigned int)bitmap_y_hot_return_cursor;
 
     /* now we do need some colors */
     screen_colormap = XDefaultColormap(dsp, DefaultScreen(dsp));
@@ -456,6 +467,7 @@ int main(int argc, char **argv)
      * here we need cursor_pixmap and cursor_mask_pixmap
      * also just use XBlackPixel(display, screen_num) as background.
      */
+
     Cursor target_cursor = XCreatePixmapCursor(dsp, cursor_pixmap,
                                                     cursor_mask_pixmap,
                                                     &yellow,
