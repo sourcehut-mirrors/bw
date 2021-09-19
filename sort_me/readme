@@ -1,0 +1,14 @@
+
+Just some sorting examples.
+
+
+To generate a list of SHA512 hashs for every file in a 
+directory structure do : 
+
+/usr/bin/nice -n +15 find . -type f -exec /opt/schily/bin/mdigest -a sha512 {} \; 
+
+However one may replace mdigest with some other similar sha512 
+hash tool : 
+
+/usr/bin/nice -n +15 find . -type f -exec openssl dgst -sha512 -r {} \;
+
