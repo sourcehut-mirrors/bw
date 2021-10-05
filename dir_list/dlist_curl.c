@@ -46,7 +46,7 @@
 
 #include <curl/curl.h>
 
-/* what are these global shits ? */
+/* TODO why these globals ? */
 static char   wr_buf[LS_REPLYSIZE+1];
 static int    wr_index;
 
@@ -62,7 +62,10 @@ typedef struct {
 
 #define VERBOSE 1
 int sysinfo(int verbose);
+
+/* TODO clean this mess up and use the time and date funcs */
 long double timespec_to_ld( struct timespec t );
+
 size_t write_data( void *buffer, size_t size, size_t nmemb, void *userp );
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
 static int my_trace( CURL *handle, curl_infotype type, char *data,
@@ -85,13 +88,13 @@ int main(void)
 
     sysinfo(VERBOSE);
 
-    /* all this stuff needs to be input parameters */
+    /* TODO all this stuff needs to be input parameters */
     char *username = "xtester";
     char *ssh_pub_key_file = calloc(128, sizeof(unsigned char));
     char *ssh_priv_key_file = calloc(128, sizeof(unsigned char));
 
     /* see the damn man page for STRLCPY(3)  and note that you
-     * can not use it in C99 world. Too bad for Theo. */
+     * can not use it in C99 world. */
 
     char *homedir = getenv("HOME");
     if ( homedir == NULL ) {
@@ -114,9 +117,10 @@ int main(void)
 
     }
     char *ssh_pass = "0xfeeddeadbeefbadcaffeh";
+    /* TODO verify that the ssh keys actually exist */
 
     char *target_url = calloc(128, sizeof(unsigned char));
-    strcpy ( target_url, "sftp://172.16.35.8:22/~/get_things_from_here/" );
+    strcpy (target_url, "sftp://172.16.35.8:22/~/get_things_from_here/" );
 
     struct dataflags config;
 
@@ -136,37 +140,39 @@ int main(void)
         exit( EXIT_FAILURE );
     }
 
-    setlocale ( LC_ALL, "POSIX" );
-    if ( setenv( "TZ", "EST", 1 ) != 0 ) {
-        fprintf( stderr, "WARN : Unable to use timezone TZ=EST5.\n" );
+    setlocale (LC_ALL, "POSIX" );
+    if (setenv("TZ", "GMT0", 1 ) != 0 ) {
+        fprintf(stderr, "WARN : Unable to use timezone GMT0\n" );
+        if (setenv("TZ", "UTC", 1 ) != 0 ) {
+            fprintf(stderr, "WARN : Unable to use timezone UTC\n" );
+        }
     }
 
     /* Let's get a start time */
-
-    if ( clock_gettime( CLOCK_REALTIME, &start_tv ) == -1 ) {
-      perror( "clock gettime" );
+    if (clock_gettime(CLOCK_REALTIME, &start_tv ) == -1 ) {
+      perror("clock gettime" );
       return EXIT_FAILURE;
     }
 
-    c_time_string = ctime( &start_tv.tv_sec );
+    c_time_string = ctime(&start_tv.tv_sec );
  
-    fprintf ( stderr, "current time is %s", c_time_string );
-    start_ld = timespec_to_ld( start_tv );
-    fprintf ( stderr, "START : %-22.19Lg \n", start_ld );
+    fprintf (stderr, "current time is %s", c_time_string );
+    start_ld = timespec_to_ld(start_tv );
+    fprintf (stderr, "START : %-22.19Lg \n", start_ld );
 
     /********************* e n d  t i m e   d a t a ********************/
 
-    logfile = fopen( "/dev/null", "w" );
+    logfile = fopen("/dev/null", "w" );
 
     /* hexdump ( NULL, eft_buffer, rarg.len ); */
 
-    curl_global_init( CURL_GLOBAL_ALL );
+    curl_global_init(CURL_GLOBAL_ALL );
     curl = curl_easy_init();
 
-    if ( curl ) {
+    if (curl) {
 
         /* this is not an upload of data */
-        curl_easy_setopt ( curl, CURLOPT_UPLOAD, 0L );
+        curl_easy_setopt (curl, CURLOPT_UPLOAD, 0L );
 
         /* only allow CURLPROTO_SCP or SFTP */
         curl_easy_setopt(curl, CURLOPT_PROTOCOLS,
@@ -184,39 +190,39 @@ int main(void)
          *
          * NOTE that we set this to zero which enables a full verbose
          * listing. */
-        curl_easy_setopt ( curl, CURLOPT_DIRLISTONLY, 0L ); 
+        curl_easy_setopt (curl, CURLOPT_DIRLISTONLY, 0L ); 
 
-        curl_easy_setopt ( curl, CURLOPT_URL, target_url );
+        curl_easy_setopt (curl, CURLOPT_URL, target_url );
 
-        curl_easy_setopt ( curl, CURLOPT_USERNAME, username );
+        curl_easy_setopt (curl, CURLOPT_USERNAME, username );
 
-        curl_easy_setopt ( curl, CURLOPT_SSH_PUBLIC_KEYFILE,
+        curl_easy_setopt (curl, CURLOPT_SSH_PUBLIC_KEYFILE,
                                  ssh_pub_key_file );
 
-        curl_easy_setopt ( curl, CURLOPT_SSH_PRIVATE_KEYFILE,
+        curl_easy_setopt (curl, CURLOPT_SSH_PRIVATE_KEYFILE,
                                  ssh_priv_key_file );
 
-        curl_easy_setopt ( curl, CURLOPT_KEYPASSWD,
+        curl_easy_setopt (curl, CURLOPT_KEYPASSWD,
                                  ssh_pass );
 
-        curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1L );
-        curl_easy_setopt ( curl, CURLOPT_DEBUGFUNCTION, my_trace );
-        curl_easy_setopt ( curl, CURLOPT_DEBUGDATA, &config );
+        curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L );
+        curl_easy_setopt (curl, CURLOPT_DEBUGFUNCTION, my_trace );
+        curl_easy_setopt (curl, CURLOPT_DEBUGDATA, &config );
 
-        curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0L );
-        curl_easy_setopt ( curl, CURLOPT_SSL_VERIFYPEER, 0L );
-        curl_easy_setopt ( curl, CURLOPT_STDERR, logfile );
+        curl_easy_setopt (curl, CURLOPT_NOPROGRESS, 0L );
+        curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L );
+        curl_easy_setopt (curl, CURLOPT_STDERR, logfile );
 
-        curl_easy_setopt ( curl, CURLOPT_READFUNCTION, read_callback );
-        curl_easy_setopt ( curl, CURLOPT_READDATA, &rarg );
+        curl_easy_setopt (curl, CURLOPT_READFUNCTION, read_callback );
+        curl_easy_setopt (curl, CURLOPT_READDATA, &rarg );
 
         /* Perform the request, res will get the return code */
-        res = curl_easy_perform ( curl );
+        res = curl_easy_perform (curl );
 
         /* Check for errors */
-        if ( res != CURLE_OK ) {
-            fprintf ( stderr, "FAIL : curl_easy_perform() failed: %s\n", curl_easy_strerror ( res ) );
-            fprintf ( stderr, "FAIL : res = %d (write_error = %d)\n", res, wr_error );
+        if (res != CURLE_OK ) {
+            fprintf (stderr, "FAIL : curl_easy_perform() failed: %s\n", curl_easy_strerror ( res ) );
+            fprintf (stderr, "FAIL : res = %d (write_error = %d)\n", res, wr_error );
             return EXIT_FAILURE;
         }
 
@@ -224,25 +230,25 @@ int main(void)
         curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
         curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
 
-        fprintf ( stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time); 
+        fprintf (stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time); 
 
         /*
          * we should  null terminate the reply
          *    with some sort of  data[write_result.pos] = '\0';
          */
-        printf( "res = %d (write_error = %d)\n", res, wr_error );
+        printf("res = %d (write_error = %d)\n", res, wr_error );
 
         /* this may not be reasonable at all */
-        if ( res == 0 )
-            printf ( "\nData length received : %-06i bytes\n", strlen(wr_buf) );
+        if (res == 0 )
+            printf ("\nData length received : %-06i bytes\n", strlen(wr_buf) );
         else
-            printf ( "\nError : \n" );
+            printf ("\nError : \n" );
 
         /* always cleanup */
-        curl_easy_cleanup ( curl );
+        curl_easy_cleanup (curl);
 
     } else {
-        printf ( "\nFAIL : curl init fail.\n" );
+        printf ("\nFAIL : curl init fail.\n" );
         return EXIT_FAILURE;
     }
 
@@ -266,12 +272,12 @@ long double timespec_to_ld( struct timespec t ) {
     int bytes_formatted;
     long double ld_t = 0.0L;
 
-    bytes_formatted = sprintf ( buffer, "%10lu.%-9lu", t.tv_sec, t.tv_nsec );
+    bytes_formatted = sprintf (buffer, "%10lu.%-9lu", t.tv_sec, t.tv_nsec );
 
-    if ( bytes_formatted > 0 )
-        ld_t = strtold( buffer, NULL );
+    if (bytes_formatted > 0 )
+        ld_t = strtold(buffer, NULL );
 
-    if ( ld_t > 0.0L)
+    if (ld_t > 0.0L)
         return  ld_t;
     else
         return -1.0L;
@@ -378,7 +384,7 @@ static int my_trace( CURL *handle, curl_infotype type, char *data,
 
     /* actually we are throwing away the data but at least
      * it gets dumped out onto the terminal */
-    dump ( text, stderr, (unsigned char *)data, size, config->trace_ascii );
+    dump (text, stderr, (unsigned char *)data, size, config->trace_ascii );
 
     return 0;
 
@@ -407,9 +413,9 @@ static void dump( const char *text, FILE *stream, unsigned char *ptr,
         if (!nohex) { /* hex not disabled, show it */
             for ( c = 0; c < width; c++ )
                 if ( i+c < size )
-                    fprintf ( stream, "%02x ", ptr[i+c] );
+                    fprintf (stream, "%02x ", ptr[i+c] );
                 else
-                    fprintf ( stream, "   " );
+                    fprintf (stream, "   " );
         }
   
         for ( c = 0; (c < width) && (i+c < size); c++ ) {
@@ -423,7 +429,7 @@ static void dump( const char *text, FILE *stream, unsigned char *ptr,
                 break;
             }
 
-            fprintf ( stream, "%c",
+            fprintf (stream, "%c",
                       ( ptr[i+c]>=0x20 ) && ( ptr[i+c]<0x80 ) ? ptr[i+c] : '.');
 
             /* check again for 0D0A, to avoid an extra \n if it's at width */
@@ -434,7 +440,7 @@ static void dump( const char *text, FILE *stream, unsigned char *ptr,
                 break;
             }
         }
-        fputc( '\n', stream); /* newline */
+        fputc('\n', stream); /* newline */
     }
 
     fflush(stream);
