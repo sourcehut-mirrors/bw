@@ -3,7 +3,7 @@ CC=/usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
-	-fno-fast-math -fno-builtin
+	-fno-fast-math -fno-builtin -Wno-cast-qual
 
 CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
@@ -11,14 +11,14 @@ CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 LDIR=/usr/local/lib
 IDIR=/usr/local/include
 
-SRCS = bsort.c
-OBJS = bsort.o
+SRCS = sorter.c ../../time_and_date/timediff.c
+OBJS = sorter.o ../../time_and_date/timediff.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
 
-bsort: $(OBJS)
+sorter: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 clean:
-	rm -f $(OBJS) bsort
+	rm -f $(OBJS) sorter
