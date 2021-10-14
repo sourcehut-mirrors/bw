@@ -1,0 +1,5 @@
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m32 -g -O0 \
+	-fno-fast-math -fno-builtin
+
+.include "common.mk"
