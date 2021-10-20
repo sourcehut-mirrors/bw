@@ -4,9 +4,7 @@ CPPFLAGS=	-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS=		-lpthread -lrt
 
-OBJS=		../sysinfo/sysmem.o \
-		../sysinfo/sysinfo.o \
-		../sysinfo/ru.o \
+OBJS=	../sysinfo/sysinfo.o \
 		q_work.o enqueue.o dequeue.o q_create.o \
 		q_destroy.o do_work.o fib.o
 
