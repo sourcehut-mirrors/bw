@@ -200,13 +200,31 @@ int main(int argc, char **argv) {
     errno = 0;
     pthread_err = pthread_attr_setscope(attr, PTHREAD_SCOPE_PROCESS);
     if ( pthread_err == EINVAL ) {
-        fprintf(stderr,"FAIL : pthread_attr_setscope\n");
+        fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
         perror("FAIL : Invalid value for attr");
         return EXIT_FAILURE;
     } else if ( pthread_err == ENOTSUP ) {
-        fprintf(stderr,"FAIL : pthread_attr_setscope\n");
+        fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
         perror("FAIL : Invalid or unsupported value");
-        return EXIT_FAILURE;
+        /* could be we are trying to run on Linux which does not support
+         * PTHREAD_SCOPE_PROCESS thus : 
+         *
+         *    POSIX.1 requires that an implementation support at least
+         *    one of these contention scopes.
+         *
+         *    Linux *only* supports PTHREAD_SCOPE_SYSTEM.
+         */
+        fprintf(stderr,"WARN : must be a Linux system.\n");
+        fprintf(stderr,"INFO : will attempt PTHREAD_SCOPE_SYSTEM\n");
+        errno = 0;
+        pthread_err = pthread_attr_setscope(attr, PTHREAD_SCOPE_SYSTEM);
+        if ((pthread_err == EINVAL)||(pthread_err == ENOTSUP)){
+            /* just give up */
+            fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
+            perror("FAIL : can not set pthread contention scope at all");
+            return EXIT_FAILURE;
+        } 
+        fprintf(stderr,"INFO : PTHREAD_SCOPE_SYSTEM works here\n");
     }
 
     /* From pthread_attr_setdetachstate :
