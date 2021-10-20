@@ -28,7 +28,7 @@ pthread_t worker_thread[THREAD_LIMIT];
 int work_flag[THREAD_LIMIT];
  *************************************************/
 
-uint64_t fib(uint64_t n);
+uint64_t fib(uint8_t n);
 
 void *do_some_array_thing ( void *work_q ) {
 

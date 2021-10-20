@@ -226,10 +226,7 @@ int main(int argc, char **argv) {
     printf("DATA : total cpu time in POSIX threads = %14" PRIu64 "\n",
              total_thread_time);
 
-    ratio = (double)total_thread_time/(double)total_time;
-    printf("DATA : ratio                           = %-12.10e\n", ratio);
-
-
+    /* start clean up */
     free(fib_request);
     fib_request = NULL;
 
