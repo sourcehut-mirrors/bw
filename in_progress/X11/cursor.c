@@ -882,6 +882,7 @@ draw_a_circle (XColor hack_me_baby,
     int p;
     double angle, some_x, some_y;
     int radius_count = 0;
+    float intensity;
 
     /* for the heck of it 64 pixel radius */
     for (radius_count = 0; radius_count < 64; radius_count++) {
@@ -894,8 +895,11 @@ draw_a_circle (XColor hack_me_baby,
             some_x = radius_count * cos (angle);
             some_y = radius_count * sin (angle);
 
+            /* this is total beer hack */
+            intensity = fabs(sin(2.0 * M_PI * p / 12.0f));
+
             hack_me_baby.pixel =
-                (((unsigned long) (p / 2) & 0xff) << 16) +
+                (unsigned long)((((unsigned long) (p / 2) & 0xff) << 16)*intensity) +
                 (((unsigned long) radius_count) << 8) +
                 (((unsigned long) (255.0 * ((float) p / 720.0))) & 0xff);
 
