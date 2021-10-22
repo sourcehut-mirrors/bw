@@ -1337,8 +1337,10 @@ int main(int argc, char*argv[])
                         fprintf(stderr,"INFO : magnify changed to %-+16.10e\n", magnify);
                         obs_x_width = 4.0 / magnify;
                         obs_y_height = 4.0 / magnify;
+
                         colour_method_flag = 1;
                         invert_me_dammit = 0;
+
                         button = Button2;
 
                         /* trigger a recalc and thus flush vbox_flag to zero */
@@ -1419,8 +1421,8 @@ replot:
                 XSetForeground(dsp, gc3, cyan.pixel);
 
                 clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
-                /* here we loop over the vbox coords */
-                if ( colour_method_flag ) {
+
+                if ( colour_method_flag == 1 ) {
                     colour_method_flag = 0;
                 } else {
                     colour_method_flag = 1;
@@ -1430,9 +1432,11 @@ replot:
                         invert_me_dammit = 0;
                     }
                 }
+
+                /* here we loop over the vbox coords */
                 for ( vbox_y = 0; vbox_y < 16; vbox_y++ ) {
                     for ( vbox_x = 0; vbox_x < 16; vbox_x++ ) {
-                        if ( vbox_flag[vbox_x][vbox_y] == 0 ) {
+                        if ( 1 ) {  /* vbox_flag[vbox_x][vbox_y] == 0 */
                             clock_gettime( CLOCK_MONOTONIC, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                 vbox_ll_y = vbox_y * vbox_h + mand_y_pix;
@@ -1461,7 +1465,7 @@ replot:
                                         mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = mand_height;
                                     }
 
-                                    if ( colour_method_flag ) {
+                                    if ( colour_method_flag == 1 ) {
 
                                         if ( invert_me_dammit == 0 ) {
                                             t_param = pow( ( (double)mand_height / (double)mand_bail ), t_param_exponent);
@@ -1520,9 +1524,9 @@ replot:
                     }
                 }
 
-                /* reset the mand_bail adjust ment parameters */
-               bail_out_factor = 1.0;
-               bail_out_jank = 10;
+                /* reset the mand_bail adjustment parameters */
+                bail_out_factor = 1.0;
+                bail_out_jank = 10;
             } /* inside main plot area check */
 
             XSetForeground(dsp, gc, yellow.pixel);
