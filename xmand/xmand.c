@@ -128,7 +128,7 @@ int main(int argc, char*argv[])
 
     /* we can swap back and forth on the colour method with
      * a trivial flag */
-    int colour_method_flag = 1;  /* Dennis Clarke LSD trippy */
+    int colour_method_flag = 0;
     int invert_me_dammit = 0;
 
     /* we need a double click on replot to trigger */
@@ -1432,7 +1432,7 @@ replot:
                 }
                 for ( vbox_y = 0; vbox_y < 16; vbox_y++ ) {
                     for ( vbox_x = 0; vbox_x < 16; vbox_x++ ) {
-                        if ( 1 ) {  /* vbox_flag[vbox_x][vbox_y] == 0 */
+                        if ( vbox_flag[vbox_x][vbox_y] == 0 ) {
                             clock_gettime( CLOCK_MONOTONIC, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                 vbox_ll_y = vbox_y * vbox_h + mand_y_pix;
@@ -1460,11 +1460,6 @@ replot:
                                         mand_height = mbrot( x_prime, y_prime, mand_bail );
                                         mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = mand_height;
                                     }
-                                    /* TODO dump this to a binary file damn it 
-                                    fprintf(stderr,"%02i %02i  %-+22.16e  %-+22.16e  %"PRIu32"\n",
-                                                    vbox_x, vbox_y, x_prime, y_prime,
-                                                    mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix] );
-                                     */
 
                                     if ( colour_method_flag ) {
 
