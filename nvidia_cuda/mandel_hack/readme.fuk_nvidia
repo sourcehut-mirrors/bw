@@ -1,0 +1,75 @@
+
+deimos$ nvcc --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2021 NVIDIA Corporation
+Built on Sun_Feb_14_21:12:58_PST_2021
+Cuda compilation tools, release 11.2, V11.2.152
+Build cuda_11.2.r11.2/compiler.29618528_0
+deimos$ 
+
+
+deimos$ 
+deimos$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o mandel_hack.o mandel_hack.cu
+deimos$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o mandel_hack mandel_hack.o -lgomp
+deimos$ 
+deimos$ ll
+total 784
+drwxr-xr-x 2 admsys admsys   4096 Oct 23 16:09 ./
+drwxr-xr-x 8 admsys admsys   4096 Oct 23 15:59 ../
+-rwxr-xr-x 1 admsys admsys 713272 Oct 23 16:09 mandel_hack
+-rw-r--r-- 1 admsys admsys  20284 Oct 23 15:31 mandel_hack.cu
+-rw-r--r-- 1 admsys admsys  47840 Oct 23 16:09 mandel_hack.o
+-rw-r--r-- 1 admsys admsys   3905 Oct 23 15:31 readme
+-rw-r--r-- 1 admsys admsys   3939 Oct 23 15:31 readme.k80
+deimos$ 
+deimos$ ./mandel_hack 
+-------------------------------------------------------------
+        system name = Linux
+          node name = deimos
+            release = 5.10.0-9-amd64
+            version = #1 SMP Debian 5.10.70-1 (2021-09-30)
+            machine = x86_64
+          page size = 4096
+       avail memory = 16730243072
+                    = 16338128 kB
+                    = 15955 MB
+-------------------------------------------------------------
+DBUG : at 136 in mandel_hack.cu
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K4200
+INFO : firing off 16777216 cuda core code chunks
+     : mem size of double data array is 134217728 bytes
+     : mem size of uint32_t height array is 67108864 bytes
+
+-----------------------------------------------------------
+     : random data load 317860592 nsecs
+     : cudaMalloc device_r 17282196 nsecs
+     : cudaMalloc device_i 297846 nsecs
+DBUG : at 239 in mandel_hack.cu
+     : cudaMalloc device_mval 179668 nsecs
+DBUG : at 261 in mandel_hack.cu
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 20831009nsecs
+DBUG : at 300 in mandel_hack.cu
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 20623727 nsecs
+INFO : CUDA kernel launch with 16384 blocks of 1024 threads
+DBUG : at 341 in mandel_hack.cu
+FAIL : CUDA failed
+FAIL : error no kernel image is available for execution on the device
+FAIL : err = d1
+deimos$ 
+
+
+There are docs out there that claim one may do : 
+
+CUDA_ARCH := -gencode arch=compute_30,code=sm_30 \
+        -gencode arch=compute_35,code=sm_35 \
+        -gencode arch=compute_50,code=sm_50 \
+        -gencode arch=compute_52,code=sm_52 \
+        -gencode arch=compute_60,code=sm_60 \
+        -gencode arch=compute_61,code=sm_61 \
+        -gencode arch=compute_61,code=compute_61
+
+
