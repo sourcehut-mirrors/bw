@@ -57,3 +57,14 @@ returned something :
 s$ grep 'glfwGetProcAddress' glextloader.c | cut -f2 -d\" | awk '{ print "    if \050 glfwExtensionSupported\050\042" $1 "\042\051 \051 \173\n        fprintf\050stderr, \042INFO: " $1 " is supported\\n\042\051;\n    \175 else \173\n        fprintf\050stderr, \042WARN: " $1 " is NOT supported\\n\042\051;\n    \175\n\n"}' ^C
 s$ 
 
+
+
+
+
+Note that on FreeBSD UNIX this works great : 
+
+europa$ 
+europa$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -c -o main.o main.c
+europa$ $CC $CFLAGS $CPPFLAGS -L/usr/local/lib -o main main.o -lglfw -lGL 
+
+then the code is borked of course 

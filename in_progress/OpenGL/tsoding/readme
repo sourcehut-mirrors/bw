@@ -11,3 +11,14 @@ s$
 s$ $CC $CFLAGS $CPPFLAGS -c -o main.o main.c -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 s$ $CC $CFLAGS $CPPFLAGS -L/usr/lib/x86_64-linux-gnu/ -o main main.o -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 
+
+
+
+on FreeBSD UNIX you are much more happy with trivial 
+
+europa$ 
+europa$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -c -o main.o main.c
+europa$ $CC $CFLAGS $CPPFLAGS -L/usr/local/lib -o main main.o -lglfw -lGL 
+europa$ 
+
+

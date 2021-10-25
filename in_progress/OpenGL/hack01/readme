@@ -61,3 +61,19 @@ The program is not being run.
 s$ 
 
 
+on FreeBSD maybe this works : 
+
+europa$ 
+europa$ CC=/usr/bin/cc
+europa$ export CC
+europa$ CFLAGS='-std=iso9899:2011 -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 -fno-fast-math -fno-builtin'
+europa$ export CFLAGS 
+europa$ CPPFLAGS='-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600'
+europa$ export CPPFLAGS
+europa$ 
+
+
+
+europa$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -c -o hack01.o hack01.c
+europa$ $CC $CFLAGS $CPPFLAGS -L/usr/local/lib -o hack01 hack01.o -lglfw -lGLU -lGL
+
