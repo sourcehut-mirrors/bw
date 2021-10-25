@@ -1,0 +1,13 @@
+
+see https://github.com/tsoding/opengl-template
+
+ensure : 
+
+s$ 
+s$ CFLAGS='-std=iso9899:2011 -m64 -g -O0 -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8'
+s$ export CFLAGS 
+s$ 
+
+s$ $CC $CFLAGS $CPPFLAGS -c -o main.o main.c -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+s$ $CC $CFLAGS $CPPFLAGS -L/usr/lib/x86_64-linux-gnu/ -o main main.o -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+

@@ -1,0 +1,63 @@
+
+
+s$ 
+s$ echo $CFLAGS 
+-std=iso9899:2011 -m64 -g -O0 -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8
+s$ echo $CPPFLAGS 
+-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+s$ 
+s$ 
+s$ $CC $CFLAGS $CPPFLAGS -c -o hack01.o hack01.c
+s$ $CC $CFLAGS $CPPFLAGS -L/usr/lib/x86_64-linux-gnu/ -o hack01 hack01.o -lglfw -lGL
+
+
+
+finally we get some data of value 
+
+s$ 
+s$ gg hack01
+Reading symbols from hack01...
+(gdb) break 65
+Breakpoint 1 at 0x12ce: file hack01.c, line 65.
+(gdb) run
+Starting program: /home/dclarke/pgm/bw/in_progress/OpenGL/hack01/hack01 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ffff5b8f700 (LWP 144870)]
+[New Thread 0x7fffed38e700 (LWP 144871)]
+[New Thread 0x7ffff538e700 (LWP 144872)]
+[New Thread 0x7ffff4b8d700 (LWP 144873)]
+WARN: glCreateShader is NOT supported
+
+Thread 1 "hack01" hit Breakpoint 1, main () at hack01.c:65
+65          glGetIntegerv( GL_NUM_EXTENSIONS, &num_of_extensions);
+(gdb) list
+60           *    by the GL implementation for the current context.
+61           *    See glGetString. 
+62           * */
+63
+64          GLint num_of_extensions;
+65          glGetIntegerv( GL_NUM_EXTENSIONS, &num_of_extensions);
+66
+67          /* at some point we need const GLubyte* glGetString(GLenum name); */
+68
+69          /* Loop until the user closes the window */
+(gdb) print num_of_extensions
+$1 = 0
+(gdb) next
+70          while (!glfwWindowShouldClose(window)) {
+(gdb) print num_of_extensions
+$2 = 261
+(gdb) cont
+Continuing.
+[Thread 0x7ffff4b8d700 (LWP 144873) exited]
+[Thread 0x7ffff538e700 (LWP 144872) exited]
+[Thread 0x7fffed38e700 (LWP 144871) exited]
+[Thread 0x7ffff5b8f700 (LWP 144870) exited]
+[Inferior 1 (process 144866) exited normally]
+(gdb) 
+The program is not being run.
+(gdb) quit
+s$ 
+
+

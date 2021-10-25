@@ -1,0 +1,59 @@
+
+
+Note that my checks for extensions supported seems to fail
+everywhere for unknow reasons : 
+
+s$ 
+s$ ./main 
+WARN: glCreateShader is NOT supported
+WARN: glShaderSource is NOT supported
+WARN: glCompileShader is NOT supported
+WARN: glGetShaderiv is NOT supported
+WARN: glGetShaderInfoLog is NOT supported
+WARN: glAttachShader is NOT supported
+WARN: glCreateProgram is NOT supported
+WARN: glLinkProgram is NOT supported
+WARN: glGetProgramiv is NOT supported
+WARN: glGetProgramInfoLog is NOT supported
+WARN: glDeleteShader is NOT supported
+WARN: glUseProgram is NOT supported
+WARN: glGenVertexArrays is NOT supported
+WARN: glBindVertexArray is NOT supported
+WARN: glDeleteProgram is NOT supported
+WARN: glGetUniformLocation is NOT supported
+WARN: glUniform2f is NOT supported
+WARN: glGenBuffers is NOT supported
+WARN: glBindBuffer is NOT supported
+WARN: glBufferData is NOT supported
+WARN: glEnableVertexAttribArray is NOT supported
+WARN: glVertexAttribPointer is NOT supported
+WARN: glUniform1f is NOT supported
+WARN: glBufferSubData is NOT supported
+INFO: ARB_debug_output is supported
+INFO: EXT_draw_instanced is supported
+Successfully Reload the Shaders
+s$ 
+
+
+
+
+These are hacked up revisions of the Alexy code
+take from https://github.com/tsoding/opengl-template
+
+ensure : 
+
+s$ 
+s$ CFLAGS='-std=iso9899:2011 -m64 -g -O0 -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8'
+s$ export CFLAGS 
+s$ 
+
+s$ $CC $CFLAGS $CPPFLAGS -c -o main.o main.c -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+s$ $CC $CFLAGS $CPPFLAGS -L/usr/lib/x86_64-linux-gnu/ -o main main.o -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+
+
+Also we may want to check that the function pointers actually 
+returned something : 
+
+s$ grep 'glfwGetProcAddress' glextloader.c | cut -f2 -d\" | awk '{ print "    if \050 glfwExtensionSupported\050\042" $1 "\042\051 \051 \173\n        fprintf\050stderr, \042INFO: " $1 " is supported\\n\042\051;\n    \175 else \173\n        fprintf\050stderr, \042WARN: " $1 " is NOT supported\\n\042\051;\n    \175\n\n"}' ^C
+s$ 
+
