@@ -5,25 +5,32 @@
  * people that tazer me as needed */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
+
+#define VERBOSE 1
+int sysinfo(int verbose);
 
 static PFNGLCREATESHADERPROC glCreateShader = NULL;
 
 int main(void)
 {
+
+    sysinfo(VERBOSE);
+
     GLFWwindow* window;
 
     /* Initialize the library */
     if (!glfwInit()) {
-        return -1;
+        return EXIT_FAILURE;
     }
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window) {
         glfwTerminate();
-        return -1;
+        return EXIT_FAILURE;
     }
 
     /* Make the window's context current */
@@ -40,7 +47,6 @@ int main(void)
 
     /* read https://www.khronos.org/registry/OpenGL-Refpages/es3/ 
      *
-     *
      *  void glGetIntegerv(	GLenum pname, GLint *data);
      *
      * see GL_NUM_EXTENSIONS
@@ -48,10 +54,11 @@ int main(void)
      *    data returns one value, the number of extensions supported
      *    by the GL implementation for the current context.
      *    See glGetString. 
-     * */
+     */
 
     GLint num_of_extensions;
     glGetIntegerv(GL_NUM_EXTENSIONS, &num_of_extensions);
+    printf("INFO : num_of_extensions = %i\n", num_of_extensions);
 
     /* at some point we need const GLubyte* glGetString(GLenum name); */
 
@@ -60,11 +67,19 @@ int main(void)
 
     printf("GL_VERSION: %s\n", (char *) glGetString(GL_VERSION));
     printf("GL_RENDERER: %s\n", (char *) glGetString(GL_RENDERER));
-    printf("GL_VENDOR: %s\n", (char *) glGetString(GL_VENDOR));
-    printf("GL_EXTENSIONS: %s\n", (char *) glGetString(GL_EXTENSIONS));
-    printf("GLU_VERSION: %s\n", (char *) gluGetString(GLU_VERSION));
-    printf("GLU_EXTENSIONS: %s\n", (char *) gluGetString(GLU_EXTENSIONS));
+    printf("GL_VENDOR: %s\n\n", (char *) glGetString(GL_VENDOR));
+
+    /* this dumps out one big long space separated list */
+    printf("INFO : num_of_extensions = %i\n", num_of_extensions);
+    printf("GL_EXTENSIONS: %s\n\n", (char *) glGetString(GL_EXTENSIONS));
+
+    printf("GLU_VERSION: %s\n\n", (char *) gluGetString(GLU_VERSION));
+
+    /* this also dumps out one big long space separated list */
+    printf("GLU_EXTENSIONS: %s\n\n", (char *) gluGetString(GLU_EXTENSIONS));
+
     printf("GLUT_API_VERSION: %d\n", GLUT_API_VERSION);
+
 #ifdef GLUT_XLIB_IMPLEMENTATION
     printf("GLUT_XLIB_IMPLEMENTATION: %d\n", GLUT_XLIB_IMPLEMENTATION);
 #endif
@@ -82,7 +97,7 @@ int main(void)
     }
 
     glfwTerminate();
-    return 0;
+    return EXIT_SUCCESS;
 
 }
 

@@ -1,0 +1,25 @@
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin \
+	-Wno-reserved-id-macro -Wno-missing-prototypes
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_REENTRANT
+
+LIBS = -lglfw -lGLU -lGL
+
+IDIR=/usr/local/include
+LDIR=/usr/local/lib
+
+SRCS = hack02.c ../../../sysinfo/sysinfo.c
+
+OBJS = hack02.o ../../../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+
+hack02: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) hack02
