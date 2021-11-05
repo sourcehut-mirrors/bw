@@ -15,6 +15,63 @@ good luck and set your phasers on stun :
 Example should be something like : 
 
 
+ppc64$ 
+ppc64$ ./xmand 8192 1024 -0.7541656494141 0.05201721191406 8
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = enceladus
+                     release = 5.15.0-genunix
+                     version = #1 SMP Mon Nov 1 15:03:04 UTC 2021
+                     machine = ppc64
+                   page size = 65536
+               system memory = 8379498496
+                             = 8183104 kB
+                             = 7991 MB
+                 avail pages = 116649
+                avail memory = 0
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    1 day   14 hours   36 mins   52 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 8192
+pthread_limit = 8
+    translate = ( -7.54165649414100e-01 , +5.20172119140600e-02 )
+      magnify = +1.024000000000e+03
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 553  , 585  ]
+vbox  [ 008 , 007 ]
+fp64( +5.85937500e-02 , -1.19140625e-01 )  
+ select = -7.540512084961e-01, +5.178451538086e-02  
+bailout = 8192              
+magnify = 1.0240000000e+03
+ centre = -7.541656494141e-01, +5.201721191406e-02  
+[mand] =    49838030146 nsec   4.983803e+01 sec
+
+
+
 mars$ 
 mars$ /usr/bin/time -p /usr/bin/nice -n +15 ./xmand 32768 137438953472 -6.3378386953274912e-02 +9.7988834095119159e-01 4
 -------------------------------------------------------------------
