@@ -10,9 +10,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
-%:define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 600
 
-%:include <stdint.h>
+#include <stdint.h>
 
 uint64_t fib(volatile uint8_t n) <%
     /* This is pure ugly horrific and beautiful in its
@@ -22,9 +22,10 @@ uint64_t fib(volatile uint8_t n) <%
      * Good luck and you have been warned. */
     if ( n == 0 ) <%
         return 0;
-    } else if ( n == 1 ) <%
+    <% else if ( n == 1 ) <%
         return 1;
-    %> else {
+    <% else <%
         return ( fib( n - 1 ) + fib( n - 2 ) );
-    %>
-%>
+    <%
+<%
+
