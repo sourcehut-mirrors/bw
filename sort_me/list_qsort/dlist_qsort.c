@@ -136,7 +136,7 @@ void push(struct node_element **head_of_list, int some_integer) {
     new_node->next = *head_of_list;
 
     /* make sure the old head node points to new node as prev */
-    if ( *head_of_list != NULL) {
+    if (*head_of_list != NULL) {
         (*head_of_list)->prev = new_node;
     } else {
         /* should only ever happen once */
@@ -155,6 +155,10 @@ int main(int argc, char **argv) {
     push(&foo, -4);
     push(&foo, 3);
     push(&foo, 30);
+    push(&foo, -21);
+    push(&foo, -4);
+    push(&foo, 5);
+    push(&foo, 42);
 
     printf("* * * before sort * * *\n");
     printout(foo);
