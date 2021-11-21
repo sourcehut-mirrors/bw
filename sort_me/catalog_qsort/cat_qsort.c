@@ -45,7 +45,6 @@
 #include <fcntl.h>
 
 typedef struct node_element {
-    int  num_dat;
     /* we need 128 chars for the sha512 hash plus the nul */
     char sha512[129];
     char *filename;
@@ -101,7 +100,7 @@ struct node_element *partition(struct node_element *l, struct node_element *h)
         /* if ( (j->num_dat) <= x) { */
             /* move to next node if we can */
             i = ( (i == NULL) ? l : i->next );
-            swap_data(&i,&j);
+            if ( i != j ) swap_data(&i,&j);
             /* switch_around(&(i->num_dat), &(j->num_dat)); */
         }
     }
@@ -109,7 +108,7 @@ struct node_element *partition(struct node_element *l, struct node_element *h)
     /* again move to the next node if we can */
     i = ( (i == NULL) ? l : i->next );
     /* switch_around(&(i->num_dat), &(h->num_dat)); */
-    swap_data(&i,&h);
+    if ( i != h ) swap_data(&i,&h);
     return i;
 }
 
