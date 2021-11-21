@@ -59,6 +59,11 @@ int main( int argc, char *argv[] ) {
     struct timespec start_time, end_time, tn;
     char time_buffer[32] = "";
     int64_t t0_s, t0_ns, t1_s, t1_ns, t_tmp_s, t_tmp_ns;
+    /* for reasons the LLVM/Clang people seem to only know
+     * it gets its panties in a twist over these two */
+    t1_s = 0;
+    t1_ns = 0;
+
     int64_t this_delta, t_delta_sanity, total_ns = 0;
 
     setlocale( LC_ALL, "C" );
