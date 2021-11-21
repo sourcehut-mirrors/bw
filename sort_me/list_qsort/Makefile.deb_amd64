@@ -1,0 +1,23 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+OBJ = dlist_qsort.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+dlist_qsort: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f *.o dlist_qsort
