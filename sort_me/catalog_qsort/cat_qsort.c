@@ -45,7 +45,7 @@
 #include <fcntl.h>
 
 typedef struct node_element {
-    /* we need 128 chars for the sha512 hash plus the nul */
+    /* 128 chars for the sha512 hash plus the nul char */
     char sha512[129];
     char *filename;
     struct node_element *next;
@@ -75,10 +75,17 @@ void swap_data(struct node_element **this, struct node_element **that) {
     strncpy((*this)->sha512,(*that)->sha512,129);
     strncpy((*that)->sha512,tmp,129);
 
+    /* just swap around the filename pointers */
+    char *tmp_filename = (*this)->filename;
+    (*this)->filename = (*that)->filename;
+    (*that)->filename = tmp_filename;
+    /*
     strncpy(tmp,(*this)->filename,_POSIX_PATH_MAX+128+3);
     strncpy((*this)->filename,(*that)->filename,_POSIX_PATH_MAX+128+3);
     strncpy((*that)->filename,tmp,_POSIX_PATH_MAX+128+3);
+    */
 }
+
 /* suppose that the last element is the pivot.
  * get the pivot element to the correct location in sort order
  * move all smaller elements to left
