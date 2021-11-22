@@ -156,14 +156,16 @@ void push(struct node_element **head_of_list, char *line_data) {
         new_node->sha512[j] = line_data[j];
     }
     new_node->sha512[j] = '\0';
-    fprintf(stdout,"%3zu  %s\n", j, new_node->sha512);
+    fprintf(stdout,"%3zu  %s ", j, new_node->sha512);
+
+    while ( line_data[j] == ' ' ) j++;
 
     /* we need enough room for the filename minus the sha512 hash string */
     new_node->filename=calloc(strlen(line_data) - j, sizeof(unsigned char));
 
-    strncpy(new_node->filename, line_data+j+1, strlen(line_data)-j);
+    /* lets try to avoid the copy of the trailing 0x0ah NL char */
+    strncpy(new_node->filename, line_data+j, strlen(line_data)-j-1);
     fprintf(stdout,"%s\n", new_node->filename);
-
 
     /* prev is NULL because this is the new head of list element */
     new_node->prev = NULL;
@@ -275,8 +277,10 @@ dir_name:
     printf("\n-----------------------------------\n");
 
 
+    /*
     printf("\n----- Before QSort ----------------\n");
     printout(foo);
+    */
 
     qs(foo);
 
