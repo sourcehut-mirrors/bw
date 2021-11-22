@@ -12,3 +12,10 @@ hash tool :
 
 /usr/bin/nice -n +15 find . -type f -exec openssl dgst -sha512 -r {} \;
 
+
+also 
+
+
+find . -type f -exec sha512 -r {} \;
+
+

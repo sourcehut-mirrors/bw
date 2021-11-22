@@ -1,0 +1,6 @@
+CFLAGS=	-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-march=rv64imafdc -mabi=lp64d -Wno-padded \
+	-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
+	-Wno-missing-prototypes
+
+.include "common.mk"

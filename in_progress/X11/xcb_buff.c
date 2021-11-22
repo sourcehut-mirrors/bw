@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
     uint32_t             values[2];
 
     char    string[] = "Hello, XCB!";
-    uint8_t string_len = strlen(string);
+    uint8_t string_len = (uint8_t)strlen(string);
 
     xcb_rectangle_t rectangles[] = {
          {

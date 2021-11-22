@@ -456,7 +456,7 @@ int sysinfo(int verbose) {
             }
         } else {
             /* the Apple M1 seems to fail here for some obscure reason */
-            printf("WAT : sysconf(_SC_MONOTONIC_CLOCK) returns %i\n", err_flag);
+            printf("WAT : sysconf(_SC_MONOTONIC_CLOCK) returns %li\n", err_flag);
             perror("WAT : ");
         }
 #endif

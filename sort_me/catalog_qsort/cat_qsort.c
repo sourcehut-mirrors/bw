@@ -55,12 +55,6 @@ typedef struct node_element {
     struct node_element *prev;
 } node_element;
 
-void switch_around(int *this, int *that) {
-    int tmp = *this;
-    *this = *that;
-    *that = tmp;
-}
-
 /* find last node */
 struct node_element *lastnode_element(struct node_element *root)
 {
@@ -162,7 +156,7 @@ void push(struct node_element **head_of_list, char *line_data) {
         new_node->sha512[j] = line_data[j];
     }
     new_node->sha512[j] = '\0';
-    fprintf(stdout,"%3i  %s\n", j, new_node->sha512);
+    fprintf(stdout,"%3zu  %s\n", j, new_node->sha512);
 
     /* we need enough room for the filename minus the sha512 hash string */
     new_node->filename=calloc(strlen(line_data) - j, sizeof(unsigned char));
@@ -218,11 +212,9 @@ usage:
 
     char *cat_fid = calloc(q+1,sizeof(unsigned char));
     /* TODO : check the damn return val of calloc eh? */
-
-    /* if q > 240 or so then we have a major problem. The path is
-     * too long. Or check for PATH_MAX for example.  */
+    /* hey ya know we could have just done strncpy here */
     for ( p = 0; (argv[1][p]!='\0'); ++p) {
-           cat_fid[p] = argv[1][p];
+        cat_fid[p] = argv[1][p];
     }
 
     /* Is the last character a forward slash "/" ?
@@ -240,7 +232,7 @@ dir_name:
     if (status != 0) {
         perror("FAIL ");
         free(cat_fid);
-        return EXIT_FAILURE;
+        goto usage;
     }
 
     /* now we check the st_mode for a few things */
@@ -261,16 +253,23 @@ dir_name:
     }
 
     printf("\n----- Read the SHA512 Catalog -----\n");
-    char cat_line[ _POSIX_PATH_MAX + 128 + 3 ];
+    /* we need enough room for the SHA512 hash string as well
+     * as the entire filename and then intermediate space or
+     * two spaces and a terminating nul char
+     *
+     * n.b.: most compilers will optimize the next line
+     *        into just being a memset */
+    char cat_line[ _POSIX_PATH_MAX + 128 + 3 ] = {0};
     FILE *cat_file = fopen(cat_fid, "r" );
     if (cat_file != NULL) {
-        cat_line[0] = '\0';
         while( fgets(cat_line,sizeof(cat_line),cat_file)!= NULL) {
             fprintf(stdout,"%s",cat_line);
             push(&foo, cat_line);
         }
         fclose(cat_file);
     } else {
+        /* TODO do a bit of handling here and provide the usual
+         * error messages etc */
         perror(cat_fid);
     }
     printf("\n-----------------------------------\n");
