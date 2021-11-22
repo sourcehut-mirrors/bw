@@ -2,6 +2,5 @@
 The idea is to sort a list of SHA512 hash data with the filename
 of the hashed data source. 
 
-See example in foo_cat.sha512 and at the moment something gets
-borked in my strncpy() call somewhere.
+See example in catalog_sample_08.sha512
 

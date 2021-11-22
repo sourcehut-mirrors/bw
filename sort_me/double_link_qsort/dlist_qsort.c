@@ -38,6 +38,9 @@
 #include <string.h>
 #include <locale.h>
 
+#define VERBOSE 1
+int sysinfo(int verbose);
+
 typedef struct node_element {
     int    num_dat;
     struct node_element *next;
@@ -150,6 +153,9 @@ void push(struct node_element **head_of_list, int some_integer) {
 int main(int argc, char **argv) {
 
     struct node_element *foo = NULL;
+
+    sysinfo(VERBOSE);
+
     push(&foo, 5);
     push(&foo, 20);
     push(&foo, -4);

@@ -1,6 +1,6 @@
 
 /*
- * dlist_qsort.c try to quick sort a linked list
+ * cat_qsort.c  read a SHA512 hash catalog file and then sort
  * Copyright (C) Dennis Clarke 2021
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,6 +43,9 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <fcntl.h>
+
+#define VERBOSE 1
+int sysinfo(int verbose);
 
 typedef struct node_element {
     /* 128 chars for the sha512 hash plus the nul char */
@@ -195,6 +198,7 @@ int main(int argc, char **argv) {
     size_t q, p;
 
     setlocale ( LC_ALL, "POSIX" );
+    sysinfo(VERBOSE);
 
     if ( argc < 2 ) {
 usage:
@@ -256,7 +260,7 @@ dir_name:
         goto usage;
     }
 
-    printf("\n\n----------------------------------\n\n");
+    printf("\n----- Read the SHA512 Catalog -----\n");
     char cat_line[ _POSIX_PATH_MAX + 128 + 3 ];
     FILE *cat_file = fopen(cat_fid, "r" );
     if (cat_file != NULL) {
@@ -269,15 +273,15 @@ dir_name:
     } else {
         perror(cat_fid);
     }
-    printf("\n\n----------------------------------\n\n");
+    printf("\n-----------------------------------\n");
 
 
-    printf("* * * before sort * * *\n");
+    printf("\n----- Before QSort ----------------\n");
     printout(foo);
 
     qs(foo);
 
-    printf("\n* * * after sort * * *\n");
+    printf("\n----- After QSort -----------------\n");
     printout(foo);
 
     foo = lastnode_element(foo);
