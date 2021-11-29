@@ -1,126 +1,236 @@
 
+I tend to look at my email *maybe* once a day. So I never had the chance
+to see the first email. 
 
-A: Bank roll is  10000
-Bet   50 on  [      25  ]  [      25  ]  [          ]
-B: Bank roll   9950
-D: Bank roll   9950
+> On November 27, 2021 2:08:20 a.m. EST, Owen Eng <owen@oetec.com> wrote:
+>> straight ups = 35 to 1
+>> splits = 17 to 1
+Yes. That is roulette. I love playing that dumb fucking game.
 
---------------------------------
-E: Bet   50 on  [      25  ]  [      25  ]  [          ]
-G: BALL is  0
-H: Lose     50
-I: Bank roll   9800
-P: Lose   150
-Q: Bank roll   9350
-D: Bank roll   9350
+>>
+>> bet an equal number of chips on straight ups and splits.
+Well, something I would often do is bet on black. So I put a $5 chip on
+every black square. Then I put a $5 chip on every split that is beside
+the black square and provides a red number.
 
---------------------------------
-E: Bet  450 on  [     225  ]  [     225  ]  [          ]
-F: BALL is 26 black even
+/* The layout generally looks like this : 
 
-D: Bank roll   9350
+    -------------------------------------------------------------+
+   / |    |    |    |    |    |    |    |    |    |    |    |    |
+  /  | 3r | 6b | 9r | 12r| 15b| 18r| 21r| 24b| 27r| 30r| 33b| 36r|
+ /   |    |    |    |    |    |    |    |    |    |    |    |    |
++ 00 +----+----+----+----+----+----+----+----+----+----+----+----+
+|    |    |    |    |    |    |    |    |    |    |    |    |    |
++----+ 2b | 5r | 8b | 11b| 14r| 17b| 20b| 23r| 26b| 29b| 32r| 35b|
+|    |    |    |    |    |    |    |    |    |    |    |    |    |
++  0 +----+----+----+----+----+----+----+----+----+----+----+----+
+ \   |    |    |    |    |    |    |    |    |    |    |    |    |
+  \  | 1r | 4b | 7r | 10b| 13b| 16r| 19r| 22b| 25r| 28b| 31b| 34r|
+   \ |    |    |    |    |    |    |    |    |    |    |    |    |
+    -------------------------------------------------------------+
 
---------------------------------
-E: Bet  450 on  [     225  ]  [     225  ]  [          ]
-F: BALL is  5   red  odd
-J: Win  675
-K: Bank roll  10025
+     */
 
-C: Peak roll  10025
 
---------------------------------
-E: Bet   50 on  [          ]  [      25  ]  [      25  ]
-F: BALL is 18   red even
-L: Win   75
-M: Bank roll  10100
 
-C: Peak roll  10100
+So if we place an X on every black square then we see this : 
 
---------------------------------
-E: Bet   50 on  [      25  ]  [          ]  [      25  ]
-F: BALL is 32   red even
-N: Win   75
-O: Bank roll  10175
 
-C: Peak roll  10175
+    -------------------------------------------------------------+
+   / |    |    |    |    |    |    |    |    |    |    |    |    |
+  /  | 3r | 6b | 9r | 12r| 15b| 18r| 21r| 24b| 27r| 30r| 33b| 36r|
+ /   |    |  X |    |    |  X |    |    |  X |    |    |  X |    |
++ 00 +----+----+----+----+----+----+----+----+----+----+----+----+
+|    |  X |    |  X |  X |    |  X |  X |    |  X |  X |    |  X |
++----+ 2b | 5r | 8b | 11b| 14r| 17b| 20b| 23r| 26b| 29b| 32r| 35b|
+|    |    |    |    |    |    |    |    |    |    |    |    |    |
++  0 +----+----+----+----+----+----+----+----+----+----+----+----+
+ \   |    |  X |    |  X |  X |    |    |  X |    |  X |  X |    |
+  \  | 1r | 4b | 7r | 10b| 13b| 16r| 19r| 22b| 25r| 28b| 31b| 34r|
+   \ |    |    |    |    |    |    |    |    |    |    |    |    |
+    -------------------------------------------------------------+
 
---------------------------------
-E: Bet   50 on  [      25  ]  [      25  ]  [          ]
-F: BALL is 28 black even
 
-D: Bank roll  10175
+Now place a bet on every split that adds in a red number : 
 
---------------------------------
-E: Bet   50 on  [      25  ]  [      25  ]  [          ]
-F: BALL is 29 black  odd
 
-D: Bank roll  10175
+    -------------------------------------------------------------+
+   / |    |    |    |    |    |    |    |    |    |    |    |    |
+  /  | 3r X 6b | 9r | 12rX 15b| 18r| 21rX 24b| 27r| 30rX 33b| 36r|
+ /   |    |  X |    |    |  X |    |    |  X |    |    |  X |    |
++ 00 +----+----+--X-+----+----+--X-+----+----+----+----+----+--X-+
+|    |  X |    |  X |  X |    |  X |  X |    |  X |  X |    |  X |
++----+ 2b X 5r | 8b | 11bX 14r| 17b| 20b| 23rX 26b| 29bX 32r| 35b|
+|    |    |    |    |    |    |    |    |    |    |    |    |    |
++  0 +----+----+----+----+----+----+--X-+----+----+----+----+----+
+ \   |    |  X |    |  X |  X |    |    |  X |    |  X |  X |    |
+  \  | 1r X 4b | 7r X 10b| 13bX 16r| 19rX 22b| 25rX 28b| 31bX 34r|
+   \ |    |    |    |    |    |    |    |    |    |    |    |    |
+    -------------------------------------------------------------+
 
---------------------------------
-E: Bet   50 on  [      25  ]  [      25  ]  [          ]
-F: BALL is 30   red even
+In this way we have every black number covered as well as a good portion
+of the red numbers.  Does this matter in any way?  Fuck no.
 
-D: Bank roll  10175
+Lets look at the probability of a win here.  We have 38 numbers on the
+wheel when we include the 36 regular numbers and the 0 and double 00. I
+can tell you that the little bouncing ball is blind and does not see if
+there is a red landing spot or a green or black.  That damn thing has no
+real clue at all. So firstly lets consider the classic red black issue
+where some dumb mook only ever bets on red and black and also the idiot
+plays with a Martingale betting strategy. That always wins right? If you
+have enough of a bankroll and the table has no limits then sure. 
 
---------------------------------
-E: Bet   50 on  [      25  ]  [      25  ]  [          ]
-F: BALL is 21   red  odd
-L: Win   75
-M: Bank roll  10250
+There are 18 red numbers and 18 black numbers with a wheel of 38 total
+possible results and thus : 
 
-C: Peak roll  10250
+             p(Rw) = 18 / 38 = 0.47368421
 
---------------------------------
-E: Bet   50 on  [      25  ]  [          ]  [      25  ]
-F: BALL is 21   red  odd
+Where this means probability of a "win" for red numbers. So here we see
+the result is a bit better than 47% and surely anyone can see the same
+result for black.  In general the house always wins with a slight edge
+that gives 52.6% to the casino. However wait. What if we cover all of
+the black numbers as above AND toss in the splits that provide a red
+number?
 
-D: Bank roll  10250
 
---------------------------------
-E: Bet   50 on  [      25  ]  [          ]  [      25  ]
-F: BALL is  4 black even
-J: Win   75
-K: Bank roll  10325
+    -------------------------------------------------------------+
+   / |    |    |    |    |    |    |    |    |    |    |    |    |
+  /  | 3r X 6b | 9r | 12rX 15b| 18r| 21rX 24b| 27r| 30rX 33b| 36r|
+ /   |    |  X |    |    |  X |    |    |  X |    |    |  X |    |
++ 00 +----+----+--X-+----+----+--X-+----+----+----+----+----+--X-+
+|    |  X |    |  X |  X |    |  X |  X |    |  X |  X |    |  X |
++----+ 2b X 5r | 8b | 11bX 14r| 17b| 20b| 23rX 26b| 29bX 32r| 35b|
+|    |    |    |    |    |    |    |    |    |    |    |    |    |
++  0 +----+----+----+----+----+----+--X-+----+----+----+----+----+
+ \   |    |  X |    |  X |  X |    |    |  X |    |  X |  X |    |
+  \  | 1r X 4b | 7r X 10b| 13bX 16r| 19rX 22b| 25rX 28b| 31bX 34r|
+   \ |    |    |    |    |    |    |    |    |    |    |    |    |
+    -------------------------------------------------------------+
 
-C: Peak roll  10325
+The bets on the table are ( going by row order for black ) with the red
+neighbour splits : 
 
---------------------------------
-E: Bet   50 on  [          ]  [      25  ]  [      25  ]
-F: BALL is 10 black even
+          black       red
+            6          3
+           15         12
+           24         21
+           33         30
+            2          5
+            8          9  Note the red neighbour is on the first row
+           11         14
+           17         18  Also an upwards split towards the first row
+           20         19  Downwards split to third row
+           26         23
+           29         32
+           35         36  Again an upwards split
+            4          1
+           10          7
+           13         16
+           22         19
+           28         25
+           31         34
 
-D: Bank roll  10325
+That is the full list of all black numbers with the red split neighbours
+with no consideration to the results from a roulette wheel.  We have two
+considerations here : what is the probability of a "win" and to what
+degree is the "win" actually worth winning?  Is it possible, in fact is
+it probable that a "win" is a financial loss? Yes. The numbers are very
+clear here and easy to simulate with a bit of software.  However firstly
+we need the basic win/loss probabilities.  The most easy thing on the 
+table ( no pun intended ) is where are the losers?  Clearly the zero
+squares are both losers and that means 0 and 00 green numbers are going
+to wipe out the whole table.  I have seen that many times.  Also 27 red
+will wipe out the table. That means there are 38 numbers on the table
+and we cover 35 of them which is a hell of a number. The probability of
+a "win" is 0.92105263.  Ponder that. A 92% chance of a win. However is
+that really a win?  Sort of depends on what we landed on. We know that
+every single bet we made cover a direct 35:1 type pay off as well as an
+additional 17:1 for a split. Are there any numbers that are different?
 
---------------------------------
-E: Bet   50 on  [          ]  [      25  ]  [      25  ]
-F: BALL is 25   red  odd
-N: Win   75
-O: Bank roll  10400
+But wait.
 
-C: Peak roll  10400
+That 35 factor pay off with the added 17 is only for a black number. We
+can says that black numbers matter here. Almost every red number is very
+similar to a Black Jack surrender in that you get the 17:1 pay off and
+lose everything else.  For the sake of being detailed lets look at the
+actual loss and win numbers for this crazy sort of roulette bet :
 
---------------------------------
-E: Bet   50 on  [      25  ]  [      25  ]  [          ]
-F: BALL is 17 black  odd
-L: Win   75
-M: Bank roll  10475
 
-C: Peak roll  10475
+       number          pay out factor             With $5 chips
+    ------------------------------------------------------------
+            0          total loss                             0
+           00          total loss                             0
+       red  1          17                                    85
+            2          35 + 17                              260
+       r    3          17                                    85
+            4          35 + 17                              260
+       r    5          17                                    85
+            6          35 + 17                              260
+       r    7          17                                    85
+            8          35 + 17                              260
+       r    9          17                                    85
+           10          35 + 17                              260
+           11          35 + 17                              260
+       r   12          17                                    85
+           13          35 + 17                              260
+       r   14          17                                    85
+           15          35 + 17                              260
+       r   16          17                                    85
+           17          35 + 17                              260
+       r   18          17                                    85
+       r   19          17 + 17 double split red             170
+           20          35 + 17                              260
+       r   21          17                                    85
+           22          35 + 17                              260
+       r   23          17                                    85
+           24          35 + 17                              260
+       r   25          17                                    85
+           26          35 + 17                              260
+       r   27          total loss
+           28          35 + 17                              260
+           29          35 + 17                              260
+       r   30          17                                    85
+           31          35 + 17                              260
+       r   32          17                                    85
+           33          35 + 17                              260
+       r   34          17                                    85
+           35          35 + 17                              260
+       r   36          17                                    85
 
---------------------------------
-E: Bet   50 on  [      25  ]  [          ]  [      25  ]
-F: BALL is  5   red  odd
-J: Win   75
-K: Bank roll  10550
+How may of the above are maximum value 260? Well damn it those are the
+black numbers. So we already know the percentage there is 47.368 or at
+least a little worse than fifty percent. Everything else is very likely
+a loss.  There are a total of 35 bets on the table and the very best
+one may hope for is a 47% win. Every other possibility is a loss and we
+see the 0 and double 00 as a disaster. The same is true for the red 27.
+However lets look at the probabilities : 
 
-C: Peak roll  10550
 
---------------------------------
-E: Bet   50 on  [          ]  [      25  ]  [      25  ]
-F: BALL is  9   red  odd
+          disaster =  3/38 = 0.07894736 =  7.89%
+            red 19 =  1/38 = 0.02631578 =  2.63%
+             split = 16/38 = 0.42105263 = 42.11%
+           perfect = 18/38 = 0.47368421 = 47.37%
 
- life was 16
- max sequential losses was 2
- max money $ 10550
-
-final is 10550
+The sum of those probabilities has to be 1 exactly unless we consider
+the bizarre situation where the roulette balls jumps out of the track
+and onto the floor somewhere. Yes I have seen that also. However that
+results in nothing happening except for a scramble around to find the
+little white ball and then toss it in the trash. Sort of like dice at
+a craps table one should, in theory, throw away a little red die that
+made a leap for the floor.  That never happens.  Regardless the total
+bet on the table has to be $170 in order to cover all those numbers
+and the splits.  There is a 42.11% chance that you lose a large piece
+of that with only $85 payout. A very very thin 2.63% that you hit the
+red 19 which is a double split 34:1 for precisely $170 payout which
+means nothing happens for you. So a dumb question that is perfectly 
+unreasonable is what happens if a schmuck walks into a casino with a
+bankroll of $2000 and then plays this situation? The math will always
+tell us that the house wins and over any period of time you go broke.
+However, how often does that happen?  Over what period of time? When
+can we expect the schmuck to walk away to the bar and just drink on
+the remains of a credit card?  Will a good criteria here would be to
+say they the walk away happens after $1000 is won or lost. Even more
+likely is that the $1000 win amount is the walk away criteria and no
+other option than to go broke.  Should be easy to simulate with some
+decent RNG source.
 

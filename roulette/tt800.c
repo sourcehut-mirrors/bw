@@ -52,15 +52,3 @@ genrand()
     return( (double) y / (unsigned long) 0xffffffff);
 }
 
-/* this main() output first 50 generated numbers */
-main()
-{ int j;
-  for (j=0; j<50; j++) {
-    printf("%5f ", genrand());
-    if (j%8==7) printf("\n");
-  }
-  printf("\n");
-}
-
-
-
