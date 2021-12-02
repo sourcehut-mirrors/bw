@@ -40,6 +40,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <stddef.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 
 /* Note : the american style double zero wheel has numbers 
  *        arranged thus : 
@@ -67,7 +69,7 @@
  */
 
 #define BANKROLL 2000
-#define WALK     1000
+#define WALKAWAY 1000
 #define BET      5
 
 double genrand(void);
@@ -80,19 +82,16 @@ int main (int argc, char **argv) {
     setlocale(LC_ALL, "C");
     sysinfo(VERBOSE);
 
-    /* The ball[] array is a record of the number of times that the 
-     * roulette wheel ball lands on a given number with ball[0] being
-     * the single 0 and ball[1] being the double 00.  Therefore we
-     * have thirty eight possible places the ball can land.
-     */
+    /* The ball[] array is a record of the number of times that the
+     * roulette wheel ball lands on a given number with ball[0]
+     * being the single 0 and ball[1] being the double 00. Therefore
+     * we have thirty eight possible places the ball can land. */
     uint32_t ball[38];
 
-    /* This next array lets us know what colour the ball 
-     * had landed on top of.  A zero indicates black and a one
-     * indicates red colour.  The zero and double zero are 
-     * usually green in colour and we don't need to worry about
-     * them unless we land on them of course.  This array starts
-     * at the number one and goes up to thirty six.
+    /* This next array lets us know what colour the ball had landed
+     * on top of.  A zero indicates black and a one indicates red
+     * colour.  The zero and double zero are usually green. This array
+     * starts at the number one and goes up to thirty six.
      *
      * The table seems to be laid out in a simple X pattern made
      * of red coloured squares within a three by three box of
@@ -107,7 +106,38 @@ int main (int argc, char **argv) {
      *
      *    1010 1010 1001 0101 0110 1010 1010 0101 0101
      *
-     * A 1 represents red and 0 for black.
+     * A 1 represents red and 0 for black however it would be
+     * perhaps obscure to mess around with bit masks just to 
+     * determine the colour the ball lands on. It would work of
+     * course and perhaps something like this :
+     *
+     *     bit_flag = (uint64_t)0x0aa956aa55h;
+     *     colour = bit_flag & ( 1 << ( slot_number - 1 ) );
+     *
+     * That would only make sense for slot_number from 1 to 36.
+     * However the bit pattern is in reverse order. The bit3 is
+     * not representing the colour of slot 3 which is red. Bit3
+     * is in the least most four bits and they should be colour
+     * data for the numbers 33 upwards to 36. We need to reverse
+     * the bit order : 
+     *
+     *    1010 1010 0101 0101 0110 1010 1001 0101 0101
+     *    ^                    ^        ^            ^
+     *    |                    |        |            bit0
+     *    |                    |        bit11        slot1
+     *    |                    bit18    slot12
+     *    bit35                slot19
+     *    slot36
+     *
+     * Above we see that bit35 will represent the red 36 and
+     * bit18 is for red 19. This makes for a trivial bit mask
+     * thus :
+     *
+     *     bit_flag = (uint64_t)0x0aa556a955h
+     *     colour = bit_flag & ( 1 << ( slot_number - 1 ) );
+     *
+     * The question on the table ( pun intended ) would be
+     * why do such a thing?  Just for fun I guess.
      */
     static uint8_t colour_data[36] = { 
             1,       0,       1, 
@@ -127,9 +157,13 @@ int main (int argc, char **argv) {
             1,       0,       1
     };
 
+    static uint64_t bit_flag = 0x0aa556a955;
+    uint64_t colour_mask, colour_flag;
+    uint64_t big_64bit_one = 1;
+
     uint32_t bankroll = BANKROLL;
-    /* uint32_t bankroll_start = bankroll; */
-    uint32_t profit_limit = WALK;
+    uint32_t bankroll_start = bankroll;
+    uint32_t profit_limit = WALKAWAY;
     uint32_t bet = BET;
 
     uint32_t n_even, n_odd, n_red, n_black, n_zero;
@@ -152,9 +186,11 @@ int main (int argc, char **argv) {
         str = argv[1];
         long max_spin_l = strtol(str, &endptr, 10);
         errno = 0;
-        if ( ( (errno == ERANGE) &&
-                   ( (max_spin_l == LONG_MAX) || (max_spin_l == LONG_MIN) ) 
-             ) || (errno != 0 && max_spin_l == 0) ) {
+        if ( ( ( errno == ERANGE ) &&
+                   ( ( max_spin_l == LONG_MAX ) 
+                     ||
+                     ( max_spin_l == LONG_MIN ) ) 
+             ) || ( ( errno != 0 ) && ( max_spin_l == 0 ) ) ) {
             perror("FAIL : strtol could not parse spin max");
             goto assume_max;
         }
@@ -169,7 +205,7 @@ int main (int argc, char **argv) {
             fprintf(stderr," spin max ignored : %s\n", endptr);
         }
 
-        if ((max_spin_l>255)||(max_spin_l<10)){
+        if ( ( max_spin_l > 255 ) || ( max_spin_l < 10 ) ){
             printf("WARN : try a reasonable number.\n");
             goto assume_max;
         }
@@ -248,7 +284,10 @@ assume_max:
             }
 
             /* black or red ? */
-            if ( colour_data[slot-1] > 0 ) {
+            colour_mask = big_64bit_one<<(slot-1);
+            colour_flag = bit_flag&colour_mask;
+
+            if ( colour_flag > 0 ) {
                 n_red += 1;
                 printf("    red");
             } else {
