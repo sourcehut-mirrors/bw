@@ -14,7 +14,7 @@
 #define M 7
 
 double
-genrand()
+genrand(void)
 {
     unsigned long y;
     static int k = 0;

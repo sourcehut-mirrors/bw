@@ -5,10 +5,13 @@ to see the first email.
 > On November 27, 2021 2:08:20 a.m. EST, Owen Eng <owen@oetec.com> wrote:
 >> straight ups = 35 to 1
 >> splits = 17 to 1
-Yes. That is roulette. I love playing that dumb fucking game.
+
+Yes. That is roulette. I love playing that dumb game. Walk up and make
+a single bet then walk away. Anything else is silly.
 
 >>
 >> bet an equal number of chips on straight ups and splits.
+
 Well, something I would often do is bet on black. So I put a $5 chip on
 every black square. Then I put a $5 chip on every split that is beside
 the black square and provides a red number.
@@ -69,16 +72,18 @@ Now place a bet on every split that adds in a red number :
     -------------------------------------------------------------+
 
 In this way we have every black number covered as well as a good portion
-of the red numbers.  Does this matter in any way?  Fuck no.
+of the red numbers.  In fact all of them except for 19 red.  Does this
+matter in any way? Nope.
 
-Lets look at the probability of a win here.  We have 38 numbers on the
+Lets look at the probability of a "win" here.  We have 38 numbers on the
 wheel when we include the 36 regular numbers and the 0 and double 00. I
 can tell you that the little bouncing ball is blind and does not see if
-there is a red landing spot or a green or black.  That damn thing has no
+there is a red landing spot or a green or black. That silly thing has no
 real clue at all. So firstly lets consider the classic red black issue
 where some dumb mook only ever bets on red and black and also the idiot
 plays with a Martingale betting strategy. That always wins right? If you
-have enough of a bankroll and the table has no limits then sure. 
+have enough of a bankroll and the table has no limits then sure. Good
+luck with that.
 
 There are 18 red numbers and 18 black numbers with a wheel of 38 total
 possible results and thus : 
@@ -89,7 +94,7 @@ Where this means probability of a "win" for red numbers. So here we see
 the result is a bit better than 47% and surely anyone can see the same
 result for black.  In general the house always wins with a slight edge
 that gives 52.6% to the casino. However wait. What if we cover all of
-the black numbers as above AND toss in the splits that provide a red
+the black numbers as above and toss in the splits that provide a red
 number?
 
 
@@ -132,9 +137,9 @@ neighbour splits :
 
 That is the full list of all black numbers with the red split neighbours
 with no consideration to the results from a roulette wheel.  We have two
-considerations here : what is the probability of a "win" and to what
+situations or questions : what is the probability of a "win" and to what
 degree is the "win" actually worth winning?  Is it possible, in fact is
-it probable that a "win" is a financial loss? Yes. The numbers are very
+it probable that a "win" is a financial loss?  Yes. The numbers are very
 clear here and easy to simulate with a bit of software.  However firstly
 we need the basic win/loss probabilities.  The most easy thing on the 
 table ( no pun intended ) is where are the losers?  Clearly the zero
@@ -142,10 +147,12 @@ squares are both losers and that means 0 and 00 green numbers are going
 to wipe out the whole table.  I have seen that many times.  Also 27 red
 will wipe out the table. That means there are 38 numbers on the table
 and we cover 35 of them which is a hell of a number. The probability of
-a "win" is 0.92105263.  Ponder that. A 92% chance of a win. However is
+a "win" is 0.92105263. Ponder that. A 92% chance of a win. However is
 that really a win?  Sort of depends on what we landed on. We know that
-every single bet we made cover a direct 35:1 type pay off as well as an
-additional 17:1 for a split. Are there any numbers that are different?
+every single bet we made on a black square will result in a direct 35:1
+type pay off as well as an additional 17:1 for a split. Are there any
+numbers that are different? Of course. All of the red numbers are less
+of a payoff by a large margin.
 
 But wait.
 
@@ -197,14 +204,13 @@ actual loss and win numbers for this crazy sort of roulette bet :
            35          35 + 17                              260
        r   36          17                                    85
 
-How may of the above are maximum value 260? Well damn it those are the
-black numbers. So we already know the percentage there is 47.368 or at
-least a little worse than fifty percent. Everything else is very likely
-a loss.  There are a total of 35 bets on the table and the very best
+How many of the above are maximum value 260? Well those are the black
+numbers. So we already know the percentage there is 47.368 or at best
+a little worse than fifty percent. Everything else is very likely a
+loss.  There are a total of 35 bets on the table and the very best
 one may hope for is a 47% win. Every other possibility is a loss and we
 see the 0 and double 00 as a disaster. The same is true for the red 27.
 However lets look at the probabilities : 
-
 
           disaster =  3/38 = 0.07894736 =  7.89%
             red 19 =  1/38 = 0.02631578 =  2.63%
@@ -228,9 +234,13 @@ bankroll of $2000 and then plays this situation? The math will always
 tell us that the house wins and over any period of time you go broke.
 However, how often does that happen?  Over what period of time? When
 can we expect the schmuck to walk away to the bar and just drink on
-the remains of a credit card?  Will a good criteria here would be to
+the remains of a credit card?  Well a good criteria here would be to
 say they the walk away happens after $1000 is won or lost. Even more
 likely is that the $1000 win amount is the walk away criteria and no
 other option than to go broke.  Should be easy to simulate with some
 decent RNG source.
+
+For the sake of another discussion we will use the Mersenne Twister
+as the PRNG here.  Mostly because it is entirely repeatable.
+
 

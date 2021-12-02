@@ -62,20 +62,22 @@
    \ |    |    |    |    |    |    |    |    |    |    |    |    |
     -------------------------------------------------------------+
 
+ * also yes it did take me some time to get that to fit in
+ * a width of 72 columns or less.
  */
 
 #define BANKROLL 2000
 #define WALK     1000
 #define BET      5
 
-double genrand();
+double genrand(void);
 
 #define VERBOSE 1
 int sysinfo(int verbose);
 
 int main (int argc, char **argv) { 
 
-    setlocale( LC_ALL, "C" );
+    setlocale(LC_ALL, "C");
     sysinfo(VERBOSE);
 
     /* The ball[] array is a record of the number of times that the 
@@ -126,12 +128,13 @@ int main (int argc, char **argv) {
     };
 
     uint32_t bankroll = BANKROLL;
-    uint32_t bankroll_start = bankroll;
+    /* uint32_t bankroll_start = bankroll; */
     uint32_t profit_limit = WALK;
     uint32_t bet = BET;
 
-    uint32_t n_even, n_odd, n_red, n_black, n_zero, colour_flag;
-    uint32_t iteration_count, i, j, k;
+    uint32_t n_even, n_odd, n_red, n_black, n_zero;
+    uint32_t iteration_count, i;
+    uint32_t slot;
     /* FILE   *fp;   maybe use /dev/random someday */
     double rval;
 
@@ -177,9 +180,6 @@ assume_max:
         max_spin = 100;
         printf("We shall assume max_spin = 100\n");
     }
-
-    /* TODO remove this */
-    max_spin = 1000;
 
     printf("\n-----------------------------------------\n");
     printf("      :    Bank roll = %5i\n", bankroll);
@@ -227,20 +227,19 @@ assume_max:
         /* get rval from M. Matsumoto TT800 in genrand() */
         rval = genrand();
         printf("%-04i   %11.8f", iteration_count, rval);
-        k = (int)(rval * 38.0);
-        printf("    k = %2i", k);
+        slot = (uint32_t)(rval * 38.0);
+        printf(" rval = %2i", slot);
 
-        ball[k] += 1;
+        ball[slot] += 1;
 
         /* so long as we didn't end up on a 0 or 00 then
-         * we must be even or odd as well as red or black 
-         */
-        if ( k > 1 ) { /* values 0 and 1 represent the zeros */
-            /* adjust the k value for a reasonable number
+         * we must be even or odd as well as red or black */
+        if ( slot > 1 ) { 
+            /* adjust the slot value for a reasonable number
              * the is not a 0 or 00 */
-            k = k-1;
-            printf("  --> slot %2i", k);
-            if (k%2) {
+            slot = slot - 1;
+            printf("  --> slot %2i", slot);
+            if (slot%2) {
                 n_odd += 1;
                 printf("  odd ");
             } else {
@@ -249,7 +248,7 @@ assume_max:
             }
 
             /* black or red ? */
-            if ( colour_data[k-1] > 0 ) {
+            if ( colour_data[slot-1] > 0 ) {
                 n_red += 1;
                 printf("    red");
             } else {
@@ -260,7 +259,7 @@ assume_max:
         } else {
             /* the ball landed on a 0 or 00 */
             n_zero += 1;
-            if (k) {
+            if (slot) {
                 printf("  --> slot 00");
             } else {
                 printf("  --> slot  0");
@@ -269,30 +268,82 @@ assume_max:
         }
         printf("\n");
 
-        /* TODO perform the schmuck betting results */
+        /* TODO perform the schmuck betting results
+         *
+         *
+
+       number          pay out factor             With $5 chips
+    ------------------------------------------------------------
+            0          total loss                             0
+           00          total loss                             0
+       red  1          17                                    85
+            2          35 + 17                              260
+       r    3          17                                    85
+            4          35 + 17                              260
+       r    5          17                                    85
+            6          35 + 17                              260
+       r    7          17                                    85
+            8          35 + 17                              260
+       r    9          17                                    85
+           10          35 + 17                              260
+           11          35 + 17                              260
+       r   12          17                                    85
+           13          35 + 17                              260
+       r   14          17                                    85
+           15          35 + 17                              260
+       r   16          17                                    85
+           17          35 + 17                              260
+       r   18          17                                    85
+       r   19          17 + 17 double split red             170
+           20          35 + 17                              260
+       r   21          17                                    85
+           22          35 + 17                              260
+       r   23          17                                    85
+           24          35 + 17                              260
+       r   25          17                                    85
+           26          35 + 17                              260
+       r   27          total loss
+           28          35 + 17                              260
+           29          35 + 17                              260
+       r   30          17                                    85
+           31          35 + 17                              260
+       r   32          17                                    85
+           33          35 + 17                              260
+       r   34          17                                    85
+           35          35 + 17                              260
+       r   36          17                                    85
+
+*/
+
     }
 
     /* print out the number of times the ball landed on each number */
     printf ( "\n\nIterations = %5i\n", iteration_count );
     printf ( "     0 = %5i     %11.8f\n", ball[0],
-             ( (float) 1.0 * ball[0] / ( (float) 1.0 * iteration_count ) ) );
+             ( 1.0 * ball[0] / ( 1.0 * iteration_count ) ) );
     printf ( "    00 = %5i     %11.8f\n", ball[1],
-             ( (float) 1.0 * ball[1] / ( (float) 1.0 * iteration_count ) ) );
-    for ( i = 2; i < 38; ++i )
+             ( 1.0 * ball[1] / ( 1.0 * iteration_count ) ) );
+
+    for ( i = 2; i < 38; ++i ) {
         printf ( "    %2i = %5i     %11.8f\n",  ( i - 1 ), ball[i],
-             ( (float) 1.0 * ball[i] / ( (float) 1.0 * iteration_count ) ) );
+             ( 1.0 * ball[i] / ( 1.0 * iteration_count ) ) );
+    }
+
+    /* how many zeros ? */
+    printf ( "\n zeros = %5i     %11.8f\n", n_zero,
+          ( 1.0 * n_zero / ( 1.0 * iteration_count ) ) );
 
     /* what was the distribution of even and odds ? */
-    printf ( "\n   odd = %5i     %11.8f\n", n_odd, 
-             ( (float) 1.0 * n_odd   / ( (float) 1.0 * iteration_count ) ) );
+    printf ( "   odd = %5i     %11.8f\n", n_odd, 
+             ( 1.0 * n_odd  / ( 1.0 * iteration_count ) ) );
     printf ( "  even = %5i     %11.8f\n", n_even, 
-             ( (float) 1.0 * n_even  / ( (float) 1.0 * iteration_count ) ) );
+             ( 1.0 * n_even / ( 1.0 * iteration_count ) ) );
 
     /* what was the distribution of red and black ? */
     printf ( "\n   red = %5i     %11.8f\n", n_red, 
-             ( (float) 1.0 * n_red   / ( (float) 1.0 * iteration_count ) ) );
+             ( 1.0 * n_red   / ( 1.0 * iteration_count ) ) );
     printf ( " black = %5i     %11.8f\n", n_black, 
-             ( (float) 1.0 * n_black / ( (float) 1.0 * iteration_count ) ) );
+             ( 1.0 * n_black / ( 1.0 * iteration_count ) ) );
 
 
     return EXIT_SUCCESS;
