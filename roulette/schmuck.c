@@ -40,6 +40,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <time.h>
+#include <unistd.h>
+
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
@@ -77,7 +80,33 @@ double genrand(void);
 #define VERBOSE 1
 int sysinfo(int verbose);
 
+uint64_t timediff( struct timespec start_time,
+                   struct timespec end_time );
+
 int main (int argc, char **argv) { 
+
+    uint64_t colour_mask, colour_flag;
+    uint64_t one = 1;
+
+    struct timespec time_start, time_end, time_now;
+    uint64_t total_time;
+    char *c_time_string = NULL;
+    int drand48_flag = 0;
+
+    uint32_t bankroll = BANKROLL;
+    uint32_t bankroll_start = bankroll;
+    uint32_t profit_limit = WALKAWAY;
+    uint32_t bet = BET;
+
+    uint32_t n_even, n_odd, n_red, n_black, n_zero;
+    uint32_t iteration_count, i;
+    uint32_t slot;
+    /* FILE   *fp;   maybe use /dev/random someday */
+    double rval;
+
+    /* maximum times a player will stand around like an idiot
+     * and watch the roulette wheel spin for them */
+    uint32_t max_spin;
 
     setlocale(LC_ALL, "C");
     sysinfo(VERBOSE);
@@ -142,22 +171,6 @@ int main (int argc, char **argv) {
      */
 
     static uint64_t bit_flag = 0x0aa556a955;
-    uint64_t colour_mask, colour_flag;
-    uint64_t big_64bit_one = 1;
-
-    uint32_t bankroll = BANKROLL;
-    uint32_t bankroll_start = bankroll;
-    uint32_t profit_limit = WALKAWAY;
-    uint32_t bet = BET;
-
-    uint32_t n_even, n_odd, n_red, n_black, n_zero;
-    uint32_t iteration_count, i;
-    uint32_t slot;
-    /* FILE   *fp;   maybe use /dev/random someday */
-    double rval;
-
-    /* some hard coded nutty number */
-    uint32_t max_spin;
 
     /* check if a max_spin parameter was on the command line */
     if ( argc > 1 ) {
@@ -212,6 +225,9 @@ assume_max:
        cover off 35 crazy numbers on the table.
 
        See the readme to understand how bonkers this is.
+       In fact, it is stupid to think that roulette can ever be played
+       with such a fashion as to win. Ever. Period. Regardless of what
+       some casino may tell you.
 
        We will use a software PRNG genrand() which is repeatable for now.
 
@@ -222,6 +238,24 @@ assume_max:
            return ( EXIT_FAILURE );
        }
      */
+
+    /* get the timenow and use the nanoseconds data as a seed
+     * for the srand48/drand48 PRNG */
+    if ( clock_gettime(CLOCK_REALTIME, &time_now) == -1 ) {
+        /* We could not get the clock. Bail out. */
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
+    /* check if the user wants to use drand48 as the PRNG */
+    if ( argc > 2 ) {
+        drand48_flag=1;
+        c_time_string = ctime(&time_now.tv_sec);
+        printf("INFO : current time is %s", c_time_string);
+        /* call srand48() with the sub-second time data */
+        srand48((long)time_now.tv_nsec);
+        printf("INFO : srand48() seed done.\n\n");
+    }
 
     /* zero the ball counts */
     for ( i = 0; i < 38; ++i )
@@ -234,6 +268,14 @@ assume_max:
     n_black = 0;
     n_zero = 0;
 
+    if ( clock_gettime(CLOCK_REALTIME, &time_start) == -1 ) {
+        /* We could not get the clock. Bail out.
+         * However no way could this happen given that we already
+         * asked for the time earlier. Whatever. */
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
     for ( i = 0; i < max_spin; ++i ) {
 
         iteration_count += 1;
@@ -244,8 +286,9 @@ assume_max:
          *    rval = ( (double) j / (double) 256.0 );
          */
 
-        /* get rval from M. Matsumoto TT800 in genrand() */
-        rval = genrand();
+        /* Do we use the M. Matsumoto TT800 genrand() Mersenne Twister
+         * or drand48?  Only the drand48_flag knows for sure. */
+        rval = drand48_flag ? drand48() : genrand();
         printf("%-04i   %11.8f", iteration_count, rval);
         slot = (uint32_t)(rval * 38.0);
         printf(" rval = %2i", slot);
@@ -268,7 +311,7 @@ assume_max:
             }
 
             /* black or red ? */
-            colour_mask = big_64bit_one<<(slot-1);
+            colour_mask = one<<(slot-1);
             colour_flag = bit_flag&colour_mask;
 
             if ( colour_flag > 0 ) {
@@ -340,6 +383,12 @@ assume_max:
 
     }
 
+    if ( clock_gettime(CLOCK_REALTIME, &time_end) == -1 ) {
+        /* this should never happen. */
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
     /* print out the number of times the ball landed on each number */
     printf ( "\n\nIterations = %5i\n", iteration_count );
     printf ( "     0 = %5i     %11.8f\n", ball[0],
@@ -368,6 +417,10 @@ assume_max:
     printf ( " black = %5i     %11.8f\n", n_black, 
              ( 1.0 * n_black / ( 1.0 * iteration_count ) ) );
 
+
+    total_time = timediff( time_start, time_end );
+    printf ( "\n Total time = %" PRIu64 " nsec =  %11.8f secs\n",
+                 total_time, ( 1.0 * total_time )/1.0E9);
 
     return EXIT_SUCCESS;
 
