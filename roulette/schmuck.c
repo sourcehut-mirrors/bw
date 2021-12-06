@@ -90,7 +90,7 @@ int main (int argc, char **argv) {
 
     /* This next array lets us know what colour the ball had landed
      * on top of.  A zero indicates black and a one indicates red
-     * colour.  The zero and double zero are usually green. This array
+     * colour. The zero and double zero are usually green. This array
      * starts at the number one and goes up to thirty six.
      *
      * The table seems to be laid out in a simple X pattern made
@@ -111,7 +111,7 @@ int main (int argc, char **argv) {
      * determine the colour the ball lands on. It would work of
      * course and perhaps something like this :
      *
-     *     bit_flag = (uint64_t)0x0aa956aa55h;
+     *     bit_flag = (uint64_t)0x0AA956AA55h;
      *     colour = bit_flag & ( 1 << ( slot_number - 1 ) );
      *
      * That would only make sense for slot_number from 1 to 36.
@@ -121,6 +121,7 @@ int main (int argc, char **argv) {
      * data for the numbers 33 upwards to 36. We need to reverse
      * the bit order : 
      *
+     * hex   A    A    5    5    6    A    9    5    5
      *    1010 1010 0101 0101 0110 1010 1001 0101 0101
      *    ^                    ^        ^            ^
      *    |                    |        |            bit0
@@ -133,29 +134,12 @@ int main (int argc, char **argv) {
      * bit18 is for red 19. This makes for a trivial bit mask
      * thus :
      *
-     *     bit_flag = (uint64_t)0x0aa556a955h
+     *     bit_flag = (uint64_t)0x0AA556A955h
      *     colour = bit_flag & ( 1 << ( slot_number - 1 ) );
      *
      * The question on the table ( pun intended ) would be
      * why do such a thing?  Just for fun I guess.
      */
-    static uint8_t colour_data[36] = { 
-            1,       0,       1, 
-            0,       1,       0,
-            1,       0,       1,
-
-            0,       0,       1, 
-            0,       1,       0,
-            1,       0,       1,
-
-            1,       0,       1, 
-            0,       1,       0,
-            1,       0,       1,
-
-            0,       0,       1, 
-            0,       1,       0,
-            1,       0,       1
-    };
 
     static uint64_t bit_flag = 0x0aa556a955;
     uint64_t colour_mask, colour_flag;

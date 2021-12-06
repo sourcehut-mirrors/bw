@@ -1,20 +1,6 @@
 
-I tend to look at my email *maybe* once a day. So I never had the chance
-to see the first email. 
-
-> On November 27, 2021 2:08:20 a.m. EST, Owen Eng <owen@oetec.com> wrote:
->> straight ups = 35 to 1
->> splits = 17 to 1
-
-Yes. That is roulette. I love playing that dumb game. Walk up and make
-a single bet then walk away. Anything else is silly.
-
->>
->> bet an equal number of chips on straight ups and splits.
-
-Well, something I would often do is bet on black. So I put a $5 chip on
-every black square. Then I put a $5 chip on every split that is beside
-the black square and provides a red number.
+Put a $5 chip on every black square. Then I put a $5 chip on every split
+that is beside the black square and provides a red number.
 
 /* The layout generally looks like this : 
 
@@ -88,7 +74,7 @@ luck with that.
 There are 18 red numbers and 18 black numbers with a wheel of 38 total
 possible results and thus : 
 
-             p(Rw) = 18 / 38 = 0.47368421
+             ρ(Rw) = 18 / 38 = 0.47368421
 
 Where this means probability of a "win" for red numbers. So here we see
 the result is a bit better than 47% and surely anyone can see the same
@@ -241,6 +227,12 @@ other option than to go broke.  Should be easy to simulate with some
 decent RNG source.
 
 For the sake of another discussion we will use the Mersenne Twister
-as the PRNG here.  Mostly because it is entirely repeatable.
+as the PRNG here.  Mostly because it is entirely repeatable. As you
+may know we can also use drand48() with a set seed value and get a
+very repeatable sequence of random numbers also.  However unless we
+use a radiation decay source then a pseudo random number sequence
+is all we can expect.
+
+
 
 
