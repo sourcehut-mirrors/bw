@@ -1,5 +1,4 @@
 
-
 /*
  * pr_mpfr_quiet.c Pollard Rho Algorithm with arbitrary precision
  * Copyright (C) Dennis Clarke 2019
@@ -52,7 +51,9 @@
 #define PREC 113 /* lowest reasonable precision */
 
 int mpfr_check_flags(int status, int debug_flag);
-int sysinfo(void);
+
+#define VERBOSE 1
+int sysinfo(int verbose);
 
 int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in)
 {
@@ -87,7 +88,7 @@ int main (int argc, char *argv[])
     int input_attempt_loop = 0;
 
     setlocale( LC_ALL, "C" );
-    sysinfo();
+    sysinfo(VERBOSE);
 
     mpfr_t number_m, x_m, x_fixed_m, size_m;
     mpfr_t factor_m, gcd_test_m, one_m, four_m, input_m;

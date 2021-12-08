@@ -39,6 +39,7 @@
 #include <locale.h>
 #include <sys/utsname.h>
 
+#define VERBOSE 1
 int sysinfo(int verbose);
 
 int main(int argc, char *argv[]) 
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
     int foo = 0;
     int char_count_total = 0;
     setlocale(LC_ALL, "C");
-    sysinfo(1);
+    sysinfo(VERBOSE);
 
     /* The C standard really doesn't clearly say how a
      * pointer will be printed. C11 ISO/IEC 9899:2011

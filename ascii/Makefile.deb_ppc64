@@ -14,9 +14,9 @@ CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS = -lm
 
-SRCS = ./argv_dump.c ../sysinfo/sysmem.c ../sysinfo/sysinfo.c
+SRCS = ./argv_dump.c ../sysinfo/sysinfo.c
 
-OBJS = ./argv_dump.o ../sysinfo/sysmem.o ../sysinfo/sysinfo.o
+OBJS = ./argv_dump.o ../sysinfo/sysinfo.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
