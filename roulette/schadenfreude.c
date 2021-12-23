@@ -232,6 +232,9 @@ assume_max:
 
        See the readme to understand how bonkers this is.
 
+       Tests show you may lose your criteria of 500 with 0.003 rho
+       after 3 spins in 100000 tests.
+
        In fact, it is stupid to think that roulette can ever be played
        with such a fashion as to win. Ever. Period. Regardless of what
        some casino may tell you.
@@ -417,7 +420,8 @@ bail_out:
                  total_time, ( 1.0 * total_time )/1.0E9);
 
     printf("\n-----------------------------------------\n");
-    printf("      :    Bank roll = %5i\n", bankroll);
+    printf("final :    Bank roll = %5i    after    %3i  spins\n",
+               bankroll, iteration_count);
 
     return EXIT_SUCCESS;
 

@@ -1,0 +1,35 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-pedantic -pedantic-errors \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
+LD_OPTIONS=-L/opt/bw/lib
+LD_RUN_PATH=/opt/bw/lib
+
+LIBS = -lm
+
+SRCS = schadenfreude.c tt800.c ../sysinfo/sysinfo.c \
+		../time_and_date/timediff.c
+
+OBJS = schadenfreude.o tt800.o ../sysinfo/sysinfo.o \
+   		../time_and_date/timediff.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+schadenfreude: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) schadenfreude
