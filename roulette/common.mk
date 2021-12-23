@@ -3,15 +3,15 @@ CC?=		/usr/bin/cc
 CPPFLAGS=	-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 		-D_XOPEN_SOURCE=600
 
-OBJS=		schmuck.o tt800.o ../sysinfo/sysinfo.o \
+OBJS=		schadenfreude.o tt800.o ../sysinfo/sysinfo.o \
 		../time_and_date/timediff.o
 
 .PHONY: all
-all: schmuck
+all: schadenfreude
 
 schmuck: $(OBJS)
-	$(CC) -o schmuck $(OBJS) $(CFLAGS) $(CPPFLAGS)
+	$(CC) -o schadenfreude $(OBJS) $(CFLAGS) $(CPPFLAGS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) schmuck
+	rm -f $(OBJS) schadenfreude

@@ -72,7 +72,9 @@
  */
 
 #define BANKROLL 2000
-#define WALKAWAY 1000
+/* When do we walk away from the roulette table?
+ * If there is a loss or gain by X amount. */
+#define WALKAWAY 500
 #define BET      5
 
 double genrand(void);
@@ -95,7 +97,7 @@ int main (int argc, char **argv) {
 
     uint32_t bankroll = BANKROLL;
     uint32_t bankroll_start = bankroll;
-    uint32_t profit_limit = WALKAWAY;
+    uint32_t criteria = WALKAWAY;
     uint32_t bet = BET;
 
     uint32_t n_even, n_odd, n_red, n_black, n_zero;
@@ -212,24 +214,34 @@ int main (int argc, char **argv) {
 assume_max:
         max_spin = 100;
         printf("We shall assume max_spin = 100\n");
+        printf("--------------------------------------------------\n");
+        printf("Usage : %s max_spin PRNG\n", argv[0]);
+        printf("      : where max_spin<=100 and PRNG = 0|1\n");
+        printf("--------------------------------------------------\n");
     }
 
     printf("\n-----------------------------------------\n");
     printf("      :    Bank roll = %5i\n", bankroll);
     printf("      :          bet = %5i\n", bet);
-    printf("      : profit limit = %5i\n", profit_limit);
+    printf("      : walk away at = %5i\n", criteria);
     printf("      :     Max Spin = %5i\n\n", max_spin);
 
     /*
        This is a simple experiment with a fixed betting pattern where we
-       cover off 35 crazy numbers on the table.
+       cover off 36 crazy numbers on the table.
 
        See the readme to understand how bonkers this is.
+
        In fact, it is stupid to think that roulette can ever be played
        with such a fashion as to win. Ever. Period. Regardless of what
        some casino may tell you.
 
-       We will use a software PRNG genrand() which is repeatable for now.
+       We may use a software PRNG genrand() or we may use srand48/drand48
+       where the user can choose with a trivial option on the command line.
+
+       At some point in the future we may even read from /dev/random however
+       I do not know how portable that is. For example this would fail on
+       an old old Sun SPARCStation 20 :
 
        if ( ( fp = fopen( "/dev/random", "r" ) ) == NULL ) {
            fprintf ( stderr, "%s: can't read read from /dev/random \n", argv[0] );
@@ -247,7 +259,9 @@ assume_max:
         return EXIT_FAILURE;
     }
 
-    /* check if the user wants to use drand48 as the PRNG */
+    /* if the user wants to use drand48 as the PRNG then they may
+     * simply append a parameter on the command line. Any damn thing
+     * as the third parameter will work. */
     if ( argc > 2 ) {
         drand48_flag=1;
         c_time_string = ctime(&time_now.tv_sec);
@@ -258,8 +272,9 @@ assume_max:
     }
 
     /* zero the ball counts */
-    for ( i = 0; i < 38; ++i )
+    for ( i = 0; i < 38; ++i ) {
         ball[i] = 0;
+    }
 
     iteration_count = 0;
     n_odd = 0;
@@ -277,111 +292,90 @@ assume_max:
     }
 
     for ( i = 0; i < max_spin; ++i ) {
+           
+        /* no matter what we do we bet 36 chips */
+        if ( ( ( (int)bankroll - (int)bet*36 ) > 0 )
+            &&
+             ( (int)bankroll > ( (int)bankroll_start - (int)criteria ) )
+                 ) {
+        
+            bankroll = bankroll - 36 * bet;
 
-        iteration_count += 1;
+            iteration_count += 1;
+    
+            /* Do we use the M. Matsumoto TT800 genrand() Mersenne Twister
+             * or drand48?
+             *
+             * Only the drand48_flag knows for sure. */
+            rval = drand48_flag ? drand48() : genrand();
+            printf("%-04i   %11.8f", iteration_count, rval);
+            slot = (uint32_t)(rval * 38.0);
+            printf(" rval = %2i", slot);
+    
+            ball[slot] += 1;
+    
+            /* so long as we didn't end up on a 0 or 00 then
+             * we must be even or odd as well as red or black */
+            if ( slot > 1 ) { 
+                /* adjust the slot value for a reasonable number
+                 * the is not a 0 or 00 */
+                slot = slot - 1;
+                printf("  --> slot %2i", slot);
+                if (slot%2) {
+                    n_odd += 1;
+                    printf("  odd ");
+                } else {
+                    n_even += 1; 
+                    printf(" even ");
+                }
+    
+                /* black or red ? */
+                colour_mask = one<<(slot-1);
+                colour_flag = bit_flag&colour_mask;
+    
+                if ( colour_flag > 0 ) {
+                    n_red += 1;
+                    printf("    red");
 
-        /* do not use /dev/random 
-         *    j = getc(fp);
-         *    printf ( "     %5i is 0x%02xh = %3i", i, j, j );
-         *    rval = ( (double) j / (double) 256.0 );
-         */
+                    /* player gets a split 17:1 and may pull back their
+                     * split bet chip */
+                    bankroll = bankroll + bet + 17 * bet;
 
-        /* Do we use the M. Matsumoto TT800 genrand() Mersenne Twister
-         * or drand48?  Only the drand48_flag knows for sure. */
-        rval = drand48_flag ? drand48() : genrand();
-        printf("%-04i   %11.8f", iteration_count, rval);
-        slot = (uint32_t)(rval * 38.0);
-        printf(" rval = %2i", slot);
+                } else {
+                    n_black += 1;
+                    printf("  black");
 
-        ball[slot] += 1;
-
-        /* so long as we didn't end up on a 0 or 00 then
-         * we must be even or odd as well as red or black */
-        if ( slot > 1 ) { 
-            /* adjust the slot value for a reasonable number
-             * the is not a 0 or 00 */
-            slot = slot - 1;
-            printf("  --> slot %2i", slot);
-            if (slot%2) {
-                n_odd += 1;
-                printf("  odd ");
+                    /* player gets a split 17:1 and a straight 35:1
+                     * and also the player may pull back their straight
+                     * bet chip and also the split bet chip */
+                    bankroll = bankroll + 2 * bet + 52 * bet;
+                }
+    
             } else {
-                n_even += 1; 
-                printf(" even ");
+                /* The ball landed on a 0 or 00 */
+                n_zero += 1;
+                if (slot) {
+                    printf("  --> slot 00");
+                } else {
+                    printf("  --> slot  0");
+                }
+                printf("        green");
             }
-
-            /* black or red ? */
-            colour_mask = one<<(slot-1);
-            colour_flag = bit_flag&colour_mask;
-
-            if ( colour_flag > 0 ) {
-                n_red += 1;
-                printf("    red");
-            } else {
-                n_black += 1;
-                printf("  black");
-            }
+            printf("\n");
 
         } else {
-            /* the ball landed on a 0 or 00 */
-            n_zero += 1;
-            if (slot) {
-                printf("  --> slot 00");
-            } else {
-                printf("  --> slot  0");
-            }
-            printf("        green");
+            /* very likely we have a loss beyond the criteria */
+            printf("BANKROLL is now %i\n", bankroll);
+            goto bail_out;
         }
-        printf("\n");
 
-        /* TODO perform the schmuck betting results
-         *
-         *
-
-       number          pay out factor             With $5 chips
-    ------------------------------------------------------------
-            0          total loss                             0
-           00          total loss                             0
-       red  1          17                                    85
-            2          35 + 17                              260
-       r    3          17                                    85
-            4          35 + 17                              260
-       r    5          17                                    85
-            6          35 + 17                              260
-       r    7          17                                    85
-            8          35 + 17                              260
-       r    9          17                                    85
-           10          35 + 17                              260
-           11          35 + 17                              260
-       r   12          17                                    85
-           13          35 + 17                              260
-       r   14          17                                    85
-           15          35 + 17                              260
-       r   16          17                                    85
-           17          35 + 17                              260
-       r   18          17                                    85
-       r   19          17 + 17 double split red             170
-           20          35 + 17                              260
-       r   21          17                                    85
-           22          35 + 17                              260
-       r   23          17                                    85
-           24          35 + 17                              260
-       r   25          17                                    85
-           26          35 + 17                              260
-       r   27          total loss
-           28          35 + 17                              260
-           29          35 + 17                              260
-       r   30          17                                    85
-           31          35 + 17                              260
-       r   32          17                                    85
-           33          35 + 17                              260
-       r   34          17                                    85
-           35          35 + 17                              260
-       r   36          17                                    85
-
-*/
-
+        if  ((int)bankroll > ( (int)bankroll_start + (int)criteria )){
+            printf("BANKROLL is now %i\n", bankroll);
+            goto bail_out;
+        }
     }
+
+bail_out:
 
     if ( clock_gettime(CLOCK_REALTIME, &time_end) == -1 ) {
         /* this should never happen. */
@@ -421,6 +415,9 @@ assume_max:
     total_time = timediff( time_start, time_end );
     printf ( "\n Total time = %" PRIu64 " nsec =  %11.8f secs\n",
                  total_time, ( 1.0 * total_time )/1.0E9);
+
+    printf("\n-----------------------------------------\n");
+    printf("      :    Bank roll = %5i\n", bankroll);
 
     return EXIT_SUCCESS;
 

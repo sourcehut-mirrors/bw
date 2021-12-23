@@ -40,26 +40,26 @@ So if we place an X on every black square then we see this :
     -------------------------------------------------------------+
 
 
-Now place a bet on every split that adds in a red number : 
+Also a bet on every split on a black number that adds in a red number
+in a unique way  : 
 
 
     -------------------------------------------------------------+
    / |    |    |    |    |    |    |    |    |    |    |    |    |
-  /  | 3r X 6b | 9r | 12rX 15b| 18r| 21rX 24b| 27r| 30rX 33b| 36r|
+  /  | 3r X 6b | 9r | 12r| 15bX 18r| 21rX 24b| 27r| 30r| 33bX 36r|
  /   |    |  X |    |    |  X |    |    |  X |    |    |  X |    |
-+ 00 +----+----+--X-+----+----+--X-+----+----+----+----+----+--X-+
++ 00 +----+----+--X-+--X-+----+----+----+----+--X-+--X-+----+----+
 |    |  X |    |  X |  X |    |  X |  X |    |  X |  X |    |  X |
-+----+ 2b X 5r | 8b | 11bX 14r| 17b| 20b| 23rX 26b| 29bX 32r| 35b|
++----+ 2b | 5r | 8b | 11b| 14r| 17b| 20b| 23r| 26b| 29b| 32r| 35b|
 |    |    |    |    |    |    |    |    |    |    |    |    |    |
-+  0 +----+----+----+----+----+----+--X-+----+----+----+----+----+
++  0 +--X-+--X-+----+----+--X-+--X-+--X-+--X-+----+----+--X-+--X-+
  \   |    |  X |    |  X |  X |    |    |  X |    |  X |  X |    |
-  \  | 1r X 4b | 7r X 10b| 13bX 16r| 19rX 22b| 25rX 28b| 31bX 34r|
+  \  | 1r | 4b | 7r X 10b| 13b| 16r| 19r| 22b| 25rX 28b| 31b| 34r|
    \ |    |    |    |    |    |    |    |    |    |    |    |    |
     -------------------------------------------------------------+
 
-In this way we have every black number covered as well as a good portion
-of the red numbers.  In fact all of them except for 19 red.  Does this
-matter in any way? Nope.
+In this way we have every black number covered as well as all of the red
+numbers.
 
 Lets look at the probability of a "win" here.  We have 38 numbers on the
 wheel when we include the 36 regular numbers and the 0 and double 00. I
@@ -83,44 +83,6 @@ that gives 52.6% to the casino. However wait. What if we cover all of
 the black numbers as above and toss in the splits that provide a red
 number?
 
-
-    -------------------------------------------------------------+
-   / |    |    |    |    |    |    |    |    |    |    |    |    |
-  /  | 3r X 6b | 9r | 12rX 15b| 18r| 21rX 24b| 27r| 30rX 33b| 36r|
- /   |    |  X |    |    |  X |    |    |  X |    |    |  X |    |
-+ 00 +----+----+--X-+----+----+--X-+----+----+----+----+----+--X-+
-|    |  X |    |  X |  X |    |  X |  X |    |  X |  X |    |  X |
-+----+ 2b X 5r | 8b | 11bX 14r| 17b| 20b| 23rX 26b| 29bX 32r| 35b|
-|    |    |    |    |    |    |    |    |    |    |    |    |    |
-+  0 +----+----+----+----+----+----+--X-+----+----+----+----+----+
- \   |    |  X |    |  X |  X |    |    |  X |    |  X |  X |    |
-  \  | 1r X 4b | 7r X 10b| 13bX 16r| 19rX 22b| 25rX 28b| 31bX 34r|
-   \ |    |    |    |    |    |    |    |    |    |    |    |    |
-    -------------------------------------------------------------+
-
-The bets on the table are ( going by row order for black ) with the red
-neighbour splits : 
-
-          black       red
-            6          3
-           15         12
-           24         21
-           33         30
-            2          5
-            8          9  Note the red neighbour is on the first row
-           11         14
-           17         18  Also an upwards split towards the first row
-           20         19  Downwards split to third row
-           26         23
-           29         32
-           35         36  Again an upwards split
-            4          1
-           10          7
-           13         16
-           22         19
-           28         25
-           31         34
-
 That is the full list of all black numbers with the red split neighbours
 with no consideration to the results from a roulette wheel.  We have two
 situations or questions : what is the probability of a "win" and to what
@@ -130,15 +92,12 @@ clear here and easy to simulate with a bit of software.  However firstly
 we need the basic win/loss probabilities.  The most easy thing on the 
 table ( no pun intended ) is where are the losers?  Clearly the zero
 squares are both losers and that means 0 and 00 green numbers are going
-to wipe out the whole table.  I have seen that many times.  Also 27 red
-will wipe out the table. That means there are 38 numbers on the table
-and we cover 35 of them which is a hell of a number. The probability of
-a "win" is 0.92105263. Ponder that. A 92% chance of a win. However is
-that really a win?  Sort of depends on what we landed on. We know that
-every single bet we made on a black square will result in a direct 35:1
-type pay off as well as an additional 17:1 for a split. Are there any
-numbers that are different? Of course. All of the red numbers are less
-of a payoff by a large margin.
+to wipe out the whole table.
+
+We know that every single bet we made on a black square will result in a
+direct 35:1 type pay off as well as an additional 17:1 for a split. Are
+there any numbers that are different? Of course. All of the red numbers
+are less of a payoff by a large margin.
 
 But wait.
 
@@ -171,7 +130,7 @@ actual loss and win numbers for this crazy sort of roulette bet :
        r   16          17                                    85
            17          35 + 17                              260
        r   18          17                                    85
-       r   19          17 + 17 double split red             170
+       r   19          17                                    85
            20          35 + 17                              260
        r   21          17                                    85
            22          35 + 17                              260
@@ -179,7 +138,7 @@ actual loss and win numbers for this crazy sort of roulette bet :
            24          35 + 17                              260
        r   25          17                                    85
            26          35 + 17                              260
-       r   27          total loss
+       r   27          17                                    85
            28          35 + 17                              260
            29          35 + 17                              260
        r   30          17                                    85
@@ -193,46 +152,43 @@ actual loss and win numbers for this crazy sort of roulette bet :
 How many of the above are maximum value 260? Well those are the black
 numbers. So we already know the percentage there is 47.368 or at best
 a little worse than fifty percent. Everything else is very likely a
-loss.  There are a total of 35 bets on the table and the very best
+loss.  There are a total of 36 bets on the table and the very best
 one may hope for is a 47% win. Every other possibility is a loss and we
-see the 0 and double 00 as a disaster. The same is true for the red 27.
+see the 0 and double 00 as a disaster.
+
 However lets look at the probabilities : 
 
-          disaster =  3/38 = 0.07894736 =  7.89%
-            red 19 =  1/38 = 0.02631578 =  2.63%
-             split = 16/38 = 0.42105263 = 42.11%
+          disaster =  2/38 = 0.05263157 =  5.26%
+         red split = 18/38 = 0.47368421 = 47.37%
            perfect = 18/38 = 0.47368421 = 47.37%
 
 The sum of those probabilities has to be 1 exactly unless we consider
 the bizarre situation where the roulette balls jumps out of the track
-and onto the floor somewhere. Yes I have seen that also. However that
+and onto the floor somewhere. However that
 results in nothing happening except for a scramble around to find the
 little white ball and then toss it in the trash. Sort of like dice at
 a craps table one should, in theory, throw away a little red die that
 made a leap for the floor.  That never happens.  Regardless the total
 bet on the table has to be $170 in order to cover all those numbers
-and the splits.  There is a 42.11% chance that you lose a large piece
-of that with only $85 payout. A very very thin 2.63% that you hit the
-red 19 which is a double split 34:1 for precisely $170 payout which
-means nothing happens for you. So a dumb question that is perfectly 
-unreasonable is what happens if a schmuck walks into a casino with a
-bankroll of $2000 and then plays this situation? The math will always
-tell us that the house wins and over any period of time you go broke.
-However, how often does that happen?  Over what period of time? When
-can we expect the schmuck to walk away to the bar and just drink on
-the remains of a credit card?  Well a good criteria here would be to
-say they the walk away happens after $1000 is won or lost. Even more
-likely is that the $1000 win amount is the walk away criteria and no
-other option than to go broke.  Should be easy to simulate with some
-decent RNG source.
+and the splits.  There is a 47.37% chance that you lose a large piece
+of that with only $85 payout.
+
+So a dumb question that is perfectly unreasonable is what happens
+if a schmuck walks into a casino with a bankroll of $2000 and then
+plays this situation? The math will always tell us that the house
+wins and over any period of time you go broke.  However, how often
+does that happen?  Over what period of time? When can we expect the
+schmuck to walk away to the bar and just drink on the remains of a
+credit card?  Well a good criteria here would be to say the walk
+away happens after $1000 is won or lost. Even more likely is that
+the $1000 win amount is the walk away criteria and no other option
+than to go broke.  Should be easy to simulate with some decent RNG
+source.
 
 For the sake of another discussion we will use the Mersenne Twister
 as the PRNG here.  Mostly because it is entirely repeatable. As you
 may know we can also use drand48() with a set seed value and get a
-very repeatable sequence of random numbers also.  However unless we
-use a radiation decay source then a pseudo random number sequence
-is all we can expect.
-
-
-
+very repeatable sequence of random numbers also.  Unless we use a
+radiation decay source then a pseudo random number sequence is all
+we can expect.
 
