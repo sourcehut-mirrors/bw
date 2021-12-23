@@ -361,7 +361,7 @@ assume_max:
                 }
                 printf("        green");
             }
-            printf("\n");
+            printf("    bank %4i\n", bankroll);
 
         } else {
             /* very likely we have a loss beyond the criteria */
