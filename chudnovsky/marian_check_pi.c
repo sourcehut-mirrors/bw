@@ -35,110 +35,102 @@ int piChud(mpfr_t pi, int steps, int precision)
     
     
     mpfr_t bigC, sigma, bigM, bigL, bigX, bigK, termA, termB,
-                                    bigFive, bigNeg,one, twelve,sixteen;
+           bigFive, bigNeg,one, twelve, sixteen;
                       
     printf("INFO : using %li bits of precision.\n", (long)precision );
-    mpfr_inits2(prec, bigC, sigma, bigM, bigL, bigX, bigK, bigL, termA, termB,
-                        bigFive,bigNeg, one, twelve,sixteen, (mpfr_ptr*) 0 );
+    mpfr_inits2(prec, bigC, sigma, bigM, bigL, bigX, bigK, bigL,
+                termA, termB, bigFive,bigNeg, one, twelve,sixteen,
+                (mpfr_ptr*) 0 );
                         
     /* constant terms */          
     /* C = 426880 * sqrt(10005) */                
     mpfr_clear_flags();                                                 
-    inex = mpfr_set_d( termA,  10005.0, MPFR_RNDN);
+    inex = mpfr_set_d(termA, 10005.0, MPFR_RNDN);
     mpfr_clear_flags();
-    inex = mpfr_sqrt( bigC, termA, MPFR_RNDN);
+    inex = mpfr_sqrt(bigC, termA, MPFR_RNDN);
     mpfr_clear_flags();
-    inex = mpfr_set_d( termA,  426880.0, MPFR_RNDN);
+    inex = mpfr_set_d(termA, 426880.0, MPFR_RNDN);
     mpfr_clear_flags();
     inex = mpfr_mul(bigC, bigC, termA, MPFR_RNDN);
     
     mpfr_clear_flags();
-    inex = mpfr_set_d( bigFive,  545140134.0, MPFR_RNDN);
+    inex = mpfr_set_d(bigFive, 545140134.0, MPFR_RNDN);
     mpfr_clear_flags();
-    inex = mpfr_set_d( bigNeg,  -262537412640768000.0, MPFR_RNDN);
+    inex = mpfr_set_d(bigNeg, -262537412640768000.0, MPFR_RNDN);
     
     /* this is k=0, or initial values of terms */                              
     mpfr_clear_flags();
-    inex = mpfr_set_d( sigma, 0.0, MPFR_RNDN);
+    inex = mpfr_set_d(sigma, 0.0, MPFR_RNDN);
     mpfr_clear_flags();
-    inex = mpfr_set_d( bigK, 6.0, MPFR_RNDN);
+    inex = mpfr_set_d(bigK, 6.0, MPFR_RNDN);
     
     mpfr_clear_flags();
-    inex = mpfr_set_d( bigM, 1.0, MPFR_RNDN);
+    inex = mpfr_set_d(bigM, 1.0, MPFR_RNDN);
     mpfr_clear_flags();
-    inex = mpfr_set_d( bigL,  13591409.0, MPFR_RNDN);
+    inex = mpfr_set_d(bigL, 13591409.0, MPFR_RNDN);
     mpfr_clear_flags();
    
     mpfr_clear_flags();
-    inex = mpfr_set_d( one, 1.0, MPFR_RNDN);
+    inex = mpfr_set_d(one, 1.0, MPFR_RNDN);
     mpfr_clear_flags();
     inex = mpfr_set_d(twelve, 12.0, MPFR_RNDN);
     mpfr_clear_flags();
     inex = mpfr_set_d(sixteen, 16.0, MPFR_RNDN);
     
     do {
-        
 
         printf("\n-----\nk = %3i %d\n\n", k, precision);
         printf("INFO : K = "); 
         mpfr_printf ("%.Re\n", bigK);
 
-
         mpfr_clear_flags();
-        mpfr_mul(termA, bigM, bigL,MPFR_RNDN);
-
-        
+        inex = mpfr_mul(termA, bigM, bigL,MPFR_RNDN);
         printf("INFO : M * L = ");
         mpfr_printf ("%.Re * %.Re = %.Re\n", bigM, bigL, termA);      
- 
         mpfr_clear_flags();
+
         inex = mpfr_pow_ui(bigX, bigNeg, (unsigned long int)k,  MPFR_RNDN);
-        
         printf("INFO : X = ");
         mpfr_printf ("%.Re\n", bigX);
-
-        
         mpfr_clear_flags();    
+
         inex = mpfr_div(termA, termA, bigX, MPFR_RNDN);
-
-
         printf("INFO : (M*L)/X = ");
         mpfr_printf ("%.Re\n", termA);       
         printf("INFO :(prev) sigma = ");
         mpfr_printf ("%.Re\n", sigma);
-        
         mpfr_clear_flags();
+
         mpfr_init_set_si(termB,0, MPFR_RNDN);
         mpfr_clear_flags();
+
         inex = mpfr_add(termB,termB,sigma,MPFR_RNDN);
-        
         mpfr_clear_flags();
         inex = mpfr_add(sigma,sigma,termA,MPFR_RNDN);
         printf("INFO :( new) sigma = ");
         mpfr_printf ("%.Re\n", sigma);
-        
         mpfr_clear_flags();
+
         inex = mpfr_sub (termA, termB, sigma, MPFR_RNDN);
         printf("INFO :  diff sigma = ");
         mpfr_printf ("%.Re\n", termA);
-        
-        
         mpfr_clear_flags();
+
         inex = mpfr_pow_si(termA, sigma, (signed long int)-1,  MPFR_RNDN); 
         printf("INFO : sigma^-1 = ");
         mpfr_printf ("%.Re\n", termA);
+        mpfr_clear_flags();
 
         inex = mpfr_mul(pi, bigC, termA, MPFR_RNDN);  
         printf("\nINFO : pi = ");
         mpfr_printf ("%.Re\n", pi);        
-             
 
         if (k==steps) {
             break;
         }
         mpfr_clear_flags();
-        inex = mpfr_add(bigL, bigL, bigFive, MPFR_RNDN);  
 
+        inex = mpfr_add(bigL, bigL, bigFive, MPFR_RNDN);  
         mpfr_clear_flags();
         inex = mpfr_pow_ui(termA, bigK, (unsigned long int)3, MPFR_RNDN);// K^3 
         mpfr_clear_flags();
@@ -147,24 +139,24 @@ int piChud(mpfr_t pi, int steps, int precision)
         inex = mpfr_sub(termA, termA, termB, MPFR_RNDN);// K^3 - 16*K
 
         k+=1;
-        mpfr_clear_flags();
-        inex = mpfr_init_set_si(termB, (long)k, MPFR_RNDN);
 
+        mpfr_clear_flags();
+
+        inex = mpfr_init_set_si(termB, (long)k, MPFR_RNDN);
         mpfr_clear_flags();
         inex = mpfr_pow_ui(termB, termB, (unsigned long int)3,  MPFR_RNDN);//(k+1)^3
         mpfr_clear_flags();
         inex = mpfr_div(termA, termA, termB, MPFR_RNDN);//(K^3 - 16*K)/(k+1)^3
-
         mpfr_clear_flags();
         inex = mpfr_mul(bigM, bigM, termA, MPFR_RNDN);// Mk * [(K^3 - 16*K)/(k+1)^3]
         mpfr_clear_flags();
         inex = mpfr_add(bigK, bigK, twelve, MPFR_RNDN); // K+=12;
 
-    }while(1);
+    } while (1);
  
 /*
     mpfr_clears (bigC, sigma, bigM, bigL, bigX, bigK, bigL, termA, termB,
-                        bigFive,bigNeg, one, twelve,sixteen, (mpfr_ptr*) 0 );
+                 bigFive,bigNeg, one, twelve,sixteen, (mpfr_ptr*) 0 );
 */
     return EXIT_SUCCESS;                                
 }

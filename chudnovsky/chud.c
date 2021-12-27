@@ -1,3 +1,4 @@
+
 /*
  * chud.c  An implementation of the Chudnovsky algorithm
  * Copyright (C) Dennis Clarke 2020
@@ -97,33 +98,38 @@ int main(int argc, char *argv[])
     printf("MPFR thresholds file used at compile time : %s\n",
                                       mpfr_buildopt_tune_case ());
 
-    if ( argc < 3 ) {
+    if ( argc < 2 ) {
         fprintf(stderr,"USAGE : %s precision num_of_loops\n", argv[0]);
         fprintf(stderr,"      : precision is the computation bitwidth\n");
-        fprintf(stderr,"      : num_of_loops is obvious.\n");
+        fprintf(stderr,"      : num_of_loops is optional.\n");
         return 42;  /* this is the ultimate answer you need */
     }
 
-    if ( argc > 1 ) {
-        candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
-        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
-            fprintf(stderr,"FAIL : bit precision not understood\n");
-            perror("     ");
-            return EXIT_FAILURE;
-        }
-        if ( ( candidate_int < 64 ) || ( candidate_int > 1048576 ) ){
-            fprintf(stderr,"WARN : bit precision is unreasonable\n");
-            fprintf(stderr,"     : we shall assume 64 and proceed.\n");
-            prec = 64;
-        } else {
-            printf("INFO : bit precision will be %i\n", candidate_int);
-            prec = candidate_int;
-        }
+    /* note that we have prec = 256 initialized above */
+    errno = 0;
+    candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
+    if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
+        fprintf(stderr,"FAIL : bit precision not understood\n");
+        perror("     ");
+        return EXIT_FAILURE;
     }
-
+    if ( ( candidate_int < 64 ) || ( candidate_int > 1048576 ) ){
+        fprintf(stderr,"WARN : bit precision is unreasonable\n");
+        fprintf(stderr,"     : we shall assume 64 and proceed.\n");
+        prec = 64;
+    } else {
+        printf("INFO : bit precision will be %i\n", candidate_int);
+        prec = candidate_int;
+    }
     printf("INFO : using %li bits of precision.\n\n", (long)prec );
 
+    /* note that we can get a lot of goodness from the Chudnovsky
+     * algorithm in only 4 iterations */
+    iteration_limit = 4;
+
+    /* check if the user specified the number of iterations */
     if ( argc > 2 ) {
+        errno = 0;
         candidate_int = (int)strtol(argv[2], (char **)NULL, 10);
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : iteration not understood\n");
@@ -148,16 +154,15 @@ int main(int argc, char *argv[])
                        inter0_mpfr, inter1_mpfr, inter2_mpfr,
                        (mpfr_ptr*) 0 );
 
-
-    mpfr_clear_flags();
-
     /* setup the constant 426880 * sqrt( 10005 ) */
+    mpfr_clear_flags();
     inex = mpfr_set_d(inter0_mpfr, 426880.0, MPFR_RNDN);
     if ( inex != 0 ){
         fprintf(stderr,"WARN : mpfr_set_d() raised a flag\n");
         return EXIT_FAILURE;
     }
 
+    mpfr_clear_flags();
     inex = mpfr_set_d(inter1_mpfr, 10005.0, MPFR_RNDN);
     if ( inex != 0 ){
         fprintf(stderr,"WARN : mpfr_set_d() raised a flag\n");
