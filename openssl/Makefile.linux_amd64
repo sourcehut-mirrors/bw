@@ -1,0 +1,32 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -I$(IDIR) -std=iso9899:2011 -m64 -O0 -g -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
+LD_OPTIONS=-L/opt/bw/lib
+LD_RUN_PATH=/opt/bw/lib
+
+LIBS = -lssl -lcrypto
+
+SRCS = ./dgst_test.c
+
+OBJS = ./dgst_test.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+dgst_test: dgst_test.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) dgst_test

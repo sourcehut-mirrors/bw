@@ -178,19 +178,20 @@ int main(int argc, char **argv)
      *  18 D3 8A A8 DB F1 92 5A B9 23 86 ED D4 00 99 23
      *
      */
-    char    mess0[] = "abc";
-
-/* we don't need these at the moment
-    char    mess1[] = "Test Message\n";
-    char    mess2[] = "Hello World\n";
-*/
+    char    default_message[4] = "abc";
+    char    *user_supplied = NULL;
 
     unsigned char   md_value[EVP_MAX_MD_SIZE];
-    unsigned int    md_len, i;
+    unsigned int    md_len, j;
 
     if (argv[1] == NULL) {
         fprintf(stderr,"Usage: %s digest_algorithm_name\n", argv[0]);
         return EXIT_FAILURE;
+    }
+
+    if (argc > 2) {
+        user_supplied = calloc(strlen(argv[2])+1,sizeof(unsigned char));
+        strncpy(user_supplied,argv[2],strlen(argv[2]));
     }
 
     md = EVP_get_digestbyname(argv[1]);
@@ -225,19 +226,30 @@ int main(int argc, char **argv)
 
     mdctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(mdctx, md, NULL);
-    EVP_DigestUpdate(mdctx, mess0, strlen(mess0));
-/*
-    EVP_DigestUpdate(mdctx, mess1, strlen(mess1));
-    EVP_DigestUpdate(mdctx, mess2, strlen(mess2));
-*/
+
+    if ( argc < 3 ) {
+        EVP_DigestUpdate(mdctx, default_message, strlen(default_message));
+    } else {
+        EVP_DigestUpdate(mdctx, user_supplied, strlen(user_supplied));
+    }
+
     EVP_DigestFinal_ex(mdctx, md_value, &md_len);
     EVP_MD_CTX_free(mdctx);
 
-    printf("Digest is: ");
-    for (i = 0; i < md_len; i++) {
-        printf("%02X ", md_value[i]);
+    if ( argc > 2 ) {
+        printf("Input is \"%s\"\n", user_supplied);
+    } else {
+        printf("Input is \"%s\"\n", default_message);
+    }
+
+    printf("Message digest algorithm %s\n    ", argv[1]);
+    for (j = 0; j < md_len; j++) {
+        if (((j%16)==0)&&(j>0)) printf("\n    ");
+        printf("%02X ", md_value[j]);
     }
     printf("\n");
+
+    if ( argc > 2 ) free(user_supplied);
 
     return EXIT_SUCCESS;
 
