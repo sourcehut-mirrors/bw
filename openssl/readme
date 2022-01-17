@@ -24,11 +24,38 @@ FAIL : Unknown message digest foodoo
     :   blake2s256, blake2b512.
 $ 
 
+However different machines and different OpenSSL versions may
+report other options : 
+
+oberon$ 
+oberon$ uname -apKU
+FreeBSD oberon 14.0-CURRENT FreeBSD 14.0-CURRENT #1 main-n251923-4bae154fe8c: Mon Dec 27 07:21:52 UTC 2021     root@oberon:/usr/obj/usr/src/arm64.aarch64/sys/GENERIC  arm64 aarch64 1400045 1400045
+oberon$ 
+oberon$ openssl version
+OpenSSL 1.1.1m-freebsd  14 Dec 2021
+oberon$ 
+oberon$ openssl dgst -list
+Supported digests:
+-blake2b512                -blake2s256                -md4                      
+-md5                       -md5-sha1                  -mdc2                     
+-ripemd                    -ripemd160                 -rmd160                   
+-sha1                      -sha224                    -sha256                   
+-sha3-224                  -sha3-256                  -sha3-384                 
+-sha3-512                  -sha384                    -sha512                   
+-sha512-224                -sha512-256                -shake128                 
+-shake256                  -sm3                       -ssl3-md5                 
+-ssl3-sha1                 -whirlpool                 
+oberon$ 
+
+
 You may then select one of those :
 
+
 $ ./dgst_test blake2b512
-Input is "abc"
-Message digest algorithm blake2b512
+Input is 3 bytes : "abc"
+    61 62 63 
+
+Message digest algorithm blake2b512 :
     BA 80 A5 3F 98 1C 4D 0D 6A 27 97 B6 9F 12 F6 E9 
     4C 21 2F 14 68 5A C4 B7 4B 12 BB 6F DB FF A2 D1 
     7D 87 C5 39 2A AB 79 2D C2 52 D5 DE 45 33 CC 95 
@@ -40,56 +67,54 @@ is the text string "abc" and the output seems to make sense
 given the test data in RFC 7693 Appendix A which you may see
 at https://www.rfc-editor.org/rfc/rfc7693.txt
 
-You may also provide a test string :
-
-$ ./dgst_test blake2b512 what
-Input is "what"
-Message digest algorithm blake2b512
-    C8 DE F6 B9 CA 25 EE 18 5A DE 25 C1 88 56 F9 52 
-    A2 C0 1A 9A 99 50 77 F1 5D E8 14 AB 3B 47 F2 1A 
-    86 AE 19 34 F9 A0 BF 18 AA F9 9B E4 DF 71 CB 17 
-    A5 54 12 71 2C 4F C2 71 CA F6 B2 A9 4C 49 3E DF 
-$ 
-
-Feel free to select other algorithms :
+Feel free to use some other algorithm :
 
 $ ./dgst_test sha256
-Input is "abc"
-Message digest algorithm sha256
+Input is 3 bytes : "abc"
+    61 62 63 
+
+Message digest algorithm sha256 :
     BA 78 16 BF 8F 01 CF EA 41 41 40 DE 5D AE 22 23 
     B0 03 61 A3 96 17 7A 9C B4 10 FF 61 F2 00 15 AD 
 $ 
 
-Also any string may be thrown in :
+You may also provide a test string :
 
 $ ./dgst_test sha256 what\ the\ cat\ dragged\ in
-Input is "what the cat dragged in"
-Message digest algorithm sha256
+Input is 23 bytes : "what the cat dragged in"
+    77 68 61 74 20 74 68 65 20 63 61 74 20 64 72 61 
+    67 67 65 64 20 69 6E 
+
+Message digest algorithm sha256 :
     BF E8 30 24 F3 C3 AC 10 F5 C5 53 A8 3A A6 74 18 
     0A 96 4A 2D A8 FA 26 59 E4 22 FD EE 71 AE 63 6B 
-$
-$
+$ 
 $ ./dgst_test sha512 what\ the\ cat\ dragged\ in
-Input is "what the cat dragged in"
-Message digest algorithm sha512
+Input is 23 bytes : "what the cat dragged in"
+    77 68 61 74 20 74 68 65 20 63 61 74 20 64 72 61 
+    67 67 65 64 20 69 6E 
+
+Message digest algorithm sha512 :
     0D 50 57 C5 B1 0D D8 A9 DF B6 1B BA 14 95 A0 33 
     EB 5E 23 C7 65 86 69 3A B2 99 EC 47 30 2F 2F 9B 
     B2 44 F7 B1 3C 54 79 7B 4F 86 60 B3 7D F5 6B 56 
     9D A7 A9 8B B8 B9 A1 AD B3 36 66 4E 69 38 9E EE 
-$
-$
+$ 
 $ ./dgst_test sha3-512 what\ the\ cat\ dragged\ in
-Input is "what the cat dragged in"
-Message digest algorithm sha3-512
+Input is 23 bytes : "what the cat dragged in"
+    77 68 61 74 20 74 68 65 20 63 61 74 20 64 72 61 
+    67 67 65 64 20 69 6E 
+
+Message digest algorithm sha3-512 :
     4D DB 77 B0 43 10 94 3A B1 50 EB 87 FD C2 C9 90 
     BD 25 9E 59 EB 38 B1 A4 C0 68 AE 83 8E E5 91 F0 
     8A 83 34 65 B9 9E 98 35 1B 4C 5E 3B 41 E4 84 D0 
     C3 6E D5 0C 42 95 E0 6F AC 57 CD F3 3E FB 79 36 
 $ 
 
+
 Dennis Clarke
 RISC-V/SPARC/PPC/ARM/CISC
 UNIX and Linux spoken
 GreyBeard and suspenders optional
-
 

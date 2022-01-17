@@ -171,15 +171,13 @@ int main(int argc, char **argv)
      * Here we see the input "abc" should produce the output
      * for BLAKE2b-512 algorithm :
      *
-     *
      *  BA 80 A5 3F 98 1C 4D 0D 6A 27 97 B6 9F 12 F6 E9
      *  4C 21 2F 14 68 5A C4 B7 4B 12 BB 6F DB FF A2 D1
      *  7D 87 C5 39 2A AB 79 2D C2 52 D5 DE 45 33 CC 95
      *  18 D3 8A A8 DB F1 92 5A B9 23 86 ED D4 00 99 23
-     *
      */
     char    default_message[4] = "abc";
-    char    *user_supplied = NULL;
+    char    *message = NULL;
 
     unsigned char   md_value[EVP_MAX_MD_SIZE];
     unsigned int    md_len, j;
@@ -190,8 +188,11 @@ int main(int argc, char **argv)
     }
 
     if (argc > 2) {
-        user_supplied = calloc(strlen(argv[2])+1,sizeof(unsigned char));
-        strncpy(user_supplied,argv[2],strlen(argv[2]));
+        message = calloc(strlen(argv[2])+1,sizeof(unsigned char));
+        strncpy(message,argv[2],strlen(argv[2]));
+    } else {
+        message = calloc(4,sizeof(unsigned char));
+        strncpy(message,default_message,3);
     }
 
     md = EVP_get_digestbyname(argv[1]);
@@ -227,29 +228,26 @@ int main(int argc, char **argv)
     mdctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(mdctx, md, NULL);
 
-    if ( argc < 3 ) {
-        EVP_DigestUpdate(mdctx, default_message, strlen(default_message));
-    } else {
-        EVP_DigestUpdate(mdctx, user_supplied, strlen(user_supplied));
-    }
+    EVP_DigestUpdate(mdctx, message, strlen(message));
 
     EVP_DigestFinal_ex(mdctx, md_value, &md_len);
     EVP_MD_CTX_free(mdctx);
 
-    if ( argc > 2 ) {
-        printf("Input is \"%s\"\n", user_supplied);
-    } else {
-        printf("Input is \"%s\"\n", default_message);
+    printf("Input is %i bytes : \"%s\"\n    ", strlen(message),message);
+    for (j = 0; j < strlen(message); j++) {
+        if (((j%16)==0)&&(j>0)) printf("\n    ");
+        printf("%02X ", (uint8_t)*(message+j));
     }
+    printf("\n\n");
 
-    printf("Message digest algorithm %s\n    ", argv[1]);
+    printf("Message digest algorithm %s :\n    ", argv[1]);
     for (j = 0; j < md_len; j++) {
         if (((j%16)==0)&&(j>0)) printf("\n    ");
         printf("%02X ", md_value[j]);
     }
     printf("\n");
 
-    if ( argc > 2 ) free(user_supplied);
+    free(message);
 
     return EXIT_SUCCESS;
 
