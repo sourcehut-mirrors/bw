@@ -6,6 +6,10 @@ This is a almost at the limit :
 
 FP64 only allows for 53 bits of data and we used a lot. 
 
+Also eye of the red dragon : 
+
+ ./xmand 16384 4398046511104 -6.3378386951398649e-02 +9.7988834095799804e-01 4
+
 ------------------------------------------------------------------------------
 
 good luck and set your phasers on stun : 
