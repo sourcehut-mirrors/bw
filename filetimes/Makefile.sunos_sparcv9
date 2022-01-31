@@ -1,0 +1,21 @@
+
+CC=/opt/developerstudio12.6/bin/c99
+
+CFLAGS= -Xc -g -errfmt=error -erroff=%none \
+	-xmemalign=8s -errshort=full -xstrconst -xildoff -m64 -xnolibmil \
+	-xcode=pic32 -xregs=no%appl -xlibmieee -ftrap=%none -xarch=sparc -mc \
+	-xs -xbuiltin=%none -xdebugformat=dwarf -xunroll=1
+
+CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+OBJQ =	../sysinfo/sysinfo.o filetimes.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -D_REENTRANT
+
+filetimes: $(OBJQ)
+	$(CC) -o $@ $^ -L$(LDIR) $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f *.o filetimes ../sysinfo/sysinfo.o
