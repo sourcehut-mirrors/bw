@@ -116,9 +116,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    /* silly but do it anyways.
-     *
-     * Note that the data in fpos will be unspecified
+    /* Note that the data in fpos will be unspecified
      * information usable by fsetpos(3C) */
     fpos_status = fgetpos(fp, &fpos);
     if ( fpos_status != 0 ) {
@@ -126,31 +124,78 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    /* also silly but we expect to be at position byte zero */
+    /* we expect to be at position byte zero */
     ftell_pos = ftell(fp);
     if ( ftell_pos < 0 ) {
         perror("FAIL ");
         return EXIT_FAILURE;
     }
 
-    while ((linelen = getline(&line, &linecap, fp)) > 0) {
-        fwrite_ret = fwrite(line, (size_t)linelen, 1, stdout);
-        ftell_pos = ftell(fp);
-        if ( ftell_pos < 0 ) {
-            perror("FAIL ");
-            free(line);
-            return EXIT_FAILURE;
+
+    size_t line_length, line_count, char_count;
+
+    errno = 0;
+    line = calloc(8192,sizeof(unsigned char));
+    if ( line == NULL ) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
         }
-
-        fprintf(stderr,"fwrite_ret = %4lu  and ftell_pos = %-6i",
-                   fwrite_ret, ftell_pos);
-
-        if ( feof(fp) != 0 ) {
-            fprintf(stderr," EOF");
-        }
-        fprintf(stderr,"\n");
-
+        perror("FAIL ");
+        return EXIT_FAILURE;
     }
+
+    int some_char = 0;
+    int end_of_file = 0;
+
+    /* NOTE : for fgetc()
+     *
+     *       If the stream is at end-of-file or a read error occurs, the
+     *       return is EOF. The routines feof(3) and ferror(3) must be
+     *       used to distinguish between end-of-file and error.
+     *
+     *       If an error occurs, the global variable errno is set to
+     *       indicate the error.
+     */
+    char_count = 0;
+    line_count = 0;
+    errno = 0;
+    do {
+        some_char = fgetc(fp);
+        if ( some_char == EOF ) {
+            if ( feof(fp) ) {
+                if ( char_count > 0 ) {
+                    /* we hit end of file and the line has
+                     * valid chars in it. */
+                    line[char_count] = '\0';
+                    printf("%-6i    %-4i    \"%s\"\n",line_count,char_count,line);
+                } else {
+                    line[0] = '\0';
+                }
+                end_of_file = 1;
+            } else {
+                /* this is a read error */
+                perror("FAIL ");
+                free(line);
+                return EXIT_FAILURE;
+            }
+        } else {
+            line[char_count] = (uint8_t)some_char;
+            char_count += 1;
+            /* end of line has a new_line char and we remove it */
+            if ( line[char_count - 1] == '\n' ) {
+                line[char_count - 1] = '\0';
+                line_count += 1;
+                printf("%-6i    %-4i    \"%s\"\n",line_count,char_count,line);
+                char_count = 0;
+                line[0] = '\0';
+            }
+        }
+    } while (end_of_file == 0);
 
     ftell_pos = ftell(fp);
     if ( ftell_pos < 0 ) {

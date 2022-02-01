@@ -7,14 +7,14 @@ CFLAGS= -std=iso9899:2011 -pedantic -pedantic-errors -Weverything \
 
 CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
 
-SRCS = fg.c ../sysinfo/sysinfo.c
-OBJS = fg.o ../sysinfo/sysinfo.o
+SRCS = filetimes.c ../sysinfo/sysinfo.c
+OBJS = filetimes.o ../sysinfo/sysinfo.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-fg: $(OBJS)
+filetimes: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
 
 clean:
-	rm -f $(OBJS) fg
+	rm -f $(OBJS) filetimes
