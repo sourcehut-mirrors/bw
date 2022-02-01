@@ -54,8 +54,11 @@ int main(int argc, char **argv)
     FILE *fp;
     char *line = NULL;
     char *c_time_string, buff[64];
+    size_t line_length, line_count, char_count;
     size_t fwrite_ret, linecap = 0;
     ssize_t linelen;
+    int some_char = 0;
+    int end_of_file = 0;
     fpos_t fpos;
     int fpos_status;
     long ftell_pos;
@@ -105,10 +108,24 @@ int main(int argc, char **argv)
         fprintf (stderr,"%s\n", buff);
 
     } else {
-        perror("FAIL ");
+        /* check for a pile of things that could have gone
+         * wrong */
+        switch(errno) {
+            case EFAULT :
+                fprintf ( stderr, "ERROR : EFAULT\n" );
+                break;
+            case ENOENT :
+                fprintf ( stderr, "ERROR : ENOENT\n" );
+                break;
+            case EBADF :
+                fprintf ( stderr, "ERROR : EBADF\n" );
+                break;
+            default :
+                fprintf ( stderr, "ERROR : something bad happened.\n" );
+        }
+        perror("ERROR ");
         return EXIT_FAILURE;
     }
-
 
     fp = fopen( argv[1], "r");
     if ( fp == NULL ) {
@@ -131,9 +148,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-
-    size_t line_length, line_count, char_count;
-
     errno = 0;
     line = calloc(8192,sizeof(unsigned char));
     if ( line == NULL ) {
@@ -149,9 +163,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    int some_char = 0;
-    int end_of_file = 0;
-
     /* NOTE : for fgetc()
      *
      *       If the stream is at end-of-file or a read error occurs, the
@@ -161,6 +172,10 @@ int main(int argc, char **argv)
      *       If an error occurs, the global variable errno is set to
      *       indicate the error.
      */
+
+    printf("\n----------------------- file output -------------------\n");
+    printf("line_no   bytes   line_buffer\n");
+    printf("-------------------------------------------------------\n");
     char_count = 0;
     line_count = 0;
     errno = 0;
@@ -170,11 +185,19 @@ int main(int argc, char **argv)
             if ( feof(fp) ) {
                 if ( char_count > 0 ) {
                     /* we hit end of file and the line has
-                     * valid chars in it. */
+                     * valid chars in it. remove the trailing
+                     * new_line char and deal with end of file.
+                     * Also note we do not increment char_count
+                     * because we did not get a valid char. */
                     line[char_count] = '\0';
-                    printf("%-6i    %-4i    \"%s\"\n",line_count,char_count,line);
+                    line_count += 1;
+                    printf("%-6i    %-4i    \"%s\"\n",line_count,
+                                                      char_count,
+                                                      line);
+
                 } else {
-                    line[0] = '\0';
+                    /* we have a dead empty line somehow */
+                    line[0] = '\0';  /* THIS should never happen */
                 }
                 end_of_file = 1;
             } else {
@@ -185,6 +208,7 @@ int main(int argc, char **argv)
             }
         } else {
             line[char_count] = (uint8_t)some_char;
+            /* we have a valid char */
             char_count += 1;
             /* end of line has a new_line char and we remove it */
             if ( line[char_count - 1] == '\n' ) {
@@ -196,14 +220,16 @@ int main(int argc, char **argv)
             }
         }
     } while (end_of_file == 0);
+    printf("\n-------------------------------------------------------\n");
+    /* free that line buffer */
+    free(line);
 
     ftell_pos = ftell(fp);
     if ( ftell_pos < 0 ) {
         perror("FAIL ");
-        free(line);
         return EXIT_FAILURE;
     }
-    fprintf(stderr,"\nINFO : ftell_pos = %-6i\n", ftell_pos);
+    fprintf(stderr,"\n\nINFO : ftell_pos = %-6i\n", ftell_pos);
 
     if ( ferror(fp) != 0 ) {
         fprintf(stderr,"\nWARN : some sort of an error occured??\n");
@@ -216,12 +242,8 @@ int main(int argc, char **argv)
     if ( fclose(fp) != 0 ) {
         fprintf(stderr,"\nWARN : fclose returned an error.\n");
         perror("FAIL ");
-        free(line);
         return EXIT_FAILURE;
     }
-
-    /* we seem to do this everywhere */
-    free(line);
 
     fprintf(stderr,"INFO : file %s is now closed\n\n", argv[1]);
 

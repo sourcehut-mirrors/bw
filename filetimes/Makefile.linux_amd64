@@ -13,11 +13,13 @@ CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 OBJ = ../sysinfo/sysinfo.o filetimes.o
 
+LIBS = -lm
+
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 filetimes: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o ../sysinfo/sysinfo.o filetimes
