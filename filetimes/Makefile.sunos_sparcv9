@@ -9,13 +9,15 @@ CFLAGS= -Xc -g -errfmt=error -erroff=%none \
 CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
+LIBS = -lrt -lm
+
 OBJQ =	../sysinfo/sysinfo.o filetimes.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -D_REENTRANT
 
 filetimes: $(OBJQ)
-	$(CC) -o $@ $^ -L$(LDIR) $(CFLAGS) $(CPPFLAGS)
+	$(CC) -o $@ $^ -L$(LDIR) $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o filetimes ../sysinfo/sysinfo.o
