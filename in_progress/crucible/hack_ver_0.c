@@ -2,7 +2,7 @@
 /*
  * crucible.c  Single threaded create a pile of files and then append
  *             poetry to the random data with both a 2048 byte chunk
- *             and then a 768 byte chunk to cause on disk fragmentation.
+ *             and then a 768 byte chunk to cause some fragmentation.
  *
  * This was written a long long time ago and used on Sparc 5 machines
  * with Sun "photon" storage arrays and such.
@@ -194,12 +194,13 @@ int main (int argc, char *argv[]) {
      *
      *              filename pattern may be like XX/XX.dat 
      *
-
-              foo_path_...._bar/XX/XX.dat    1024bytes max
-
+     *
+     *        foo_path_...._bar/XX/XX.dat    1024 bytes max
+     *
      * Also the trailing slash may or may not exist and to be
      * fair we don't care. If the pathname is that long then
-     * the user may be just a jerk. */
+     * the user may be just a jerk.
+     */
     if ( q > ( FILENAME_MAX - 12 ) ) {
         fprintf(stderr,"ERROR : path name too long\n");
         return EXIT_FAILURE;
