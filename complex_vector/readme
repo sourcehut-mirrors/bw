@@ -1,7 +1,4 @@
 
-At this point thanks to chat and Jefferson and guys like theddmage  :
-
-vesta$ 
 vesta$ valgrind --leak-check=full ./test_cplex > /dev/null
 ==96678== Memcheck, a memory error detector
 ==96678== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
@@ -34,32 +31,54 @@ boe13$ echo '14k _57 1405/p _2249 5620 / pq' | dc
 -.40017793594306
 boe13$ 
 
+Also someone in my life had the argument that sqrt(2) can
+not possibly but -2 because "two negatives will never make
+a positive". I of course made a diagram : 
 
 
 
--------- 2020 01 21 line plane intercept testing 
 
-New matrix with line plane intercept data.
-dbug : row 1 =    -4.082482905e-01    +0.000000000e+00    -9.636241117e-01
-     : row 2 =    +8.164965809e-01    -5.547001962e-01    -2.223747950e-01
-     : row 3 =    +4.082482905e-01    +8.320502943e-01    -1.482498633e-01
+                                         |                                  
 
-     :   det =    -9.819805061e-01, 0 )
+                                         | area = (+2) x (+2) = +4                               
+                                      +2 +-----------------+                
+                                         |                 |                
+                                         |                 |                
+                                         |                 |                
+                                         |                 |                
+                                      +1 +                 |                
+                                         |                 |                
+                                         |                 |                
+                                         |                 |                
+                                         |                 |                
+                   ----+--------+--------+--------+--------+-----------
+                      -2       -1        0       +1       +2
+                       |                 |                                  
+                       |                 |                                  
+                       |                 |                                  
+                       |                 |                                  
+                       |              -1 +                                  
+                       |                 |                                  
+                       |                 |                                  
+                       |                 |      two different things              
+                       |                 |                 |                
+                       +------------  -2 +               --+  +2 x (-2)
+                                         |                                  
+               area = (-2) x (-2) = +4   |      this is not (+2)^2
+                                         |        nor is it (-2)^2                                  
 
-Solve for line plane intercept with Cramers rule.
 
-    k = +5.7154760664940829e+00
-    s = -3.1433011119429657e+00
-    t = +3.4591634777518065e-01
+                                                                  
+Here we see the area of the square ( -2 )^2 is in fact positive 4. What
+is a negative area anyways? To this I get the question "but see that a
+-2 multiplied by -2 is the number -4 and not +4 so you must be wrong?"
+I take a sip of whiskey, smile, and then say "that is not the square of
+two things which are identical."  That got me no where. This is yet
+another reason why I drink sometimes.
 
+Dennis Clarke 
 
----------  note, we may need to deal with the complex vector dot product
-      with a bit more finesse : 
+PS: as for cube roots of 27 ?
 
-      vesta$ curl -4 -L --url "https://arxiv.org/pdf/math/9904077.pdf" -o Hermitian_angle_concerns_9904077.pdf
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100  165k  100  165k    0     0   143k      0  0:00:01  0:00:01 --:--:--  143k
-vesta$
-
+        there are two more answers other than +3
 
