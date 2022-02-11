@@ -1288,3 +1288,39 @@ raw  [ 539  , 605  ]
 right click
 
 
+-------------------------------------------------------------------------
+
+
+hydra$ 
+hydra$ ./xmand 1048576 268435456 -1.9999435224162880 0.0 6
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = hydra
+                     release = 5.17.0-rc3-genunix
+                     version = #1 SMP PREEMPT Fri Feb 11 18:25:12 GMT 2022
+                     machine = x86_64
+                   page size = 4096
+               system memory = 14314831872
+                             = 13979328 kB
+                             = 13651 MB
+                 avail pages = 3429507
+                avail memory = 0
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour   25 mins   22 secs
+-------------------------------------------------------------------
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+WARN : pthread_limit is not a perfect
+     : power of two. We shall assume
+     : 4 POSIX thread(s).
+
+
