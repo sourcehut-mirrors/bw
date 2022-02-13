@@ -1,6 +1,93 @@
 
-C_deimos$ 
-C_deimos$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o vaddd.o vaddd.cu 
-C_deimos$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o vaddd vaddd.o -lgomp
-C_deimos$ 
+
+dev$ ls /usr/local/cuda-11.4/bin
+bin2c  crt  cudafe++  fatbinary  nvcc  nvcc.profile  nvlink  nvprof  ptxas
+ 
+ 
+dev$ uname -a 
+Linux dev 5.17.0-rc3 #1 SMP PREEMPT Sat Feb 12 01:19:29 UTC 2022 x86_64 GNU/Linux
+dev$ nvidia-smi 
+Sun Feb 13 01:28:11 2022       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 470.103.01   Driver Version: 470.103.01   CUDA Version: 11.4     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  Quadro K6000        On   | 00000000:01:00.0 Off |                  Off |
+| 26%   34C    P8    28W / 225W |      0MiB / 12206MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+dev$ 
+
+$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o vaddd.o vaddd.cu 
+
+$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o vaddd vaddd.o -lgomp
+
+
+dev$ 
+dev$ nvprof ./vaddd
+==3544== NVPROF is profiling process 3544, command: ./vaddd
+-------------------------------------------------------------
+        system name = Linux
+          node name = dev
+            release = 5.17.0-rc3
+            version = #1 SMP PREEMPT Sat Feb 12 01:19:29 UTC 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16728719360
+                    = 16336640 kB
+                    = 15953 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : Vector addition of 134217728 double FP64 elements
+     : Memory size of each array is 1073741824 bytes
+     : random data loaded 1712709795 nsecs    1.71271 secs
+     : cudaMalloc(A) 135397894 nsecs  0.1353979 secs
+     : cudaMalloc(B) 1246693 nsecs  0.001246693 secs
+     : cudaMalloc(C) 1206984 nsecs  0.001206984 secs
+INFO : Copy of vector A from host to device done.
+     : cudaMemcpy() 351976668 nsecs  0.3519767 secs
+INFO : Copy of vector B from host to device done.
+     : cudaMemcpy() 352007003 nsecs   0.352007 secs
+INFO : CUDA kernel launch with 131072 blocks of 1024 threads
+INFO : vector_add done.
+     : vector_add 37781 nsecs  3.7781e-05 secs
+INFO : Copy result A from device to host done.
+     : cudaMemcpy() 341574195 nsecs  0.3415742 secs
+INFO : A + B correct within error epsilon =  1.000000000e-12
+     : epsilon 342179905 nsecs  0.3421799 secs
+INFO : host memory free and we are done
+==3544== Profiling application: ./vaddd
+==3544== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   67.41%  704.35ms         2  352.18ms  351.93ms  352.43ms  [CUDA memcpy HtoD]
+                   31.34%  327.46ms         1  327.46ms  327.46ms  327.46ms  [CUDA memcpy DtoH]
+                    1.24%  12.992ms         1  12.992ms  12.992ms  12.992ms  vector_add(double const *, double const *, double*, int)
+      API calls:   77.12%  1.04551s         3  348.50ms  341.56ms  351.99ms  cudaMemcpy
+                   12.66%  171.58ms         3  57.192ms  1.0106ms  85.284ms  cudaFree
+                   10.17%  137.81ms         3  45.935ms  1.2005ms  135.37ms  cudaMalloc
+                    0.03%  428.13us         1  428.13us  428.13us  428.13us  cuDeviceTotalMem
+                    0.01%  142.34us       101  1.4090us     106ns  61.300us  cuDeviceGetAttribute
+                    0.01%  121.57us         1  121.57us  121.57us  121.57us  cudaGetDeviceProperties
+                    0.00%  34.919us         1  34.919us  34.919us  34.919us  cuDeviceGetName
+                    0.00%  24.592us         1  24.592us  24.592us  24.592us  cudaLaunchKernel
+                    0.00%  13.590us         1  13.590us  13.590us  13.590us  cuDeviceGetPCIBusId
+                    0.00%  3.3550us         3  1.1180us     493ns  2.2410us  cuDeviceGetCount
+                    0.00%  1.9010us         2     950ns     387ns  1.5140us  cuDeviceGet
+                    0.00%     621ns         1     621ns     621ns     621ns  cudaGetDeviceCount
+                    0.00%     320ns         1     320ns     320ns     320ns  cudaGetLastError
+                    0.00%     210ns         1     210ns     210ns     210ns  cuDeviceGetUuid
+dev$ 
 
