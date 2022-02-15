@@ -192,7 +192,7 @@ int main( int argc, char *argv[] ) {
             pper = (int32_t)atoi(argv[4]);
         }
     } else {
-        printf ("FAIL : usage %s nper pmt pv [pper]\n");
+        printf ("FAIL : usage %s nper pmt pv [pper]\n", argv[0]);
         printf ("     : nper is total number of payment periods\n");
         printf ("     : pmt is the negative payment made\n");
         printf ("     : pv is the present value\n");

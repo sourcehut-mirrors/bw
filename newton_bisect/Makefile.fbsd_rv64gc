@@ -1,0 +1,21 @@
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-march=rv64imafdc -mabi=lp64d \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
+	-fno-fast-math -fno-builtin
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+LIBS= -lm
+
+SRCS = bisect.c
+OBJS = bisect.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+bisect: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) bisect
+
