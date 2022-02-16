@@ -6,9 +6,12 @@
  * 469762048    448M
  * 536870912    512M
  * 1073741824   1G
+ *
+ * minimal low level entry point at 16M is 
+ *            16777216   elements
  */
 
-#define NUM_ELEMENTS 402653184
+#define NUM_ELEMENTS 16777216
 #define THREADS_PER_BLOCK 1024
 #define EPSILON 1e-12
 

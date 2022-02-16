@@ -1,0 +1,19 @@
+
+On a decent recent devuan machine you will need a bucket 
+of OpenGL packages as well as other goodness : 
+
+# apt-get install libglew-dev libglfw3-dev libglm-dev libpng-dev libboost1.74-dev libglfw3 libglew-dev libglew2.2 ftgl-dev libftgl2 libftgl-dev
+#
+#
+
+some of the above may even exist 
+
+C_dev$ 
+C_dev$ g++ -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 $CPPFLAGS -c -o canvas.o canvas.cc 
+C_dev$ g++ -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 $CPPFLAGS -c -o geometry.o geometry.cc
+C_dev$ g++ -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 $CPPFLAGS -c -o texture.o texture.cc
+C_dev$ g++ -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 $CPPFLAGS -c -o shader.o shader.cc
+C_dev$ g++ -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 $CPPFLAGS -c -o furtexture.o furtexture.cc
+C_dev$ g++ -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 $CPPFLAGS -o fur canvas.o geometry.o texture.o shader.o furtexture.o -lpng -lglfw -lGLEW -lGL -lGLU
+C_dev$ 
+

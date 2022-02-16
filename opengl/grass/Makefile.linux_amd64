@@ -1,0 +1,24 @@
+
+CC=/usr/bin/c++
+
+CFLAGS= -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp \
+	-mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 \
+	-malign-double -m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=8
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+
+LIBS = -lpng -lglfw -lGLEW -lGL -lGLU
+
+SRCS = ./canvas.cc ./geometry.cc ./furtexture.cc ./shader.cc ./texture.cc
+
+OBJS = ./canvas.o ./geometry.o ./furtexture.o ./shader.o ./texture.o
+
+.cc.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+grass: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) grass.o grass

@@ -1,0 +1,73 @@
+
+C_dev$ 
+C_dev$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o mandel_hack.o mandel_hack.cu
+C_dev$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o mandel_hack mandel_hack.o -lgomp
+C_dev$ 
+C_dev$ nvprof ./mandel_hack
+==2659== NVPROF is profiling process 2659, command: ./mandel_hack
+-------------------------------------------------------------
+        system name = Linux
+          node name = dev
+            release = 5.17.0-rc3
+            version = #1 SMP PREEMPT Sat Feb 12 01:19:29 UTC 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16728719360
+                    = 16336640 kB
+                    = 15953 MB
+-------------------------------------------------------------
+DBUG : at 140 in mandel_hack.cu
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : firing off 16777216 cuda core code chunks
+     : mem size of double data array is 134217728 bytes
+     : mem size of uint32_t height array is 67108864 bytes
+
+-----------------------------------------------------------
+     : random data load 318210474 nsecs
+     : cudaMalloc device_r 81509029 nsecs
+     : cudaMalloc device_i 244302 nsecs
+DBUG : at 242 in mandel_hack.cu
+     : cudaMalloc device_mval 171217 nsecs
+DBUG : at 264 in mandel_hack.cu
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 12976962nsecs
+DBUG : at 303 in mandel_hack.cu
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 12980323 nsecs
+INFO : CUDA kernel launch with 16384 blocks of 1024 threads
+DBUG : at 344 in mandel_hack.cu
+INFO : done.
+     : gpu_mbrot time delta 27973 nsecs
+DBUG : at 369 in mandel_hack.cu
+INFO : Copy result from device to host done.
+     : copy device result done 11277666 nsecs
+DBUG : at 403 in mandel_hack.cu
+     : Total error count = 0
+     : data check done 717485524102 nsecs
+INFO : host memory free and we are done
+==2659== Profiling application: ./mandel_hack
+==2659== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   99.96%  89.7633s         1  89.7633s  89.7633s  89.7633s  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    0.03%  25.897ms         2  12.949ms  12.920ms  12.977ms  [CUDA memcpy HtoD]
+                    0.01%  11.150ms         1  11.150ms  11.150ms  11.150ms  [CUDA memcpy DtoH]
+      API calls:   99.84%  89.7635s         6  14.9606s  2.4610us  89.7633s  cudaDeviceSynchronize
+                    0.09%  81.913ms         3  27.304ms  170.94us  81.499ms  cudaMalloc
+                    0.04%  37.206ms         3  12.402ms  11.266ms  12.975ms  cudaMemcpy
+                    0.02%  21.607ms         3  7.2025ms  270.64us  10.690ms  cudaFree
+                    0.00%  1.3626ms         1  1.3626ms  1.3626ms  1.3626ms  cudaDeviceReset
+                    0.00%  1.0550ms         1  1.0550ms  1.0550ms  1.0550ms  cuDeviceTotalMem
+                    0.00%  422.56us         1  422.56us  422.56us  422.56us  cudaGetDeviceProperties
+                    0.00%  404.73us       101  4.0070us     453ns  167.12us  cuDeviceGetAttribute
+                    0.00%  44.685us         1  44.685us  44.685us  44.685us  cuDeviceGetName
+                    0.00%  22.734us         1  22.734us  22.734us  22.734us  cudaLaunchKernel
+                    0.00%  7.1260us         1  7.1260us  7.1260us  7.1260us  cuDeviceGetPCIBusId
+                    0.00%  4.7830us         3  1.5940us     746ns  3.0470us  cuDeviceGetCount
+                    0.00%  2.6750us         2  1.3370us     725ns  1.9500us  cuDeviceGet
+                    0.00%  2.4170us         1  2.4170us  2.4170us  2.4170us  cudaGetDeviceCount
+                    0.00%     925ns         1     925ns     925ns     925ns  cuDeviceGetUuid
+                    0.00%     329ns         1     329ns     329ns     329ns  cudaGetLastError
+C_dev$ 
+
