@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t0 );
     tdelta_nsec = timediff( t1, t0);
-    printf("     : cudaMalloc(A) %" PRIu64 " nsecs  %9.7g secs\n",
+    printf("     : cudaMalloc(A) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
-    printf("     : cudaMalloc(B) %" PRIu64 " nsecs  %9.7g secs\n",
+    printf("     : cudaMalloc(B) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t0 );
     tdelta_nsec = timediff( t1, t0);
-    printf("     : cudaMalloc(C) %" PRIu64 " nsecs  %9.7g secs\n",
+    printf("     : cudaMalloc(C) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 

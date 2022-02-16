@@ -1,5 +1,78 @@
 
 
+32-bit test first 
+
+C_dev$ 
+C_dev$ nvcc --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2021 NVIDIA Corporation
+Built on Mon_Oct_11_21:27:02_PDT_2021
+Cuda compilation tools, release 11.4, V11.4.152
+Build cuda_11.4.r11.4/compiler.30521435_0
+C_dev$ 
+C_dev$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o vaddf.o vaddf.cu 
+C_dev$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o vaddf vaddf.o -lgomp 
+C_dev$ 
+C_dev$ 
+C_dev$ nvprof ./vaddf 
+==1825== NVPROF is profiling process 1825, command: ./vaddf
+-------------------------------------------------------------
+        system name = Linux
+          node name = dev
+            release = 5.17.0-rc3
+            version = #1 SMP PREEMPT Sat Feb 12 01:19:29 UTC 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16728719360
+                    = 16336640 kB
+                    = 15953 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : Vector addition of 134217728 float FP32 elements
+     : Memory size is 536870912 bytes
+     : random data loaded 1673311238 nsecs   1.673311 secs
+     : cudaMalloc(A)   80184642 nsecs  0.08018464 secs
+     : cudaMalloc(B)     685817 nsecs  0.000685817 secs
+     : cudaMalloc(C)     653642 nsecs  0.000653642 secs
+INFO : Copy of vector A from host to device done.
+     : cudaMemcpy() 52930156 nsecs  0.05293016 secs
+INFO : Copy of vector B from host to device done.
+     : cudaMemcpy() 52996419 nsecs  0.05299642 secs
+INFO : CUDA kernel launch with 131072 blocks of 1024 threads
+INFO : vectorAdd done.
+     : vectorAdd 44223 nsecs  4.4223e-05 secs
+INFO : Copy result vector A from device to host done.
+     : cudaMemcpy() 106974717 nsecs  0.1069747 secs
+INFO : A + B correct within error epsilon =  1.000000000e-09
+     : epsilon 564787218 nsecs  0.5647872 secs
+INFO : host memory free and we are done
+==1825== Profiling application: ./vaddf
+==1825== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   49.93%  105.77ms         2  52.887ms  52.862ms  52.913ms  [CUDA memcpy HtoD]
+                   46.47%  98.442ms         1  98.442ms  98.442ms  98.442ms  [CUDA memcpy DtoH]
+                    3.60%  7.6217ms         1  7.6217ms  7.6217ms  7.6217ms  vectorAdd(float const *, float const *, float*, int)
+      API calls:   55.70%  212.86ms         3  70.952ms  52.912ms  106.96ms  cudaMemcpy
+                   22.48%  85.885ms         3  28.628ms  574.13us  42.657ms  cudaFree
+                   21.32%  81.483ms         3  27.161ms  647.26us  80.166ms  cudaMalloc
+                    0.28%  1.0583ms         1  1.0583ms  1.0583ms  1.0583ms  cuDeviceTotalMem
+                    0.10%  398.77us       101  3.9480us     432ns  168.41us  cuDeviceGetAttribute
+                    0.09%  340.07us         1  340.07us  340.07us  340.07us  cudaGetDeviceProperties
+                    0.01%  56.748us         1  56.748us  56.748us  56.748us  cuDeviceGetName
+                    0.01%  30.666us         1  30.666us  30.666us  30.666us  cudaLaunchKernel
+                    0.00%  5.1300us         1  5.1300us  5.1300us  5.1300us  cuDeviceGetPCIBusId
+                    0.00%  4.9620us         3  1.6540us     740ns  2.7030us  cuDeviceGetCount
+                    0.00%  2.9430us         2  1.4710us     731ns  2.2120us  cuDeviceGet
+                    0.00%  2.1230us         1  2.1230us  2.1230us  2.1230us  cudaGetDeviceCount
+                    0.00%     922ns         1     922ns     922ns     922ns  cuDeviceGetUuid
+                    0.00%     312ns         1     312ns     312ns     312ns  cudaGetLastError
+C_dev$ 
+
+
+------------- 64 bit test --------------------------
+
 dev$ ls /usr/local/cuda-11.4/bin
 bin2c  crt  cudafe++  fatbinary  nvcc  nvcc.profile  nvlink  nvprof  ptxas
  
