@@ -22,38 +22,69 @@ const float FUR_DENSITY = 0.4f;
 const int FUR_LAYERS = 40;
 const int FUR_HEIGHT = 2.0;
 
-int main(int argc, char** argv) {
-  GLFWwindow* window;
+int main(int argc, char** argv)
+{
 
-  if (!glfwInit()) {
-    return EXIT_FAILURE;
-  }
+    GLFWwindow* window;
+    int glfw_major_version, glfw_minor_version, glfw_rev,
+        glfw_error_code, glfw_status = 0;
+
+    const char *glfw_error_message;
+
+    glfw_status = glfwInit();
+
+    if (glfw_status != GLFW_TRUE) {
+        cout << "glfwInit() fail\n";
+        glfw_error_code = glfwGetError(&glfw_error_message);
+        cout << "glfw error code = " << glfw_error_code << "\n";
+        cout << "glfw error = \"" << glfw_error_message << "\"\n";
+        return EXIT_FAILURE;
+    } else {
+        glfwGetVersion(&glfw_major_version,&glfw_minor_version,&glfw_rev);
+        cout << "glfwInit() good.\n";
+        cout << "glfw major version = " << glfw_major_version << "\n";
+        cout << "glfw minor version = " << glfw_minor_version << "\n";
+        cout << "glfw revision      = " << glfw_rev << "\n";
+    }
   
-  // Ask for the OpenGL 3.3 Core Profile.    
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_SAMPLES, 8);
+    /* Ask for the OpenGL 3.3 Core Profile. */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 8);
   
-  // Initialize GLFW window.
-  window = glfwCreateWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "gldemo", NULL, NULL);
-  if (!window) {
-    glfwTerminate();
-    return EXIT_FAILURE;
-  }
-  glfwMakeContextCurrent(window);	
-  cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
+    /* Initialize GLFW window. */
+    window = glfwCreateWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "gldemo", NULL, NULL);
+    if (!window) {
+        cout << "glfwCreateWindow fail\n";
+        glfw_error_code = glfwGetError(&glfw_error_message);
+        cout << "glfw error code = " << glfw_error_code << "\n";
+        cout << "glfw error = \"" << glfw_error_message << "\n";
+        glfwTerminate();
+        return EXIT_FAILURE;
+    }
+    glfwMakeContextCurrent(window);	
+
+    cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
   
-  // Initialize GLEW.
-  glewExperimental = true; /* glGenVertexArrays() fails without this. */
-  GLenum err = glewInit();
-  if (err != GLEW_OK)
-  {
-    glfwTerminate();
-    return EXIT_FAILURE;
-  }
-  cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
+    /* Using Core OpenGL version 3.3 one must specify you are 
+     * using "new" and by GLEW terms "experimental" API.
+     * Add this line before calling glewInit();
+     * Otherwise glGenVertexArrays() fails without this.
+     */
+    glewExperimental = true;
+
+    GLenum glew_error_code = glewInit();
+    if (glew_error_code != GLEW_OK) {
+        cout << "glewInit() fail\n";
+        cout << "glew error = \"";
+        cout << glewGetErrorString(glew_error_code);
+        cout << "\"\n";
+        glfwTerminate();
+        return EXIT_FAILURE;
+    }
+    cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
  
   // Initialize shaders.
   ShaderProgram prog("default.vert", "default.frag");
