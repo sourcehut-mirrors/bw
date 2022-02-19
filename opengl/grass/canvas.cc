@@ -78,9 +78,8 @@ int main(int argc, char** argv)
     GLenum glew_error_code = glewInit();
     if (glew_error_code != GLEW_OK) {
         cout << "glewInit() fail\n";
-        cout << "glew error = \"";
-        cout << glewGetErrorString(glew_error_code);
-        cout << "\"\n";
+        cout << "glew error code = " << glew_error_code << "\n";
+        cout << "glew error = \"" << glewGetErrorString(glew_error_code) << "\"\n";
         glfwTerminate();
         return EXIT_FAILURE;
     }
