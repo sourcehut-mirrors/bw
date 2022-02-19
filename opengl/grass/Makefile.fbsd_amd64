@@ -1,0 +1,23 @@
+
+CXX=/usr/bin/c++
+
+CFLAGS= -m64 -g -O0 -fno-fast-math -fno-builtin
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+
+LIBS= -lpng -lglfw -lGLEW -lGL -lGLU
+
+SRCS = canvas.cc geometry.cc furtexture.cc shader.cc texture.cc
+OBJS = canvas.o  geometry.o  furtexture.o  shader.o  texture.o
+
+.cc.o:
+	$(CXX) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+grass: $(OBJS)
+	$(CXX) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) grass.o grass
