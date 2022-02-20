@@ -77,6 +77,8 @@ int main(int argc, char** argv)
             glfwTerminate();
             return EXIT_FAILURE;
         }
+    } else {
+        printf("glewInit() returns GLEW_OK on this platform\n");
     }
  
     glfwTerminate();
