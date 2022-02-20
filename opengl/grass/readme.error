@@ -1,0 +1,22 @@
+
+uname -apKU says :
+
+FreeBSD phobos 14.0-CURRENT FreeBSD 14.0-CURRENT #1 main-n252744-656f5031c39: Sun Jan 30 10:59:44 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC  amd64 amd64 1400051 1400051
+
+
+$ /usr/bin/cc -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -I/usr/local/include -c -o glew_test.o glew_test.c
+$ /usr/bin/cc -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -L/usr/local/lib -o glew_test glew_test.o -lpng -lglfw -lGLEW -lGL -lGLU
+$ 
+
+$ ./glew_test
+glfwInit() good.
+glfw version = 3.3.4
+OpenGL version: 4.5 (Core Profile) Mesa 21.3.4
+GLEW version: 2.2.0
+glewInit() returns GLEW_ERROR_NO_GLX_DISPLAY
+we may not care and there is no error message yet
+however there will be ... real soon now
+see glew_init_tail.c line 11
+glewGetErrorString() should say "No GLX display"
+$ 
+
