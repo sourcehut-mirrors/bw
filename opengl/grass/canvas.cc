@@ -75,6 +75,7 @@ int main(int argc, char** argv)
      */
     glewExperimental = true;
 
+    cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
     GLenum glew_error_code = glewInit();
     if (glew_error_code != GLEW_OK) {
         cout << "glewInit() fail\n";
@@ -83,7 +84,6 @@ int main(int argc, char** argv)
         glfwTerminate();
         return EXIT_FAILURE;
     }
-    cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
  
   // Initialize shaders.
   ShaderProgram prog("default.vert", "default.frag");
