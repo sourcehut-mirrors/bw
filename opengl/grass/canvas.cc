@@ -3,6 +3,8 @@
 #include <cassert>
 #include <vector>
 
+#include <stdbool.h>
+
 #include <X11/Xlib.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -88,7 +90,7 @@ int main(int argc, char** argv)
 
     int glx_major, glx_minor;
     int status = glXQueryVersion(glx_dsp, &glx_major, &glx_minor);
-    if ( status != 0 ) {
+    if ( status == 0 ) {
         cout << "NOTE glXQueryVersion tosses " << status << "\n";
     } else {
         cout << "NOTE glXversion = " << glx_major << "." << glx_minor;
