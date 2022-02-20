@@ -102,7 +102,9 @@ int main(int argc, char** argv)
         if ( glew_error_code == GLEW_ERROR_NO_GLX_DISPLAY ) {
             cout << "glewInit() returns GLEW_ERROR_NO_GLX_DISPLAY\n";
             cout << "glew error = \"" << glewGetErrorString(glew_error_code) << "\"\n";
-            cout << "* * * we seem to not care? * * * \n\n";
+            cout << "* * * we seem to not care? * * *\n";
+            cout << "see glew_init_tail.c line 11\n";
+            cout << "glewGetErrorString() should say \"No GLX display\"\n";
         } else {
             cout << "glewInit() fail\n";
             cout << "glew error code = " << glew_error_code << "\n";
