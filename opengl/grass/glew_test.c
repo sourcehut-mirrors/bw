@@ -2,11 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <locale.h>
+#include <unistd.h>
+
+#include <X11/Xlib.h>
 #include <GL/glew.h>
+#include <GL/glxew.h>
 #include <GLFW/glfw3.h> 
 
 int main(int argc, char** argv)
 {
+
+    setlocale( LC_ALL, "C" );
+
 
     int glfw_major_version, glfw_minor_version, glfw_rev,
         glfw_error_code, glfw_status = 0;
@@ -61,6 +69,34 @@ int main(int argc, char** argv)
     glewExperimental = true;
 
     printf("GLEW version: %s\n", glewGetString(GLEW_VERSION));
+
+
+    /* lets try a GLX display check here 
+     * can we get a display from Xorg ? */
+    Display *dsp;
+    char *disp_name = NULL;
+    int conn_num, screen_num, depth;
+
+    dsp = XOpenDisplay(disp_name);
+    if (dsp == NULL) {
+        fprintf(stderr, "%s: no X server?? '%s'\n",
+            argv[0], disp_name);
+        exit(EXIT_FAILURE);
+    }
+    conn_num = XConnectionNumber(dsp);
+    printf("     : connection number %i\n", conn_num);
+
+    screen_num = DefaultScreen(dsp);
+    printf("     : screen number %i\n", screen_num);
+
+    depth = XDefaultDepth(dsp,screen_num);
+    printf("     : default depth is %i\n", depth);
+
+
+    Display *glx_dsp = glXGetCurrentDisplay();
+    if (glx_dsp == NULL) {
+        fprintf(stderr,"\nOKAY we have glXGetCurrentDisplay() NULL!\n");
+    }
 
     GLenum glew_error_code = glewInit();
     if (glew_error_code != GLEW_OK) {
