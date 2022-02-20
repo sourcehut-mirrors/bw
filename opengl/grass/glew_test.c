@@ -7,8 +7,9 @@
 
 #include <X11/Xlib.h>
 #include <GL/glew.h>
-#include <GL/glxew.h>
+/* #include <GL/glxew.h> */
 #include <GLFW/glfw3.h> 
+#include <GL/glx.h>
 
 int main(int argc, char** argv)
 {
@@ -92,13 +93,17 @@ int main(int argc, char** argv)
     depth = XDefaultDepth(dsp,screen_num);
     printf("     : default depth is %i\n", depth);
 
+    GLenum glew_error_code = glewInit();
 
     Display *glx_dsp = glXGetCurrentDisplay();
     if (glx_dsp == NULL) {
         fprintf(stderr,"\nOKAY we have glXGetCurrentDisplay() NULL!\n");
     }
 
-    GLenum glew_error_code = glewInit();
+    int glx_major, glx_minor;
+    glXQueryVersion(glx_dsp, &glx_major, &glx_minor);
+    printf("NOTE glXversion = %i.%i\n", glx_major, glx_minor);
+
     if (glew_error_code != GLEW_OK) {
         if ( glew_error_code == GLEW_ERROR_NO_GLX_DISPLAY ) {
             printf("glewInit() returns GLEW_ERROR_NO_GLX_DISPLAY\n");

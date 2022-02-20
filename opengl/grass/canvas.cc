@@ -2,8 +2,12 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+
+#include <X11/Xlib.h>
 #include <GL/glew.h>
-#include <GLFW/glfw3.h> 
+#include <GLFW/glfw3.h>
+#include <GL/glx.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -75,8 +79,23 @@ int main(int argc, char** argv)
      */
     glewExperimental = true;
 
-    cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
     GLenum glew_error_code = glewInit();
+
+    Display *glx_dsp = glXGetCurrentDisplay();
+    if (glx_dsp == NULL) {
+        cout << "\nOKAY we have glXGetCurrentDisplay() NULL!\n";
+    }
+
+    int glx_major, glx_minor;
+    int status = glXQueryVersion(glx_dsp, &glx_major, &glx_minor);
+    if ( status != 0 ) {
+        cout << "NOTE glXQueryVersion tosses " << status << "\n";
+    } else {
+        cout << "NOTE glXversion = " << glx_major << "." << glx_minor;
+    }
+
+    cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
+
     if (glew_error_code != GLEW_OK) {
         if ( glew_error_code == GLEW_ERROR_NO_GLX_DISPLAY ) {
             cout << "glewInit() returns GLEW_ERROR_NO_GLX_DISPLAY\n";
