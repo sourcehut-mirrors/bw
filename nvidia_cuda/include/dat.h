@@ -11,7 +11,7 @@
  *            16777216   elements
  */
 
-#define NUM_ELEMENTS 16777216
+#define NUM_ELEMENTS 268435456
 #define THREADS_PER_BLOCK 1024
 #define EPSILON 1e-12
 
