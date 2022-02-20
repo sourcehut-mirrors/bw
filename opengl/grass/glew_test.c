@@ -1,26 +1,7 @@
-#include <cstdlib>
-#include <iostream>
-#include <cassert>
-#include <vector>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h> 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <png.h>
-#include "texture.h"
-#include "furtexture.h"
-#include "furgeometry.h"
-#include "shader.h"
-
-using namespace std;
-
-const int CANVAS_WIDTH = 500;
-const int CANVAS_HEIGHT = 500;
-const int FUR_DIM = 512;
-const float FUR_DENSITY = 0.4f;
-const int FUR_LAYERS = 40;
-const int FUR_HEIGHT = 2.0;
 
 int main(int argc, char** argv)
 {
@@ -34,17 +15,17 @@ int main(int argc, char** argv)
     glfw_status = glfwInit();
 
     if (glfw_status != GLFW_TRUE) {
-        cout << "glfwInit() fail\n";
+        printf("glfwInit() fail\n");
         glfw_error_code = glfwGetError(&glfw_error_message);
-        cout << "glfw error code = " << glfw_error_code << "\n";
-        cout << "glfw error = \"" << glfw_error_message << "\"\n";
+        printf("glfw error code = %i\n", glfw_error_code);
+        printf("glfw error = \"%s\"\n", glfw_error_message);
         return EXIT_FAILURE;
     } else {
         glfwGetVersion(&glfw_major_version,&glfw_minor_version,&glfw_rev);
-        cout << "glfwInit() good.\n";
-        cout << "glfw major version = " << glfw_major_version << "\n";
-        cout << "glfw minor version = " << glfw_minor_version << "\n";
-        cout << "glfw revision      = " << glfw_rev << "\n";
+        printf("glfwInit() good.\n");
+        printf("glfw version = %i.%i.%i\n", glfw_major_version,
+                                            glfw_minor_version,
+                                            glfw_rev);
     }
   
     /* Ask for the OpenGL 3.3 Core Profile. */
@@ -78,15 +59,11 @@ int main(int argc, char** argv)
     cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
     GLenum glew_error_code = glewInit();
     if (glew_error_code != GLEW_OK) {
-        if ( glew_error_code == GLEW_ERROR_NO_GLX_DISPLAY ) {
-            cout << "glewInit() returns GLEW_ERROR_NO_GLX_DISPLAY\n";
-        } else {
-            cout << "glewInit() fail\n";
-            cout << "glew error code = " << glew_error_code << "\n";
-            cout << "glew error = \"" << glewGetErrorString(glew_error_code) << "\"\n";
-            glfwTerminate();
-            return EXIT_FAILURE;
-        }
+        cout << "glewInit() fail\n";
+        cout << "glew error code = " << glew_error_code << "\n";
+        cout << "glew error = \"" << glewGetErrorString(glew_error_code) << "\"\n";
+        glfwTerminate();
+        return EXIT_FAILURE;
     }
  
   // Initialize shaders.
