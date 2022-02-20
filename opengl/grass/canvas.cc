@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     if ( status == 0 ) {
         cout << "NOTE glXQueryVersion tosses " << status << "\n";
     } else {
-        cout << "NOTE glXversion = " << glx_major << "." << glx_minor;
+        cout << "NOTE glXversion = " << glx_major << "." << glx_minor << "\n";
     }
 
     cout << "GLEW version: " << glewGetString(GLEW_VERSION) << "\n";
