@@ -18,15 +18,16 @@
 #include "furtexture.h"
 #include "furgeometry.h"
 #include "shader.h"
+#include "dat.h"
 
 using namespace std;
 
-const int CANVAS_WIDTH = 500;
-const int CANVAS_HEIGHT = 500;
-const int FUR_DIM = 512;
-const float FUR_DENSITY = 0.4f;
-const int FUR_LAYERS = 40;
-const int FUR_HEIGHT = 2.0;
+const int canvas_width = CANVAS_WIDTH;
+const int canvas_height = CANVAS_HEIGHT;
+const int grass_dim = GRASS_DIM;
+const float grass_density = GRASS_DENSITY;
+const int grass_layers = GRASS_LAYERS;
+const int grass_height = GRASS_HEIGHT;
 
 int main(int argc, char** argv)
 {
@@ -61,7 +62,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_SAMPLES, 8);
   
     /* Initialize GLFW window. */
-    window = glfwCreateWindow(CANVAS_WIDTH, CANVAS_HEIGHT, "gldemo", NULL, NULL);
+    window = glfwCreateWindow(canvas_width, canvas_height, "gldemo", NULL, NULL);
     if (!window) {
         cout << "glfwCreateWindow fail\n";
         glfw_error_code = glfwGetError(&glfw_error_message);
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
     
   // Load textures.
   glActiveTexture(GL_TEXTURE0);
-  FurTexture fur(FUR_DIM, FUR_DIM, FUR_LAYERS, FUR_DENSITY);
+  FurTexture fur(grass_dim, grass_dim, grass_layers, grass_density);
   glUniform1i(prog.getUniform("fur"), 0);
   
   glActiveTexture(GL_TEXTURE1);
@@ -158,7 +159,7 @@ int main(int argc, char** argv)
   fa = {{ 20.0, -20.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.0}, 0.0}; // D
   vertices.push_back(fa);
   
-  FurGeometry geom(vertices, prog, FUR_LAYERS, FUR_HEIGHT);
+  FurGeometry geom(vertices, prog, GRASS_LAYERS, GRASS_HEIGHT);
 
   // Gloabl GL stuff.
   glEnable(GL_MULTISAMPLE);
