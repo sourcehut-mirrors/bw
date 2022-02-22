@@ -78,7 +78,8 @@ int main(int argc, char** argv)
     char *disp_name = NULL;
     int conn_num, screen_num, depth;
 
-
+    /* TODO do we need to get an X11 display at all?
+     *
     dsp = XOpenDisplay(disp_name);
     if (dsp == NULL) {
         fprintf(stderr, "%s: no X server?? '%s'\n",
@@ -93,6 +94,7 @@ int main(int argc, char** argv)
 
     depth = XDefaultDepth(dsp,screen_num);
     printf("     : default depth is %i\n", depth);
+    */
 
 
     GLenum glew_error_code = glewInit();
