@@ -1,0 +1,65 @@
+
+
+ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o vmultd.o vmultd.cu 
+ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o vmultd vmultd.o -lgomp
+
+
+
+
+dev$ nvprof ./vmultd
+==2010== NVPROF is profiling process 2010, command: ./vmultd
+-------------------------------------------------------------
+        system name = Linux
+          node name = dev
+            release = 5.17.0-rc3
+            version = #1 SMP PREEMPT Sat Feb 12 01:19:29 UTC 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16728719360
+                    = 16336640 kB
+                    = 15953 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : Vector addition of 134217728 double FP64 elements
+     : Memory size of each array is 1073741824 bytes
+     : random data loaded 1734631806 nsecs   1.734632 secs
+     : cudaMalloc(A)   81697788 nsecs  0.08169779 secs
+     : cudaMalloc(B)    1294839 nsecs  0.001294839 secs
+     : cudaMalloc(C)    1216628 nsecs  0.001216628 secs
+INFO : Copy of vector A from host to device done.
+     : cudaMemcpy() 352611413 nsecs  0.3526114 secs
+INFO : Copy of vector B from host to device done.
+     : cudaMemcpy() 352522586 nsecs  0.3525226 secs
+INFO : CUDA kernel launch with 131072 blocks of 1024 threads
+INFO : vector_add done.
+     : vector_add 39241 nsecs  3.9241e-05 secs
+INFO : Copy result A from device to host done.
+     : cudaMemcpy() 341579026 nsecs   0.341579 secs
+INFO : A * B correct within error epsilon =  1.000000000e-12
+     : epsilon 342283540 nsecs  0.3422836 secs
+INFO : host memory free and we are done
+==2010== Profiling application: ./vmultd
+==2010== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   67.45%  705.50ms         2  352.75ms  352.45ms  353.06ms  [CUDA memcpy HtoD]
+                   31.31%  327.46ms         1  327.46ms  327.46ms  327.46ms  [CUDA memcpy DtoH]
+                    1.24%  12.998ms         1  12.998ms  12.998ms  12.998ms  vector_mult(double const *, double const *, double*, int)
+      API calls:   80.21%  1.04667s         3  348.89ms  341.57ms  352.59ms  cudaMemcpy
+                   13.15%  171.60ms         3  57.199ms  1.0204ms  85.293ms  cudaFree
+                    6.45%  84.166ms         3  28.055ms  1.2102ms  81.675ms  cudaMalloc
+                    0.13%  1.7023ms         1  1.7023ms  1.7023ms  1.7023ms  cuDeviceTotalMem
+                    0.03%  395.74us       101  3.9180us     438ns  162.24us  cuDeviceGetAttribute
+                    0.03%  342.50us         1  342.50us  342.50us  342.50us  cudaGetDeviceProperties
+                    0.00%  44.594us         1  44.594us  44.594us  44.594us  cuDeviceGetName
+                    0.00%  27.037us         1  27.037us  27.037us  27.037us  cudaLaunchKernel
+                    0.00%  4.9350us         1  4.9350us  4.9350us  4.9350us  cuDeviceGetPCIBusId
+                    0.00%  4.3120us         3  1.4370us     704ns  2.4520us  cuDeviceGetCount
+                    0.00%  2.5480us         2  1.2740us     585ns  1.9630us  cuDeviceGet
+                    0.00%  2.4220us         1  2.4220us  2.4220us  2.4220us  cudaGetDeviceCount
+                    0.00%     859ns         1     859ns     859ns     859ns  cuDeviceGetUuid
+                    0.00%     364ns         1     364ns     364ns     364ns  cudaGetLastError
+dev$ 
+
+
