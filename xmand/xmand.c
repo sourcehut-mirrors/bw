@@ -253,6 +253,16 @@ int main(int argc, char*argv[])
     }
     sysinfo(VERBOSE);
 
+    /* these two calls are silly and not of much value other than
+     * to determine the speed of the clock_gettime() call. Which
+     * we don't care much about as it had better be a microsecond. */
+    clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
+    clock_gettime( CLOCK_MONOTONIC, &soln_t1 );
+    t_delta = timediff( soln_t0, soln_t1 );
+    /* this t_delta is a baseline offset value that we seem to ignore
+     * anyways. */
+    printf("INFO : baseline tdelta = %14lld nsec\n", t_delta);
+
     errno = 0;
     if ( ( argc < 6 ) && ( argc > 1 ) ) {
         fprintf(stderr,"FAIL : insufficient arguments provided\n");
