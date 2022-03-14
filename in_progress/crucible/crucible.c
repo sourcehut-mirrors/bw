@@ -87,7 +87,7 @@ int main (int argc, char **argv) {
 
     uint64_t r64_time, r64_dump_time_hrt, total_dump_time_hrt;
     uint64_t file_create_total_time, file_create_time;
-    uint64_t totaltime;
+    uint64_t totaltime, baseline_delta;
 
     uint32_t iteration_count;
     uint32_t i, j, k, l, m, n, p, z;
@@ -173,7 +173,7 @@ int main (int argc, char **argv) {
     char directory[FILENAME_MAX];
     char mkdir_path[FILENAME_MAX];
 
-    FILE *fp, *fr;
+    FILE *fp, *frandom;
 
     setlocale( LC_ALL, "C" );
 
@@ -202,7 +202,7 @@ int main (int argc, char **argv) {
     if ( clock_gettime( CLOCK_REALTIME, &start_hrt ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } else {
 
         /* do not use CLOCK_MONOTONIC for this. 
@@ -224,6 +224,17 @@ int main (int argc, char **argv) {
          */
         srand48( (long) start_hrt.tv_nsec );
     }
+
+    /*
+     * baseline clock_gettime delta
+     */
+    clock_gettime( CLOCK_REALTIME, &start_hrt );
+    clock_gettime( CLOCK_REALTIME, &end_hrt );
+    baseline_delta = timediff(start_hrt, end_hrt);
+
+    printf("\nINFO : baseline delta time is %" PRIu64 " nsecs\n", baseline_delta);
+
+
     
     /**************************************************************
      * from somewhere back in 1994 or so ...                      *
@@ -285,7 +296,7 @@ int main (int argc, char **argv) {
     file_create_time = 0;
     iteration_count = 0;
 
-    if ((fr = fopen("/dev/urandom", "r")) == NULL) {
+    if ((frandom = fopen("/dev/urandom", "r")) == NULL) {
         fprintf(stderr, "%s: can't read /dev/urandom \n", argv[0]);
         perror("WARN : ");
         fprintf(stderr, "    : we must use the Mersenne Twister\n");
@@ -347,8 +358,11 @@ int main (int argc, char **argv) {
                         return EXIT_FAILURE;
                     }
     
-                    /* memset to clear 64k_random and alph_dist */
+                    /* memset to clear 64k_random */
                     memset(rand64k, 0x00, ((size_t)65536)*sizeof(uint8_t));
+
+
+                    /* why do this ??? */
                     memset(alph_dist, 0x00, ((size_t)64)*sizeof(int));
 
                     if ( twister_flag ) {
@@ -360,13 +374,13 @@ int main (int argc, char **argv) {
                         }
                     } else {
                         errno = 0;
-                        clearerr(fr);
-                        random_bytes_read = fread(rand64k, sizeof(uint8_t), 65536, fr);
-                        if (ferror(fr) != 0) {
+                        clearerr(frandom);
+                        random_bytes_read = fread(rand64k, sizeof(uint8_t), 65536, frandom);
+                        if (ferror(frandom) != 0) {
                             /* this is a real mess and we may as well bail out */
-                            fprintf(stderr,"ERROR : reading /dev/random failed\n");
+                            fprintf(stderr,"ERROR : reading /dev/urandom failed\n");
                             perror("FAIL : ");
-                            fclose(fr);
+                            fclose(frandom);
                             return EXIT_FAILURE;
                         }
                         for (char_count = 0; char_count < 65535; ++char_count ) {
@@ -398,6 +412,8 @@ int main (int argc, char **argv) {
                         return EXIT_FAILURE;
                     }
     
+                    /* TODO try a more intelligent approach to this using 
+                     * fstat/stat etc */
                     if ( (fp = fopen(filename, "w")) == NULL ) {
                         /* probably the directory does not exist */
                         for ( n = 0; (directory[n]!='\0'); ++n ) {
@@ -441,6 +457,9 @@ int main (int argc, char **argv) {
                      *
                      * make a copy of the alph_dist array such that we can
                      * bubble sort it and also qsort it for fun 
+                     *
+                     *   WHY ? ? ? 
+                     *
                      */
                     for ( z=0; z<64; z++ ) alph_dist_copy[z] = alph_dist[z];
 
@@ -471,11 +490,13 @@ int main (int argc, char **argv) {
 
                     bubble_time = timediff(bubble_start_hrt, bubble_end_hrt);
 
+                    /*
                     printf("alph_dist min = %4i    max = %4i",
                                 alph_dist[0], alph_dist[63]);
 
                     printf("    swap_count = %4i    bubble_t = %" PRIu64 "    ",
                                 swap_count, bubble_time);
+                     */
 
                     if ( bubble_time > bubble_max ) bubble_max = bubble_time;
                     if ( bubble_time < bubble_min ) bubble_min = bubble_time;
@@ -493,7 +514,7 @@ int main (int argc, char **argv) {
                         return EXIT_FAILURE;
                     }
                     qsort_time = timediff(qsort_start_hrt, qsort_end_hrt);
-                    printf("qsort_t = %" PRIu64 , qsort_time);
+                    /* printf("qsort_t = %" PRIu64 , qsort_time); */
 
                     if ( qsort_time > qsort_max ) qsort_max = qsort_time;
                     if ( qsort_time < qsort_min ) qsort_min = qsort_time;
@@ -508,7 +529,7 @@ int main (int argc, char **argv) {
                             z = 64;
                         }
                     }
-                    printf("\n");
+                    /* printf("\n"); */
 
                     iteration_count = iteration_count + 1;
         
@@ -535,7 +556,7 @@ int main (int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    if ( twister_flag ) fclose ( fr );
+    if ( twister_flag ) fclose ( frandom );
 
     totaltime = timediff( start_hrt, end_test1_hrt );
 

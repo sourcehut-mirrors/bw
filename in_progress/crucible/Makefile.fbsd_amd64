@@ -8,11 +8,11 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
-SRCS = crucible.c ../sysinfo/sysinfo.c \
-	  ../time_and_date/timediff.c
+SRCS = crucible.c ../../sysinfo/sysinfo.c \
+	  ../../time_and_date/timediff.c
 
-OBJS = crucible.o ../sysinfo/sysinfo.o \
-	   ../time_and_date/timediff.o
+OBJS = crucible.o ../../sysinfo/sysinfo.o \
+	   ../../time_and_date/timediff.o
 
 LIBS = -lrt
 
