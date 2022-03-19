@@ -53,19 +53,20 @@
  *           Last update Dec 2020. Still likely full of errors and all
  *           the high resolution timer bits are janky as hell.
  **************************************************************************/
-#include <sys/time.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <locale.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <iso646.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define VERBOSE 1
 #define SIXTYFOURK 65536
@@ -81,8 +82,6 @@ uint64_t timediff( struct timespec start_time,
 
 int sysinfo(int verbose);
 
-static int int_compare(const void *p1, const void *p2);
-
 int main (int argc, char **argv) {
 
     uint64_t r64_time, r64_dump_time_hrt, total_dump_time_hrt;
@@ -91,11 +90,13 @@ int main (int argc, char **argv) {
 
     uint32_t iteration_count;
     uint32_t i, j, k, l, m, n, p, z;
-    size_t q, random_bytes_read;
+    size_t q, random_bytes_read, filename_len, fid_len, dir_len;
     int fflush_err, twister_flag = 0;
+    int rchar_line, rchar_num;
     char *c_time_string;
 
     /* a pile of these can be tossed away */
+    struct timespec clock_resolution;
     struct timespec start_hrt, end_hrt;
     struct timespec end_test1_hrt, end_test2_hrt, end_test3_hrt;
     struct timespec start_proc_hrt, end_proc_hrt;
@@ -113,7 +114,7 @@ int main (int argc, char **argv) {
     uint64_t qsort_max = 0;
     int bork = 0; /* just in case qsort and bubble sort disagree */
     
-    double thisfile, avgtime;
+    double avgtime;
     double this_file_io, avg_file_io;
 
     char fid0[2] = { 'a', 'a' };
@@ -175,8 +176,6 @@ int main (int argc, char **argv) {
 
     FILE *fp, *frandom;
 
-    setlocale( LC_ALL, "C" );
-
     if ( argc != 2 ) {
         printf ("\n*****************************************************\n");
         printf (" crucible : cru-ci-ble (kroo'se-bel) noun.\n");
@@ -197,45 +196,84 @@ int main (int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    /* dump out some information about the system we are using */
     sysinfo(VERBOSE);
     
-    if ( clock_gettime( CLOCK_REALTIME, &start_hrt ) == -1 ) {
+    if (setlocale(LC_ALL,"POSIX") == NULL) {
+        printf("INFO : for some reason setlocale fails.\n");
+        return EXIT_FAILURE;
+    }
+
+    errno = 0;
+    if (setenv("TZ","GMT0",1) == -1) {
+        fprintf(stderr, "%s: can not set TZ=GMT0\n", argv[0]);
+        perror("WARN : ");
+        fprintf(stderr,"    : The TimeZone appears to be TZ=\"");
+        fprintf(stderr,getenv("TZ"));
+        fprintf(stderr,"\"\n");
+    }
+
+    /* can we get the current time from a clock? */
+    if (clock_gettime( CLOCK_REALTIME, &start_hrt) == EINVAL) {
         /* We could not get the clock. Bail out. */
-        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
         return EXIT_FAILURE;
     } else {
 
-        /* do not use CLOCK_MONOTONIC for this. 
-         * only useful with CLOCK_REALTIME */
-
-        c_time_string = ctime( &start_hrt.tv_sec );
-        fprintf (stderr,"\nINFO : current time is %s", c_time_string );
-
-        /* call srand48() with the sub-second time data 
-         *
-         * TODO note that we are using the Mersennne Twister 
-         * at the moment but can switch over to a more modern
-         * drand() given that /dev/random etc etc in the world
-         * of 2020 can generally be accepted as damn near 
-         * cryptographically random. Mostly. At least on most
-         * modern systems running UNIX and Linux. Get a random
-         * number generator based on radiation decay of some
-         * strontium-90 or caesium-137 for best results.
+        /* We use CLOCK_REALTIME which is assured to work reasonably
+         * well by IEEE Std 1003.1b-1993 (“POSIX.1b”). It may be useful
+         * to ask for the resolution of the system clock calls. This
+         * may be done with clock_getres().
          */
-        srand48( (long) start_hrt.tv_nsec );
+
+        if (clock_getres(CLOCK_REALTIME, &clock_resolution) == EINVAL) {
+            /* This makes no sense and *should* never happen. */
+            fprintf(stderr,"ERR  : clock_getres fail\n");
+            return EXIT_FAILURE;
+        }
+
+        printf("INFO : clock_resolution = %" PRIu64 " nsec\n",
+                                               clock_resolution.tv_nsec);
+
+        /* baseline clock_gettime delta */
+        clock_gettime(CLOCK_REALTIME, &start_hrt);
+        clock_gettime(CLOCK_REALTIME, &end_hrt);
+        baseline_delta = timediff(start_hrt, end_hrt);
+    
+        printf("INFO : baseline delta time is %" PRIu64 " nsec\n",
+                                                         baseline_delta);
+    
+        /* With all these time and clock calls we may as well report the
+         * current time. */
+        c_time_string = ctime(&end_hrt.tv_sec);
+        fprintf (stderr,"\nINFO : current time is %s", c_time_string);
+
+        /* Note that strftime() may help :
+         *
+         * phobos$ date -u
+         * TZ=GMT0 LC_TIME=C /bin/date "+%a %b %d %H:%M:%S %Z %Y"
+         * Fri Mar 18 23:44:10 UTC 2022
+         * Fri Mar 18 23:44:10 GMT 2022
+         *
+         * Both represent the same time.
+         */
+
+        /* Initialize the random number drand48() with the nanosec data
+         * from the current time. Not a perfect method but srand48()
+         * needs some sort of a initial number as input.
+         *
+         * In the past we could use the Mersennne Twister as a random
+         * number source. It makes sense to use a more modern method
+         * given that /dev/random can generally be accepted as near 
+         * cryptographically random. Mostly. At least on most modern
+         * systems running UNIX and Linux. To get a really flawless
+         * random number generator we need something like radiation
+         * decay data from strontium-90 or caesium-137. Not really
+         * available at a corner store.
+         */
+        srand48((long)end_hrt.tv_nsec);
     }
 
-    /*
-     * baseline clock_gettime delta
-     */
-    clock_gettime( CLOCK_REALTIME, &start_hrt );
-    clock_gettime( CLOCK_REALTIME, &end_hrt );
-    baseline_delta = timediff(start_hrt, end_hrt);
-
-    printf("\nINFO : baseline delta time is %" PRIu64 " nsecs\n", baseline_delta);
-
-
-    
     /**************************************************************
      * from somewhere back in 1994 or so ...                      *
      *                                                            *
@@ -258,20 +296,33 @@ int main (int argc, char **argv) {
      * 3 Apr 2021 : near as I can recall we need to append at
      *              least ten bytes onto the given filepath.
      *
-     *              filename pattern may be like XX/XX.dat 
+     *              filename pattern will be like "XX/XX.dat" 
+     *
+     *              there is also a trailing nul byte "\0"
      *
      *
-     *        foo_path_...._bar/XX/XX.dat    1024 bytes max
+     * So we get something similar to :
      *
-     * Also the trailing slash may or may not exist and to be
-     * fair we don't care. If the pathname is that long then
-     * the user may be just a jerk. */
+     *      user_gave_us_a_pathname/XX/XX.dat
+     *
+     * Where the total length of the string must be less than
+     * the system FILENAME_MAX.
+     *
+     * 18 Mar 2022 : someday I may want to try three letter
+     *               combinations for the filenames and the
+     *               directory that they land inside. In which
+     *               case we need a trailing "/XXX/XXX.dat\0"
+     *               which will be 13 bytes. Check for a path
+     *               total length of FILENAME_MAX - 14 to be
+     *               super safe.
+     *
+     * If the pathname is that long then the user may be just
+     * be a bit of a fool to even try.
+     */
     if ( q > ( FILENAME_MAX - 12 ) ) {
         fprintf(stderr,"ERROR : path name too long\n");
         return EXIT_FAILURE;
     }
-
-    /* TODO check for the trailing slash and then use strncpy */
 
     /* just copy argv[1] into directory */
     for ( i = 0; (argv[1][i]!='\0'); ++i)
@@ -285,8 +336,66 @@ int main (int argc, char **argv) {
         directory[i] = '\0';        /* argv[1] had the slash, ok */
     }
 
-    /* TODO it would be of some value to stat() the directory
-     * pathname just to ensure it actually exists */
+    /* It would be of some value to stat() the directory
+     * pathname just to ensure it actually exists and is
+     * a directory. */
+    struct stat fid_status_buffer;
+    int fid_status;
+    errno = 0;
+    fid_status = stat(directory, &fid_status_buffer);
+
+    if ( fid_status != 0 ) {
+        fprintf(stderr,"ERR  : pathname provided is not valid.\n");
+
+        switch(errno) {
+            case EFAULT :
+                fprintf (stderr,"ERR  : EFAULT\n");
+                break;
+            case ENOENT :
+                fprintf (stderr,"ERR  : ENOENT\n");
+                break;
+            case EBADF :
+                fprintf (stderr,"ERR  : EBADF\n");
+                break;
+            default :
+                fprintf (stderr,"ERR  : an error happened.\n");
+        }
+        perror("ERR  ");
+        return EXIT_FAILURE;
+    }
+
+    /* is that a valid directory? */
+    if (S_ISDIR(fid_status_buffer.st_mode) == 0) {
+        fprintf (stderr,"ERR  : pathname provided not a directory.\n");
+        return EXIT_FAILURE;
+    }
+
+    /* check that the current user can write effective_uid using
+     *     st_uid
+     *     st_gid
+     */
+    uid_t effective_uid = geteuid();
+    printf("INFO : fid_status_buffer.st_uid = %i\n", fid_status_buffer.st_uid);
+    printf("     : fid_status_buffer.st_gid = %i\n", fid_status_buffer.st_gid);
+    printf("     : effective_uid = %i\n", effective_uid);
+
+
+    /* iso646.h terms for bitwise logical operations */
+    if ((fid_status_buffer.st_mode bitor S_IWUSR) != 0 ) {
+        printf("     : valid write permission for owner.\n");
+
+        if (fid_status_buffer.st_uid == effective_uid) {
+            printf("     :  correct ownership also.\n");
+        } else {
+            fprintf (stderr,"ERR  : wrong user ownership.\n");
+            return EXIT_FAILURE;
+        }
+    } else {
+        /* LLVM/Clang suggests this code block will never 
+         * be reachable */
+        fprintf (stderr,"ERR  : pathname provided not writable.\n");
+        return EXIT_FAILURE;
+    }
 
     totaltime = 0;
     r64_time = 0;
@@ -296,7 +405,7 @@ int main (int argc, char **argv) {
     file_create_time = 0;
     iteration_count = 0;
 
-    if ((frandom = fopen("/dev/urandom", "r")) == NULL) {
+    if ((frandom = fopen("/dev/Xrandom", "r")) == NULL) {
         fprintf(stderr, "%s: can't read /dev/urandom \n", argv[0]);
         perror("WARN : ");
         fprintf(stderr, "    : we must use the Mersenne Twister\n");
@@ -304,15 +413,15 @@ int main (int argc, char **argv) {
     }
 
     /* reset the start time clock data */
-    if ( clock_gettime( CLOCK_MONOTONIC, &start_hrt ) == -1 ) {
+    if ( clock_gettime( CLOCK_REALTIME, &start_hrt ) == -1 ) {
         /* We could not get the clock. Bail out. */
-        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
         return EXIT_FAILURE;
     }
 
-    /* directory name loops for [a-z][a-z] */
-    for ( j=0; j<26; ++j ) {
-        for ( k=0; k<26; ++k ) {
+    /* directory name loops for [A-Z][A-Z] */
+    for (j=20; j<26; ++j) {
+        for (k=12; k<16; ++k) {
             /* The structure of the character string fid is very simple.
              * It looks like so : aa/aa.dat
              * To iterate through a pile of unique filenames we just
@@ -321,81 +430,76 @@ int main (int argc, char **argv) {
             fid[1]=alph[k];
     
             /* inner loops to change the filename.  */
-            for ( l=0; l<26; ++l ) {
+            for (l=0; l<2 ; ++l) {
                 fid[3]=alph[l];
-                /* for ( m=0; m<26; ++m ) { */
-                    /* fid[4]=alph[m]; */
-                    fid[4]=alph[0];
-    
-                    /* We did add another loop here to change the other
-                     * letter in the filename.
-                     *
+                for (m=0; m<1; ++m) {
+                    fid[4]=alph[m];
+
+                    /* 
                      * If we stick to just lowercase letters then we
                      * have 26^2 = 676 files per directory. Before long
                      * we would no longer be testing file IO rates and
-                     * have to deal with overhead to locate a given
-                     * file in a directory.
-                     * 
-                     * 3 April 2021 and here we are using ZFS and I have
-                     * not messed with UFS in over a decade.
+                     * have to deal with overhead to locate a given file
+                     * in a directory.
                      */
         
-                    for ( i = 0; directory[i]!='\0'; ++i)
-                        filename[i]=directory[i];
+                    filename_len = sizeof(filename);
+                    strncpy(filename,directory,filename_len);
 
-                    for ( q = 0; fid[q]!='\0'; ++q)
-                        filename[i+q]=fid[q];
+                    fid_len = sizeof(fid);
+                    strncat(filename,fid,fid_len);
 
-                    filename[i+q]='\0';
-                    /* printf ( "File to write %s\n", filename ); */
-        
                     /* Generate the random text before we need it and
                      * also outside of the area that measures time. */
-        
-                    if ( clock_gettime( CLOCK_MONOTONIC, &random_buffer_start_hrt ) == -1 ) {
+                    if ( clock_gettime( CLOCK_REALTIME, &random_buffer_start_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+                        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
     
                     /* memset to clear 64k_random */
                     memset(rand64k, 0x00, ((size_t)65536)*sizeof(uint8_t));
 
-
-                    /* why do this ??? */
-                    memset(alph_dist, 0x00, ((size_t)64)*sizeof(int));
-
                     if ( twister_flag ) {
                         /* we can not use the /dev/random device it seems */
                         for (char_count = 0; char_count < 65535; ++char_count ) {
-                            k_index = (int)( genrand() * 64.0 );
+                            k_index = (int)(genrand() * 64.0);
                             buffer_64k_rand_text[char_count]=alph[k_index];
-                            alph_dist[k_index]+=1;
                         }
                     } else {
                         errno = 0;
                         clearerr(frandom);
+                        /* read 64kB of random bytes */
                         random_bytes_read = fread(rand64k, sizeof(uint8_t), 65536, frandom);
                         if (ferror(frandom) != 0) {
                             /* this is a real mess and we may as well bail out */
-                            fprintf(stderr,"ERROR : reading /dev/urandom failed\n");
+                            fprintf(stderr,"ERR  : reading /dev/urandom failed\n");
                             perror("FAIL : ");
                             fclose(frandom);
                             return EXIT_FAILURE;
                         }
+                        /* now use that random pile of bytes to generate
+                         * random text */
                         for (char_count = 0; char_count < 65535; ++char_count ) {
+                            /* ensure we only use 7 low bits of those 
+                             * random numbers. Thus we mask with the
+                             * binary value 01111111 */
                             k_index = rand64k[char_count] & (uint8_t)0x3f;
                             buffer_64k_rand_text[char_count]=alph[k_index];
-                            alph_dist[k_index]+=1;
                         }
                     }
         
+                    /* insert newline chars at 64 bytes each */
+                    for (char_count = 63; char_count < 65535; char_count+=64){
+                        buffer_64k_rand_text[char_count]='\n';
+                    }
+
                     buffer_64k_rand_text[65535]='\n';
                     buffer_64k_rand_text[65536]='\0';
-        
-                    if ( clock_gettime( CLOCK_MONOTONIC, &end_hrt ) == -1 ) {
+
+                    if ( clock_gettime(CLOCK_REALTIME, &end_hrt) == -1 ) {
                         /* We could not get the clock. Bail out. */
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+                        fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
         
@@ -404,25 +508,21 @@ int main (int argc, char **argv) {
                     r64_dump_time_hrt += timediff(random_buffer_start_hrt, end_hrt);
 
                     /* create the new file and dump our random data */
-                    thisfile = 0.0;
-    
-                    if ( clock_gettime( CLOCK_MONOTONIC, &start_proc_hrt ) == -1 ) {
+                    if ( clock_gettime( CLOCK_REALTIME, &start_proc_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+                        fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
     
                     /* TODO try a more intelligent approach to this using 
                      * fstat/stat etc */
                     if ( (fp = fopen(filename, "w")) == NULL ) {
-                        /* probably the directory does not exist */
-                        for ( n = 0; (directory[n]!='\0'); ++n ) {
-                            mkdir_path[n] = directory[n];
-                        }
-                        mkdir_path[n] = fid[0];
-                        mkdir_path[n+1] = fid[1];
-                        mkdir_path[n+2] = '\0';
-        
+                        /* probably the directory does not exist yet.
+                         * So lets remove the XX.dat part from the end. */
+                        dir_len = strlen(filename) - 6;
+                        memset(mkdir_path, 0x00, dir_len*sizeof(uint8_t));
+                        strncpy(mkdir_path,filename,dir_len);
+
                         errno = 0;
                         if ( mkdir(mkdir_path, (mode_t)0755) != 0 ) {
                             fprintf (stderr,"%s: can't mkdir %s\n",
@@ -453,89 +553,11 @@ int main (int argc, char **argv) {
                     }
                     fclose ( fp ); /* close the file and flush buffers */
         
-                    /* for the sake of snits and giggles what was the char min max?
-                     *
-                     * make a copy of the alph_dist array such that we can
-                     * bubble sort it and also qsort it for fun 
-                     *
-                     *   WHY ? ? ? 
-                     *
-                     */
-                    for ( z=0; z<64; z++ ) alph_dist_copy[z] = alph_dist[z];
-
-                    if ( clock_gettime( CLOCK_MONOTONIC, &bubble_start_hrt ) == -1 ) {
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
-                        return EXIT_FAILURE;
-                    }
-
-                    /* ye old slow bubble sort */
-                    swap_count = 0;
-                    do {
-                        swapped = 0;
-                        for ( z=0; z<63; z++ ) {
-                            if ( alph_dist[z] > alph_dist[z+1] ) {
-                                swap_me = alph_dist[z];
-                                alph_dist[z] = alph_dist[z+1];
-                                alph_dist[z+1] = swap_me;
-                                swapped = 1;
-                                swap_count += 1;
-                            }
-                        }
-                    } while ( swapped );
-
-                    if ( clock_gettime( CLOCK_MONOTONIC, &bubble_end_hrt ) == -1 ) {
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
-                        return EXIT_FAILURE;
-                    }
-
-                    bubble_time = timediff(bubble_start_hrt, bubble_end_hrt);
-
-                    /*
-                    printf("alph_dist min = %4i    max = %4i",
-                                alph_dist[0], alph_dist[63]);
-
-                    printf("    swap_count = %4i    bubble_t = %" PRIu64 "    ",
-                                swap_count, bubble_time);
-                     */
-
-                    if ( bubble_time > bubble_max ) bubble_max = bubble_time;
-                    if ( bubble_time < bubble_min ) bubble_min = bubble_time;
-                    if ( swap_count > swap_count_max ) swap_count_max = swap_count;
-                    if ( swap_count < swap_count_min ) swap_count_min = swap_count;
-
-                    /* qsort is so much faster */
-                    if ( clock_gettime( CLOCK_MONOTONIC, &qsort_start_hrt ) == -1 ) {
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
-                        return EXIT_FAILURE;
-                    }
-                    qsort((void *)alph_dist_copy, (size_t)64, sizeof(int), int_compare);
-                    if ( clock_gettime( CLOCK_MONOTONIC, &qsort_end_hrt ) == -1 ) {
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
-                        return EXIT_FAILURE;
-                    }
-                    qsort_time = timediff(qsort_start_hrt, qsort_end_hrt);
-                    /* printf("qsort_t = %" PRIu64 , qsort_time); */
-
-                    if ( qsort_time > qsort_max ) qsort_max = qsort_time;
-                    if ( qsort_time < qsort_min ) qsort_min = qsort_time;
-
-                    /* common sense check if qsort results are same as bubble sort */
-                    bork = 0;
-                    for ( z=0; z<64; z++ ) {
-                        if ( alph_dist_copy[z] != alph_dist[z] ) {
-                            /* we have a borked result */
-                            bork = 1;
-                            printf("    bork");
-                            z = 64;
-                        }
-                    }
-                    /* printf("\n"); */
-
                     iteration_count = iteration_count + 1;
         
-                    if ( clock_gettime( CLOCK_MONOTONIC, &end_proc_hrt ) == -1 ) {
+                    if ( clock_gettime( CLOCK_REALTIME, &end_proc_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
-                        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+                        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
                     /* TODO  use file_create_time as an array and then we can
@@ -543,22 +565,22 @@ int main (int argc, char **argv) {
                     file_create_time = timediff(start_proc_hrt, end_proc_hrt);
                     file_create_total_time = file_create_total_time + file_create_time;
 
-                /* } */ /* m for */
+                } /* m for */
             } /* l for */
         } /* k for */
     } /* j for */
 
     /* NOTE this marks the end of the initial file create and 64k dump */
     
-    if ( clock_gettime( CLOCK_MONOTONIC, &end_test1_hrt ) == -1 ) {
+    if ( clock_gettime( CLOCK_REALTIME, &end_test1_hrt ) == -1 ) {
         /* We could not get the clock. Bail out. */
-        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
         return EXIT_FAILURE;
     }
 
-    if ( twister_flag ) fclose ( frandom );
+    if ( twister_flag == 0 ) fclose ( frandom );
 
-    totaltime = timediff( start_hrt, end_test1_hrt );
+    totaltime = timediff(start_hrt, end_test1_hrt);
 
     avgtime = (double)totaltime/((double)iteration_count * NANOSEC);
     
@@ -574,52 +596,107 @@ int main (int argc, char **argv) {
 
     printf("          IO avg rate =%.6f MB/s\n", avg_file_io);
 
-    /* no idea what the idea is here so we shall ignore it
-     *
-     * printf(" Difference between Wall Clock and File IO Time = %.6f sec\n",
-     *  ( ((double)( timediff( start_hrt, end_test1_hrt) ) / BigDivisor ) - totaltime ) );
-     */
-
     printf("Time required for random text generation = %.6f sec\n",
                (double)r64_dump_time_hrt/NANOSEC );
     
+    /*******************************************************************/
 
-    /* bubble time min and max were what ? */
-    printf("TIME : bubble sort min = %" PRIu64 "    max = %" PRIu64 "\n",
-               bubble_min, bubble_max);
+    printf ( "\\nnTEST 2 ) file append 2048 bytes." );
+    printf ( "\nAppending to file structure at %s\n", directory );
 
-    printf("TIME :       qsort min = %" PRIu64 "    max = %" PRIu64 "\n",
-               qsort_min, qsort_max);
+    printf ( "\nThis test will append 2048 bytes to the files\n" );
+    printf (   "that were created in TEST 1.\n\n" );
 
-    printf("swap_count_min = %6i    swap_count_max = %6i\n",
-               swap_count_min, swap_count_max);
+    /* we want a new time */
+    if ( clock_gettime( CLOCK_REALTIME, &end_test1_hrt ) == -1 ) {
+        /* We could not get the clock. Bail out. */
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        return(EXIT_FAILURE);
+    }
 
-    if ( bork ) printf("WARN : there was a bork sort somewhere.\n");
+    totaltime = 0.0;
+    iteration_count = 0;
+    for (j=20; j<26; ++j) {
+        for (k=10; k<16; ++k) {
+            fid[0]=alph[j];
+            fid[1]=alph[k];
+
+            /******************************************************
+             * Now we need an inner loop to change the filename.  *
+             ******************************************************/
+
+            for (l=0; l<2; ++l) {
+                fid[3]=alph[l];
+                for (m=0; m<1; ++m) {
+                    fid[4]=alph[m];
+
+                    filename_len = sizeof(filename);
+                    strncpy(filename,directory,filename_len);
+
+                    fid_len = sizeof(fid);
+                    strncat(filename,fid,fid_len);
+
+                    thisfile = 0.0;
+                    if ( clock_gettime( CLOCK_REALTIME, &start_proc_hrt ) == -1 ) {
+                        /* We could not get the clock. Bail out. */
+                        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+                        return EXIT_FAILURE ;
+                    }
+
+                    if ( ( fp = fopen ( filename, "a") ) == NULL ) {
+                        /** There was an error **/
+                        fprintf ( stderr, "%s: can't append to file %s\n", argv[0], filename );
+                        fprintf ( stderr, "%s: ABORTING\n", argv[0]);
+                        perror ("FAIL ");
+                        return EXIT_FAILURE ;
+                    } else {  
+                        /** append the data **/
+                        append_2k ( fp );
+                        fflush_err = fflush ( fp );
+                        if ( fflush_err != 0 ) {
+                            fprintf ( stderr, "fflush error %i", fflush_err );
+                            return EXIT_FAILURE ;
+                        }
+                        fclose ( fp ); /* close the file and flush buffers */
+                    }
+
+                    if ( clock_gettime( CLOCK_REALTIME, &end_proc_hrt ) == -1 ) {
+                        /* We could not get the clock. Bail out. */
+                        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+                        return EXIT_FAILURE;
+                    }
+
+                    iteration_count = iteration_count + 1;
+
+                    thisfile = ( (double)timediff( start_proc_hrt, end_proc_hrt ) ) / BigDivisor;
+
+                    totaltime = totaltime + thisfile;
+                } /* m for */
+            } /* l for */
+        } /* k for */
+    } /* j for */
+
+    if ( clock_gettime( CLOCK_REALTIME, &end_test2_hrt ) == -1 ) {
+        /* We could not get the clock. Bail out. */
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
+    avgtime = totaltime / ( (double) iteration_count );
+
+
+    printf(" TEST (2) Wall Clock Total Time = %.6f sec\n\n",
+          ( (double)timediff(end_test1_hrt, end_test2_hrt) / BigDivisor ) );
+
+    printf("%6li files  avg=%.6f sec  total=%.6f sec  io_avg=%.6f MB/s\n",
+                 iteration_count, avgtime, totaltime, avg_file_io );
 
 
     return EXIT_SUCCESS;
 
 } /* End of main */
 
-/* A trivial function to compare data which happens
- * to just be integers at the moment.  However we
- * could write this to handle nearly anything and
- * that includes the colour of cats.  */
-static int int_compare(const void *p1, const void *p2)
-{
-    /* Note that LLVM/Clang tosses a warning here :
-     *     cast from 'const void *' to 'int *' drops const qualifier
-     */
-    int i = *((int *)p1);
-    int j = *((int *)p2);
-
-    if (i > j) return (1);
-    if (i < j) return (-1);
-
-    return 0;
-}
-
-/************************************************************************/
+/***********************************************************************/
 /* A C-program for TT800 : July 8th 1996 Version */
 /* by M. Matsumoto, email: matumoto@math.keio.ac.jp */
 /* genrand() generate one pseudorandom number with double precision */
