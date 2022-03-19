@@ -217,7 +217,16 @@ int main(int argc, char *argv[])
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
-    /* test that result vector is correct within epsilon error */
+    /* test that result vector is correct within epsilon error
+     *
+     * Note that the various IEEE754-2008 ( onwards ) compiler
+     * options make a world of difference here.
+     *
+     * Essentially the NVidia hardware will make optimization
+     * choices for you and deliver wrong results.
+     *
+     * Feel free to verify for yourself.
+     */
     int correct_flag = 1;
     for (int i = 0; i < num_elements; ++i)
     {
