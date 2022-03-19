@@ -63,3 +63,11 @@ INFO : host memory free and we are done
 dev$ 
 
 
+
+If you enjoy serious self abuse then try to switch off the IEEE754 compliance options : 
+
+dev$ 
+dev$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -c -o vmultd.o vmultd.cu
+dev$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o vmultd vmultd.o -lgomp
+
+

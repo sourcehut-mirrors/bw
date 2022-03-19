@@ -41,7 +41,7 @@ vector_mult(const double *A, const double *B, double *C, int num_elements)
 
 int main(int argc, char *argv[])
 {
-    struct timespec t0, t1;
+    struct timespec time_begin, time_end, t0, t1;
     uint64_t tdelta_nsec;
 
     cudaError_t err = cudaSuccess;
@@ -63,6 +63,9 @@ int main(int argc, char *argv[])
         /* call srand48() with the sub-second time data */
         srand48( (long) t0.tv_nsec );
     }
+
+    time_begin.tv_sec = t0.tv_sec;
+    time_begin.tv_nsec = t0.tv_nsec;
 
     /* determine the number of CUDA capable GPUs */
     cudaGetDeviceCount(&num_gpus);
@@ -282,6 +285,12 @@ int main(int argc, char *argv[])
 
     printf("INFO : host memory free and we are done\n");
     cudaProfilerStop();
+
+    clock_gettime(CLOCK_REALTIME, &time_end);
+    tdelta_nsec = timediff(time_begin, time_end);
+    printf("TOTAL TIME %" PRIu64 " nsecs  %9.7g secs\n",
+                          tdelta_nsec, (float)tdelta_nsec/1.0e9);
+
     return EXIT_SUCCESS;
 
 }
