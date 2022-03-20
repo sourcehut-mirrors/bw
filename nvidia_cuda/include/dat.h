@@ -16,7 +16,7 @@
  *          the 32-bit elements are 4 bytes each.
  */
 
-#define NUM_ELEMENTS 134217728
+#define NUM_ELEMENTS 268435456
 #define THREADS_PER_BLOCK 1024
 #define EPSILON 1e-12
 

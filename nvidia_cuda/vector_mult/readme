@@ -4,6 +4,8 @@ Note that different chips and GPU cards from NVidia will not
 be portable in terms of the internal PTX code and they all seem
 to have a different version. 
 
+See https://developer.nvidia.com/cuda-gpus
+
 The 1080 Ti and its brethren are like so : 
 
 NVIDIA TITAN Xp     6.1

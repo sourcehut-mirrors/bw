@@ -34,21 +34,8 @@
 /* #define NUM_ELEMENTS 1048576 */
 #define THREADS_PER_BLOCK 1024
 #define BAIL_OUT 8192
-#define MAGNIFY 2097152
+#define MAGNIFY 137438953472
 #define IMG_PIX_W 1024
-
-/*  1048576 268435456 -1.9999435224162880 0.0 6 
-    perhaps do the compute for this region 
-
-
-
-    do it live 
-
-    try 8192  2097152  -1.3655090238898993e-01 +1.0047914078459144e+00 
-
-
- */
-
 
 int sysinfo(void);
 uint64_t system_memory();
@@ -197,10 +184,14 @@ int main(int argc, char *argv[])
 
     center_r = -1.9999435224162880;
     center_i = 0.0;
-    */
 
     center_r = -0.13655090238898993;
     center_i =  1.0047914078459144;
+
+    */
+
+    center_r = -0.13655024443380626;
+    center_i =  1.0047922476418307;
 
     clock_gettime( CLOCK_REALTIME, &t0 );
     for (int i = 0; i < num_elements; ++i) {
