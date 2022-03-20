@@ -29,9 +29,11 @@
 #include <omp.h>
 
 /* #define NUM_ELEMENTS 1073741824   big GV100 only as this needs 20G */
-/* #define NUM_ELEMENTS 134217728 */
-#define NUM_ELEMENTS 16777216
-/* #define NUM_ELEMENTS 1048576 */
+/* #define NUM_ELEMENTS 16777216 */
+
+
+/* lets try what fits in 4G of GPU mem */
+#define NUM_ELEMENTS 67108864
 #define THREADS_PER_BLOCK 1024
 #define BAIL_OUT 8192
 #define MAGNIFY 137438953472
@@ -436,6 +438,7 @@ int main(int argc, char *argv[])
     /*** CPU test stage ***/
 
     /* for all of the data what was the height values in host_mval */
+
     clock_gettime( CLOCK_REALTIME, &t0 );
     int error_count = 0;
     uint32_t delta_error_sum = 0;
