@@ -33,7 +33,7 @@
 
 
 /* lets try what fits in 4G of GPU mem */
-#define NUM_ELEMENTS 67108864
+#define NUM_ELEMENTS 40960000
 #define THREADS_PER_BLOCK 1024
 #define BAIL_OUT 8192
 #define MAGNIFY 137438953472
