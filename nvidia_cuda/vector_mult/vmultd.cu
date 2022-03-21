@@ -189,7 +189,16 @@ int main(int argc, char *argv[])
     int blocksPerGrid =( num_elements + threadsPerBlock - 1 ) / threadsPerBlock;
     printf("INFO : CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
 
+    cudaEvent_t start_cuda_event, stop_cuda_event;
+    cudaEventCreate(&start_cuda_event);
+    cudaEventCreate(&stop_cuda_event);
+
+    cudaEventRecord(start_cuda_event);
     vector_mult<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, num_elements);
+    cudaEventRecord(stop_cuda_event);
+    cudaEventSynchronize(stop_cuda_event);
+    float vector_mult_msec = 0.0f;
+    cudaEventElapsedTime(&vector_mult_msec, start_cuda_event, stop_cuda_event);
 
     err = cudaGetLastError();
     if (err != cudaSuccess)
@@ -198,11 +207,8 @@ int main(int argc, char *argv[])
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
-    printf("INFO : vector_add done.\n");
     clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
-    printf("     : vector_add %" PRIu64 " nsecs  %9.7g secs\n",
-                            tdelta_nsec, (float)tdelta_nsec/1.0e9);
+    printf("     : vector_mult %9.7g msecs\n", vector_mult_msec);
 
     /* Copy the device result memory d_C to the host result h_C memory */
     err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);

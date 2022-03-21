@@ -81,20 +81,18 @@ int main(int argc, char **argv)
     #endif
 
     cuda_err_status = cudaGetDeviceCount(&dev_count);
-    if (cuda_err_status != cudaSuccess)
-    {
+    if (cuda_err_status != cudaSuccess) {
         fprintf(stderr,"FAIL : cudaGetDeviceCount %d\n-> %s\n",
                            (int)cuda_err_status,
                            cudaGetErrorString(cuda_err_status));
 
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* returns 0 if there are no CUDA capable devices */
-    if (dev_count == 0)
-    {
+    if (dev_count == 0) {
         fprintf(stderr,"WARN : no CUDA device found.\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } else {
         printf("INFO : Detected %d CUDA Capable device(s)\n", dev_count);
     }
@@ -278,90 +276,64 @@ int main(int argc, char **argv)
 
     }
 
-    // If there are 2 or more GPUs, query to determine whether RDMA is supported
-    if (dev_count >= 2)
-    {
+    /* If there are 2 or more GPUs, query to determine
+     * whether RDMA is supported */
+    if (dev_count >= 2) {
         cudaDeviceProp prop[64];
-        int gpuid[64]; // we want to find the first two GPUs that can support P2P
+        /* find the first two GPUs that can support P2P */
+        int gpuid[64];
         int gpu_p2p_count = 0;
 
-        for (int i=0; i < dev_count; i++)
-        {
+        for (int i=0; i < dev_count; i++) {
             checkCudaErrors(cudaGetDeviceProperties(&prop[i], i));
 
-            // Only boards based on Fermi or later can support P2P
-            if ((prop[i].major >= 2)
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-                // on Windows (64-bit), the Tesla Compute Cluster driver for windows must be enabled to support this
-                && prop[i].tccDriver
-#endif
-               )
-            {
-                // This is an array of P2P capable GPUs
+            /* boards based on Fermi or later can support P2P */
+            if ((prop[i].major >= 2)) {
+                /* array of P2P capable GPUs */
                 gpuid[gpu_p2p_count++] = i;
             }
         }
 
-        // Show all the combinations of support P2P GPUs
+        /* Show all the combinations of support P2P GPUs */
         int can_access_peer;
 
-        if (gpu_p2p_count >= 2)
-        {
-            for (int i = 0; i < gpu_p2p_count; i++)
-            {
-                for (int j = 0; j < gpu_p2p_count; j++)
-                {
-                    if (gpuid[i] == gpuid[j])
-                    {
+        if (gpu_p2p_count >= 2) {
+            for (int i = 0; i < gpu_p2p_count; i++) {
+                for (int j = 0; j < gpu_p2p_count; j++) {
+                    if (gpuid[i] == gpuid[j]) {
                         continue;
                     }
-                    checkCudaErrors(cudaDeviceCanAccessPeer(&can_access_peer, gpuid[i], gpuid[j]));
-                        printf("> Peer access from %s (GPU%d) -> %s (GPU%d) : %s\n", prop[gpuid[i]].name, gpuid[i],
-                           prop[gpuid[j]].name, gpuid[j] ,
-                           can_access_peer ? "Yes" : "No");
+
+                    checkCudaErrors(cudaDeviceCanAccessPeer(&can_access_peer,
+                                                             gpuid[i],
+                                                             gpuid[j]));
+
+                    printf("> Peer access from %s (GPU%d) -> %s (GPU%d) : %s\n",
+                                 prop[gpuid[i]].name,
+                                 gpuid[i],
+                                 prop[gpuid[j]].name,
+                                 gpuid[j] ,
+                                 can_access_peer ? "Yes" : "No");
+
                 }
             }
         }
     }
 
-    // csv masterlog info
-    // *****************************
-    // exe and CUDA driver name
-    printf("\n");
-    std::string sProfileString = "deviceQuery, CUDA Driver = CUDART";
+    /* csv masterlog info
+     * exe and CUDA driver name */
+    printf("\ndeviceQuery, CUDA Driver = CUDART");
     char cTemp[16];
-
-    // driver version
-    sProfileString += ", CUDA Driver Version = ";
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-    sprintf_s(cTemp, 10, "%d.%d", driver_ver/1000, (driver_ver%100)/10);
-#else
-    sprintf(cTemp, "%d.%d", driver_ver/1000, (driver_ver%100)/10);
-#endif
-    sProfileString +=  cTemp;
-
-    // Runtime version
-    sProfileString += ", CUDA Runtime Version = ";
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-    sprintf_s(cTemp, 10, "%d.%d", runtime_ver/1000, (runtime_ver%100)/10);
-#else
-    sprintf(cTemp, "%d.%d", runtime_ver/1000, (runtime_ver%100)/10);
-#endif
-    sProfileString +=  cTemp;
-
-    // Device count
-    sProfileString += ", NumDevs = ";
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-    sprintf_s(cTemp, 10, "%d", dev_count);
-#else
-    sprintf(cTemp, "%d", dev_count);
-#endif
-    sProfileString += cTemp;
-    sProfileString += "\n";
-    printf("%s", sProfileString.c_str());
+    /* driver version */
+    printf(", CUDA Driver Version = %d.%d", driver_ver/1000, (driver_ver%100)/10);
+    /* runtime version */
+    printf(", CUDA Runtime Version = %d.%d", runtime_ver/1000, (runtime_ver%100)/10);
+    /* device count */
+    printf(", NumDevs = %d\n", dev_count);
 
     printf("Result = PASS\n");
 
-    // finish
-    exit(EXIT_SUCCESS);
+    return EXIT_SUCCESS;
+
 }
+

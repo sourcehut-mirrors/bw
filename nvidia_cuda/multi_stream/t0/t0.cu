@@ -24,10 +24,10 @@ int main()
  
         cudaMalloc(&data[i], N * sizeof(float));
         
-        // launch one worker kernel per stream
+        /* launch one worker kernel per stream */
         kernel<<<1, 64, 0, streams[i]>>>(data[i], N);
 
-        // launch a dummy kernel on the default stream
+        /* launch a dummy kernel on the default stream */
         kernel<<<1, 1>>>(0, 0);
     }
 

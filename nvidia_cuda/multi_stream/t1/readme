@@ -1,0 +1,23 @@
+
+dev$ 
+dev$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o t1 t1.cu 
+dev$ 
+dev$ nvprof ./t1
+==6513== NVPROF is profiling process 6513, command: ./t1
+==6513== Profiling application: ./t1
+==6513== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:  100.00%  204.42ms         8  25.552ms  23.519ms  26.783ms  kernel(float*, int)
+      API calls:   57.43%  1.21374s         8  151.72ms  144.22ms  162.82ms  cudaMalloc
+                   41.02%  866.99ms         8  108.37ms  30.335ms  183.95ms  cudaStreamSynchronize
+                    1.45%  30.722ms         8  3.8403ms  10.855us  10.642ms  cudaLaunchKernel
+                    0.05%  1.0580ms         1  1.0580ms  1.0580ms  1.0580ms  cuDeviceTotalMem
+                    0.02%  444.28us       101  4.3980us     439ns  182.81us  cuDeviceGetAttribute
+                    0.02%  343.48us         1  343.48us  343.48us  343.48us  cudaDeviceReset
+                    0.00%  46.377us         1  46.377us  46.377us  46.377us  cuDeviceGetName
+                    0.00%  6.0150us         1  6.0150us  6.0150us  6.0150us  cuDeviceGetPCIBusId
+                    0.00%  4.8190us         3  1.6060us     868ns  2.8750us  cuDeviceGetCount
+                    0.00%  2.6170us         2  1.3080us     624ns  1.9930us  cuDeviceGet
+                    0.00%     959ns         1     959ns     959ns     959ns  cuDeviceGetUuid
+dev$ 
+
