@@ -232,6 +232,9 @@ int main (int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
+        /* This clock resolution data is not very useful. It may say
+         * that the clock reports all the way down to a 1 nsec number
+         * but I assure you that doesn't mean very much. */
         printf("INFO : clock_resolution = %" PRIu64 " nsec\n",
                                                clock_resolution.tv_nsec);
 
@@ -617,7 +620,7 @@ int main (int argc, char **argv) {
     totaltime = 0.0;
     iteration_count = 0;
     for (j=20; j<26; ++j) {
-        for (k=10; k<16; ++k) {
+        for (k=12; k<16; ++k) {
             fid[0]=alph[j];
             fid[1]=alph[k];
 
@@ -636,7 +639,6 @@ int main (int argc, char **argv) {
                     fid_len = sizeof(fid);
                     strncat(filename,fid,fid_len);
 
-                    thisfile = 0.0;
                     if ( clock_gettime( CLOCK_REALTIME, &start_proc_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
                         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
@@ -668,9 +670,6 @@ int main (int argc, char **argv) {
 
                     iteration_count = iteration_count + 1;
 
-                    thisfile = ( (double)timediff( start_proc_hrt, end_proc_hrt ) ) / BigDivisor;
-
-                    totaltime = totaltime + thisfile;
                 } /* m for */
             } /* l for */
         } /* k for */
@@ -682,14 +681,10 @@ int main (int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    avgtime = totaltime / ( (double) iteration_count );
+    printf(" TEST (2) Wall Clock Total Time = %" PRIu64 " nsecs\n",
+             timediff(end_test1_hrt, end_test2_hrt) );
 
-
-    printf(" TEST (2) Wall Clock Total Time = %.6f sec\n\n",
-          ( (double)timediff(end_test1_hrt, end_test2_hrt) / BigDivisor ) );
-
-    printf("%6li files  avg=%.6f sec  total=%.6f sec  io_avg=%.6f MB/s\n",
-                 iteration_count, avgtime, totaltime, avg_file_io );
+    printf("%6li files\n", iteration_count);
 
 
     return EXIT_SUCCESS;
