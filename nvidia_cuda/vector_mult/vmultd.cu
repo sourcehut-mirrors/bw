@@ -42,7 +42,7 @@ vector_mult(const double *A, const double *B, double *C, int num_elements)
 int main(int argc, char *argv[])
 {
     struct timespec time_begin, time_end, t0, t1;
-    uint64_t tdelta_nsec;
+    uint64_t tdelta_nsec, cuda_malloc, cuda_memcpy, cuda_free;
 
     cudaError_t err = cudaSuccess;
     int num_elements = NUM_ELEMENTS;
@@ -69,8 +69,7 @@ int main(int argc, char *argv[])
 
     /* determine the number of CUDA capable GPUs */
     cudaGetDeviceCount(&num_gpus);
-    if ( num_gpus < 1 )
-    {
+    if ( num_gpus < 1 ) {
         printf("INFO : no CUDA capable devices were detected\n");
         return EXIT_FAILURE;
     }
@@ -79,8 +78,7 @@ int main(int argc, char *argv[])
     printf("INFO : number of host CPUs:\t%d\n", omp_get_num_procs());
     printf("INFO : number of CUDA devices:\t%d\n", num_gpus);
 
-    for (int i = 0; i < num_gpus; i++)
-    {
+    for (int i = 0; i < num_gpus; i++) {
         cudaDeviceProp dprop;
         cudaGetDeviceProperties(&dprop, i);
         printf("     :    %d: %s\n", i, dprop.name);
@@ -93,16 +91,14 @@ int main(int argc, char *argv[])
     double *h_B = (double *)malloc(size);
     double *h_C = (double *)malloc(size);
 
-    if (h_A == NULL || h_B == NULL || h_C == NULL)
-    {
+    if (h_A == NULL || h_B == NULL || h_C == NULL) {
         fprintf(stderr, "FAIL : memory allocate\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* fill the arrays A and B with random data */
     clock_gettime( CLOCK_REALTIME, &t0 );
-    for (int i = 0; i < num_elements; ++i)
-    {
+    for (int i = 0; i < num_elements; ++i) {
         h_A[i] = drand48();
         h_B[i] = drand48();
     }
@@ -113,8 +109,7 @@ int main(int argc, char *argv[])
 
     /* Allocate the device input memory */
     double *d_A = NULL;
-    if (cudaMalloc((void **)&d_A, size) != cudaSuccess)
-    {
+    if (cudaMalloc((void **)&d_A, size) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector A\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
@@ -122,13 +117,13 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t0 );
     tdelta_nsec = timediff( t1, t0);
+    cuda_malloc = tdelta_nsec;
     printf("     : cudaMalloc(A) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
     double *d_B = NULL;
-    if (cudaMalloc((void **)&d_B, size) != cudaSuccess)
-    {
+    if (cudaMalloc((void **)&d_B, size) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector B\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
@@ -136,13 +131,13 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
+    cuda_malloc += tdelta_nsec;
     printf("     : cudaMalloc(B) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
     double *d_C = NULL;
-    if (cudaMalloc((void **)&d_C, size) != cudaSuccess)
-    {
+    if (cudaMalloc((void **)&d_C, size) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector C\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
@@ -150,36 +145,43 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t0 );
     tdelta_nsec = timediff( t1, t0);
+    cuda_malloc += tdelta_nsec;
     printf("     : cudaMalloc(C) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
+    printf("TOTAL: cudaMalloc    %10" PRIu64 " nsecs  %9.7g secs\n",
+                     cuda_malloc, (float)cuda_malloc/1.0e9);
 
 
     /* Copy the host input A and B arrays in host memory
      * to the device memory */
-    if (cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice) != cudaSuccess)
-    {
+    clock_gettime(CLOCK_REALTIME, &t0);
+    err = cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
+    clock_gettime(CLOCK_REALTIME, &t1);
+    if (err != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to copy vector A from host to device\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
     printf("INFO : Copy of vector A from host to device done.\n");
-    clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
+    tdelta_nsec = timediff(t0, t1);
+    cuda_memcpy = tdelta_nsec;
     printf("     : cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
-    if (cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice) != cudaSuccess)
-    {
+    clock_gettime(CLOCK_REALTIME, &t0);
+    err = cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
+    clock_gettime(CLOCK_REALTIME, &t1);
+    if (err != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to copy vector B from host to device\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
     printf("INFO : Copy of vector B from host to device done.\n");
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff( t1, t0);
+    tdelta_nsec = timediff(t0, t1);
+    cuda_memcpy += tdelta_nsec;
     printf("     : cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
@@ -201,29 +203,29 @@ int main(int argc, char *argv[])
     cudaEventElapsedTime(&vector_mult_msec, start_cuda_event, stop_cuda_event);
 
     err = cudaGetLastError();
-    if (err != cudaSuccess)
-    {
+    if (err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed vectorAdd\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
-    clock_gettime( CLOCK_REALTIME, &t1 );
     printf("     : vector_mult %9.7g msecs\n", vector_mult_msec);
 
     /* Copy the device result memory d_C to the host result h_C memory */
+    clock_gettime(CLOCK_REALTIME, &t0);
     err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
-
-    if (err != cudaSuccess)
-    {
+    clock_gettime(CLOCK_REALTIME, &t1);
+    if (err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed to copy result vector C from device to host\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     printf("INFO : Copy result A from device to host done.\n");
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff( t1, t0 );
-    printf("     : cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
+    tdelta_nsec = timediff(t0, t1);
+    cuda_memcpy += tdelta_nsec;
+    printf("     : cudaMemcpy %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
+    printf("TOTAL: cudaMemcpy %10" PRIu64 " nsecs  %9.7g secs\n",
+                               cuda_memcpy, (float)cuda_memcpy/1.0e9);
 
 
     /* test that result vector is correct within epsilon error
@@ -250,39 +252,44 @@ int main(int argc, char *argv[])
     } else {
         printf("INFO : A * B went sideways somewhere\n");
     }
-    clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
+    clock_gettime(CLOCK_REALTIME, &t1);
+    tdelta_nsec = timediff(t0, t1);
     printf("     : epsilon %" PRIu64 " nsecs  %9.7g secs\n",
                           tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
     /* Free device memory */
+    clock_gettime(CLOCK_REALTIME, &t0);
     err = cudaFree(d_A);
-
-    if (err != cudaSuccess)
-    {
+    clock_gettime(CLOCK_REALTIME, &t1);
+    cuda_free = timediff(t0, t1);
+    if (err != cudaSuccess) {
         fprintf(stderr, "FAIL : Failed to free memory on device for vector A\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
 
+    clock_gettime(CLOCK_REALTIME, &t0);
     err = cudaFree(d_B);
-
-    if (err != cudaSuccess)
-    {
+    clock_gettime(CLOCK_REALTIME, &t1);
+    cuda_free += timediff(t0, t1);
+    if (err != cudaSuccess) {
         fprintf(stderr, "FAIL : Failed to free memory on device for vector B\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
 
+    clock_gettime(CLOCK_REALTIME, &t0);
     err = cudaFree(d_C);
-
-    if (err != cudaSuccess)
-    {
+    clock_gettime(CLOCK_REALTIME, &t1);
+    cuda_free += timediff(t0, t1);
+    if (err != cudaSuccess) {
         fprintf(stderr, "FAIL : Failed to free memory on device for vector C\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
+    printf("TOTAL: cudaFree   %10" PRIu64 " nsecs  %9.7g secs\n",
+                               cuda_free, (float)cuda_free/1.0e9);
 
     /* Free host memory */
     free(h_A);
