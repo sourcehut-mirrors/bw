@@ -370,14 +370,13 @@ int main(int argc, char *argv[])
     printf("     : gpu_mbrot time delta %" PRIu64 " nsecs\n", tdelta_nsec);
 
     fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
-    /*
+
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceSynchronize()\n");
         fprintf(stderr, "err = %0x\n", err );
         exit(EXIT_FAILURE);
     }
-    */
 
     /* Copy the device result memory to the host result memory */
     clock_gettime( CLOCK_REALTIME, &t0 );
