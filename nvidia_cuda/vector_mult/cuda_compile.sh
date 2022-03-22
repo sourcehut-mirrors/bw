@@ -4,6 +4,8 @@ PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/cuda-11.4/bin:/opt/
 
 NVCC=`(command -v nvcc)` ; export NVCC
 
+OPENSSL=`( command -v openssl )`; export OPENSSL
+
 rm -f vmult.o vmult > /dev/null 2>&1
 
 ${NVCC} -ccbin g++ -I../include -m64 \
@@ -32,6 +34,7 @@ ${NVCC} -ccbin g++ -m64 \
 
 ls -lapb vmult*
 
+${OPENSSL} dgst -sha512 -r vmultd.cu | cut -c1-128
 sleep 5 
 
 NVPROF=`( command -v nvprof )`; export NVPROF

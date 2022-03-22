@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         printf("     :    %d: %s\n", i, dprop.name);
     }
 
-    printf("INFO : Vector addition of %d double FP64 elements\n", num_elements);
+    printf("INFO : Vector multiply of %d double FP64 elements\n", num_elements);
     printf("     : Memory size of each array is %ld bytes\n", size );
 
     double *h_A = (double *)malloc(size);
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
 
     err = cudaGetLastError();
     if (err != cudaSuccess) {
-        fprintf(stderr, "FAIL : CUDA failed vectorAdd\n");
+        fprintf(stderr, "FAIL : CUDA failed vector_mult\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         return EXIT_FAILURE;
     }
