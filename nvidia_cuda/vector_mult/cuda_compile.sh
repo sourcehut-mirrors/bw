@@ -35,6 +35,7 @@ ${NVCC} -ccbin g++ -m64 \
 ls -lapb vmult*
 
 ${OPENSSL} dgst -sha512 -r vmultd.cu | cut -c1-128
+${OPENSSL} dgst -sha512 -r ../include/dat.h | cut -c1-128
 sleep 5 
 
 NVPROF=`( command -v nvprof )`; export NVPROF

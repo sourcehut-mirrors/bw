@@ -33,10 +33,12 @@
 
 
 /* lets try what fits in 4G of GPU mem */
-#define NUM_ELEMENTS 1048576
+#define NUM_ELEMENTS 16777216
 #define THREADS_PER_BLOCK 1024
-#define BAIL_OUT 8192
-#define MAGNIFY 137438953472
+#define BAIL_OUT 32768
+#define MAGNIFY 268435456
+#define REAL_COORD 0.39975096035050228
+#define IMAG_COORD 0.20525179748074152
 #define IMG_PIX_W 1024
 
 int sysinfo(void);
@@ -180,20 +182,8 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    /* hard coded coordinates in complex plane 
-    center_r = -1.5018879696731058e+00;
-    center_i = -2.1867454051976436e-05;
-
-    center_r = -1.9999435224162880;
-    center_i = 0.0;
-
-    center_r = -0.13655090238898993;
-    center_i =  1.0047914078459144;
-
-    */
-
-    center_r = -0.13655024443380626;
-    center_i =  1.0047922476418307;
+    center_r = REAL_COORD;
+    center_i = IMAG_COORD;
 
     clock_gettime( CLOCK_REALTIME, &t0 );
     for (int i = 0; i < num_elements; ++i) {
