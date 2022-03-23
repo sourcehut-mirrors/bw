@@ -113,7 +113,7 @@ int main (int argc, char **argv) {
     uint64_t qsort_min = 3600000000000;
     uint64_t qsort_max = 0;
     int bork = 0; /* just in case qsort and bubble sort disagree */
-    
+
     double avgtime;
     double this_file_io, avg_file_io;
 
@@ -123,7 +123,7 @@ int main (int argc, char **argv) {
     char dir1[2] = { 'a', 'a' };
     char fid[10] = { 'a', 'a', '/', 'a', 'a', '.', 'd', 'a', 't', '\0' };
 
-    /* see https://tools.ietf.org/html/rfc4648 RFC 4648   
+    /* see https://tools.ietf.org/html/rfc4648 RFC 4648
      * 5.  Base 64 Encoding with URL and Filename Safe Alphabet
      *
      *   0 A            17 R            34 i            51 z
@@ -198,7 +198,7 @@ int main (int argc, char **argv) {
 
     /* dump out some information about the system we are using */
     sysinfo(VERBOSE);
-    
+
     if (setlocale(LC_ALL,"POSIX") == NULL) {
         printf("INFO : for some reason setlocale fails.\n");
         return EXIT_FAILURE;
@@ -242,10 +242,10 @@ int main (int argc, char **argv) {
         clock_gettime(CLOCK_REALTIME, &start_hrt);
         clock_gettime(CLOCK_REALTIME, &end_hrt);
         baseline_delta = timediff(start_hrt, end_hrt);
-    
+
         printf("INFO : baseline delta time is %" PRIu64 " nsec\n",
                                                          baseline_delta);
-    
+
         /* With all these time and clock calls we may as well report the
          * current time. */
         c_time_string = ctime(&end_hrt.tv_sec);
@@ -267,7 +267,7 @@ int main (int argc, char **argv) {
          *
          * In the past we could use the Mersennne Twister as a random
          * number source. It makes sense to use a more modern method
-         * given that /dev/random can generally be accepted as near 
+         * given that /dev/random can generally be accepted as near
          * cryptographically random. Mostly. At least on most modern
          * systems running UNIX and Linux. To get a really flawless
          * random number generator we need something like radiation
@@ -287,7 +287,7 @@ int main (int argc, char **argv) {
      * since we are using short strings then we can cast it to a  *
      * simple int.                                                *
      **************************************************************/
-    
+
     /**************************************************************
      * copy the provided directory argument to the variable
      * directory with the exception of the last character.
@@ -299,7 +299,7 @@ int main (int argc, char **argv) {
      * 3 Apr 2021 : near as I can recall we need to append at
      *              least ten bytes onto the given filepath.
      *
-     *              filename pattern will be like "XX/XX.dat" 
+     *              filename pattern will be like "XX/XX.dat"
      *
      *              there is also a trailing nul byte "\0"
      *
@@ -395,6 +395,15 @@ int main (int argc, char **argv) {
         }
     } else {
         /* TODO check for group ownership and rights */
+
+        /*
+         * int    group_member(gid_t gid);
+         * gid_t  getgid(void);
+         * int    getgroups(int, gid_t []);
+         */
+
+        if ( group_member( getgroups(fid_status_buffer.st_gid
+
         fprintf (stderr,"ERR  : pathname provided not writable.\n");
         return EXIT_FAILURE;
     }
@@ -430,21 +439,21 @@ int main (int argc, char **argv) {
              * keep changing those letter chars as needed.  */
             fid[0]=alph[j];
             fid[1]=alph[k];
-    
+
             /* inner loops to change the filename.  */
             for (l=0; l<2 ; ++l) {
                 fid[3]=alph[l];
                 for (m=0; m<1; ++m) {
                     fid[4]=alph[m];
 
-                    /* 
+                    /*
                      * If we stick to just lowercase letters then we
                      * have 26^2 = 676 files per directory. Before long
                      * we would no longer be testing file IO rates and
                      * have to deal with overhead to locate a given file
                      * in a directory.
                      */
-        
+
                     filename_len = sizeof(filename);
                     strncpy(filename,directory,filename_len);
 
@@ -458,7 +467,7 @@ int main (int argc, char **argv) {
                         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
-    
+
                     /* memset to clear 64k_random */
                     memset(rand64k, 0x00, ((size_t)65536)*sizeof(uint8_t));
 
@@ -483,14 +492,14 @@ int main (int argc, char **argv) {
                         /* now use that random pile of bytes to generate
                          * random text */
                         for (char_count = 0; char_count < 65535; ++char_count ) {
-                            /* ensure we only use 7 low bits of those 
+                            /* ensure we only use 7 low bits of those
                              * random numbers. Thus we mask with the
                              * binary value 01111111 */
                             k_index = rand64k[char_count] & (uint8_t)0x3f;
                             buffer_64k_rand_text[char_count]=alph[k_index];
                         }
                     }
-        
+
                     /* insert newline chars at 64 bytes each */
                     for (char_count = 63; char_count < 65535; char_count+=64){
                         buffer_64k_rand_text[char_count]='\n';
@@ -504,7 +513,7 @@ int main (int argc, char **argv) {
                         fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
-        
+
                     /* this is nothing but the time to create the
                      * random 64k bytes */
                     r64_dump_time_hrt += timediff(random_buffer_start_hrt, end_hrt);
@@ -515,8 +524,8 @@ int main (int argc, char **argv) {
                         fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
-    
-                    /* TODO try a more intelligent approach to this using 
+
+                    /* TODO try a more intelligent approach to this using
                      * fstat/stat etc */
                     if ( (fp = fopen(filename, "w")) == NULL ) {
                         /* probably the directory does not exist yet.
@@ -533,7 +542,7 @@ int main (int argc, char **argv) {
                             perror("FAIL ");
                             return EXIT_FAILURE;
                         }
-                            
+
                         /* we know for certain that the directory exists */
                         errno = 0;
                         if ( (fp = fopen(filename, "w")) == NULL ) {
@@ -554,9 +563,9 @@ int main (int argc, char **argv) {
                         return EXIT_FAILURE;
                     }
                     fclose ( fp ); /* close the file and flush buffers */
-        
+
                     iteration_count = iteration_count + 1;
-        
+
                     if ( clock_gettime( CLOCK_REALTIME, &end_proc_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
                         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
@@ -573,7 +582,7 @@ int main (int argc, char **argv) {
     } /* j for */
 
     /* NOTE this marks the end of the initial file create and 64k dump */
-    
+
     if ( clock_gettime( CLOCK_REALTIME, &end_test1_hrt ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
@@ -585,11 +594,11 @@ int main (int argc, char **argv) {
     totaltime = timediff(start_hrt, end_test1_hrt);
 
     avgtime = (double)totaltime/((double)iteration_count * NANOSEC);
-    
+
     avg_file_io = ((double)iteration_count * SIXTYFOURK )
                 / ((double)totaltime * ONE_MEG * NANOSEC );
-    
-    printf("\n TEST (1) Wall Clock Time was %.6f sec\n\n", 
+
+    printf("\n TEST (1) Wall Clock Time was %.6f sec\n\n",
                (double)totaltime/NANOSEC );
 
     printf("%6li files \n", iteration_count);
@@ -600,7 +609,7 @@ int main (int argc, char **argv) {
 
     printf("Time required for random text generation = %.6f sec\n",
                (double)r64_dump_time_hrt/NANOSEC );
-    
+
     /*******************************************************************/
 
     printf ( "\\nnTEST 2 ) file append 2048 bytes." );
@@ -650,7 +659,7 @@ int main (int argc, char **argv) {
                         fprintf ( stderr, "%s: ABORTING\n", argv[0]);
                         perror ("FAIL ");
                         return EXIT_FAILURE ;
-                    } else {  
+                    } else {
                         /** append the data **/
                         append_2k ( fp );
                         fflush_err = fflush ( fp );
@@ -716,7 +725,7 @@ static double genrand(void) {
         0x8121da71, 0x8b823ecb, 0x885d05f5, 0x4e20cd47, 0x5a9ad5d9,
         0x512c0c03, 0xea857ccd, 0x4cc1d30f, 0x8891a8a1, 0xa6b7aadb
     };
-    static unsigned long mag01[2]={ 
+    static unsigned long mag01[2]={
         0x0, 0x8ebfd028 /* this is magic vector `a', don't change */
     };
     if (k==N) { /* generate N words at one time */
@@ -733,7 +742,7 @@ static double genrand(void) {
     y ^= (y << 7) & 0x2b5b2500; /* s and b, magic vectors */
     y ^= (y << 15) & 0xdb8b0000; /* t and c, magic vectors */
     y &= 0xffffffff; /* you may delete this line if word size = 32 */
-/* 
+/*
    the following line was added by Makoto Matsumoto in the 1996 version
    to improve lower bit's corellation.
    Delete this line to use the code published in 1994.
@@ -754,7 +763,7 @@ void append_2k ( FILE *fp ) {
         fprintf ( fp, "\n" );
 
     fprintf( fp, "Suddenly I felt as if I had more to say.\n\n");
-    fprintf( fp, "\n\n------------- Rage against the dying of the disk -----------\n\n"); 
+    fprintf( fp, "\n\n------------- Rage against the dying of the disk -----------\n\n");
     fprintf( fp, "Do not go slowly into that good server,\n");
     fprintf( fp, "Old disks should spin and seek at close of file;\n");
     fprintf( fp, "Rage, rage against the dying of the disk.\n");
@@ -797,7 +806,7 @@ void append_TSE ( FILE *fp ) {
     fprintf( fp, "And breastless creatures under ground\n");
     fprintf( fp, "Leaned backward with a lipless grin.\n");
     fprintf( fp, "\n");
- 
+
     fprintf( fp, "Daffodil bulbs instead of balls               5\n");
     fprintf( fp, "Stared from the sockets of the eyes!\n");
     fprintf( fp, "He knew that thought clings round dead limbs\n");
@@ -809,7 +818,7 @@ void append_TSE ( FILE *fp ) {
     fprintf( fp, "To seize and clutch and penetrate;\n");
     fprintf( fp, "Expert beyond experience,\n");
     fprintf( fp, "\n");
- 
+
     fprintf( fp, "He knew the anguish of the marrow\n");
     fprintf( fp, "The ague of the skeleton;\n");
     fprintf( fp, "No contact possible to flesh                  15\n");

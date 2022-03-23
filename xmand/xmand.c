@@ -85,14 +85,6 @@ uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
 #define WIN_WIDTH 1044
 #define WIN_HEIGHT 1044
 
-/* TODO : make geometry a variable we accept
- * 14 Sept 2020 we have an issue where this just will not fit
- * on smaller display type machines. Really this needs to be
- * a damn command line geometry variable.
-#define WIN_WIDTH 800
-#define WIN_HEIGHT 600
- */
-
 /* lets live with the crazy notion that we may have a bonkers
  * AMD ThreadRipper in our lives someday and just say sure we
  * can dispatch 256 threads at once. Someday. In dreams. */
@@ -133,6 +125,9 @@ int main(int argc, char*argv[])
 
     /* we need a double click on replot to trigger */
     int replot_flag = 0;
+
+    /* we need a double click on the file dumper also */
+    int dumper_flag = 0;
 
     /* please see https://arxiv.org/abs/1108.5083
      * A colour scheme for the display of astronomical intensity images
@@ -709,6 +704,11 @@ int main(int argc, char*argv[])
     sprintf(buf,"REPLOT");
     XDrawImageString( dsp, win2, gc2, 332, 207, buf, (int)strlen(buf));
 
+    /* create a file dump button */
+    XSetForeground(dsp, gc2, magenta.pixel);
+    XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+    sprintf(buf,"DUMPER");
+    XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
 
     /****************************************************************
      *
@@ -1298,14 +1298,11 @@ int main(int argc, char*argv[])
                              && ( ( x_prime + 8.0 ) > EPSILON )
                              && ( ( y_prime + 8.0 ) > EPSILON ) ) {
 
-                    /* TODO why that janky EPSILON check above? code done
-                     * live on twitch can be mysterious months later with no
-                     * damn comment. The only thing that stuff does is to
-                     * determine are we inside the replot button? 
+                    /* The above is a janky EPSILON check which verifies
+                     * the mouse location is inside the REPLOT button
+                     * window area.
                      *
-                     * A comment below claims :
-                     *
-                     *  CHECK THAT x_prime and y_prime are NOT the initial
+                     * Also verify x_prime and y_prime are NOT the initial
                      *     impossible values ( -8.0, -8.0 )
                      */
 
@@ -1364,8 +1361,45 @@ int main(int argc, char*argv[])
 
                     }
 
-                }
+                } else if (     ( mouse_x_raw > 1372 ) && ( mouse_y_raw > 885 )
+                             && ( mouse_x_raw < 1442 ) && ( mouse_y_raw < 903 )
+                             && ( ( x_prime + 8.0 ) > EPSILON )
+                             && ( ( y_prime + 8.0 ) > EPSILON ) ) {
 
+                    /* The above is a janky EPSILON check which verifies
+                     * the mouse location is inside the DUMPER button
+                     * window area.
+                     *
+                     * Also verify x_prime and y_prime are NOT the initial
+                     *     impossible values ( -8.0, -8.0 )
+                     */
+
+                    if ( dumper_flag == 0 ) {
+                        /* we need that button to be double clicked so
+                         * at this time we flip the button to cornflowerblue */
+                        XSetForeground(dsp, gc2, cornflowerblue.pixel);
+                        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                        sprintf(buf,">DUMPER<");
+                        XDrawImageString( dsp, win2, gc2, 324, 177, buf, (int)strlen(buf));
+                        dumper_flag = 1;
+                        fprintf(stderr,"INFO : dumper_flag = 1\n");
+
+                    } else {
+                        /* we are confirmed. Switch the dumper button back to
+                         * magenta and create a new data file in the users TMPDIR
+                         */
+
+                        XSetForeground(dsp, gc2, magenta.pixel);
+                        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                        sprintf(buf,"DUMPER");
+                        XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+
+                        /* TODO the logic and error trapping for a file data dump */
+                        dumper_flag = 0;
+                        fprintf(stderr,"INFO : dumper_flag = 0\n");
+
+                    }
+                }
             }
 
         } else if ( button == Button2 ) {
