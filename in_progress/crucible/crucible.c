@@ -370,7 +370,7 @@ int main (int argc, char **argv) {
 
     /* is that a valid directory?
      * The sys/stat.h header says we need S_IFDIR value 0040000 */
-    if ((fid_status_buffer.st_mode bitor 00040000) == 00040000) {
+    if ((fid_status_buffer.st_mode bitand 00040000) == 00040000) {
         fprintf (stderr,"ERR  : pathname provided not a directory.\n");
         return EXIT_FAILURE;
     }
@@ -387,7 +387,7 @@ int main (int argc, char **argv) {
 
     /* the user should have rwx permissions on the directory
      * otherwise we need to check the group permissions */
-    if ( (fid_status_buffer.st_mode bitor 00000700) == 0000700 ) {
+    if ( (fid_status_buffer.st_mode bitand 00000700) == 0000700 ) {
         printf("     : valid write permission for owner.\n");
 
         if (fid_status_buffer.st_uid == effective_uid) {
@@ -442,7 +442,7 @@ int main (int argc, char **argv) {
         if ( group_match == 1 ) {
             /* wonderful but can we read, write and execure/search
              * in the directory ? */
-            if (( fid_status_buffer.st_mode bitor 00000070 ) != 00000070 ) {
+            if (( fid_status_buffer.st_mode bitand 00000070 ) != 00000070 ) {
                 fprintf (stderr,"ERR  : pathname provided not group usable.\n");
                 free(group_list);
                 return EXIT_FAILURE;
