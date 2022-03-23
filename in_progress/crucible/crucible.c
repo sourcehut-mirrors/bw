@@ -69,6 +69,7 @@
 #include <sys/types.h>
 
 #define VERBOSE 1
+#define MAX_GROUPS 16
 #define SIXTYFOURK 65536
 #define ONE_MEG 1048576
 #define NANOSEC 1000000000
@@ -367,8 +368,9 @@ int main (int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    /* is that a valid directory? */
-    if (S_ISDIR(fid_status_buffer.st_mode) == 0) {
+    /* is that a valid directory?
+     * The sys/stat.h header says we need S_IFDIR value 0040000 */
+    if ((fid_status_buffer.st_mode bitor 00040000) == 00040000) {
         fprintf (stderr,"ERR  : pathname provided not a directory.\n");
         return EXIT_FAILURE;
     }
@@ -380,11 +382,12 @@ int main (int argc, char **argv) {
     uid_t effective_uid = geteuid();
     printf("INFO : fid_status_buffer.st_uid = %i\n", fid_status_buffer.st_uid);
     printf("     : fid_status_buffer.st_gid = %i\n", fid_status_buffer.st_gid);
-    printf("     : effective_uid = %i\n", effective_uid);
+    printf("     : this user  effective_uid = %i\n", effective_uid);
 
 
-    /* iso646.h terms for bitwise logical operations */
-    if ((fid_status_buffer.st_mode bitor S_IWUSR) != 0 ) {
+    /* the user should have rwx permissions on the directory
+     * otherwise we need to check the group permissions */
+    if ( (fid_status_buffer.st_mode bitor 00000700) == 0000700 ) {
         printf("     : valid write permission for owner.\n");
 
         if (fid_status_buffer.st_uid == effective_uid) {
@@ -394,18 +397,58 @@ int main (int argc, char **argv) {
             return EXIT_FAILURE;
         }
     } else {
-        /* TODO check for group ownership and rights */
+        /* we can plan for a user that may be in 16 groups
+         * and that should be more than enough */
+        errno = 0;
+        gid_t *group_list = calloc(MAX_GROUPS, sizeof(gid_t));
+        if ( group_list == NULL ) {
+            /* really? possible ENOMEM? */
+            if ( errno == ENOMEM ) {
+                fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+            } else {
+                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+            }
+            perror("FAIL ");
+            /* NOTE : it is very nasty to bail out this way
+             */
+            return EXIT_FAILURE;
+        }
 
-        /*
-         * int    group_member(gid_t gid);
-         * gid_t  getgid(void);
-         * int    getgroups(int, gid_t []);
-         */
+        errno = 0;
+        int num_of_groups = getgroups(MAX_GROUPS, group_list);
 
-        if ( group_member( getgroups(fid_status_buffer.st_gid
+        if ( num_of_groups < 0 ) {
+            perror("ERR  ");
+            return EXIT_FAILURE;
+        }
 
-        fprintf (stderr,"ERR  : pathname provided not writable.\n");
-        return EXIT_FAILURE;
+        /* walk the group list to see if the user matches the
+         * directory st_gid */
+
+        int group_match = 0;
+        for ( int s=0; s<num_of_groups; s++ ) {
+            if ( fid_status_buffer.st_gid == group_list[s] ) {
+                /* we have a group id match */
+                printf("     : this user is in grp_id = %i\n",
+                                                         group_list[s]);
+
+                group_match = 1;
+                s = num_of_groups;
+            }
+        }
+
+        if ( group_match == 1 ) {
+            /* wonderful but can we read, write and execure/search
+             * in the directory ? */
+            if (( fid_status_buffer.st_mode bitor 00000070 ) != 00000070 ) {
+                fprintf (stderr,"ERR  : pathname provided not group usable.\n");
+                free(group_list);
+                return EXIT_FAILURE;
+            }
+        }
+        free(group_list);
     }
 
     totaltime = 0;
@@ -416,6 +459,7 @@ int main (int argc, char **argv) {
     file_create_time = 0;
     iteration_count = 0;
 
+    /* TODO return this back to /dev/urandom */
     if ((frandom = fopen("/dev/Xrandom", "r")) == NULL) {
         fprintf(stderr, "%s: can't read /dev/urandom \n", argv[0]);
         perror("WARN : ");
