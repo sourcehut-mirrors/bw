@@ -370,7 +370,8 @@ int main (int argc, char **argv) {
 
     /* is that a valid directory?
      * The sys/stat.h header says we need S_IFDIR value 0040000 */
-    if ((fid_status_buffer.st_mode bitand 00040000) == 00040000) {
+
+    if (S_ISDIR(fid_status_buffer.st_mode) == 0) {
         fprintf (stderr,"ERR  : pathname provided not a directory.\n");
         return EXIT_FAILURE;
     }
@@ -380,9 +381,11 @@ int main (int argc, char **argv) {
      *     st_gid
      */
     uid_t effective_uid = geteuid();
+    gid_t effective_gid = getegid();
     printf("INFO : fid_status_buffer.st_uid = %i\n", fid_status_buffer.st_uid);
     printf("     : fid_status_buffer.st_gid = %i\n", fid_status_buffer.st_gid);
     printf("     : this user  effective_uid = %i\n", effective_uid);
+    printf("     : this user  effective_gid = %i\n", effective_gid);
 
 
     /* the user should have rwx permissions on the directory
@@ -397,58 +400,62 @@ int main (int argc, char **argv) {
             return EXIT_FAILURE;
         }
     } else {
-        /* we can plan for a user that may be in 16 groups
-         * and that should be more than enough */
-        errno = 0;
-        gid_t *group_list = calloc(MAX_GROUPS, sizeof(gid_t));
-        if ( group_list == NULL ) {
-            /* really? possible ENOMEM? */
-            if ( errno == ENOMEM ) {
-                fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                        __FILE__, __LINE__ );
-            } else {
-                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                        __FILE__, __LINE__ );
-            }
-            perror("FAIL ");
-            /* NOTE : it is very nasty to bail out this way
-             */
-            return EXIT_FAILURE;
-        }
 
-        errno = 0;
-        int num_of_groups = getgroups(MAX_GROUPS, group_list);
+        if ( fid_status_buffer.st_gid != effective_gid ) {
 
-        if ( num_of_groups < 0 ) {
-            perror("ERR  ");
-            return EXIT_FAILURE;
-        }
-
-        /* walk the group list to see if the user matches the
-         * directory st_gid */
-
-        int group_match = 0;
-        for ( int s=0; s<num_of_groups; s++ ) {
-            if ( fid_status_buffer.st_gid == group_list[s] ) {
-                /* we have a group id match */
-                printf("     : this user is in grp_id = %i\n",
-                                                         group_list[s]);
-
-                group_match = 1;
-                s = num_of_groups;
-            }
-        }
-
-        if ( group_match == 1 ) {
-            /* wonderful but can we read, write and execure/search
-             * in the directory ? */
-            if (( fid_status_buffer.st_mode bitand 00000070 ) != 00000070 ) {
-                fprintf (stderr,"ERR  : pathname provided not group usable.\n");
-                free(group_list);
+            /* we can plan for a user that may be in 16 groups
+             * and that should be more than enough */
+            errno = 0;
+            gid_t *group_list = calloc(MAX_GROUPS, sizeof(gid_t));
+            if ( group_list == NULL ) {
+                /* really? possible ENOMEM? */
+                if ( errno == ENOMEM ) {
+                    fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                            __FILE__, __LINE__ );
+                } else {
+                    fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                            __FILE__, __LINE__ );
+                }
+                perror("FAIL ");
+                /* NOTE : it is very nasty to bail out this way
+                 */
                 return EXIT_FAILURE;
             }
+
+            errno = 0;
+            int num_of_groups = getgroups(MAX_GROUPS, group_list);
+    
+            if ( num_of_groups < 0 ) {
+                perror("ERR  ");
+                return EXIT_FAILURE;
+            }
+    
+            /* walk the group list to see if the user matches the
+             * directory st_gid */
+            int group_match = 0;
+            for ( int s=0; s<num_of_groups; s++ ) {
+                if ( fid_status_buffer.st_gid == group_list[s] ) {
+                    /* we have a group id match */
+                    printf("     : this user is in   grp_id = %i\n",
+                                                             group_list[s]);
+    
+                    group_match = 1;
+                    s = num_of_groups;
+                }
+            }
+    
+            if ( group_match == 1 ) {
+                /* wonderful but can we read, write and execure/search
+                 * in the directory ? */
+                if (( fid_status_buffer.st_mode bitand 00000070 ) != 00000070 ) {
+                    fprintf (stderr,"ERR  : pathname provided not group usable.\n");
+                    free(group_list);
+                    return EXIT_FAILURE;
+                }
+            }
+            free(group_list);
+
         }
-        free(group_list);
     }
 
     totaltime = 0;
