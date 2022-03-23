@@ -394,8 +394,7 @@ int main (int argc, char **argv) {
             return EXIT_FAILURE;
         }
     } else {
-        /* LLVM/Clang suggests this code block will never 
-         * be reachable */
+        /* TODO check for group ownership and rights */
         fprintf (stderr,"ERR  : pathname provided not writable.\n");
         return EXIT_FAILURE;
     }
