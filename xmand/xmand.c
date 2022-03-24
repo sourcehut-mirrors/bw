@@ -106,7 +106,7 @@ int main(int argc, char*argv[])
     /* a very few colours */
     XColor red, green, blue, yellow, cyan, magenta;
     XColor cornflowerblue, royal_blue, very_dark_grey;
-    XColor mandlebrot;
+    XColor oldlace, mandlebrot;
 
     /* pre-loaded 8-bit color map */
     unsigned long lsd_trippy[256];
@@ -195,7 +195,13 @@ int main(int argc, char*argv[])
     int vbox_x, vbox_y;
 
     uint32_t mandel_val[16][16][64][64];
-    memset( &mandel_val, 0x00, (size_t)(64*64*16*16)* sizeof(uint32_t));
+    memset(&mandel_val, 0x00, (size_t)(64*64*16*16)* sizeof(uint32_t));
+
+    /* the actual complex coordinates */
+    double coord_r[16][16][64][64];
+    double coord_j[16][16][64][64];
+    memset(&coord_r, 0x00, (size_t)(64*64*16*16)* sizeof(double));
+    memset(&coord_j, 0x00, (size_t)(64*64*16*16)* sizeof(double));
 
     /* pre-fill the lsd trippy color map */
     for ( k=0; k<256; k++ ) {
@@ -241,7 +247,7 @@ int main(int argc, char*argv[])
     if ( clock_gettime( CLOCK_REALTIME, &now_time ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } else {
         /* call srand48() with the sub-second time data */
         srand48( (long) now_time.tv_nsec );
@@ -256,7 +262,7 @@ int main(int argc, char*argv[])
     t_delta = timediff( soln_t0, soln_t1 );
     /* this t_delta is a baseline offset value that we seem to ignore
      * anyways. */
-    printf("INFO : baseline tdelta = %14lld nsec\n", t_delta);
+    printf("INFO : baseline tdelta = %14" PRIu64 " nsec\n", t_delta);
 
     errno = 0;
     if ( ( argc < 6 ) && ( argc > 1 ) ) {
@@ -267,7 +273,7 @@ int main(int argc, char*argv[])
         fprintf(stderr,"     :          double_imaginary\\\n");
         fprintf(stderr,"     :          pthread_count\n");
         fprintf(stderr,"     : quitting.\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     } else if ( argc >= 6 ) {
         /* TODO someday maybe
          * check if the first char in argv[1] is a letter 'p' and then
@@ -278,7 +284,7 @@ int main(int argc, char*argv[])
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : bail_out_integer not understood\n");
             perror("     ");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
         if ( ( candidate_int < 256 ) || ( candidate_int > 134217728 ) ){
             fprintf(stderr,"WARN : mandlebrot bail out is unreasonable\n");
@@ -301,7 +307,7 @@ int main(int argc, char*argv[])
             if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
                 fprintf(stderr,"FAIL : magnify_integer not understood\n");
                 perror("     ");
-                return ( EXIT_FAILURE );
+                return EXIT_FAILURE;
             }
             if ( ( candidate_int < 1 ) || ( candidate_int > ( 1<<30 ) ) ){
                 fprintf(stderr,"WARN : magnify_integer is unreasonable\n");
@@ -335,12 +341,12 @@ int main(int argc, char*argv[])
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : double real coordinate not understood\n");
             perror("     ");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
         if ( !isnormal(candidate_double) && ( candidate_double != 0.0 ) ) {
             fprintf(stderr,"FAIL : double real coordinate is not normal\n");
             fprintf(stderr,"     : looks like %-+18.12e\n", candidate_double);
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
         feclearexcept(FE_ALL_EXCEPT);
         if ( ( candidate_double < -2.0 ) || ( candidate_double > 2.0 ) ){
@@ -371,12 +377,12 @@ int main(int argc, char*argv[])
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : double imaginary coordinate not understood\n");
             perror("     ");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
         if ( !isnormal(candidate_double) && ( candidate_double != 0.0 ) ) {
             fprintf(stderr,"FAIL : double imaginary coordinate is not normal\n");
             fprintf(stderr,"     : looks like %-+18.12e\n", candidate_double);
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
         feclearexcept(FE_ALL_EXCEPT);
         if ( ( candidate_double < -2.0 ) || ( candidate_double > 2.0 ) ){
@@ -392,7 +398,7 @@ int main(int argc, char*argv[])
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : pthread_limit not understood\n");
             perror("     ");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
         if ( ( candidate_int < 1 ) || ( candidate_int > 64 ) ){
             fprintf(stderr,"WARN : pthread_limit is unreasonable\n");
@@ -461,7 +467,7 @@ int main(int argc, char*argv[])
     obs_y_height = 4.0 / magnify;
 
     /* ensure we start with clear vbox flags */
-    memset( &vbox_flag, 0x00, (size_t)(16*16)*sizeof(int));
+    memset(&vbox_flag, 0x00, (size_t)(16*16)*sizeof(int));
 
     width = WIN_WIDTH;
     height = WIN_HEIGHT;
@@ -475,7 +481,7 @@ int main(int argc, char*argv[])
     if (dsp == NULL) {
         fprintf(stderr, "%s: no X server?? '%s'\n",
             argv[0], disp_name);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     conn_num = XConnectionNumber(dsp);
     printf("     : connection number %i\n", conn_num);
@@ -501,7 +507,7 @@ int main(int argc, char*argv[])
          ||
          ( disp_height < (int)height ) ) {
         fprintf(stderr, "ERROR: screen is too small\n\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* hard coded screen offset */
@@ -538,39 +544,39 @@ int main(int argc, char*argv[])
                          screen_colormap,
                          "red", &red, &red) == 0) {
         fprintf(stderr, "XAllocNamedColor - no red color?\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     if (XAllocNamedColor(dsp,
                          screen_colormap,
                          "green", &green, &green) == 0) {
         fprintf(stderr, "XAllocNamedColor - red works but green no??\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     if (XAllocNamedColor(dsp,
                          screen_colormap,
                          "blue", &blue, &blue) == 0) {
         fprintf(stderr, "XAllocNamedColor - red and green okay but blue??\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
     if (XAllocNamedColor(dsp,
                          screen_colormap,
                          "yellow", &yellow, &yellow) == 0) {
         fprintf(stderr, "XAllocNamedColor - yellow bork bork bork!\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     if (XAllocNamedColor(dsp,
                          screen_colormap,
                          "cyan", &cyan, &cyan) == 0) {
         fprintf(stderr, "XAllocNamedColor - cyan bork bork bork!\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     if (XAllocNamedColor(dsp,
                          screen_colormap,
                          "magenta", &magenta, &magenta) == 0) {
         fprintf(stderr, "XAllocNamedColor - magenta bork bork!\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* cornflowerblue is #6495ED */
@@ -579,11 +585,11 @@ int main(int argc, char*argv[])
                          "cornflowerblue",
                          &cornflowerblue, &cornflowerblue) == 0) {
         fprintf(stderr, "XAllocNamedColor - cornflowerblue fails.\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* request Royal Blue which should be #4169E1 however we
-     * will get whatever teh hardware can map closest to the
+     * will get whatever the hardware can map closest to the
      * request */
     royal_blue.flags= DoRed | DoGreen | DoBlue;
     royal_blue.red = 0x4100;
@@ -591,7 +597,18 @@ int main(int argc, char*argv[])
     royal_blue.blue = 0xe100;
     if ( XAllocColor(dsp, screen_colormap, &royal_blue) == 0 ) {
         fprintf(stderr, "XAllocColor - royal_blue fails.\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
+    }
+
+    /* possible idea for a progress bar to show that a file
+     * is being dumped */
+    oldlace.flags= DoRed | DoGreen | DoBlue;
+    oldlace.red = 0xfd00;
+    oldlace.green = 0xf500;
+    oldlace.blue = 0xe600;
+    if ( XAllocColor(dsp, screen_colormap, &oldlace) == 0 ) {
+        fprintf(stderr, "XAllocColor - oldlace fails.\n");
+        return EXIT_FAILURE;
     }
 
     /* We need an inner grid which in our main plot window
@@ -604,7 +621,7 @@ int main(int argc, char*argv[])
     very_dark_grey.blue = 0x1f00;
     if ( XAllocColor(dsp, screen_colormap, &very_dark_grey) == 0 ) {
         fprintf(stderr, "XAllocColor - very_dark_grey fails.\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* this is a hack color data value that we will abuse later
@@ -619,7 +636,7 @@ int main(int argc, char*argv[])
 
     if ( XAllocColor(dsp, screen_colormap, &mandlebrot) == 0 ) {
         fprintf(stderr, "XAllocColor - gee .. mandlebrot fail.\n");
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     /* main plot window yellow pixel at each corner 5 pixels indent */
@@ -789,7 +806,7 @@ int main(int argc, char*argv[])
     /* this t_delta is a baseline offset value wherein we at least
      * know how long the clock_gettime takes. Mostly. */
 
-    sprintf(buf,"[0000] tdelta = %14lld nsec", t_delta);
+    sprintf(buf,"[0000] tdelta = %14" PRIu64 " nsec", t_delta);
     XDrawImageString( dsp, win3, gc3, 10, 20, buf, (int)strlen(buf));
 
     /* TODO WTF ??
@@ -827,11 +844,11 @@ int main(int argc, char*argv[])
                 fprintf(stderr,"FAIL : calloc says ENOMEM\n");
                 fprintf(stderr,"     : so best buy some more.\n");
                 perror("     ");
-                return ( EXIT_FAILURE );
+                return EXIT_FAILURE;
             }
             fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
             perror("FAIL ");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     }
 
@@ -1058,7 +1075,7 @@ int main(int argc, char*argv[])
                 clock_gettime( CLOCK_MONOTONIC, &soln_t1 );
 
                 t_delta = timediff( soln_t0, soln_t1 );
-                sprintf(buf,"[join] = %14lld nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
+                sprintf(buf,"[join] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
                 fprintf(stderr,"%s\n",buf);
                 XSetForeground(dsp, gc3, magenta.pixel);
                 XDrawImageString( dsp, win3, gc3, 10, 270, buf, (int)strlen(buf));
@@ -1104,7 +1121,7 @@ int main(int argc, char*argv[])
                                 sub_pixel_real = x_prime + ( p - 1 ) * pixel_real_width / 3.0;
                                 sub_pixel_imag = y_prime + ( q - 1 ) * pixel_imag_height / -3.0;
 
-                                mand_height = mbrot( sub_pixel_real, sub_pixel_imag, mand_bail );
+                                mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
 
                                 if ( mand_height == mand_bail ) {
                                     XSetForeground(dsp, gc2, (unsigned long)0 );
@@ -1131,7 +1148,7 @@ int main(int argc, char*argv[])
                 clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
 
                 t_delta = timediff( soln_t1, soln_t0 );
-                sprintf(buf,"[plot] = %14lld nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
+                sprintf(buf,"[plot] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
                 fprintf(stderr,"%s\n",buf);
                 XSetForeground(dsp, gc3, green.pixel);
                 XDrawImageString( dsp, win3, gc3, 10, 290, buf, (int)strlen(buf));
@@ -1328,7 +1345,7 @@ int main(int argc, char*argv[])
                         XSetForeground(dsp, gc2, red.pixel);
                         XDrawRectangle(dsp, win2, gc2, 320, 192, 72, 20);
                         sprintf(buf," REPLOT ");
-                        XDrawImageString( dsp, win2, gc2, 324, 207, buf, (int)strlen(buf));
+                        XDrawImageString(dsp, win2, gc2, 324, 207, buf, (int)strlen(buf));
                         replot_flag = 0;
                         /* we now need to figure out what minimal stuff we can do to
                          * actually get a replot at the selected center and with
@@ -1337,7 +1354,7 @@ int main(int argc, char*argv[])
                         mouse_x = 512;   /* try to be dead center */
                         mouse_y = 518;   /* after a hokey adjustment */
 
-                        mand_bail = (uint32_t)( (double)mand_bail * bail_out_factor );
+                        mand_bail = (uint32_t)((double)mand_bail * bail_out_factor);
                         fprintf(stderr,"INFO : mand_bail changed to %" PRIu32 "\n", mand_bail);
 
                         magnify *= magnify_factor;
@@ -1355,7 +1372,7 @@ int main(int argc, char*argv[])
 
                         real_translate = x_prime;
                         imag_translate = y_prime;
-                        fprintf(stderr,"INFO : c = %-+16.12e, %-+16.12e  ", x_prime, y_prime );
+                        fprintf(stderr,"INFO : c = %-+16.12e, %-+16.12e  ", x_prime, y_prime);
 
                         goto replot;
 
@@ -1394,7 +1411,7 @@ int main(int argc, char*argv[])
                         sprintf(buf,"DUMPER");
                         XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
 
-                        /* TODO the logic and error trapping for a file data dump */
+                        /* TODO dump file data */
                         dumper_flag = 0;
                         fprintf(stderr,"INFO : dumper_flag = 0\n");
 
@@ -1506,7 +1523,10 @@ replot:
                                     if ( vbox_flag[vbox_x][vbox_y] == 1 ) {
                                         mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
                                     } else {
-                                        mand_height = mbrot( x_prime, y_prime, mand_bail );
+                                        /* the actual mandelbrot computation for (x_prime, y_prime) */
+                                        coord_r[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = x_prime;
+                                        coord_j[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = y_prime;
+                                        mand_height = mbrot(x_prime, y_prime, mand_bail);
                                         mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = mand_height;
                                     }
 
@@ -1562,7 +1582,7 @@ replot:
                             vbox_flag[vbox_x][vbox_y] = 1;
                             clock_gettime( CLOCK_MONOTONIC, &vbox_t1 );
                             t_delta = timediff( vbox_t0, vbox_t1);
-                            sprintf(buf,"[vbox] = %14lld nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
+                            sprintf(buf,"[vbox] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
                             XSetForeground(dsp, gc3, yellow.pixel);
                             XDrawImageString( dsp, win3, gc3, 10, 310, buf, (int)strlen(buf));
                         }
@@ -1577,7 +1597,7 @@ replot:
             XSetForeground(dsp, gc, yellow.pixel);
             clock_gettime( CLOCK_MONOTONIC, &soln_t1 );
             t_delta = timediff( soln_t0, soln_t1 );
-            sprintf(buf,"[mand] = %14lld nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
+            sprintf(buf,"[mand] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
             fprintf(stderr,"%s\n\n",buf);
             XSetForeground(dsp, gc2, red.pixel);
             XDrawImageString( dsp, win2, gc2, 10, 310, buf, (int)strlen(buf));
@@ -1588,11 +1608,9 @@ replot:
             clock_gettime( CLOCK_MONOTONIC, &t1 );
             t_delta = timediff( t0, t1 );
 
-            sprintf(buf,"[%04i] tdelta = %14lld nsec",
-                                            right_count, t_delta);
+            sprintf(buf,"[%04i] tdelta = %14" PRIu64 " nsec", right_count, t_delta);
 
-            XDrawImageString( dsp, win3, gc3, 10, 20,
-                               buf, (int)strlen(buf));
+            XDrawImageString( dsp, win3, gc3, 10, 20, buf, (int)strlen(buf));
 
             t0.tv_sec = t1.tv_sec;
             t0.tv_nsec = t1.tv_nsec;

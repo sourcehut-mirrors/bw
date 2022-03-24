@@ -1,5 +1,14 @@
 
 
+24 Mar 2022 : currently focused on a single dataset in order to 
+              get repeatable data into timestamp files named with
+              a timestamp. Date to be used to test and verify the
+              code written for future NVidia CUDA enabled GPUs.
+
+     ./xmand 32768 268435456 0.39975096035050228 0.20525179748074152 4
+
+-------------------------------------------------------------------------------
+
 This is a almost at the limit : 
 
  ./xmand 32768 35184372088832 -6.3378386963316991e-02 +9.7988834095918365e-01 8
