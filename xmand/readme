@@ -7,6 +7,73 @@
 
      ./xmand 32768 268435456 0.39975096035050228 0.20525179748074152 4
 
+The worst case is on the old VIA Eden Esther machine : 
+
+esther$ 
+esther$ ./xmand 32768 268435456 0.39975096035050228 0.20525179748074152 4
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = esther
+                     release = 14.0-CURRENT
+                     version = FreeBSD 14.0-CURRENT #2 main-n253885-7819a911ff5: Mon Mar 21 17:29:51 UTC 2022     root@esther:/usr/obj/usr/src/i386.i386/sys/GENERIC
+                     machine = i386
+                   page size = 4096
+               system memory = 976736256
+                             = 953844 kB
+                             = 931 MB
+                 avail pages = 238461
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+           system uptime    2 days    9 hours   49 mins   46 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =          27651 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( +3.99750960350502e-01 , +2.05251797480742e-01 )
+      magnify = +2.684354560000e+08
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 582  , 530  ]
+vbox  [ 008 , 007 ]
+fp64( +1.15234375e-01 , -1.17187500e-02 )  
+ select = +3.997509612091e-01, +2.052517973934e-01  
+bailout = 32768             
+magnify = 2.6843545600e+08
+ centre = +3.997509603505e-01, +2.052517974807e-01  
+[mand] =  1936520076198 nsec   1.936520e+03 sec
+
+click at 581 528 
+raw  [ 547  , 468  ]
+right click
+click at 546 466 
+raw  [ 547  , 468  ]
+right click
+
+
+
 -------------------------------------------------------------------------------
 
 This is a almost at the limit : 
