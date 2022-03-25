@@ -1430,10 +1430,16 @@ replot:
                 win_x = ( 1.0 * ( mouse_x - offset_x ) ) / eff_width;
                 win_y = ( 1.0 * ( eff_height - mouse_y + offset_y ) ) / eff_height;
 
+                printf("DBUG : button 2 pressed\n");
+                printf("     : win_x = %-+20.14e\n", win_x );
+                printf("     : win_y = %-+20.14e\n", win_y );
+
                 /* invert the y axis */
                 invert_mouse_x = mouse_x - offset_x;
                 invert_mouse_y = eff_height - mouse_y + offset_y;
                 sprintf(buf,"inv  [ %4i , %4i ]  ", invert_mouse_x, invert_mouse_y );
+                printf("     : invert_mouse_x = %4i\n", invert_mouse_x);
+                printf("     : invert_mouse_y = %4i\n", invert_mouse_y);
 
                 XSetForeground(dsp, gc2, green.pixel);
                 XDrawImageString( dsp, win2, gc2, 10, 230, buf, (int)strlen(buf));
@@ -1445,39 +1451,49 @@ replot:
                 vbox_x = ( mouse_x - offset_x ) / vbox_w;
                 vbox_y = ( eff_height - mouse_y + offset_y ) / vbox_h;
                 sprintf(buf,"vbox  [ %03i , %03i ]", vbox_x, vbox_y );
+                printf("     : %s\n");
                 XDrawImageString( dsp, win2, gc2, 10, 270, buf, (int)strlen(buf));
-                fprintf(stderr,"%s\n", buf);
 
                 /* Offset the floating point values such that the
                  * center point shall be ( 0.0, 0.0 ) */
                 win_x = win_x * 2.0 - 1.0;
                 win_y = win_y * 2.0 - 1.0;
+                printf("DBUG : after offset\n");
+                printf("     : win_x = %-+20.14e\n", win_x );
+                printf("     : win_y = %-+20.14e\n", win_y );
 
                 XSetForeground(dsp, gc2, cornflowerblue.pixel);
                 sprintf(buf,"fp64( %-+10.8e , %-+10.8e )  ", win_x, win_y );
-                fprintf(stderr,"%s\n", buf);
                 XDrawImageString( dsp, win2, gc2, 10, 290, buf, (int)strlen(buf));
 
                 x_prime = obs_x_width * win_x / 2.0;
                 y_prime = obs_y_height * win_y / 2.0;
 
+                printf("     : x_prime = %-+20.14e\n", x_prime );
+                printf("     : y_prime = %-+20.14e\n", y_prime );
+
                 /* translation */
                 x_prime = x_prime + real_translate;
                 y_prime = y_prime + imag_translate;
+                printf("DBUG : after translation\n");
+                printf("     : r_trn   = %-+20.14e\n", real_translate );
+                printf("     : j_trn   = %-+20.14e\n", imag_translate );
+                printf("     : x_prime = %-+20.14e\n", x_prime );
+                printf("     : y_prime = %-+20.14e\n", y_prime );
 
                 XSetForeground(dsp, gc3, red.pixel);
                 sprintf(buf," select = %-+16.12e, %-+16.12e  ", x_prime, y_prime );
-                fprintf(stderr,"%s\n", buf);
+
                 XDrawImageString( dsp, win3, gc3, 10, 80, buf, (int)strlen(buf));
                 XSetForeground(dsp, gc3, green.pixel);
                 sprintf(buf,"bailout = %-8i          ", mand_bail);
-                fprintf(stderr,"%s\n", buf);
+                printf("     : %s\n", buf);
                 XDrawImageString( dsp, win3, gc3, 10, 100, buf, (int)strlen(buf));
                 sprintf(buf,"magnify = %-12.10e", magnify);
-                fprintf(stderr,"%s\n", buf);
+                printf("     : %s\n", buf);
                 XDrawImageString( dsp, win3, gc3, 10, 120, buf, (int)strlen(buf));
                 sprintf(buf," centre = %-+16.12e, %-+16.12e  ", real_translate, imag_translate);
-                fprintf(stderr,"%s\n", buf);
+                printf("     : %s\n", buf);
                 XDrawImageString( dsp, win3, gc3, 10, 140, buf, (int)strlen(buf));
                 XSetForeground(dsp, gc3, cyan.pixel);
 
@@ -1497,7 +1513,7 @@ replot:
                 /* here we loop over the vbox coords */
                 for ( vbox_y = 0; vbox_y < 16; vbox_y++ ) {
                     for ( vbox_x = 0; vbox_x < 16; vbox_x++ ) {
-                        /* TODO someone please fix this */
+                        /* TODO please fix this */
                         if ( 1 ) {  /* vbox_flag[vbox_x][vbox_y] == 0 */
                             clock_gettime( CLOCK_MONOTONIC, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
@@ -1586,8 +1602,8 @@ replot:
                             XSetForeground(dsp, gc3, yellow.pixel);
                             XDrawImageString( dsp, win3, gc3, 10, 310, buf, (int)strlen(buf));
                         }
-                    }
-                }
+                    } /* vbox_x for */
+                } /* vbox_y for */
 
                 /* reset the mand_bail adjustment parameters */
                 bail_out_factor = 1.0;
@@ -1602,6 +1618,11 @@ replot:
             XSetForeground(dsp, gc2, red.pixel);
             XDrawImageString( dsp, win2, gc2, 10, 310, buf, (int)strlen(buf));
 
+            printf("     : r[8][8][32][32] = %-+20.14e\n", coord_r[8][8][32][32]);
+            printf("     : j[8][8][32][32] = %-+20.14e\n", coord_j[8][8][32][32]);
+            printf("     :     mand_height = %9i\n", mandel_val[8][8][32][32] );
+            printf("--------------------------- full plot done -----------------------------\n");
+            
         } else if ( button == Button3 ) {
 
             printf("right click\n");
