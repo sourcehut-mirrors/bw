@@ -244,7 +244,7 @@ int main(int argc, char*argv[])
     setlocale( LC_ALL, "C" );
 
     /* Get the REALTIME_CLOCK time in a timespec struct */
-    if ( clock_gettime( CLOCK_REALTIME, &now_time ) == -1 ) {
+    if ( clock_gettime(CLOCK_REALTIME, &now_time ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
         return EXIT_FAILURE;
@@ -257,8 +257,8 @@ int main(int argc, char*argv[])
     /* these two calls are silly and not of much value other than
      * to determine the speed of the clock_gettime() call. Which
      * we don't care much about as it had better be a microsecond. */
-    clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
-    clock_gettime( CLOCK_MONOTONIC, &soln_t1 );
+    clock_gettime(CLOCK_REALTIME, &soln_t0 );
+    clock_gettime(CLOCK_REALTIME, &soln_t1 );
     t_delta = timediff( soln_t0, soln_t1 );
     /* this t_delta is a baseline offset value that we seem to ignore
      * anyways. */
@@ -800,8 +800,8 @@ int main(int argc, char*argv[])
     XSelectInput(dsp, win, ButtonPressMask);
 
     /* some initial time data before anyone clicks anything */
-    clock_gettime( CLOCK_MONOTONIC, &t0 );
-    clock_gettime( CLOCK_MONOTONIC, &t1 );
+    clock_gettime(CLOCK_REALTIME, &t0 );
+    clock_gettime(CLOCK_REALTIME, &t1 );
     t_delta = timediff( t0, t1 );
     /* this t_delta is a baseline offset value wherein we at least
      * know how long the clock_gettime takes. Mostly. */
@@ -999,7 +999,7 @@ int main(int argc, char*argv[])
                 XSetForeground(dsp, gc3, cyan.pixel);
 
                 /* time the computation before we dispatch a thread */
-                clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
+                clock_gettime(CLOCK_REALTIME, &soln_t0 );
 
                 /* TODO : perhaps accept another CLI argv flag to determine
                  *        if we always do the computation here or not.
@@ -1072,7 +1072,7 @@ int main(int argc, char*argv[])
                     }
                     vbox_flag[vbox_x][vbox_y] = 1;
                 }
-                clock_gettime( CLOCK_MONOTONIC, &soln_t1 );
+                clock_gettime(CLOCK_REALTIME, &soln_t1 );
 
                 t_delta = timediff( soln_t0, soln_t1 );
                 sprintf(buf,"[join] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
@@ -1145,7 +1145,7 @@ int main(int argc, char*argv[])
                     }
                 }
 
-                clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
+                clock_gettime(CLOCK_REALTIME, &soln_t0 );
 
                 t_delta = timediff( soln_t1, soln_t0 );
                 sprintf(buf,"[plot] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
@@ -1431,8 +1431,8 @@ replot:
                 win_y = ( 1.0 * ( eff_height - mouse_y + offset_y ) ) / eff_height;
 
                 printf("DBUG : button 2 pressed\n");
-                printf("     : win_x = %-+20.14e\n", win_x );
-                printf("     : win_y = %-+20.14e\n", win_y );
+                printf("     : win_x = %-+26.20e\n", win_x );
+                printf("     : win_y = %-+26.20e\n", win_y );
 
                 /* invert the y axis */
                 invert_mouse_x = mouse_x - offset_x;
@@ -1459,8 +1459,8 @@ replot:
                 win_x = win_x * 2.0 - 1.0;
                 win_y = win_y * 2.0 - 1.0;
                 printf("DBUG : after offset\n");
-                printf("     : win_x = %-+20.14e\n", win_x );
-                printf("     : win_y = %-+20.14e\n", win_y );
+                printf("     : win_x = %-+26.20e\n", win_x );
+                printf("     : win_y = %-+26.20e\n", win_y );
 
                 XSetForeground(dsp, gc2, cornflowerblue.pixel);
                 sprintf(buf,"fp64( %-+10.8e , %-+10.8e )  ", win_x, win_y );
@@ -1469,17 +1469,17 @@ replot:
                 x_prime = obs_x_width * win_x / 2.0;
                 y_prime = obs_y_height * win_y / 2.0;
 
-                printf("     : x_prime = %-+20.14e\n", x_prime );
-                printf("     : y_prime = %-+20.14e\n", y_prime );
+                printf("     : x_prime = %-+26.20e\n", x_prime );
+                printf("     : y_prime = %-+26.20e\n", y_prime );
 
                 /* translation */
                 x_prime = x_prime + real_translate;
                 y_prime = y_prime + imag_translate;
                 printf("DBUG : after translation\n");
-                printf("     : r_trn   = %-+20.14e\n", real_translate );
-                printf("     : j_trn   = %-+20.14e\n", imag_translate );
-                printf("     : x_prime = %-+20.14e\n", x_prime );
-                printf("     : y_prime = %-+20.14e\n", y_prime );
+                printf("     : r_trn   = %-+26.20e\n", real_translate );
+                printf("     : j_trn   = %-+26.20e\n", imag_translate );
+                printf("     : x_prime = %-+26.20e\n", x_prime );
+                printf("     : y_prime = %-+26.20e\n", y_prime );
 
                 XSetForeground(dsp, gc3, red.pixel);
                 sprintf(buf," select = %-+16.12e, %-+16.12e  ", x_prime, y_prime );
@@ -1490,14 +1490,14 @@ replot:
                 printf("     : %s\n", buf);
                 XDrawImageString( dsp, win3, gc3, 10, 100, buf, (int)strlen(buf));
                 sprintf(buf,"magnify = %-12.10e", magnify);
-                printf("     : %s\n", buf);
+                printf("     : magnify = %-18.12e\n", magnify);
                 XDrawImageString( dsp, win3, gc3, 10, 120, buf, (int)strlen(buf));
                 sprintf(buf," centre = %-+16.12e, %-+16.12e  ", real_translate, imag_translate);
-                printf("     : %s\n", buf);
+                printf("     : centre = %-+26.20e, %-+26.20e\n", real_translate, imag_translate);
                 XDrawImageString( dsp, win3, gc3, 10, 140, buf, (int)strlen(buf));
                 XSetForeground(dsp, gc3, cyan.pixel);
 
-                clock_gettime( CLOCK_MONOTONIC, &soln_t0 );
+                clock_gettime(CLOCK_REALTIME, &soln_t0 );
 
                 if ( colour_method_flag == 1 ) {
                     colour_method_flag = 0;
@@ -1515,7 +1515,7 @@ replot:
                     for ( vbox_x = 0; vbox_x < 16; vbox_x++ ) {
                         /* TODO please fix this */
                         if ( 1 ) {  /* vbox_flag[vbox_x][vbox_y] == 0 */
-                            clock_gettime( CLOCK_MONOTONIC, &vbox_t0 );
+                            clock_gettime(CLOCK_REALTIME, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                 vbox_ll_y = vbox_y * vbox_h + mand_y_pix;
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
@@ -1596,7 +1596,7 @@ replot:
                                 }
                             }
                             vbox_flag[vbox_x][vbox_y] = 1;
-                            clock_gettime( CLOCK_MONOTONIC, &vbox_t1 );
+                            clock_gettime(CLOCK_REALTIME, &vbox_t1 );
                             t_delta = timediff( vbox_t0, vbox_t1);
                             sprintf(buf,"[vbox] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
                             XSetForeground(dsp, gc3, yellow.pixel);
@@ -1611,22 +1611,35 @@ replot:
             } /* inside main plot area check */
 
             XSetForeground(dsp, gc, yellow.pixel);
-            clock_gettime( CLOCK_MONOTONIC, &soln_t1 );
+            clock_gettime(CLOCK_REALTIME, &soln_t1 );
             t_delta = timediff( soln_t0, soln_t1 );
             sprintf(buf,"[mand] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
             fprintf(stderr,"%s\n\n",buf);
             XSetForeground(dsp, gc2, red.pixel);
             XDrawImageString( dsp, win2, gc2, 10, 310, buf, (int)strlen(buf));
 
-            printf("     : r[8][8][32][32] = %-+20.14e\n", coord_r[8][8][32][32]);
-            printf("     : j[8][8][32][32] = %-+20.14e\n", coord_j[8][8][32][32]);
-            printf("     :     mand_height = %9i\n", mandel_val[8][8][32][32] );
+            printf("\nraw data values -------------------------------------------------------\n");
+            printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_r[0][0][0][0]);
+            printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_j[0][0][0][0]);
+            printf("     :       mand_height = %9i\n", mandel_val[0][0][0][0] );
+            printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_r[8][8][0][0]);
+            printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_j[8][8][0][0]);
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][8][8] );
+            printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", coord_r[8][8][32][32]);
+            printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", coord_j[8][8][32][32]);
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
+            printf("     : r[ 3][12][44][21] = %-+26.20e\n", coord_r[3][12][44][21]);
+            printf("     : j[ 3][12][44][21] = %-+26.20e\n", coord_j[3][12][44][21]);
+            printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
+            printf("     : r[15][15][63][63] = %-+26.20e\n", coord_r[15][15][63][63]);
+            printf("     : j[15][15][63][63] = %-+26.20e\n", coord_j[15][15][63][63]);
+            printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
             printf("--------------------------- full plot done -----------------------------\n");
             
         } else if ( button == Button3 ) {
 
             printf("right click\n");
-            clock_gettime( CLOCK_MONOTONIC, &t1 );
+            clock_gettime(CLOCK_REALTIME, &t1 );
             t_delta = timediff( t0, t1 );
 
             sprintf(buf,"[%04i] tdelta = %14" PRIu64 " nsec", right_count, t_delta);

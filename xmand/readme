@@ -5,36 +5,39 @@
               a timestamp. Date to be used to test and verify the
               code written for future NVidia CUDA enabled GPUs.
 
-     ./xmand 32768 268435456 0.39975096035050228 0.20525179748074152 4
+------------------------------------------------------------------------
+Sample dataset 1 :  NOTE the precise middle mouse button click [512,512]
 
-The worst case is on the old VIA Eden Esther machine : 
-
-esther$ 
-esther$ ./xmand 32768 268435456 0.39975096035050228 0.20525179748074152 4
+phobos$ date -u
+Fri Mar 25 16:19:22 UTC 2022
+phobos$ uname -apKU
+FreeBSD phobos 14.0-CURRENT FreeBSD 14.0-CURRENT #4 main-n253712-0784121c963: Fri Mar 11 03:59:31 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64 amd64 1400053 1400053
+phobos$ 
+phobos$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
                  system name = FreeBSD
-                   node name = esther
+                   node name = phobos
                      release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #2 main-n253885-7819a911ff5: Mon Mar 21 17:29:51 UTC 2022     root@esther:/usr/obj/usr/src/i386.i386/sys/GENERIC
-                     machine = i386
+                     version = FreeBSD 14.0-CURRENT #4 main-n253712-0784121c963: Fri Mar 11 03:59:31 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     machine = amd64
                    page size = 4096
-               system memory = 976736256
-                             = 953844 kB
-                             = 931 MB
-                 avail pages = 238461
+               system memory = 16867770368
+                             = 16472432 kB
+                             = 16086 MB
+                 avail pages = 4118108
                 avail memory = 0
          clock ticks per sec = 128
              threads support = 200112
                POSIX Version = 200112
                       endian = little endian
-       sizeof(unsigned long) = 4
+       sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
-               sizeof(void*) = 4
+               sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    2 days    9 hours   49 mins   46 secs
+           system uptime    7 days   15 hours    9 mins   31 secs
 -------------------------------------------------------------------
-INFO : baseline tdelta =          27651 nsec
+INFO : baseline tdelta =            229 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -56,25 +59,160 @@ pthread_limit = 4
      : eff_width =  1024    eff_height =  1024
 
 --------------------------------------------
-raw  [ 582  , 530  ]
-vbox  [ 008 , 007 ]
-fp64( +1.15234375e-01 , -1.17187500e-02 )  
- select = +3.997509612091e-01, +2.052517973934e-01  
-bailout = 32768             
-magnify = 2.6843545600e+08
- centre = +3.997509603505e-01, +2.052517974807e-01  
-[mand] =  1936520076198 nsec   1.936520e+03 sec
+raw  [ 523  , 524  ]
+DBUG : button 2 pressed
+     : win_x = +5.00000000000000000000e-01
+     : win_y = +5.00000000000000000000e-01
+     : invert_mouse_x =  512
+     : invert_mouse_y =  512
+     :  ]
+DBUG : after offset
+     : win_x = +0.00000000000000000000e+00
+     : win_y = +0.00000000000000000000e+00
+     : x_prime = +0.00000000000000000000e+00
+     : y_prime = +0.00000000000000000000e+00
+DBUG : after translation
+     : r_trn   = +3.99750960350502282381e-01
+     : j_trn   = +2.05251797480741515756e-01
+     : x_prime = +3.99750960350502282381e-01
+     : y_prime = +2.05251797480741515756e-01
+     : bailout = 32768             
+     : magnify = 2.684354560000e+08
+     : centre = +3.99750960350502282381e-01, +2.05251797480741515756e-01
+[mand] =   111459422352 nsec   1.114594e+02 sec
 
-click at 581 528 
-raw  [ 547  , 468  ]
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = +3.99750952899921685457e-01
+     : j[ 0][ 0][ 0][ 0] = +2.05251790030160918832e-01
+     :       mand_height =      3200
+     : r[ 8][ 8][ 0][ 0] = +3.99750960350502282381e-01
+     : j[ 8][ 8][ 0][ 0] = +2.05251797480741515756e-01
+     :       mand_height =      5604
+     : r[ 8][ 8][32][32] = +3.99750960816163569689e-01
+     : j[ 8][ 8][32][32] = +2.05251797946402803063e-01
+     :       mand_height =      4814
+     : r[ 3][12][44][21] = +3.99750956334173679352e-01
+     : j[ 3][12][44][21] = +2.05251801511622034013e-01
+     :       mand_height =      3467
+     : r[15][15][63][63] = +3.99750967786530964077e-01
+     : j[15][15][63][63] = +2.05251804916770197451e-01
+     :       mand_height =     16874
+--------------------------- full plot done -----------------------------
+click at 522 522 
+raw  [ 523  , 524  ]
 right click
-click at 546 466 
-raw  [ 547  , 468  ]
+click at 522 522 
+raw  [ 523  , 524  ]
 right click
 
 
+
+------------------------------------------------------------------------
+Sample dataset 2 :  NOTE the precise middle mouse button click [512,512]
+
+phobos$ date -u 
+Fri Mar 25 16:08:07 UTC 2022
+phobos$ uname -a
+FreeBSD phobos 14.0-CURRENT FreeBSD 14.0-CURRENT #4 main-n253712-0784121c963: Fri Mar 11 03:59:31 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC amd64
+phobos$ 
+phobos$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = phobos
+                     release = 14.0-CURRENT
+                     version = FreeBSD 14.0-CURRENT #4 main-n253712-0784121c963: Fri Mar 11 03:59:31 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 16867770368
+                             = 16472432 kB
+                             = 16086 MB
+                 avail pages = 4118108
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    7 days   14 hours   58 mins   16 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =            293 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( -1.57887752805700e-02 , +1.02061921088800e+00 )
+      magnify = +2.748779069440e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+raw  [ 523  , 524  ]
+DBUG : button 2 pressed
+     : win_x = +5.00000000000000000000e-01
+     : win_y = +5.00000000000000000000e-01
+     : invert_mouse_x =  512
+     : invert_mouse_y =  512
+     :  ]
+DBUG : after offset
+     : win_x = +0.00000000000000000000e+00
+     : win_y = +0.00000000000000000000e+00
+     : x_prime = +0.00000000000000000000e+00
+     : y_prime = +0.00000000000000000000e+00
+DBUG : after translation
+     : r_trn   = -1.57887752805699992098e-02
+     : j_trn   = +1.02061921088799989477e+00
+     : x_prime = -1.57887752805699992098e-02
+     : y_prime = +1.02061921088799989477e+00
+     : bailout = 32768             
+     : magnify = 2.748779069440e+11
+     : centre = -1.57887752805699992098e-02, +1.02061921088799989477e+00
+[mand] =    71688111240 nsec   7.168811e+01 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.57887752878459568240e-02
+     : j[ 0][ 0][ 0][ 0] = +1.02061921088072393715e+00
+     :       mand_height =      1978
+     : r[ 8][ 8][ 0][ 0] = -1.57887752805699992098e-02
+     : j[ 8][ 8][ 0][ 0] = +1.02061921088799989477e+00
+     :       mand_height =      3707
+     : r[ 8][ 8][32][32] = -1.57887752801152518589e-02
+     : j[ 8][ 8][32][32] = +1.02061921088845464212e+00
+     :       mand_height =      3894
+     : r[ 3][12][44][21] = -1.57887752844921951112e-02
+     : j[ 3][12][44][21] = +1.02061921089193630152e+00
+     :       mand_height =      3781
+     : r[15][15][63][63] = -1.57887752733082524503e-02
+     : j[15][15][63][63] = +1.02061921089526164153e+00
+     :       mand_height =      2065
+--------------------------- full plot done -----------------------------
+click at 522 522 
+raw  [ 523  , 524  ]
+right click
+click at 522 522 
+raw  [ 523  , 524  ]
+right click
 
 -------------------------------------------------------------------------------
+*************************************************************************
+*   Other stuff from the past which may not be of any value anymore.    *
+*************************************************************************
 
 This is a almost at the limit : 
 
