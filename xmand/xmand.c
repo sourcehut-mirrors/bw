@@ -820,11 +820,11 @@ int main(int argc, char*argv[])
      * controls and need to bounce way back up here and setup a
      * whole new plot globally. For now we are going to get our threads
      * setup. */
-    thread_parm_t *parm[NUM_THREADS];
+    thread_parm *parm[NUM_THREADS];
     errno = 0;
 
     for ( pt = 0; pt < pthread_limit; pt++ ){
-        parm[pt] = calloc( (size_t) 1, (size_t) sizeof(thread_parm_t) );
+        parm[pt] = calloc( (size_t) 1, (size_t) sizeof(thread_parm) );
         /* ERRORS
          *  The malloc(), calloc(), and realloc() functions will fail
          *  if:

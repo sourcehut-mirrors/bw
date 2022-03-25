@@ -40,13 +40,13 @@
 #include "mandelbrot.h" 
 
 /* This will be a dispatched POSIX pthread that shall receive
- * a point to a struct of type thread_parm_t.  Then we shall
+ * a point to a struct of type thread_parm.  Then we shall
  * pull out the values needed from that struct and simply
  * compute the mandelbrot height for each coordinate in a
  * given vbox region on the screen */
 void *mbrot_vbox_pthread(void *recv_parm)
 {
-    thread_parm_t *p = (thread_parm_t *)recv_parm;
+    thread_parm *p = (thread_parm *)recv_parm;
     double win_x, win_y, x_prime, y_prime;
     int mand_x_pix, mand_y_pix, vbox_ll_x, vbox_ll_y;
     int mand_y_pix_start, mand_y_pix_stop;

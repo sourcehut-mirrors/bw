@@ -1,9 +1,5 @@
 
-/*
- * struct to pass params to dispatched thread
- * in generaly arrange the data from large to
- * small in terms of memory footprint.
- */
+/* struct to pass params to dispatched thread */
 typedef struct {
     double r_translate, i_translate, magnify;
     double obs_x_width, obs_y_height;
@@ -15,5 +11,5 @@ typedef struct {
     uint32_t bail_out;
     int t_num;
     int t_total;
-} thread_parm_t;
+} thread_parm;
 
