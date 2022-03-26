@@ -1,0 +1,24 @@
+
+
+Note that a big endian machine will create data files with
+big endian order : 
+
+enceladus$ ./timedump 
+DBUG : filename len = 14
+     : filename     = "20220326170727"
+DBUG :  8 byte double  c_r           num_written = 1
+     :  8 byte double  c_j           num_written = 1
+     :  4 byte integer bail_out      num_written = 1
+     :  4 byte integer magnify       num_written = 1
+     :  4 byte integer num_elements  num_written = 1
+enceladus$ 
+enceladus$ dn
+20220326170729
+
+enceladus$ od -Ax -t x1 -v  20220326170727
+000000 3f d9 95 85 0d 50 00 00 3f ca 45 b0 de d0 00 00
+000010 00 00 80 00 10 00 00 00 01 00 00 00
+00001c
+enceladus$ 
+
+
