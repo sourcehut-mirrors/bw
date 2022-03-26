@@ -47,8 +47,8 @@
 #define NUM_ELEMENTS 16777216
 #define BAIL_OUT 32768
 #define MAGNIFY 268435456
-#define REAL_COORD 0.39975096035050228
-#define IMAG_COORD 0.20525179748074152
+#define REAL_COORD 0.399750960350502282381
+#define IMAG_COORD 0.205251797480741515756
 
 #define VERBOSE 1
 int sysinfo(int verbose);
@@ -79,7 +79,7 @@ int main ( int argc, char **argv) {
     sysinfo(VERBOSE);
 
     time(&time_now);
-    struct tm *ptm = localtime(&time_now);
+    struct tm *ptm = gmtime(&time_now);
 
     setlocale (LC_ALL, "POSIX");
 

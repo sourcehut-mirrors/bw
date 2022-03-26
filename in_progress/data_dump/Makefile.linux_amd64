@@ -1,0 +1,26 @@
+
+CC=/usr/bin/cc
+
+CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -mno-fancy-math-387 -malign-double \
+	-m128bit-long-double -mlong-double-80 -mstackrealign \
+	-mpreferred-stack-boundary=8 -mno-mmx
+
+CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+SRCS = timedump.c ../../sysinfo/sysinfo.c
+
+OBJS = timedump.o ../../sysinfo/sysinfo.o
+
+LIBS = -lrt -lm
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+timedump: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) timedump
