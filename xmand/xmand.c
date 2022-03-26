@@ -1665,21 +1665,35 @@ replot:
             XDrawImageString( dsp, win2, gc2, 10, 310, buf, (int)strlen(buf));
 
             printf("\nraw data values -------------------------------------------------------\n");
+
             printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_r[0][0][0][0]);
             printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_j[0][0][0][0]);
-            printf("     :       mand_height = %9i\n", mandel_val[0][0][0][0] );
+            printf("     :       mand_height = %9i\n",    mandel_val[0][0][0][0] );
+
+            printf("     : r[ 7][ 7][63][63] = %-+26.20e\n", coord_r[ 7][ 7][63][63]);
+            printf("     : j[ 7][ 7][63][63] = %-+26.20e\n", coord_j[ 7][ 7][63][63]);
+            printf("     :       mand_height = %9i\n",    mandel_val[ 7][ 7][63][63] );
+
             printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_r[8][8][0][0]);
             printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_j[8][8][0][0]);
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][8][8] );
+            printf("     :       mand_height = %9i\n",    mandel_val[8][8][0][0] );
+
+            printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", coord_r[8][8][1][0]);
+            printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", coord_j[8][8][1][0]);
+            printf("     :       mand_height = %9i\n",    mandel_val[8][8][1][0] );
+
             printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", coord_r[8][8][32][32]);
             printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", coord_j[8][8][32][32]);
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
+            printf("     :       mand_height = %9i\n",    mandel_val[8][8][32][32] );
+
             printf("     : r[ 3][12][44][21] = %-+26.20e\n", coord_r[3][12][44][21]);
             printf("     : j[ 3][12][44][21] = %-+26.20e\n", coord_j[3][12][44][21]);
-            printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
+            printf("     :       mand_height = %9i\n",    mandel_val[3][12][44][21]);
+
             printf("     : r[15][15][63][63] = %-+26.20e\n", coord_r[15][15][63][63]);
             printf("     : j[15][15][63][63] = %-+26.20e\n", coord_j[15][15][63][63]);
-            printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
+            printf("     :       mand_height = %9i\n",    mandel_val[15][15][63][63]);
+
             printf("--------------------------- full plot done -----------------------------\n");
             
         } else if ( button == Button3 ) {
