@@ -85,6 +85,16 @@ uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
 #define WIN_WIDTH 1044
 #define WIN_HEIGHT 1044
 
+/* how many little sample boxes are there within the plot
+ * region?  We start with a 16x16 grid of these vbox
+ * square sample sets. */
+#define VBOX_REAL_COUNT 16
+#define VBOX_IMAG_COUNT 16
+
+/* how many sample spots are there within a given vbox? */
+#define VBOX_SAMPLE_REAL 64
+#define VBOX_SAMPLE_IMAG 64
+
 /* lets live with the crazy notion that we may have a bonkers
  * AMD ThreadRipper in our lives someday and just say sure we
  * can dispatch 256 threads at once. Someday. In dreams. */
@@ -189,19 +199,19 @@ int main(int argc, char*argv[])
      * as well as displayed via libX11. For now we just
      * don't want to recompute the same region over and
      * over and over. */
-    int vbox_flag[16][16];
+    int vbox_flag[VBOX_REAL_COUNT][VBOX_IMAG_COUNT];
     /* Also we finally have use for the little box grid that we
      * lay out and thus we will need the box coordinates */
     int vbox_x, vbox_y;
 
-    uint32_t mandel_val[16][16][64][64];
-    memset(&mandel_val, 0x00, (size_t)(64*64*16*16)* sizeof(uint32_t));
+    uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
+    memset(&mandel_val, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(uint32_t));
 
     /* the actual complex coordinates */
-    double coord_r[16][16][64][64];
-    double coord_j[16][16][64][64];
-    memset(&coord_r, 0x00, (size_t)(64*64*16*16)* sizeof(double));
-    memset(&coord_j, 0x00, (size_t)(64*64*16*16)* sizeof(double));
+    double coord_r[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
+    double coord_j[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
+    memset(&coord_r, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(double));
+    memset(&coord_j, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(double));
 
     /* pre-fill the lsd trippy color map */
     for ( k=0; k<256; k++ ) {
@@ -467,7 +477,7 @@ int main(int argc, char*argv[])
     obs_y_height = 4.0 / magnify;
 
     /* ensure we start with clear vbox flags */
-    memset(&vbox_flag, 0x00, (size_t)(16*16)*sizeof(int));
+    memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
     width = WIN_WIDTH;
     height = WIN_HEIGHT;
@@ -667,6 +677,9 @@ int main(int argc, char*argv[])
      * for each pixel we sample.  This shall be the 64x64 actual
      * vbox region with room to plot each of the 3x3 samples and
      * we also need room for the one pixel borders.
+     *
+     * Note : please see the defined VBOX_SAMPLE_REAL and
+     *        VBOX_SAMPLE_IMAG values
      */
     XDrawRectangle(dsp, win2, gc2, 10, 10, 202, 202);
     XSetForeground(dsp, gc2, red.pixel);
@@ -728,6 +741,7 @@ int main(int argc, char*argv[])
     XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
 
     /****************************************************************
+     * NOTE : see VBOX_REAL_COUNT and VBOX_IMAG_COUNT
      *
      * The viewport is made up of a neat grid of 16 x 16 little box
      * areas and we can lay down a lightly colored dashed lines to
@@ -739,16 +753,23 @@ int main(int argc, char*argv[])
      * Each of these vbox elements has a height and width in the
      * on screen pixels of :
      *
-     *     vbox_w = eff_width/16
+     *     vbox_w = eff_width/VBOX_REAL_COUNT
      *
-     *     vbox_h = eff_height/16
+     *     vbox_h = eff_height/VBOX_IMAG_COUNT
      *
-     * These may come in handy later to identify where the user has
-     * clicked and to perhaps identify a small region that can be
-     * computed without the burden of computing the entire viewport.
+     * A given vbox has VBOX_SAMPLE_REAL * VBOX_SAMPLE_IMAGE points
+     * of interest with a real width of sample_w and an imaginary
+     * or complex height of sample_h.
      ****************************************************************/
-    vbox_w = eff_width/16;
-    vbox_h = eff_height/16;
+    vbox_w = eff_width/VBOX_REAL_COUNT;
+    vbox_h = eff_height/VBOX_IMAG_COUNT;
+
+    double vbox_real_width = obs_x_width / ( 1.0 * VBOX_REAL_COUNT );
+    double vbox_imag_height = obs_y_height / ( 1.0 * VBOX_IMAG_COUNT );
+    double sample_real_width = vbox_real_width / ( 1.0 * VBOX_SAMPLE_REAL );
+    double sample_imag_height = vbox_imag_height / ( 1.0 * VBOX_SAMPLE_IMAG );
+    double half_sample_offset_real = sample_real_width / 2.0;
+    double half_sample_offset_imag = sample_imag_height / 2.0;
 
     /* horizontal tic marks */
     for ( j=offset_x + vbox_w; j<lx; j+=vbox_w ){
@@ -1368,7 +1389,7 @@ int main(int argc, char*argv[])
                         button = Button2;
 
                         /* trigger a recalc and thus flush vbox_flag to zero */
-                        memset( &vbox_flag, 0x00, (size_t)(16*16)*sizeof(int));
+                        memset( &vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
                         real_translate = x_prime;
                         imag_translate = y_prime;
@@ -1511,8 +1532,8 @@ replot:
                 }
 
                 /* here we loop over the vbox coords */
-                for ( vbox_y = 0; vbox_y < 16; vbox_y++ ) {
-                    for ( vbox_x = 0; vbox_x < 16; vbox_x++ ) {
+                for ( vbox_y = 0; vbox_y < VBOX_IMAG_COUNT; vbox_y++ ) {
+                    for ( vbox_x = 0; vbox_x < VBOX_REAL_COUNT; vbox_x++ ) {
                         /* TODO please fix this */
                         if ( 1 ) {  /* vbox_flag[vbox_x][vbox_y] == 0 */
                             clock_gettime(CLOCK_REALTIME, &vbox_t0 );
@@ -1521,6 +1542,12 @@ replot:
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                                     vbox_ll_x = vbox_x * vbox_w + mand_x_pix;
 
+                                    /* The double precision floating point value
+                                     * of ( win_x, win_y ) represents the position
+                                     * within the plotting region with the lower
+                                     * left most corner being ( -1, -1 ) and the
+                                     * upper right corner is ( +1, +1 )
+                                     */
                                     win_x = ( ( ( 1.0 * vbox_ll_x )
                                                 / eff_width ) * 2.0 - 1.0 ) + 0.0;
 
@@ -1530,11 +1557,30 @@ replot:
                                                 ) * 2.0 - 1.0
                                               ) ) + 0.0;
 
+                                    /* note that the observable x width is just our
+                                     * defined 4.0 / magnify and thus if we assume a
+                                     * trivial magnify of 1 then the point on the
+                                     * complex plane for (x_prime,y_prime) will simply
+                                     * be the lower left corner of our default complex
+                                     * plane bounded by ( -2, -2j ) in the lower left
+                                     * corner and ( 2, 2j ) in the upper right corner.
+                                     */
                                     x_prime = obs_x_width * win_x / 2.0;
                                     y_prime = obs_y_height * win_y / 2.0;
 
+                                    /* we then translate the entire complex plane by our
+                                     * selected centre position.
+                                     */
                                     x_prime = x_prime + real_translate;
                                     y_prime = y_prime + imag_translate;
+
+                                    /* we need a trivial adjustment to ( x_prime, y_prime ) to
+                                     * account for the offset into the centre of a square
+                                     * sample.
+                                     */
+
+                                    x_prime = x_prime + half_sample_offset_real;
+                                    y_prime = y_prime + half_sample_offset_imag;
 
                                     if ( vbox_flag[vbox_x][vbox_y] == 1 ) {
                                         mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
