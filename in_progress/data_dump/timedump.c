@@ -35,10 +35,11 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <time.h>
-#include <errno.h>
 #include <locale.h>
 #include <fcntl.h>
 #include <sys/stat.h>
