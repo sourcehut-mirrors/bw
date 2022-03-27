@@ -206,8 +206,12 @@ int main(int argc, char*argv[])
      * lay out and thus we will need the box coordinates */
     int vbox_x, vbox_y;
 
+    /* It is a surprise to me that this array fits into the stack
+     * memory of modern linux systems. We shall get this to the
+     * heap real soon now. Consider that a TODO. Sure. */
     uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
-    memset(&mandel_val, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(uint32_t));
+    memset(&mandel_val, 0x00, VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
+                             *VBOX_REAL_COUNT*VBOX_IMAG_COUNT * sizeof(uint32_t));
 
     /* The actual complex coordinates are stored in 
      * two large arrays. coord_r will be all the real
@@ -244,7 +248,10 @@ int main(int argc, char*argv[])
      * Please see test code index_check.c where this has been
      * verified.
      */
-    double *coord_r = calloc(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT, sizeof(double));
+
+    double *coord_r = calloc(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
+                            *VBOX_REAL_COUNT*VBOX_IMAG_COUNT, sizeof(double));
+
     if ( coord_r == NULL ) {
         /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
@@ -261,8 +268,25 @@ int main(int argc, char*argv[])
         return EXIT_FAILURE;
     }
 
-    double coord_j[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
-    memset(&coord_j, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(double));
+
+    double *coord_j = calloc(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
+                            *VBOX_REAL_COUNT*VBOX_IMAG_COUNT, sizeof(double));
+
+    if ( coord_j == NULL ) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        /* NOTE : it is very nasty to bail out this way
+         *        but why bother to continue ?
+         */
+        return EXIT_FAILURE;
+    }
 
     /* pre-fill the lsd trippy color map */
     for ( k=0; k<256; k++ ) {
@@ -1640,9 +1664,7 @@ replot:
                                          * and massive array. Now we shall index into heap
                                          * as described in index_check.c */
                                         *(coord_r + index(vbox_x,vbox_y,mand_x_pix,mand_y_pix)) = x_prime;
-
-                                        /* coord_r[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = x_prime; */
-                                        coord_j[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = y_prime;
+                                        *(coord_j + index(vbox_x,vbox_y,mand_x_pix,mand_y_pix)) = y_prime;
 
                                         /* the actual mandelbrot computation for (x_prime, y_prime) */
                                         mand_height = mbrot(x_prime, y_prime, mand_bail);
@@ -1724,32 +1746,32 @@ replot:
             printf("\nraw data values -------------------------------------------------------\n");
 
             printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_r + index(0,0,0,0)));
-            printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_j[0][0][0][0]);
-            printf("     :       mand_height = %9i\n",    mandel_val[0][0][0][0] );
+            printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_j + index(0,0,0,0)));
+            printf("     :       mand_height = %9i\n", mandel_val[0][0][0][0] );
 
             printf("     : r[ 7][ 7][63][63] = %-+26.20e\n", *(coord_r + index(7,7,63,63)));
-            printf("     : j[ 7][ 7][63][63] = %-+26.20e\n", coord_j[ 7][ 7][63][63]);
-            printf("     :       mand_height = %9i\n",    mandel_val[ 7][ 7][63][63] );
+            printf("     : j[ 7][ 7][63][63] = %-+26.20e\n", *(coord_j + index(7,7,63,63)));
+            printf("     :       mand_height = %9i\n", mandel_val[ 7][ 7][63][63] );
 
             printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_r + index(8,8,0,0)));
-            printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_j[8][8][0][0]);
-            printf("     :       mand_height = %9i\n",    mandel_val[8][8][0][0] );
+            printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_j + index(8,8,0,0)));
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][0][0] );
 
             printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_r + index(8,8,1,0)));
-            printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", coord_j[8][8][1][0]);
-            printf("     :       mand_height = %9i\n",    mandel_val[8][8][1][0] );
+            printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_j + index(8,8,1,0)));
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][1][0] );
 
             printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", *(coord_r + index(8,8,32,32)));
-            printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", coord_j[8][8][32][32]);
-            printf("     :       mand_height = %9i\n",    mandel_val[8][8][32][32] );
+            printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", *(coord_j + index(8,8,32,32)));
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
 
             printf("     : r[ 3][12][44][21] = %-+26.20e\n", *(coord_r + index(3,12,44,21)));
-            printf("     : j[ 3][12][44][21] = %-+26.20e\n", coord_j[3][12][44][21]);
-            printf("     :       mand_height = %9i\n",    mandel_val[3][12][44][21]);
+            printf("     : j[ 3][12][44][21] = %-+26.20e\n", *(coord_j + index(3,12,44,21)));
+            printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
 
             printf("     : r[15][15][63][63] = %-+26.20e\n", *(coord_r + index(15,15,63,63)));
-            printf("     : j[15][15][63][63] = %-+26.20e\n", coord_j[15][15][63][63]);
-            printf("     :       mand_height = %9i\n",    mandel_val[15][15][63][63]);
+            printf("     : j[15][15][63][63] = %-+26.20e\n", *(coord_j + index(15,15,63,63)));
+            printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
 
             printf("--------------------------- full plot done -----------------------------\n");
             
@@ -1809,6 +1831,9 @@ replot:
 
     free(coord_r);
     coord_r = NULL;
+
+    free(coord_j);
+    coord_j = NULL;
 
     return EXIT_SUCCESS;
 }
