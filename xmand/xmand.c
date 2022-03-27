@@ -80,6 +80,8 @@ unsigned long mandle_col( uint8_t height );
 
 uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
 
+int index(int Vbox_r, int Vbox_j, int Sr, int Sj);
+
 /* local defs where 1044 pixels is more or less full screen
  * and 660 pixels square fits into a neat 720p res OBS setup */
 #define WIN_WIDTH 1044
@@ -207,10 +209,59 @@ int main(int argc, char*argv[])
     uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
     memset(&mandel_val, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(uint32_t));
 
-    /* the actual complex coordinates */
-    double coord_r[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
+    /* The actual complex coordinates are stored in 
+     * two large arrays. coord_r will be all the real
+     * values whereas coord_j shall hold the imaginary
+     * component of any given sample point.
+     *
+     * The plot surface is also the sample set and it consists
+     * of VBOX_REAL_COUNT*VBOX_IMAG_COUNT smaller "vbox" regions
+     * with a total of VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG samples
+     * each.
+     *
+     * If we use the default numbers : 
+     *
+     *     VBOX_REAL_COUNT = 16
+     *     VBOX_IMAG_COUNT = 16
+     *     VBOX_SAMPLE_REAL = 64
+     *     VBOX_SAMPLE_IMAG = 64
+     *
+     * then we easily see we have a 16x16 grid of sample set vbox
+     * regions with 64x64 samples each. To index into the memory
+     * arrays created below we need a small bit of math to find
+     * the correct sample point.  For a sample [Sr,Sj] within a
+     * vbox [Vbox_r,Vbox_j] we may index thus :
+     *
+     *                         
+     *              index = Vbox_r * VBOX_SAMPLE_REAL + Sr
+     *
+     *                    + Vbox_j * VBOX_REAL_COUNT
+     *                             * VBOX_SAMPLE_REAL
+     *                             * VBOX_SAMPLE_IMAG
+     *
+     *                    + Sj * VBOX_REAL_COUNT * VBOX_SAMPLE_REAL;
+     *
+     * Please see test code index_check.c where this has been
+     * verified.
+     */
+    double *coord_r = calloc(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT, sizeof(double));
+    if ( coord_r == NULL ) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        /* NOTE : it is very nasty to bail out this way
+         *        but why bother to continue ?
+         */
+        return EXIT_FAILURE;
+    }
+
     double coord_j[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
-    memset(&coord_r, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(double));
     memset(&coord_j, 0x00, (size_t)(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG*VBOX_REAL_COUNT*VBOX_IMAG_COUNT)* sizeof(double));
 
     /* pre-fill the lsd trippy color map */
@@ -1585,9 +1636,15 @@ replot:
                                     if ( vbox_flag[vbox_x][vbox_y] == 1 ) {
                                         mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
                                     } else {
-                                        /* the actual mandelbrot computation for (x_prime, y_prime) */
-                                        coord_r[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = x_prime;
+                                        /* In the past we abused the stack with a trivial
+                                         * and massive array. Now we shall index into heap
+                                         * as described in index_check.c */
+                                        *(coord_r + index(vbox_x,vbox_y,mand_x_pix,mand_y_pix)) = x_prime;
+
+                                        /* coord_r[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = x_prime; */
                                         coord_j[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = y_prime;
+
+                                        /* the actual mandelbrot computation for (x_prime, y_prime) */
                                         mand_height = mbrot(x_prime, y_prime, mand_bail);
                                         mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = mand_height;
                                     }
@@ -1666,31 +1723,31 @@ replot:
 
             printf("\nraw data values -------------------------------------------------------\n");
 
-            printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_r[0][0][0][0]);
+            printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_r + index(0,0,0,0)));
             printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", coord_j[0][0][0][0]);
             printf("     :       mand_height = %9i\n",    mandel_val[0][0][0][0] );
 
-            printf("     : r[ 7][ 7][63][63] = %-+26.20e\n", coord_r[ 7][ 7][63][63]);
+            printf("     : r[ 7][ 7][63][63] = %-+26.20e\n", *(coord_r + index(7,7,63,63)));
             printf("     : j[ 7][ 7][63][63] = %-+26.20e\n", coord_j[ 7][ 7][63][63]);
             printf("     :       mand_height = %9i\n",    mandel_val[ 7][ 7][63][63] );
 
-            printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_r[8][8][0][0]);
+            printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_r + index(8,8,0,0)));
             printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", coord_j[8][8][0][0]);
             printf("     :       mand_height = %9i\n",    mandel_val[8][8][0][0] );
 
-            printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", coord_r[8][8][1][0]);
+            printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_r + index(8,8,1,0)));
             printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", coord_j[8][8][1][0]);
             printf("     :       mand_height = %9i\n",    mandel_val[8][8][1][0] );
 
-            printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", coord_r[8][8][32][32]);
+            printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", *(coord_r + index(8,8,32,32)));
             printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", coord_j[8][8][32][32]);
             printf("     :       mand_height = %9i\n",    mandel_val[8][8][32][32] );
 
-            printf("     : r[ 3][12][44][21] = %-+26.20e\n", coord_r[3][12][44][21]);
+            printf("     : r[ 3][12][44][21] = %-+26.20e\n", *(coord_r + index(3,12,44,21)));
             printf("     : j[ 3][12][44][21] = %-+26.20e\n", coord_j[3][12][44][21]);
             printf("     :       mand_height = %9i\n",    mandel_val[3][12][44][21]);
 
-            printf("     : r[15][15][63][63] = %-+26.20e\n", coord_r[15][15][63][63]);
+            printf("     : r[15][15][63][63] = %-+26.20e\n", *(coord_r + index(15,15,63,63)));
             printf("     : j[15][15][63][63] = %-+26.20e\n", coord_j[15][15][63][63]);
             printf("     :       mand_height = %9i\n",    mandel_val[15][15][63][63]);
 
@@ -1749,6 +1806,22 @@ replot:
         free( parm[pt] );
         parm[pt] = NULL;
     }
+
+    free(coord_r);
+    coord_r = NULL;
+
     return EXIT_SUCCESS;
+}
+
+int index(int Vbox_r, int Vbox_j, int Sr, int Sj) {
+
+    return Vbox_r * VBOX_SAMPLE_REAL + Sr
+
+           + Vbox_j * VBOX_REAL_COUNT
+                    * VBOX_SAMPLE_REAL
+                    * VBOX_SAMPLE_IMAG
+      
+           + Sj * VBOX_REAL_COUNT * VBOX_SAMPLE_REAL;
+
 }
 
