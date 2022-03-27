@@ -109,6 +109,17 @@ int main ( int argc, char **argv) {
      *           but not much else.
      */
 
+    /* guess the architecture endianess */
+    int end_check = 1;
+    /* strictly speaking this is not a wise way to do this */
+    uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
+
+    /* if the machine is big endian we get endian_flag = 0x10 */
+
+    num_written = fwrite( &endian_flag, sizeof(uint8_t), 1, fp);
+    printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
+            sizeof(uint8_t), num_written);
+
     num_written = fwrite( &c_r, sizeof(double), 1, fp);
     printf("DBUG : %2lu byte double  c_r           num_written = %lu\n",
             sizeof(double), num_written);
