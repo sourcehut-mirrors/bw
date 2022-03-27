@@ -1068,8 +1068,8 @@ int main(int argc, char*argv[])
                 y_prime = obs_y_height * win_y / 2.0;
 
                 /* apply the translation on the complex plane */
-                x_prime = x_prime + real_translate;
-                y_prime = y_prime + imag_translate;
+                x_prime = x_prime + real_translate + half_sample_offset_real;
+                y_prime = y_prime + imag_translate + half_sample_offset_imag;
                 fprintf(stderr,"c = ( %-+22.16e, %-+22.16e )\n", x_prime, y_prime );
                 XSetForeground(dsp, gc3, red.pixel);
                 sprintf(buf," select = %-+16.12e, %-+16.12e  ", x_prime, y_prime );
@@ -1187,8 +1187,8 @@ int main(int argc, char*argv[])
                         x_prime = obs_x_width * win_x / 2.0;
                         y_prime = obs_y_height * win_y / 2.0;
 
-                        x_prime = x_prime + real_translate;
-                        y_prime = y_prime + imag_translate;
+                        x_prime = x_prime + real_translate + half_sample_offset_real;
+                        y_prime = y_prime + imag_translate + half_sample_offset_imag;
 
                         mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
 
@@ -1569,8 +1569,9 @@ replot:
                 printf("     : y_prime = %-+26.20e\n", y_prime );
 
                 /* translation */
-                x_prime = x_prime + real_translate;
-                y_prime = y_prime + imag_translate;
+                x_prime = x_prime + real_translate + half_sample_offset_real;
+                y_prime = y_prime + imag_translate + half_sample_offset_imag;
+
                 printf("DBUG : after translation\n");
                 printf("     : r_trn   = %-+26.20e\n", real_translate );
                 printf("     : j_trn   = %-+26.20e\n", imag_translate );
