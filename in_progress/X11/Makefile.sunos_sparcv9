@@ -17,14 +17,14 @@ RPATH=/opt/bw/lib
 SRCS =  ./cursor.c ../../xwin/x_error_handler.c \
 	../../xwin/create_gc.c \
 	../../xwin/create_borderless_topwin.c \
-	../../sysinfo/sysmem.c ../../sysinfo/sysinfo.c
+	../../sysinfo/sysinfo.c
 
 
 OBJS = ./cursor.o \
 	../../xwin/x_error_handler.o \
 	../../xwin/create_gc.o \
 	../../xwin/create_borderless_topwin.o \
-	../../sysinfo/sysmem.o ../../sysinfo/sysinfo.o
+	../../sysinfo/sysinfo.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I. -I$(IDIR)
@@ -34,4 +34,3 @@ cursor: cursor.o $(OBJS)
 
 clean:
 	rm -f $(OBJS) cursor.o cursor
-
