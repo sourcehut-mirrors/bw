@@ -1547,7 +1547,7 @@ replot:
                 vbox_x = ( mouse_x - offset_x ) / vbox_w;
                 vbox_y = ( eff_height - mouse_y + offset_y ) / vbox_h;
                 sprintf(buf,"vbox  [ %03i , %03i ]", vbox_x, vbox_y );
-                printf("     : %s\n");
+                printf("     : %s\n", buf);
                 XDrawImageString( dsp, win2, gc2, 10, 270, buf, (int)strlen(buf));
 
                 /* Offset the floating point values such that the

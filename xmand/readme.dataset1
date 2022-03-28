@@ -1,28 +1,28 @@
-callisto$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+[test@arch xmand]$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = callisto
-                     release = 13.0-RELEASE-p8
-                     version = FreeBSD 13.0-RELEASE-p8 #0: Tue Mar 15 09:36:28 UTC 2022     root@amd64-builder.daemonology.net:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
-                     machine = amd64
+                 system name = Linux
+                   node name = arch
+                     release = 5.16.16-arch1-1
+                     version = #1 SMP PREEMPT Mon, 21 Mar 2022 22:59:40 +0000
+                     machine = x86_64
                    page size = 4096
-               system memory = 4242771968
-                             = 4143332 kB
-                             = 4046 MB
-                 avail pages = 1035833
+               system memory = 33600409600
+                             = 32812900 kB
+                             = 32043 MB
+                 avail pages = 3234696
                 avail memory = 0
-         clock ticks per sec = 128
-             threads support = 200112
-               POSIX Version = 200112
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
                       endian = little endian
        sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    1 day   12 hours   28 mins   44 secs
+           system uptime    0 day   12 hours   29 mins   41 secs
 -------------------------------------------------------------------
-INFO : baseline tdelta =            130 nsec
+INFO : baseline tdelta =             41 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -39,7 +39,7 @@ pthread_limit = 4
      : connection number 3
      : screen number 0
      : default depth is 24
-     : display seems to be 5760 wide and 1080 high.
+     : display seems to be 5760 wide and 1200 high.
      : offset x=20 y=20
      : eff_width =  1024    eff_height =  1024
 
@@ -59,12 +59,12 @@ DBUG : after offset
 DBUG : after translation
      : r_trn   = +3.99750960350502282381e-01
      : j_trn   = +2.05251797480741515756e-01
-     : x_prime = +3.99750960350502282381e-01
-     : y_prime = +2.05251797480741515756e-01
-     : bailout = 32768             
+     : x_prime = +3.99750960357778239995e-01
+     : y_prime = +2.05251797488017473370e-01
+     : bailout = 32768
      : magnify = 2.684354560000e+08
      : centre = +3.99750960350502282381e-01, +2.05251797480741515756e-01
-[mand] =   102861455315 nsec   1.028615e+02 sec
+[mand] =    22533477920 nsec   2.253348e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -90,9 +90,3 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +2.05251804924046155065e-01
      :       mand_height =     16877
 --------------------------- full plot done -----------------------------
-click at 522 522 
-raw  [ 525  , 511  ]
-right click
-click at 524 509 
-raw  [ 525  , 511  ]
-right click

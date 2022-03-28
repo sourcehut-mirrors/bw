@@ -1,28 +1,29 @@
-callisto$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
+dionysus $ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
 -------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = callisto
-                     release = 13.0-RELEASE-p8
-                     version = FreeBSD 13.0-RELEASE-p8 #0: Tue Mar 15 09:36:28 UTC 2022     root@amd64-builder.daemonology.net:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
-                     machine = amd64
-                   page size = 4096
-               system memory = 4242771968
-                             = 4143332 kB
-                             = 4046 MB
-                 avail pages = 1035833
+                 system name = SunOS
+                   node name = dionysus
+                     release = 5.10
+                     version = Generic_150400-65
+                     machine = sun4u
+                   page size = 8192
+               system memory = 25769803776
+                             = 25165824 kB
+                             = 24576 MB
+                             = 24 GB
+                 avail pages = 3139733
                 avail memory = 0
-         clock ticks per sec = 128
+         clock ticks per sec = 100
              threads support = 200112
                POSIX Version = 200112
-                      endian = little endian
+                      endian = big endian
        sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    1 day   13 hours    0 min   43 secs
+           system uptime    0 day    2 hours   12 mins   31 secs
 -------------------------------------------------------------------
-INFO : baseline tdelta =            130 nsec
+INFO : baseline tdelta =            100 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -36,7 +37,7 @@ pthread_limit = 4
 
 
  X11 : default width=1044 height=1044
-     : connection number 3
+     : connection number 4
      : screen number 0
      : default depth is 24
      : display seems to be 5760 wide and 1080 high.
@@ -50,7 +51,7 @@ DBUG : button 2 pressed
      : win_y = +5.00000000000000000000e-01
      : invert_mouse_x =  512
      : invert_mouse_y =  512
-     :  ]
+     : vbox  [ 008 , 008 ]
 DBUG : after offset
      : win_x = +0.00000000000000000000e+00
      : win_y = +0.00000000000000000000e+00
@@ -59,12 +60,12 @@ DBUG : after offset
 DBUG : after translation
      : r_trn   = -1.57887752805699992098e-02
      : j_trn   = +1.02061921088799989477e+00
-     : x_prime = -1.57887752805699992098e-02
-     : y_prime = +1.02061921088799989477e+00
+     : x_prime = -1.57887752805628937824e-02
+     : y_prime = +1.02061921088800700019e+00
      : bailout = 32768             
      : magnify = 2.748779069440e+11
      : centre = -1.57887752805699992098e-02, +1.02061921088799989477e+00
-[mand] =    65765728037 nsec   6.576573e+01 sec
+[mand] =    80983596200 nsec   8.098360e+01 sec
 
 
 raw data values -------------------------------------------------------
