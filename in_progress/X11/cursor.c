@@ -111,7 +111,6 @@ int main(int argc, char **argv)
 
     /* setup mouse x and y */
     int mouse_x = -1, mouse_y = -1;
-    int invert_mouse_x, invert_mouse_y;
     int mouse_x_raw, mouse_y_raw;
 
     /* these next five are just mouse button counters where the
@@ -132,17 +131,12 @@ int main(int argc, char **argv)
     int conn_num, screen_num, depth;
     int offset_x, offset_y;
     int lx, ly, ux, uy;
-    int gc0_x, gc0_y;
     int eff_width, eff_height, vbox_w, vbox_h;
-
-    /* These are the initial and normalized mouse fp64 values
-     * from within a graphical context */
-    double win_x, win_y;
 
     /* small general purpose char buffer */
     char *buf = calloc((size_t)128,sizeof(unsigned char));
 
-    setlocale( LC_ALL, "C" );
+    setlocale(LC_ALL, "C");
     sysinfo(VERBOSE);
 
     char *disp_name = NULL;
@@ -666,7 +660,7 @@ int main(int argc, char **argv)
             goto cleanup;
         }
 
-        switch(event.type){
+        switch(event.type) {
 
             case EnterNotify:
                 printf("Grabbing pointer\n");
@@ -689,7 +683,7 @@ int main(int argc, char **argv)
                                       (20 + right_count * 20) % 900, buf,
                                       (int) strlen (buf));
 
-                switch(event.xbutton.button){
+                switch(event.xbutton.button) {
 
                     case Button1: /* left mouse button */
                         printf ("left click\n");
@@ -737,8 +731,11 @@ int main(int argc, char **argv)
                 break;
 
             case KeyRelease:
+                printf ("Key released\n");
+                break;
             case ButtonRelease:
-                printf ("Key / Button released\n");
+                printf ("Button released\n");
+                break;
 
         default:
             break;
