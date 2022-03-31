@@ -223,6 +223,8 @@ int main(int argc, char **argv)
      * BadMatch error results.
      */
     unsigned long wtf = CWBackPixel | CWBorderPixel | CWEventMask;
+
+    /* this should just work */
     wtf = CWOverrideRedirect;
 
     /* second to last parameter is CWOverrideRedirect but if we
@@ -231,7 +233,7 @@ int main(int argc, char **argv)
                          RootWindow(dsp, DefaultScreen(dsp)),
                          offset_x, offset_y, width, height, 0,
                          CopyFromParent, CopyFromParent,
-                         CopyFromParent, CWOverrideRedirect,
+                         CopyFromParent, wtf,
                          &win0_attribs);
 
     XSizeHints wmsize;
