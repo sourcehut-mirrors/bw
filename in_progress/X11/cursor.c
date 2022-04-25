@@ -191,12 +191,15 @@ int main(int argc, char **argv)
      * to use tomato FF6347 */
     unsigned long gc0_bg = 0x0F0F0F;
 
-    gc0_bg = 0x663399; /* Rebecca Purple */
+    /* gc0_bg = 0x663399;  Rebecca Purple */
 
 
     /* TODO deal with a real border better than just 4 magic pixels */
     XSetWindowAttributes win0_attribs;
-    win0_attribs.override_redirect = 0;   /* this was a nasty 1 */
+
+    /* if we want a non-resizable window set override_redirect = 1
+     * otherwise leave it as zero */
+    win0_attribs.override_redirect = 1;
     win0_attribs.background_pixmap = None;
     win0_attribs.backing_store = Always;
 
@@ -224,8 +227,9 @@ int main(int argc, char **argv)
      */
     unsigned long wtf = CWBackPixel | CWBorderPixel | CWEventMask;
 
-    /* this should just work */
+    /* this should just work but it does not 
     wtf = CWOverrideRedirect;
+    */
 
     /* second to last parameter is CWOverrideRedirect but if we
      * try wtf then this tosses an error ?? for unknown reasons */

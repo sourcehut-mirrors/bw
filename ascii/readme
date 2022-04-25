@@ -1,0 +1,88 @@
+
+The argv vector dump will respect UTF-8 characters 
+just fine if you can put them into your terminal.
+
+Thus : 
+
+See https://www.unicode.org/charts/PDF/U20A0.pdf for the unicode
+data points for currency symbols.
+
+You will see the euro currency is 0x20AC --> € 
+
+Lets expand that into binary and then encode as 
+3 bytes of UTF-8 thus :
+
+   0x20AC -->  0010 0000 1010 1100 binary 
+               
+               1110 xxxx 10xx xxxx 10xx xxxx  <-- 16bits encoded in three bytes 
+ 
+                    0010   00 0010   10 1100  <-- actual data bits 
+               1110 0010 1000 0010 1010 1100  <-- Euro currency 0x20AC codepoint in UTF-8 byte sequence 
+ 
+                  E    2    8    2    A    C  -->   e2 82 ac  
+
+Therefore the three bytes for a single euro currency symbol will
+be e2 82 ac and we can demonstrate this :
+
+ 
+hydra$ ./argv_dump Berenice\ spends\ 5€\ pour\ un\ caffe
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = hydra
+                     release = 14.0-CURRENT
+                     version = FreeBSD 14.0-CURRENT #0 main-n254876-b85b9c88eb0: Mon Apr 18 00:47:44 GMT 2022     root@hydra:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 14690115584
+                             = 14345816 kB
+                             = 14009 MB
+                 avail pages = 3586454
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    7 days    0 hour    2 mins   53 secs
+-------------------------------------------------------------------
+argc = 2
+&argc = 0x820a9fca8
+argv = 0x820a9fd10
+11 chars for argv[ 0] = "./argv_dump"
+34 chars for argv[ 1] = "Berenice spends 5€ pour un caffe"
+
+hex dump of argv
+----------------
+2e 2f 61 72 67 76 5f 64 75 6d 70 00 42 65 72 65 6e 69 63 65 20 73 70 65 6e 64 73 20 35 e2 82 ac 20 70 6f 75 72 20 75 6e 20 63 61 66 66 65 00 
+hydra$ 
+ 
+Carefully look at the bytes and you will see 35 e2 82 ac 20 as a single string
+which represents 5€ as a single ASCII 0x35 for the digit 5 and then the three
+bytes for euro symbol.
+
+
+Another example would be characters with accents : 
+
+argc = 9
+&argc = 0x820d31d98
+argv = 0x820d31e00
+11 chars for argv[ 0] = "./argv_dump"
+ 2 chars for argv[ 1] = "á"
+ 2 chars for argv[ 2] = "â"
+ 2 chars for argv[ 3] = "ã"
+ 2 chars for argv[ 4] = "ä"
+ 2 chars for argv[ 5] = "å"
+ 2 chars for argv[ 6] = "æ"
+ 2 chars for argv[ 7] = "ç"
+ 2 chars for argv[ 8] = "è"
+
+hex dump of argv
+----------------
+2e 2f 61 72 67 76 5f 64 75 6d 70 00 c3 a1 00 c3 a2 00 c3 a3 00 c3 a4 00 c3 a5 00 c3 a6 00 c3 a7 00 c3 a8 00 
+hydra$ 
+
+

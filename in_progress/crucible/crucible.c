@@ -74,6 +74,23 @@
 #define ONE_MEG 1048576
 #define NANOSEC 1000000000
 
+/* for testing we may restrict the range of letters
+ * used and thus we need to avoid magic numbers 
+ */
+
+/* all letters upper and lowercase A->Z and a->z */
+#define DIR_FIRST_LETTER_MIN 0
+#define DIR_FIRST_LETTER_MAX 51
+
+/* all letters lowercase a->z */
+#define DIR_SECOND_LETTER_MIN 26
+#define DIR_SECOND_LETTER_MAX 51
+
+/* all letters lowercase a->z */
+#define FILENAME_FIRST_LETTER_MIN 26
+#define FILENAME_FIRST_LETTER_MAX 51
+
+
 void append_2k(FILE *);
 void append_TSE(FILE *);
 static double genrand(void);
@@ -188,10 +205,12 @@ int main (int argc, char **argv) {
         printf ("Written in 1994 or so to hammer Sun SPARC servers and\n");
         printf ("the old \"photon\" series fibre arrays.\n");
         printf ("*****************************************************\n\n");
+        /*
         printf ("This test will create 26^4 = 456976 files of\n");
         printf ("exactly 65536 bytes each. This amounts to\n");
         printf ("29,948,379,136 bytes = 27.8 GB of data where we\n");
         printf ("are not counting directory structure overhead.\n\n");
+        */
         printf ("%s: Usage - you must specify the directory.\n", argv[0]);
         printf ("Example : %s ./test/area/foo \n", argv[0]);
         return EXIT_FAILURE;
@@ -466,8 +485,8 @@ int main (int argc, char **argv) {
     file_create_time = 0;
     iteration_count = 0;
 
-    /* TODO return this back to /dev/urandom */
-    if ((frandom = fopen("/dev/Xrandom", "r")) == NULL) {
+
+    if ((frandom = fopen("/dev/urandom", "r")) == NULL) {
         fprintf(stderr, "%s: can't read /dev/urandom \n", argv[0]);
         perror("WARN : ");
         fprintf(stderr, "    : we must use the Mersenne Twister\n");
@@ -481,9 +500,9 @@ int main (int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    /* directory name loops for [A-Z][A-Z] */
-    for (j=20; j<26; ++j) {
-        for (k=12; k<16; ++k) {
+    /* directory name loops for [A-z] etc */
+    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
+        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
             /* The structure of the character string fid is very simple.
              * It looks like so : aa/aa.dat
              * To iterate through a pile of unique filenames we just
@@ -492,7 +511,7 @@ int main (int argc, char **argv) {
             fid[1]=alph[k];
 
             /* inner loops to change the filename.  */
-            for (l=0; l<2 ; ++l) {
+            for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
                 for (m=0; m<1; ++m) {
                     fid[4]=alph[m];
@@ -654,20 +673,19 @@ int main (int argc, char **argv) {
 
     printf("%6li files \n", iteration_count);
 
+    /*
     printf("          avg =%.6f sec\n", avgtime);
 
     printf("          IO avg rate =%.6f MB/s\n", avg_file_io);
+    */
 
     printf("Time required for random text generation = %.6f sec\n",
                (double)r64_dump_time_hrt/NANOSEC );
 
     /*******************************************************************/
 
-    printf ( "\\nnTEST 2 ) file append 2048 bytes." );
-    printf ( "\nAppending to file structure at %s\n", directory );
-
-    printf ( "\nThis test will append 2048 bytes to the files\n" );
-    printf (   "that were created in TEST 1.\n\n" );
+    printf ( "\nTEST 2 ) file append 2048 bytes.\n" );
+    printf ( "Appending to file structure at %s\n", directory );
 
     /* we want a new time */
     if ( clock_gettime( CLOCK_REALTIME, &end_test1_hrt ) == -1 ) {
@@ -678,8 +696,8 @@ int main (int argc, char **argv) {
 
     totaltime = 0.0;
     iteration_count = 0;
-    for (j=20; j<26; ++j) {
-        for (k=12; k<16; ++k) {
+    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
+        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
             fid[0]=alph[j];
             fid[1]=alph[k];
 
@@ -687,7 +705,7 @@ int main (int argc, char **argv) {
              * Now we need an inner loop to change the filename.  *
              ******************************************************/
 
-            for (l=0; l<2; ++l) {
+            for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
                 for (m=0; m<1; ++m) {
                     fid[4]=alph[m];
@@ -740,8 +758,75 @@ int main (int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    printf(" TEST (2) Wall Clock Total Time = %" PRIu64 " nsecs\n",
-             timediff(end_test1_hrt, end_test2_hrt) );
+    totaltime = timediff(end_test1_hrt, end_test2_hrt);
+    printf(" TEST (2) Wall Clock Total Time = %" PRIu64 " nsec = %.6f sec\n",
+             totaltime, (double)totaltime/NANOSEC );
+
+    printf ( "\nTEST 3 ) file append 749 bytes.\n" );
+
+    totaltime = 0.0;
+    iteration_count = 0;
+    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
+        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
+            fid[0]=alph[j];
+            fid[1]=alph[k];
+
+            for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
+                fid[3]=alph[l];
+                for (m=0; m<1; ++m) {
+                    fid[4]=alph[m];
+
+                    filename_len = sizeof(filename);
+                    strncpy(filename,directory,filename_len);
+
+                    fid_len = sizeof(fid);
+                    strncat(filename,fid,fid_len);
+
+                    if ( clock_gettime( CLOCK_REALTIME, &start_proc_hrt ) == -1 ) {
+                        /* We could not get the clock. Bail out. */
+                        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+                        return EXIT_FAILURE ;
+                    }
+
+                    if ( ( fp = fopen ( filename, "a") ) == NULL ) {
+                        /** There was an error **/
+                        fprintf ( stderr, "%s: can't append to file %s\n", argv[0], filename );
+                        fprintf ( stderr, "%s: ABORTING\n", argv[0]);
+                        perror ("FAIL ");
+                        return EXIT_FAILURE ;
+                    } else {
+                        /** append the data **/
+                        append_TSE ( fp );
+                        fflush_err = fflush ( fp );
+                        if ( fflush_err != 0 ) {
+                            fprintf ( stderr, "fflush error %i", fflush_err );
+                            return EXIT_FAILURE ;
+                        }
+                        fclose ( fp ); /* close the file and flush buffers */
+                    }
+
+                    if ( clock_gettime( CLOCK_REALTIME, &end_proc_hrt ) == -1 ) {
+                        /* We could not get the clock. Bail out. */
+                        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+                        return EXIT_FAILURE;
+                    }
+
+                    iteration_count = iteration_count + 1;
+
+                } /* m for */
+            } /* l for */
+        } /* k for */
+    } /* j for */
+
+    if ( clock_gettime( CLOCK_REALTIME, &end_test3_hrt ) == -1 ) {
+        /* We could not get the clock. Bail out. */
+        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
+    totaltime = timediff(end_test2_hrt, end_test3_hrt);
+    printf(" TEST (3) Wall Clock Total Time = %" PRIu64 " nsec = %.6f sec\n",
+             totaltime, (double)totaltime/NANOSEC );
 
     printf("%6li files\n", iteration_count);
 
