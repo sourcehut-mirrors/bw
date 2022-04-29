@@ -1,3 +1,4 @@
+
 /*
  * filetimes.c report the various essential UNIX timestamps for a file
  * Copyright (C) Dennis Clarke 2019
@@ -35,7 +36,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -44,7 +44,7 @@
 #include <fcntl.h>
 
 #define VERBOSE 1
-// int sysinfo(int verbose);
+int sysinfo(int verbose);
 
 int main(int argc, char **argv)
 {
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
     FILE *fp;
     char *line = NULL;
-    char *c_time_string;
+    char *c_time_string, buff[64];
     size_t line_length, line_count, char_count;
     size_t fwrite_ret, linecap = 0;
     ssize_t linelen;
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    setlocale ( LC_ALL, "C" );
+    setlocale ( LC_ALL, "POSIX" );
     if ( clock_gettime( CLOCK_REALTIME, &start_tv ) == -1 ) {
         perror( "clock gettime" );
         return EXIT_FAILURE;
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 
     /* note that we no longer will get an ENOMEM from the
      * sysctlbyname call.  See sysinfo.c for details. */
-    // sysinfo(VERBOSE);
+    sysinfo(VERBOSE);
 
     c_time_string = ctime( &start_tv.tv_sec );
 
@@ -90,14 +90,23 @@ int main(int argc, char **argv)
         fprintf (stderr,"     : three UNIX times of the file are :\n");
 
         /* access time */
-        fprintf(stderr,"     : ctime(&buffer.st_atime) = %s",
-                               ctime(&status_buffer.st_atime));
+        sprintf(buff,"     : ctime(&buffer.st_atime) = %s",
+                                        ctime(&status_buffer.st_atime));
+        buff[57] = '\0';
+        fprintf (stderr,"%s\n", buff);
+
         /* modification time */
-        fprintf(stderr,"     :              .st_mtime) = %s",
-                               ctime(&status_buffer.st_mtime));
+        sprintf(buff,"     :              .st_mtime) = %s",
+                                        ctime(&status_buffer.st_mtime));
+        buff[57] = '\0';
+        fprintf (stderr,"%s\n", buff);
+
         /* creation time */
-        fprintf(stderr,"     :              .st_ctime) = %s",
-                               ctime(&status_buffer.st_ctime));
+        sprintf(buff,"     :              .st_ctime) = %s",
+                                        ctime(&status_buffer.st_ctime));
+        buff[57] = '\0';
+        fprintf (stderr,"%s\n", buff);
+
     } else {
         /* check for a pile of things that could have gone
          * wrong */
@@ -112,7 +121,7 @@ int main(int argc, char **argv)
                 fprintf ( stderr, "ERROR : EBADF\n" );
                 break;
             default :
-                fprintf ( stderr, "ERROR : %s\n", strerror(errno) );
+                fprintf ( stderr, "ERROR : something bad happened.\n" );
         }
         perror("ERROR ");
         return EXIT_FAILURE;
@@ -182,7 +191,7 @@ int main(int argc, char **argv)
                      * because we did not get a valid char. */
                     line[char_count] = '\0';
                     line_count += 1;
-                    printf("%-6zu    %-4zu    \"%s\"\n",line_count,
+                    printf("%-6i    %-4i    \"%s\"\n",line_count,
                                                       char_count,
                                                       line);
 
@@ -205,7 +214,7 @@ int main(int argc, char **argv)
             if ( line[char_count - 1] == '\n' ) {
                 line[char_count - 1] = '\0';
                 line_count += 1;
-                printf("%-6zu    %-4zu    \"%s\"\n",line_count,char_count,line);
+                printf("%-6i    %-4i    \"%s\"\n",line_count,char_count,line);
                 char_count = 0;
                 line[0] = '\0';
             }
@@ -220,7 +229,7 @@ int main(int argc, char **argv)
         perror("FAIL ");
         return EXIT_FAILURE;
     }
-    fprintf(stderr,"\n\nINFO : ftell_pos = %-6li\n", ftell_pos);
+    fprintf(stderr,"\n\nINFO : ftell_pos = %-6i\n", ftell_pos);
 
     if ( ferror(fp) != 0 ) {
         fprintf(stderr,"\nWARN : some sort of an error occured??\n");
@@ -243,16 +252,23 @@ int main(int argc, char **argv)
         fprintf (stderr,"\nINFO : three UNIX times are now :\n");
 
         /* access time */
-        fprintf(stderr,"     : ctime(&buffer.st_atime) = %s",
-                               ctime(&status_buffer.st_atime));
+        sprintf(buff,"     : ctime(&buffer.st_atime) = %s",
+                                        ctime(&status_buffer.st_atime));
+        buff[57] = '\0';
+        fprintf (stderr,"%s\n", buff);
 
         /* modification time */
-        fprintf(stderr,"     :              .st_mtime) = %s",
-                               ctime(&status_buffer.st_mtime));
+        sprintf(buff,"     :              .st_mtime) = %s",
+                                        ctime(&status_buffer.st_mtime));
+        buff[57] = '\0';
+        fprintf (stderr,"%s\n", buff);
 
         /* creation time */
-        fprintf(stderr,"     :              .st_ctime) = %s",
-                               ctime(&status_buffer.st_ctime));
+        sprintf(buff,"     :              .st_ctime) = %s",
+                                        ctime(&status_buffer.st_ctime));
+        buff[57] = '\0';
+        fprintf (stderr,"%s\n", buff);
+
     } else {
         perror("FAIL ");
         return EXIT_FAILURE;
@@ -261,3 +277,4 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 
 }
+

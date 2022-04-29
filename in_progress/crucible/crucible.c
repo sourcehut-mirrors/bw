@@ -90,6 +90,10 @@
 #define FILENAME_FIRST_LETTER_MIN 26
 #define FILENAME_FIRST_LETTER_MAX 51
 
+/* lock this to the lowercase letter a */
+#define FILENAME_SECOND_LETTER_MIN 26
+#define FILENAME_SECOND_LETTER_MAX 26
+
 
 void append_2k(FILE *);
 void append_TSE(FILE *);
@@ -513,7 +517,7 @@ int main (int argc, char **argv) {
             /* inner loops to change the filename.  */
             for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
-                for (m=0; m<1; ++m) {
+                for (m=FILENAME_SECOND_LETTER_MIN; m<=FILENAME_SECOND_LETTER_MAX; ++m) {
                     fid[4]=alph[m];
 
                     /*
@@ -707,7 +711,7 @@ int main (int argc, char **argv) {
 
             for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
-                for (m=0; m<1; ++m) {
+                for (m=FILENAME_SECOND_LETTER_MIN; m<=FILENAME_SECOND_LETTER_MAX; ++m) {
                     fid[4]=alph[m];
 
                     filename_len = sizeof(filename);
@@ -773,7 +777,7 @@ int main (int argc, char **argv) {
 
             for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
-                for (m=0; m<1; ++m) {
+                for (m=FILENAME_SECOND_LETTER_MIN; m<=FILENAME_SECOND_LETTER_MAX; ++m) {
                     fid[4]=alph[m];
 
                     filename_len = sizeof(filename);
