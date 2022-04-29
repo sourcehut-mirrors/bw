@@ -10,7 +10,7 @@ CFLAGS= -m64 -xarch=sparc -Xc -g -mc -xs -errfmt=error \
 	-xcode=pic32 -xmemalign=8s -xnolibmil -xunroll=1 -xregs=no%appl \
 	-xdebugformat=dwarf
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 LIBS = -lX11 -lrt -lm

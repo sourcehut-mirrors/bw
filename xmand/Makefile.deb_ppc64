@@ -11,7 +11,7 @@ CFLAGS= -std=iso9899:1999 -pedantic -g -O0 -fno-builtin -m64 \
 	-mno-recip -fno-unsafe-math-optimizations -pedantic-errors \
 	-Wall
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 LIBS = -lX11 -lrt -lm -lpthread

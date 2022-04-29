@@ -3,7 +3,7 @@ CXX=/usr/bin/c++
 
 CFLAGS= -m32 -g -O0 -fno-fast-math -fno-builtin
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
 
 LDIR=/usr/local/lib
 IDIR=/usr/local/include

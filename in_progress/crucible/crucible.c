@@ -61,6 +61,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <time.h>
 #include <unistd.h>
 #include <inttypes.h>
 #include <iso646.h>

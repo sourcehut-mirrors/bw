@@ -7,7 +7,7 @@ CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
 	-m128bit-long-double -mlong-double-80 \
 	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 CC=/usr/bin/gcc

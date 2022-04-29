@@ -6,7 +6,7 @@ CFLAGS= -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp \
 	-malign-double -m128bit-long-double -mlong-double-80 \
 	-mstackrealign -mpreferred-stack-boundary=8
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
 
 LIBS = -lpng -lglfw -lGLEW -lGL -lGLU
 

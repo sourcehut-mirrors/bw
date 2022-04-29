@@ -7,7 +7,7 @@ CFLAGS= -g -O0 -fno-builtin -m64 -mcpu=970 -mno-altivec -mno-isel \
 	-mno-bit-align -mno-strict-align -mbig -mregnames -mno-recip \
 	-fno-unsafe-math-optimizations -pedantic-errors -Wall
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
 
 LIBS = -lpng -lglfw -lGLEW -lGL -lGLU
 

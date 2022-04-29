@@ -6,7 +6,7 @@ CFLAGS= -I$(IDIR) -std=iso9899:1999 -march=armv7-a \
 	-marm -mtls-dialect=gnu2 -pedantic -Wl,-rpath=/opt/bw/lib \
 	-mno-sched-prolog -mlittle-endian -O2
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 LIBS = -lX11 -lrt -lm -lpthread

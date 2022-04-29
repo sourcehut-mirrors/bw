@@ -9,7 +9,7 @@ CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
 	-m128bit-long-double -mlong-double-80 \
 	-mstackrealign -mpreferred-stack-boundary=4
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 SRCS = collatz.c collatz_f.c

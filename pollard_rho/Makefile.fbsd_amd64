@@ -6,7 +6,7 @@ CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
 	-Wno-missing-prototypes -Wno-padded -fno-fast-math -fno-builtin \
 	-Wl,-rpath=/opt/bw/lib
 
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 LDIR=/opt/bw/lib
