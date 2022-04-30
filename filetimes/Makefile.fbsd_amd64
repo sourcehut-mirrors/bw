@@ -1,7 +1,7 @@
 
 CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:2011 -pedantic -pedantic-errors -Weverything \
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
 	-fno-fast-math -fno-builtin
 

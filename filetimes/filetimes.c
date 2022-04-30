@@ -31,6 +31,7 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <ctype.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,8 +44,10 @@
 #include <time.h>
 #include <fcntl.h>
 
+#define MAX_LINE 512
+
 #define VERBOSE 1
-// int sysinfo(int verbose);
+int sysinfo(int verbose);
 
 int main(int argc, char **argv)
 {
@@ -57,7 +60,7 @@ int main(int argc, char **argv)
     size_t line_length, line_count, char_count;
     size_t fwrite_ret, linecap = 0;
     ssize_t linelen;
-    int some_char = 0;
+    int some_char, char_flag;
     int end_of_file = 0;
     fpos_t fpos;
     int fpos_status;
@@ -79,7 +82,7 @@ int main(int argc, char **argv)
 
     /* note that we no longer will get an ENOMEM from the
      * sysctlbyname call.  See sysinfo.c for details. */
-    // sysinfo(VERBOSE);
+    sysinfo(VERBOSE);
 
     c_time_string = ctime( &start_tv.tv_sec );
 
@@ -98,6 +101,7 @@ int main(int argc, char **argv)
         /* creation time */
         fprintf(stderr,"     :              .st_ctime) = %s",
                                ctime(&status_buffer.st_ctime));
+
     } else {
         /* check for a pile of things that could have gone
          * wrong */
@@ -140,7 +144,7 @@ int main(int argc, char **argv)
     }
 
     errno = 0;
-    line = calloc(8192,sizeof(unsigned char));
+    line = calloc(MAX_LINE,sizeof(unsigned char));
     if ( line == NULL ) {
         /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
@@ -172,7 +176,12 @@ int main(int argc, char **argv)
     errno = 0;
     do {
         some_char = fgetc(fp);
+        /* Due to the sad fact that a binary file will cause all
+         * manner of problems we may need to check if we can print
+         * the some_char. */
+
         if ( some_char == EOF ) {
+
             if ( feof(fp) ) {
                 if ( char_count > 0 ) {
                     /* we hit end of file and the line has
@@ -197,10 +206,30 @@ int main(int argc, char **argv)
                 free(line);
                 return EXIT_FAILURE;
             }
+
         } else {
-            line[char_count] = (uint8_t)some_char;
-            /* we have a valid char */
+
+            char_flag = isprint(some_char) || isspace(some_char)
+                    || (some_char==0010) || (some_char==0177);
+
+            /* Try to ensure we have a safe char to print */
+            line[char_count] = char_flag ? (uint8_t)some_char : 0176;
+
             char_count += 1;
+
+            /* check for some insane line length and bail out with
+             * a horrific nasty message and tell the user to smarten
+             * up.
+             */
+            if (char_count>=MAX_LINE) {
+                free(line);
+                line = NULL;
+                fprintf(stderr,"\n\n*****************************\n");
+                fprintf(stderr,"*    WHAT? Binary file?     *\n");
+                fprintf(stderr,"*****************************\n");
+                return EXIT_FAILURE;
+            }
+
             /* end of line has a new_line char and we remove it */
             if ( line[char_count - 1] == '\n' ) {
                 line[char_count - 1] = '\0';

@@ -1,10 +1,21 @@
+    *********************************************************
+
+                    W  A  R  N  I  N  G
+
+    *********************************************************
+
+    Only provide simple text files as the argument to
+    this filetimes code. 
+
+    A binary will likely result in a seg fault or worse.
 
 
-note that the results are messed up on arm : 
 
 
+Also, from a long time ago we saw that the 32-bit arm platform was
+really screwed up. For unknown reasons. Some day we may look there
+again. However here is what we saw : 
 
-arm$ 
 arm$ ./fg wtf.dat 
 -------------------------------------------------------------------
                  system name = Linux
