@@ -37,13 +37,18 @@
 #include <stdlib.h>
 
 #define DIR_FIRST_LETTER_MIN 0
-#define DIR_FIRST_LETTER_MAX 9
-#define DIR_SECOND_LETTER_MIN 26
-#define DIR_SECOND_LETTER_MAX 28
-#define FILE_FIRST_LETTER_MIN 26
+#define DIR_FIRST_LETTER_MAX 51
+#define DIR_SECOND_LETTER_MIN 0
+#define DIR_SECOND_LETTER_MAX 51
+#define FILE_FIRST_LETTER_MIN 0
 #define FILE_FIRST_LETTER_MAX 51
-#define FILE_SECOND_LETTER_MIN 26
-#define FILE_SECOND_LETTER_MAX 26
+#define FILE_SECOND_LETTER_MIN 0
+#define FILE_SECOND_LETTER_MAX 51
+
+/* sad global values that are useful later */
+static int FFR = FILE_FIRST_LETTER_MAX - FILE_FIRST_LETTER_MIN + 1;
+static int DFR = DIR_FIRST_LETTER_MAX - DIR_FIRST_LETTER_MIN + 1;
+static int FSR = FILE_SECOND_LETTER_MAX - FILE_SECOND_LETTER_MIN + 1;
 
 int offset(int a, int b, int k, int x);
 
@@ -242,13 +247,13 @@ main(int argc, char **argv)
      * which we know to be 26 * 1 = 26. Let us therefore define four
      * new variables for an offset computation :
      *
-     *     alpha = dfl - DIR_FIRST_LETTER_MIN + 1
+     *     alpha = dfl - DIR_FIRST_LETTER_MIN
      *
-     *      beta = dsl - DIR_SECOND_LETTER_MIN + 1
+     *      beta = dsl - DIR_SECOND_LETTER_MIN
      *
-     *     kappa = ffl - FILE_FIRST_LETTER_MIN + 1
+     *     kappa = ffl - FILE_FIRST_LETTER_MIN
      *
-     *       chi = fsl - FILE_SECOND_LETTER_MIN + 1
+     *       chi = fsl - FILE_SECOND_LETTER_MIN
      *
      * The above values (alpha, beta, kappa, chi) will uniquely locate
      * any file within any directory without the use of letters or
@@ -266,13 +271,17 @@ main(int argc, char **argv)
      */
 
      for ( dfl = DIR_FIRST_LETTER_MIN; dfl <= DIR_FIRST_LETTER_MAX; dfl++ ) {
-         alpha = dfl - DIR_FIRST_LETTER_MIN + 1;
+         alpha = dfl - DIR_FIRST_LETTER_MIN;
+         /* printf("%4i    ",alpha); */
          for ( dsl = DIR_SECOND_LETTER_MIN; dsl <= DIR_SECOND_LETTER_MAX; dsl++ ) {
-             beta = dsl - DIR_SECOND_LETTER_MIN + 1;
+             beta = dsl - DIR_SECOND_LETTER_MIN;
+             /* printf("%4i    ",beta); */
              for ( ffl = FILE_FIRST_LETTER_MIN; ffl <= FILE_FIRST_LETTER_MAX; ffl++ ) {
-                 kappa = ffl - FILE_FIRST_LETTER_MIN + 1;
+                 kappa = ffl - FILE_FIRST_LETTER_MIN;
+                 /* printf("%4i    ",kappa); */
                  for ( fsl = FILE_SECOND_LETTER_MIN; fsl <= FILE_SECOND_LETTER_MAX; fsl++ ) {
-                     chi = fsl - FILE_SECOND_LETTER_MIN + 1;
+                     chi = fsl - FILE_SECOND_LETTER_MIN;
+                     /* printf("%4i    ",chi); */
 
                      printf("%7i\n",offset(alpha,beta,kappa,chi));
 
@@ -288,12 +297,6 @@ main(int argc, char **argv)
 int
 offset(int a, int b, int k, int x)
 {
-
-    int FFR = FILE_FIRST_LETTER_MAX - FILE_FIRST_LETTER_MIN + 1;
-
-    int DFR = DIR_FIRST_LETTER_MAX - DIR_FIRST_LETTER_MIN + 1;
-
-    int FSR = FILE_SECOND_LETTER_MAX - FILE_SECOND_LETTER_MIN + 1;
 
     return a * FFR + k + b * DFR * FFR * FSR + x * DFR * FFR;
 
