@@ -1,7 +1,6 @@
-
 /*
- * offset.c  index into the four dimensional array of atime data
- *
+ * ctime.c report the date for a give UNIX time expressed in secs since
+ *         1 Jan 1970 00:00:00
  * Copyright (C) Dennis Clarke 2022
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +19,7 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-/*
+/*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
  *
@@ -29,16 +28,46 @@
  *    inclusion of any header. This is needed to enable the
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
- */
+ *
+ *********************************************************************/
 #define _XOPEN_SOURCE 600
 
-#include "offset.h"
+#include <ctype.h>
+#include <locale.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <fcntl.h>
 
-int
-offset(int a, int b, int k, int x)
+int main(int argc, char **argv)
 {
+    char *c_time_string;
 
-	return a * FFR + k + b * DFR * FFR * FSR + x * DFR * FFR;
+    struct timespec time_tv;
+
+    if ( argc < 2 ) {
+        fprintf(stderr,"FAIL : provide a UNIX time in secs\n");
+        errno = EINVAL;
+        perror("FAIL ");
+        return EXIT_FAILURE;
+    }
+
+    setlocale ( LC_ALL, "C" );
+
+    time_tv.tv_sec = strtol(argv[1], (char **)NULL, 10);
+    time_tv.tv_nsec = (argc == 3 ) ? strtol(argv[2], (char **)NULL, 10) : 0; 
+
+    c_time_string = ctime( &time_tv.tv_sec );
+
+    printf("TIME : %s", c_time_string);
+
+    return EXIT_SUCCESS;
 
 }
 

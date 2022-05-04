@@ -13,17 +13,13 @@ CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS = -lrt -lm
 
-SRCS = offset.c crucible.c ../../sysinfo/sysinfo.c \
-	  ../../time_and_date/timediff.c
+OBJ = ../sysinfo/sysinfo.o filetimes.o
 
-OBJS = offset.o crucible.o ../../sysinfo/sysinfo.o \
-	   ../../time_and_date/timediff.o
-
-.c.o:
+%.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-crucible: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+filetimes: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
-	rm -f $(OBJS) crucible
+	rm -f *.o ../sysinfo/sysinfo.o filetimes

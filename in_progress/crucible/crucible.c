@@ -69,7 +69,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "index.h"
+#include "offset.h"
 
 #define VERBOSE 1
 #define MAX_GROUPS 16
@@ -85,8 +85,6 @@ uint64_t timediff( struct timespec start_time,
                    struct timespec end_time );
 
 int sysinfo(int verbose);
-
-int offset(int alpha, int beta, int kappa, int chi);
 
 int main (int argc, char **argv) {
 
@@ -109,6 +107,27 @@ int main (int argc, char **argv) {
     struct timespec bubble_start_hrt, bubble_end_hrt;
     struct timespec qsort_start_hrt, qsort_end_hrt;
     struct timespec random_buffer_start_hrt, random_buffer_end_hrt;
+
+
+    int file_ctime_offset;
+    struct timespec *file_ctime = calloc(DFR*DSR*FFR*FSR,sizeof(struct timespec));
+
+    if ( file_ctime == NULL ) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        /* NOTE : it is very nasty to bail out this way
+         *        but why bother to continue ?
+         */
+        return EXIT_FAILURE;
+    }
+
 
     /* For snits and giggles we are curious about bubble sort min
      * and max time */
@@ -498,9 +517,9 @@ int main (int argc, char **argv) {
     }
 
     /* directory name loops for [A-z] etc */
-    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
+    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; j++) {
         fid[0]=alph[j];
-        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
+        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; k++) {
             /* The structure of the character string fid is very simple.
              * It looks like so : aa/aa.dat
              * To iterate through a pile of unique filenames we just
@@ -508,9 +527,9 @@ int main (int argc, char **argv) {
             fid[1]=alph[k];
 
             /* inner loops to change the filename.  */
-            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; ++l) {
+            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; l++) {
                 fid[3]=alph[l];
-                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; ++m) {
+                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; m++) {
                     fid[4]=alph[m];
 
                     /*
@@ -528,7 +547,8 @@ int main (int argc, char **argv) {
                     strncat(filename,fid,fid_len);
 
                     /* Generate the random text before we need it and
-                     * also outside of the area that measures time. */
+                     * also outside of the area that measures time
+                     * for a given file. */
                     if ( clock_gettime( CLOCK_REALTIME, &random_buffer_start_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
                         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
@@ -612,6 +632,13 @@ int main (int argc, char **argv) {
                             return EXIT_FAILURE;
                         }
 
+                        /* create the new file and dump our random data */
+                        if ( clock_gettime( CLOCK_REALTIME, &start_proc_hrt ) == -1 ) {
+                            /* We could not get the clock. Bail out. */
+                            fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
+                            return EXIT_FAILURE;
+                        }
+
                         /* we know for certain that the directory exists */
                         errno = 0;
                         if ( (fp = fopen(filename, "w")) == NULL ) {
@@ -633,17 +660,27 @@ int main (int argc, char **argv) {
                     }
                     fclose ( fp ); /* close the file and flush buffers */
 
-                    iteration_count = iteration_count + 1;
-
                     if ( clock_gettime( CLOCK_REALTIME, &end_proc_hrt ) == -1 ) {
                         /* We could not get the clock. Bail out. */
                         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
                         return EXIT_FAILURE;
                     }
-                    /* TODO  use file_create_time as an array and then we can
-                     *       do some statistical stuff with it later */
+
+                    iteration_count = iteration_count + 1;
+
+                    /* Compute an offset into the linear array file_ctime */
+
+                    file_ctime_offset=offset(j - DIR_FIRST_LETTER_MIN,
+                                             k - DIR_SECOND_LETTER_MIN,
+                                             l - FILE_FIRST_LETTER_MIN,
+                                             m - FILE_SECOND_LETTER_MIN);
+
+                    (file_ctime+file_ctime_offset)->tv_sec = start_proc_hrt.tv_sec;
+                    (file_ctime+file_ctime_offset)->tv_nsec = start_proc_hrt.tv_nsec;
+                    /*
                     file_create_time = timediff(start_proc_hrt, end_proc_hrt);
                     file_create_total_time = file_create_total_time + file_create_time;
+                    */
 
                 } /* m for */
             } /* l for */
@@ -690,13 +727,13 @@ int main (int argc, char **argv) {
     if ( clock_gettime( CLOCK_REALTIME, &end_test1_hrt ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     totaltime = 0.0;
     iteration_count = 0;
-    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
-        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
+    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; j++) {
+        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; k++) {
             fid[0]=alph[j];
             fid[1]=alph[k];
 
@@ -704,9 +741,9 @@ int main (int argc, char **argv) {
              * Now we need an inner loop to change the filename.  *
              ******************************************************/
 
-            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; ++l) {
+            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; l++) {
                 fid[3]=alph[l];
-                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; ++m) {
+                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; m++) {
                     fid[4]=alph[m];
 
                     filename_len = sizeof(filename);
@@ -765,14 +802,14 @@ int main (int argc, char **argv) {
 
     totaltime = 0.0;
     iteration_count = 0;
-    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
-        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
+    for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; j++) {
+        for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; k++) {
             fid[0]=alph[j];
             fid[1]=alph[k];
 
-            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; ++l) {
+            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; l++) {
                 fid[3]=alph[l];
-                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; ++m) {
+                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; m++) {
                     fid[4]=alph[m];
 
                     filename_len = sizeof(filename);
@@ -829,6 +866,8 @@ int main (int argc, char **argv) {
 
     printf("%6li files\n", iteration_count);
 
+    free(file_ctime);
+    file_ctime = NULL;
 
     return EXIT_SUCCESS;
 

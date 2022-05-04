@@ -57,9 +57,7 @@ int main(int argc, char **argv)
     FILE *fp;
     char *line = NULL;
     char *c_time_string;
-    size_t line_length, line_count, char_count;
-    size_t fwrite_ret, linecap = 0;
-    ssize_t linelen;
+    size_t line_count, char_count;
     int some_char, char_flag;
     int end_of_file = 0;
     fpos_t fpos;

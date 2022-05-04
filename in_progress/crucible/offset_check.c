@@ -36,9 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "index.h"
-
-int offset(int a, int b, int k, int x);
+#include "offset.h"
 
 int
 main(int argc, char **argv)
@@ -274,14 +272,6 @@ main(int argc, char **argv)
 	}
 
 	return EXIT_SUCCESS;
-
-}
-
-int
-offset(int a, int b, int k, int x)
-{
-
-	return a * FFR + k + b * DFR * FFR * FSR + x * DFR * FFR;
 
 }
 

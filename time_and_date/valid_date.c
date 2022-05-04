@@ -64,6 +64,16 @@ int valid_date ( int day, int month, int year )
      * by 100 (for example, 1900) is a leap year only if it
      * is also evenly divisible by 400.
      *
+     * Also there exists the strange and historically correct
+     * month of September in the year 1752 : 
+     *
+     *                   September 1752
+     *                 S  M Tu  W Th  F  S
+     *                    1  2 14 15 16 17
+     *                18 19 20 21 22 23 24
+     *                25 26 27 28 29 30
+     *
+     *
      * However we only care to check if the month is February
      *
      * -------------------------------------------------------

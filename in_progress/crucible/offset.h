@@ -24,4 +24,7 @@
 static int FFR = FILE_FIRST_LETTER_MAX  - FILE_FIRST_LETTER_MIN  + 1;
 static int FSR = FILE_SECOND_LETTER_MAX - FILE_SECOND_LETTER_MIN + 1;
 static int DFR = DIR_FIRST_LETTER_MAX   - DIR_FIRST_LETTER_MIN   + 1;
+static int DSR = DIR_SECOND_LETTER_MAX  - DIR_SECOND_LETTER_MIN  + 1;
+
+int offset(int a, int b, int k, int x);
 
