@@ -69,32 +69,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "index.h"
+
 #define VERBOSE 1
 #define MAX_GROUPS 16
 #define SIXTYFOURK 65536
 #define ONE_MEG 1048576
 #define NANOSEC 1000000000
-
-/* for testing we may restrict the range of letters
- * used and thus we need to avoid magic numbers 
- */
-
-/* all letters upper and lowercase A->Z and a->z */
-#define DIR_FIRST_LETTER_MIN 0
-#define DIR_FIRST_LETTER_MAX 51
-
-/* all letters lowercase a->z */
-#define DIR_SECOND_LETTER_MIN 26
-#define DIR_SECOND_LETTER_MAX 51
-
-/* all letters lowercase a->z */
-#define FILENAME_FIRST_LETTER_MIN 26
-#define FILENAME_FIRST_LETTER_MAX 51
-
-/* lock this to the lowercase letter a */
-#define FILENAME_SECOND_LETTER_MIN 26
-#define FILENAME_SECOND_LETTER_MAX 26
-
 
 void append_2k(FILE *);
 void append_TSE(FILE *);
@@ -104,6 +85,8 @@ uint64_t timediff( struct timespec start_time,
                    struct timespec end_time );
 
 int sysinfo(int verbose);
+
+int offset(int alpha, int beta, int kappa, int chi);
 
 int main (int argc, char **argv) {
 
@@ -192,6 +175,15 @@ int main (int argc, char **argv) {
      * nul char. */
     char buffer_64k_rand_text[65537];
     int char_count, k_index;
+
+    /* curious what we get with _XOPEN_SOURCE 600 */
+    printf("\n\n--------- _XOPEN_SOURCE 600 -------\n");
+    printf("_POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
+    printf("_POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
+    printf("_POSIX_OPEN_MAX    = %i\n", _POSIX_OPEN_MAX);
+    printf("_POSIX_PATH_MAX    = %i\n", _POSIX_PATH_MAX);
+    printf("_POSIX_TZNAME_MAX  = %i\n", _POSIX_TZNAME_MAX);
+    printf("---------------------------------------\n");
 
     char filename[FILENAME_MAX];
     char directory[FILENAME_MAX];
@@ -516,9 +508,9 @@ int main (int argc, char **argv) {
             fid[1]=alph[k];
 
             /* inner loops to change the filename.  */
-            for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
+            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
-                for (m=FILENAME_SECOND_LETTER_MIN; m<=FILENAME_SECOND_LETTER_MAX; ++m) {
+                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; ++m) {
                     fid[4]=alph[m];
 
                     /*
@@ -710,9 +702,9 @@ int main (int argc, char **argv) {
              * Now we need an inner loop to change the filename.  *
              ******************************************************/
 
-            for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
+            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
-                for (m=FILENAME_SECOND_LETTER_MIN; m<=FILENAME_SECOND_LETTER_MAX; ++m) {
+                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; ++m) {
                     fid[4]=alph[m];
 
                     filename_len = sizeof(filename);
@@ -776,9 +768,9 @@ int main (int argc, char **argv) {
             fid[0]=alph[j];
             fid[1]=alph[k];
 
-            for (l=FILENAME_FIRST_LETTER_MIN; l<=FILENAME_FIRST_LETTER_MAX; ++l) {
+            for (l=FILE_FIRST_LETTER_MIN; l<=FILE_FIRST_LETTER_MAX; ++l) {
                 fid[3]=alph[l];
-                for (m=FILENAME_SECOND_LETTER_MIN; m<=FILENAME_SECOND_LETTER_MAX; ++m) {
+                for (m=FILE_SECOND_LETTER_MIN; m<=FILE_SECOND_LETTER_MAX; ++m) {
                     fid[4]=alph[m];
 
                     filename_len = sizeof(filename);

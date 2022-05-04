@@ -4,4 +4,4 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 	-Wno-double-promotion -Wno-implicit-float-conversion \
 	-Wno-missing-prototypes -Wno-reserved-identifier
 
-.include "common.mk"
+include common.mk

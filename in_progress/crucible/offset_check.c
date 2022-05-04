@@ -36,19 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DIR_FIRST_LETTER_MIN 0
-#define DIR_FIRST_LETTER_MAX 9
-#define DIR_SECOND_LETTER_MIN 26
-#define DIR_SECOND_LETTER_MAX 28
-#define FILE_FIRST_LETTER_MIN 26
-#define FILE_FIRST_LETTER_MAX 51
-#define FILE_SECOND_LETTER_MIN 26
-#define FILE_SECOND_LETTER_MAX 26
-
-/* sad global values that are useful later */
-static int FFR = FILE_FIRST_LETTER_MAX - FILE_FIRST_LETTER_MIN + 1;
-static int DFR = DIR_FIRST_LETTER_MAX - DIR_FIRST_LETTER_MIN + 1;
-static int FSR = FILE_SECOND_LETTER_MAX - FILE_SECOND_LETTER_MIN + 1;
+#include "index.h"
 
 int offset(int a, int b, int k, int x);
 
