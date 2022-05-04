@@ -499,12 +499,12 @@ int main (int argc, char **argv) {
 
     /* directory name loops for [A-z] etc */
     for (j=DIR_FIRST_LETTER_MIN; j<=DIR_FIRST_LETTER_MAX; ++j) {
+        fid[0]=alph[j];
         for (k=DIR_SECOND_LETTER_MIN; k<=DIR_SECOND_LETTER_MAX; ++k) {
             /* The structure of the character string fid is very simple.
              * It looks like so : aa/aa.dat
              * To iterate through a pile of unique filenames we just
              * keep changing those letter chars as needed.  */
-            fid[0]=alph[j];
             fid[1]=alph[k];
 
             /* inner loops to change the filename.  */
@@ -596,10 +596,12 @@ int main (int argc, char **argv) {
                      * fstat/stat etc */
                     if ( (fp = fopen(filename, "w")) == NULL ) {
                         /* probably the directory does not exist yet.
-                         * So lets remove the XX.dat part from the end. */
+                         * So lets remove the XX.dat part from the end.
+                         * Make sure we have the terminating nul. */
                         dir_len = strlen(filename) - 6;
-                        memset(mkdir_path, 0x00, dir_len*sizeof(uint8_t));
+                        mkdir_path[0]='\0';
                         strncpy(mkdir_path,filename,dir_len);
+                        mkdir_path[dir_len]='\0';
 
                         errno = 0;
                         if ( mkdir(mkdir_path, (mode_t)0755) != 0 ) {
