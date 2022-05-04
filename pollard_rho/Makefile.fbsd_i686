@@ -1,5 +1,5 @@
 
-CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+CFLAGS= -std=iso9899:1999 -m32 -g -O0 -pedantic -pedantic-errors \
 	-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
 	-Wno-missing-prototypes -Wno-padded -fno-fast-math -fno-builtin
 
