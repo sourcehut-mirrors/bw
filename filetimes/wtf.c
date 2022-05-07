@@ -177,34 +177,21 @@ int main(int argc, char **argv)
      * a 32bit signed integer.
      */
 
-    if ( argc > 2 ) {
-        printf("INFO : sizeof(long long) = %i\n", sizeof(long long));
+    struct tm *time_tm = calloc(1,sizeof(struct tm));
+    time_t unix_secs_now = time_tv.tv_sec;
 
-        errno = 0;
-        uint64_t candidate = (uint64_t)strtoll(argv[2], (char **)NULL, 10);
-        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
-            fprintf(stderr,"FAIL : bail out integer not understood\n");
-            perror("     ");
-            return EXIT_FAILURE;
-        }
+    struct tm *barf_tm = gmtime_r(&unix_secs_now, time_tm);
 
-        struct tm *time_tm = calloc(1,sizeof(struct tm));
-        time_t unix_secs_now = time_tv.tv_sec;
-    
-        struct tm *barf_tm = gmtime_r(&unix_secs_now, time_tm);
-    
-        time_t unix_secs_wow = candidate;
-        barf_tm = gmtime_r(&unix_secs_wow, time_tm);
-        if ( barf_tm == NULL ) {
-            fprintf(stderr,"FAIL : %" PRIu64 " fail\n", (uint64_t)unix_secs_wow);
-        } else {
-            printf("INFO : time_tm->tm_year = %i\n", time_tm->tm_year);
-        }
-    
-        free(time_tm);
-        time_tm = NULL;
+    time_t unix_secs_wow = 67769050553057857;
+    barf_tm = gmtime_r(&unix_secs_wow, time_tm);
+    if ( barf_tm == NULL ) {
+        fprintf(stderr,"FAIL : %" PRIu64 " fail\n", (uint64_t)unix_secs_wow);
+    } else {
+        printf("INFO : time_tm->tm_year = %i\n", time_tm->tm_year);
     }
 
+    free(time_tm);
+    time_tm = NULL;
 
 
     fp = fopen( argv[1], "r");
