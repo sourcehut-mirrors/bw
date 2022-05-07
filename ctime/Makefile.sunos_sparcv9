@@ -11,13 +11,13 @@ CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS = -lrt
 
-OBJ = ctime.o
+OBJ = file_times.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-ctime: $(OBJ)
+file_times: $(OBJ)
 	$(CC) -o $@ $^ -L$(LDIR) $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
-	rm -f *.o ctime
+	rm -f *.o file_times

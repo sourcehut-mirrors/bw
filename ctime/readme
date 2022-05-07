@@ -1,0 +1,34 @@
+
+
+There are possible issues with strtold as seen in the manpage :
+
+RETURN VALUE
+    These functions return the converted value, if any.
+
+    If endptr is not NULL, a pointer to the character after the last
+character used in the conversion is stored in the location referenced
+by endptr.
+
+    If no conversion is performed, zero is returned and (unless endptr
+is null) the value of nptr is stored in the location referenced by
+endptr.
+
+   If the correct value would cause overflow, plus or minus HUGE_VAL,
+HUGE_VALF, or HUGE_VALL is returned (according to the return type and
+sign of the value), and ERANGE is stored in errno.
+
+   If the correct value would cause overflow, plus or minus HUGE_VAL,
+HUGE_VALF, or HUGE_VALL is returned (according to the sign and type of
+the return value), and ERANGE is stored in errno. If the correct value
+would cause underflow, zero is returned and ERANGE is stored in errno.
+
+   The value of the environment variable LC_NUMERIC will determine the
+character to be interpreted as a decimal point.
+
+ERRORS : ERANGE Overflow or underflow may occur.
+
+NOTES
+    The value 0 can legitimately be returned on both success and failure
+therefore the calling program should set errno to 0 before the call. You
+may then determine if an error occurred by checking whether errno has a
+nonzero value after the call.

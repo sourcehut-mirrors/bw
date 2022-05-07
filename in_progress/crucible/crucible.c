@@ -387,17 +387,17 @@ int main (int argc, char **argv) {
         fprintf(stderr,"ERR  : pathname provided is not valid.\n");
 
         switch(errno) {
-            case EFAULT :
-                fprintf (stderr,"ERR  : EFAULT\n");
-                break;
-            case ENOENT :
-                fprintf (stderr,"ERR  : ENOENT\n");
-                break;
-            case EBADF :
-                fprintf (stderr,"ERR  : EBADF\n");
-                break;
-            default :
-                fprintf (stderr,"ERR  : an error happened.\n");
+        case EFAULT :
+            fprintf (stderr,"ERR  : EFAULT\n");
+            break;
+        case ENOENT :
+            fprintf (stderr,"ERR  : ENOENT\n");
+            break;
+        case EBADF :
+            fprintf (stderr,"ERR  : EBADF\n");
+            break;
+        default :
+            fprintf (stderr,"ERR  : an error happened.\n");
         }
         perror("ERR  ");
         return EXIT_FAILURE;
