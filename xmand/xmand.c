@@ -804,16 +804,30 @@ int main(int argc, char*argv[])
     XSetFont(dsp, gc3, type_font);
 
     /* big dumb red box for the REPLOT button */
-    XSetForeground(dsp, gc2, red.pixel);
+    XSetForeground(dsp, gc2, cyan.pixel);
     XDrawRectangle(dsp, win2, gc2, 320, 192, 72, 20);
     sprintf(buf,"REPLOT");
     XDrawImageString( dsp, win2, gc2, 332, 207, buf, (int)strlen(buf));
 
     /* create a file dump button */
-    XSetForeground(dsp, gc2, magenta.pixel);
-    XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
-    sprintf(buf,"DUMPER");
-    XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+    char *tmpdir = getenv("TMPDIR");
+    if ( tmpdir == NULL ) {
+        sprintf(buf,"No TMPDIR");
+        XSetForeground(dsp, gc2, red.pixel);
+        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+        XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
+        sprintf(buf,"DUMPER");
+        XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+        XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
+        XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
+        dumper_flag = -1;
+    } else {
+        XSetForeground(dsp, gc2, magenta.pixel);
+        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+        sprintf(buf,"DUMPER");
+        XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+        dumper_flag = 0;
+    }
 
     /****************************************************************
      * NOTE : see VBOX_REAL_COUNT and VBOX_IMAG_COUNT
@@ -1438,7 +1452,7 @@ int main(int argc, char*argv[])
                          * So now we have bail_out_jank and we need to trap for
                          * strange values.
                          */
-                        XSetForeground(dsp, gc2, red.pixel);
+                        XSetForeground(dsp, gc2, cyan.pixel);
                         XDrawRectangle(dsp, win2, gc2, 320, 192, 72, 20);
                         sprintf(buf," REPLOT ");
                         XDrawImageString(dsp, win2, gc2, 324, 207, buf, (int)strlen(buf));
@@ -1487,30 +1501,45 @@ int main(int argc, char*argv[])
                      *     impossible values ( -8.0, -8.0 )
                      */
 
-                    if ( dumper_flag == 0 ) {
-                        /* we need that button to be double clicked so
-                         * at this time we flip the button to cornflowerblue */
-                        XSetForeground(dsp, gc2, cornflowerblue.pixel);
-                        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
-                        sprintf(buf,">DUMPER<");
-                        XDrawImageString( dsp, win2, gc2, 324, 177, buf, (int)strlen(buf));
-                        dumper_flag = 1;
-                        fprintf(stderr,"INFO : dumper_flag = 1\n");
+                    if ( dumper_flag > -1 ) {
 
-                    } else {
-                        /* we are confirmed. Switch the dumper button back to
-                         * magenta and create a new data file in the users TMPDIR
-                         */
-
-                        XSetForeground(dsp, gc2, magenta.pixel);
-                        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
-                        sprintf(buf,"DUMPER");
-                        XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
-
-                        /* TODO dump file data */
-                        dumper_flag = 0;
-                        fprintf(stderr,"INFO : dumper_flag = 0\n");
-
+                        if ( dumper_flag == 0 ) {
+                            /* we need that button to be double clicked so
+                             * at this time we flip the button to cornflowerblue */
+                            XSetForeground(dsp, gc2, cornflowerblue.pixel);
+                            XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                            sprintf(buf,">DUMPER<");
+                            XDrawImageString( dsp, win2, gc2, 324, 177, buf, (int)strlen(buf));
+                            dumper_flag = 1;
+                            fprintf(stderr,"INFO : dumper_flag = 1\n");
+    
+                        } else {
+    
+                            /* We are confirmed. Switch the dumper button back to
+                             * magenta and create a new data file in the users TMPDIR
+                             * if we can.
+                             */
+    
+                            XSetForeground(dsp, gc2, magenta.pixel);
+                            XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                            sprintf(buf,"DUMPER");
+                            XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+    
+                            /* check for a TMPDIR env var */
+                            char *tmpdir = getenv("TMPDIR");
+                            if ( tmpdir == NULL ) {
+                                sprintf(buf,"No TMPDIR");
+                                XSetForeground(dsp, gc2, red.pixel);
+                                XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
+                                XDrawLine(dsp, win2, gc2, 72, 20, 320, 162);
+                                XDrawLine(dsp, win2, gc2, 72, 162, 320, 20);
+                                dumper_flag = -1;
+                            } else {
+                                /* TODO dump file data */
+                                fprintf(stderr,"INFO : dumper_flag = 0\n");
+                                dumper_flag = 0;
+                            }
+                        }
                     }
                 }
             }
