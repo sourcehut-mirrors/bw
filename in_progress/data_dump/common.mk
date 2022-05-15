@@ -1,9 +1,10 @@
 
-CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
 
 SRCS = timedump.c ../../sysinfo/sysinfo.c
 
-OBJS = timedump.o ../../sysinfo/sysinfo.o
+OBJS = ${SRCS:.c=.o}
 
 LIBS = -lrt
 

@@ -22,9 +22,23 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
+#define _XOPEN_SOURCE 600
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 #include <inttypes.h>
 #include <time.h>
@@ -33,7 +47,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 
 #define NUM_ELEMENTS 16777216
 #define BAIL_OUT 32768
@@ -85,24 +98,15 @@ int main ( int argc, char **argv) {
     filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
     time(&time_now);
 
-    /* On some Linux places we may see _POSIX_PATH_MAX in output
-     * from getconf -a but that won't help us much */
-#ifndef _POSIX_PATH_MAX
-#define _POSIX_PATH_MAX 256
-#endif
-
     timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
     /* TODO check the calloc return value */
 
-    int directory_fd = openat(AT_FDCWD, tmpdir, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
-
-    int file_fd = openat(directory_fd, timestamp, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-
-    fp = fdopen(file_fd, "wb");
-
-    /*
     err_status = strcat(timestamp_filename, tmpdir);
-    err_status = strcat(timestamp_filename, "/");
+
+	if (tmpdir[strlen(tmpdir)-1] != '/' ) {
+        err_status = strcat(timestamp_filename, "/");
+	}
+
     err_status = strcat(timestamp_filename, timestamp);
 
     status = stat(timestamp_filename, &status_buffer);
@@ -113,7 +117,6 @@ int main ( int argc, char **argv) {
 
     errno = 0;
     fp = fopen(timestamp_filename, "wb");
-    */
 
     if ( fp == NULL ) {
         perror("FAIL ");
