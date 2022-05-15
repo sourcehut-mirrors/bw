@@ -1,7 +1,5 @@
 
-CC=/usr/bin/gcc
-
-CC=/usr/bin/gcc
+CC=gcc
 
 CFLAGS= -std=iso9899:1999 -pedantic -g -O0 -fno-builtin -m64 \
 	-mcpu=970 -mno-altivec -mno-isel -mno-vsx \
