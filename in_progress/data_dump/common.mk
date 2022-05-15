@@ -6,7 +6,7 @@ SRCS = timedump.c ../../sysinfo/sysinfo.c
 
 OBJS = ${SRCS:.c=.o}
 
-LIBS = -lrt
+LIBS = -lrt -lm
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)

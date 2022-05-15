@@ -1,9 +1,7 @@
 
-CC=/usr/bin/cc
-
 CFLAGS= -I$(IDIR) -std=iso9899:1999 -fno-builtin -march=armv7-a \
-	-mtune=cortex-a17 -mfpu=vfpv4-d16 -mstructure-size-boundary=32 \
-	-marm -mtls-dialect=gnu2 -pedantic -Wl,-rpath=/opt/bw/lib \
+	-mtune=cortex-a17 -mfpu=vfpv4-d16 \
+	-marm -mtls-dialect=gnu2 -pedantic \
 	-mno-sched-prolog -mlittle-endian -O0 -g
 
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \

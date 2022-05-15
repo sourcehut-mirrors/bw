@@ -1,0 +1,9 @@
+
+CC=gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -fno-builtin \
+	-g -O0 -march=armv7-a -mtune=cortex-a17 -mfpu=vfpv4-d16 \
+	-marm -mno-sched-prolog -mlittle-endian -fno-fast-math
+
+include common.mk
+
