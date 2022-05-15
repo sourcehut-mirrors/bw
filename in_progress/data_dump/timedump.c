@@ -29,9 +29,11 @@
 #include <inttypes.h>
 #include <time.h>
 #include <locale.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 #define NUM_ELEMENTS 16777216
 #define BAIL_OUT 32768
@@ -82,6 +84,12 @@ int main ( int argc, char **argv) {
     ptm = gmtime(&time_now);
     filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
     time(&time_now);
+
+    /* On some Linux places we may see _POSIX_PATH_MAX in output
+     * from getconf -a but that won't help us much */
+#ifndef _POSIX_PATH_MAX
+#define _POSIX_PATH_MAX 256
+#endif
 
     timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
     /* TODO check the calloc return value */
