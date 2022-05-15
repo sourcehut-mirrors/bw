@@ -1,0 +1,8 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -fno-builtin \
+	-g -O0 -fno-fast-math
+
+include common.mk
+
