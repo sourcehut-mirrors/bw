@@ -45,6 +45,7 @@
 #include <sched.h>
 #include <time.h>
 #include <math.h>
+#include <limits.h>
 #include <fenv.h>
 /* #pragma STDC FENV_ACCESS ON */
 
@@ -57,6 +58,9 @@
 #include <errno.h>
 
 #include <pthread.h>
+
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include "mandelbrot.h"
 
@@ -249,8 +253,10 @@ int main(int argc, char*argv[])
      * verified.
      */
 
-    double *coord_r = calloc(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
-                            *VBOX_REAL_COUNT*VBOX_IMAG_COUNT, sizeof(double));
+    uint32_t num_elements = VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
+                         *VBOX_REAL_COUNT*VBOX_IMAG_COUNT;
+
+    double *coord_r = calloc((size_t)num_elements, sizeof(double));
 
     if ( coord_r == NULL ) {
         /* really? possible ENOMEM? */
@@ -269,8 +275,7 @@ int main(int argc, char*argv[])
     }
 
 
-    double *coord_j = calloc(VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
-                            *VBOX_REAL_COUNT*VBOX_IMAG_COUNT, sizeof(double));
+    double *coord_j = calloc((size_t)num_elements, sizeof(double));
 
     if ( coord_j == NULL ) {
         /* really? possible ENOMEM? */
@@ -326,7 +331,24 @@ int main(int argc, char*argv[])
 
     char *disp_name = NULL;
 
-    setlocale( LC_ALL, "C" );
+    /* I am not checking the status of the setlocale call here
+     * because it had better be impossible to fail for a "C"
+     * or POSIX locale : 
+     *
+     * RETURN VALUES
+     *     Upon successful completion, setlocale() returns the string
+     *     associated with the specified category for the requested
+     *     locale.  The setlocale() function returns NULL and fails
+     *     to change the locale if the given combination of category
+     *     and locale makes no sense.
+     */
+    setlocale(LC_ALL, "C");
+
+    int status = setenv("TZ", "GMT0", 1);
+    if ( status < 0 ) {
+        fprintf (stderr,"FAIL : can not set timezone TZ = GMT0\n");
+        return EXIT_FAILURE;
+    }
 
     /* Get the REALTIME_CLOCK time in a timespec struct */
     if ( clock_gettime(CLOCK_REALTIME, &now_time ) == -1 ) {
@@ -1536,8 +1558,90 @@ int main(int argc, char*argv[])
                                 dumper_flag = -1;
                             } else {
                                 /* TODO dump file data */
-                                fprintf(stderr,"INFO : dumper_flag = 0\n");
-                                dumper_flag = 0;
+                                FILE *fp;
+                                struct stat status_buffer;
+                                time_t time_now;
+
+                                /* TODO check the TMPDIR pathname len somewhere earlier */
+                                char timestamp[32];
+                                time(&time_now);
+                                struct tm *ptm = gmtime(&time_now);
+
+                                size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
+                                char *timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+                                char *err_status = strcat(timestamp_filename, tmpdir);
+                                err_status = strcat(timestamp_filename, "/");
+                                err_status = strcat(timestamp_filename, timestamp);
+
+                                status = stat(timestamp_filename, &status_buffer);
+                                if ( status == 0 ) {
+                                    fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
+                                    dumper_flag = -1;
+                                } else {
+                                    errno = 0;
+                                    fp = fopen(timestamp_filename, "wb");
+                                    if ( fp == NULL ) {
+                                        perror("FAIL ");
+                                        dumper_flag = -1;
+                                    } else {
+                                        /* finally we know we have a file */
+                                        fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
+
+                                        /* guess the architecture endianess */
+                                        int end_check = 1;
+                                        /* strictly speaking this is not a wise way to do this */
+                                        uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
+
+                                        /* if the machine is big endian we get endian_flag = 0x10 */
+                                        size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
+                                        printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
+                                                sizeof(uint8_t), num_written);
+
+                                        num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
+                                        printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : num_elements = %8i\n",num_elements);
+
+                                        num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
+                                        printf("     : %2lu byte uint32_t bail_out     num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : mand_bail = %8i\n",mand_bail);
+
+                                        num_written = fwrite(&magnify, sizeof(double), 1, fp);
+                                        printf("     : %2lu byte double magnify        num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     :        magnify = %-+26.20e\n", magnify);
+
+                                        num_written = fwrite(&real_translate, sizeof(double), 1, fp);
+                                        printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     : real_translate = %-+26.20e\n",real_translate);
+
+                                        num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
+                                        printf("     : %2lu byte double imag_translate num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     : imag_translate = %-+26.20e\n",imag_translate);
+
+                                        fclose(fp);
+                                        fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
+                                    }
+                                }
+                                free(timestamp_filename);
+                                /* if the dumper flag is -1 then we need to
+                                 * indicate that the dump is impossible */
+                                if ( dumper_flag < 0 ) {
+                                    sprintf(buf,"Bad TMPDIR");
+                                    XSetForeground(dsp, gc2, red.pixel);
+                                    XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                                    XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
+                                    sprintf(buf,"DUMPER");
+                                    XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+                                    XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
+                                    XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
+                                } else {
+                                    fprintf(stderr,"INFO : dumper_flag = 0\n");
+                                    dumper_flag = 0;
+                                }
                             }
                         }
                     }
