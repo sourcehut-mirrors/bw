@@ -2,7 +2,7 @@ BLOCKSIZE=K
 CC=/usr/local/bin/gcc
 CFLAGS=-std=iso9899:1999 -O0 -fno-builtin -march=rv64imafdc -mabi=lp64d -L/lib -L/usr/lib -Wl,-rpath=/lib -Wl,-rpath=/usr/lib -mpreferred-stack-boundary=4 -mstrict-align -mexplicit-relocs
 COLUMNS=132
-CPPFLAGS=-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTIC -D_LARGEFILE64_SOURCE
+CPPFLAGS=-D_POSIX_PTHREAD_SEMANTIC -D_LARGEFILE64_SOURCE
 EDITOR=vi
 ENV=/home/dclarke/.shrc
 HOME=/home/dclarke

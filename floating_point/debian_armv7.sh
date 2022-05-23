@@ -72,7 +72,7 @@ CFLAGS=\-std=iso9899:1999\ \-fno-builtin\ \-g\ \-march=armv7-a\ \
 \-mno-sched-prolog\ \-mlittle-endian\ \-D_LARGEFILE64_SOURCE
 export CFLAGS
 
-CPPFLAGS=\-I/opt/bw/include\ \-D_POSIX_PTHREAD_SEMANTICS\ \-D_TS_ERRNO
+CPPFLAGS=\-I/opt/bw/include\ \-D_POSIX_PTHREAD_SEMANTICS
 export CPPFLAGS
 
 CXXFLAGS=\-std=c++98\ \-fno-builtin\ \-g\ \-march=armv7-a\ \
@@ -133,7 +133,7 @@ MAKE=/usr/bin/make ; export MAKE
 PERL=/usr/bin/perl ; export PERL
 SED=/bin/sed ; export SED
 
-CPPFLAGS=\-D_POSIX_PTHREAD_SEMANTICS\ \-D_TS_ERRNO
+CPPFLAGS=\-D_POSIX_PTHREAD_SEMANTICS
 export CPPFLAGS
 
 unset CXXFLAGS

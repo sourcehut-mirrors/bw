@@ -4,7 +4,7 @@ s$
 s$ echo $CFLAGS 
 -std=iso9899:2011 -m64 -g -O0 -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8
 s$ echo $CPPFLAGS 
--D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 s$ 
 s$ 
 s$ $CC $CFLAGS $CPPFLAGS -c -o hack01.o hack01.c
@@ -68,7 +68,7 @@ europa$ CC=/usr/bin/cc
 europa$ export CC
 europa$ CFLAGS='-std=iso9899:2011 -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 -fno-fast-math -fno-builtin'
 europa$ export CFLAGS 
-europa$ CPPFLAGS='-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600'
+europa$ CPPFLAGS='-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600'
 europa$ export CPPFLAGS
 europa$ 
 

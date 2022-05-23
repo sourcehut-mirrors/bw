@@ -15,7 +15,7 @@ beta$ /opt/developerstudio12.6/bin/c99 -Xc \
 > -m64 -xarch=sparc -g -errfmt=error -errshort=full -xstrconst -xildoff \
 > -xmemalign=8s -xnolibmil -xcode=pic32 -xregs=no%appl -xlibmieee -mc -ftrap=%none -xbuiltin=%none -xunroll=1 -xs \
 > -xdebugformat=dwarf -errtags=yes -errwarn=%none -erroff=%none \
-> -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -o tn tn.c -lrt 
+> -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -o tn tn.c -lrt 
 beta$ 
 
 
@@ -25,7 +25,7 @@ vesta$ CC=/usr/bin/cc
 vesta$ export CC
 vesta$ CFLAGS='-std=iso9899:1999 -m64 -g -O0 -fno-fast-math -fno-builtin'
 vesta$ export CFLAGS
-vesta$ CPPFLAGS='-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_X_OPEN_SOURCE=600'
+vesta$ CPPFLAGS='-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_X_OPEN_SOURCE=600'
 vesta$ export CPPFLAGS
 vesta$ 
 vesta$ 
@@ -43,7 +43,7 @@ vesta$
 
 Ordinary k8 opteron target :
 
-lenovo# /usr/bin/gcc-9 -v -std=iso9899:1999 -m64 -O0 -g -fno-fast-math -fno-builtin -march=k8 -mtune=k8 -Wall -pedantic -Wextra -pedantic-errors -malign-double -mpc80 -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_X_OPEN_SOURCE=600 -o /opt/schily/bin/tn tn.c -lrt 
+lenovo# /usr/bin/gcc-9 -v -std=iso9899:1999 -m64 -O0 -g -fno-fast-math -fno-builtin -march=k8 -mtune=k8 -Wall -pedantic -Wextra -pedantic-errors -malign-double -mpc80 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_X_OPEN_SOURCE=600 -o /opt/schily/bin/tn tn.c -lrt 
 
 
 

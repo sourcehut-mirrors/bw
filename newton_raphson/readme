@@ -9,7 +9,7 @@ https://www.wolframalpha.com/input/?i=%283.0+*+x+*+x+-+5.0+*+x+%2B+2.0%29%3D0+so
 
 CC=/usr/bin/gcc-8
 CFLAGS=-std=iso9899:1999 -m64 -g -pedantic -pedantic-errors -Wall -march=k8 -fno-builtin -malign-double -mpc80 -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
-CPPFLAGS=-I/opt/bw/include -D_LARGEFILE64_SOURCE -D_POSIX_PTHREAD_SEMANTICS -D_TS_ERRNO
+CPPFLAGS=-I/opt/bw/include -D_LARGEFILE64_SOURCE -D_POSIX_PTHREAD_SEMANTICS
 
 
 Or perhaps LLVM/Clang on FreeBSD 
@@ -22,7 +22,7 @@ CFLAGS=\-m64\ \-std=c99\ \-O0\ \-g\ \-Werror\ \
 \-fdiagnostics-format=vi\ \-fno-color-diagnostics
 export CFLAGS 
 
-CPPFLAGS=\-D_TS_ERRNO\ \-D_POSIX_PTHREAD_SEMANTICS\ \
+CPPFLAGS=\-D_POSIX_PTHREAD_SEMANTICS\ \
 \-D_LARGEFILE64_SOURCE
 export CPPFLAGS
 

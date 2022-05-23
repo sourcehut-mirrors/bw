@@ -9,7 +9,7 @@ if [ -d /usr/xpg6/bin ]; then
     export PATH
 fi
 
-CFLAGS=\-erroff\ \-xstrconst\ \-xildoff\ \-xarch=v9\ \-xmemalign=8s\ \-xnolibmil\ \-Xc\ \-xcode=pic32\ \-xregs=no%appl\ \-xlibmieee\ \-mc\ \-g\ \-xs\ \-D_TS_ERRNO\ \-Dsun=1\ \-Dunix=1\ \-Dsparc=1\ \-D__sun\ \-D__unix\ \-D__SUNPRO_C=0x580\ \-D__SunOS_5_8\ \-D__sparc\ \-D__SVR4\ \-ftrap=%none\ \-Qy\ \-V\ \-xbuiltin=%none\ \-xdebugformat=dwarf\ \-xtime\ \-xunroll=1\ \-DSOLARIS2=8\ \-D_POSIX_PTHREAD_SEMANTICS\ \-D_LARGEFILE64_SOURCE
+CFLAGS=\-erroff\ \-xstrconst\ \-xildoff\ \-xarch=v9\ \-xmemalign=8s\ \-xnolibmil\ \-Xc\ \-xcode=pic32\ \-xregs=no%appl\ \-xlibmieee\ \-mc\ \-g\ \-xs\ \-Dsun=1\ \-Dunix=1\ \-Dsparc=1\ \-D__sun\ \-D__unix\ \-D__SUNPRO_C=0x580\ \-D__SunOS_5_8\ \-D__sparc\ \-D__SVR4\ \-ftrap=%none\ \-Qy\ \-V\ \-xbuiltin=%none\ \-xdebugformat=dwarf\ \-xtime\ \-xunroll=1\ \-DSOLARIS2=8\ \-D_POSIX_PTHREAD_SEMANTICS\ \-D_LARGEFILE64_SOURCE
 export CFLAGS
 
 CC=/opt/studio/SOS11/SUNWspro/bin/cc
@@ -73,9 +73,9 @@ unset CPPFLAGS
 unset CXXFLAGS
 
 /bin/printf "\nCC    : ---------------------------------------\n"
-/opt/studio/SOS11/SUNWspro/bin/cc -H -\# -D_TS_ERRNO -Dsun=1 -Dunix=1 -Dsparc=1 -D__sun -D__unix -D__SUNPRO_C=0x580 -D__SunOS_5_8 -D__sparc -D__SVR4 -DSOLARIS2=8 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -erroff=%all -g -H -mc -V -Xc -xarch=v9 -xcode=pic32 -xdebugformat=dwarf -xlibmieee -xmemalign=8s -xregs=no%appl -xs -xstrconst -xtime -xunroll=1 -c -o lot649.o lot649.c
+/opt/studio/SOS11/SUNWspro/bin/cc -H -\# -Dsun=1 -Dunix=1 -Dsparc=1 -D__sun -D__unix -D__SUNPRO_C=0x580 -D__SunOS_5_8 -D__sparc -D__SVR4 -DSOLARIS2=8 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -erroff=%all -g -H -mc -V -Xc -xarch=v9 -xcode=pic32 -xdebugformat=dwarf -xlibmieee -xmemalign=8s -xregs=no%appl -xs -xstrconst -xtime -xunroll=1 -c -o lot649.o lot649.c
 /bin/printf "\nLINK  : ---------------------------------------\n"
-/opt/studio/SOS11/SUNWspro/bin/cc -D_TS_ERRNO -Dsun=1 -Dunix=1 -Dsparc=1 -D__sun -D__unix -D__SUNPRO_C=0x580 -D__SunOS_5_8 -D__sparc -D__SVR4 -DSOLARIS2=8 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -erroff=%all -g -H -mc -V -Xc -xarch=v9 -xcode=pic32 -xdebugformat=dwarf -xlibmieee -xmemalign=8s -xregs=no%appl -xs -xstrconst -xtime -xunroll=1 -o lot649 lot649.o
+/opt/studio/SOS11/SUNWspro/bin/cc -Dsun=1 -Dunix=1 -Dsparc=1 -D__sun -D__unix -D__SUNPRO_C=0x580 -D__SunOS_5_8 -D__sparc -D__SVR4 -DSOLARIS2=8 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -erroff=%all -g -H -mc -V -Xc -xarch=v9 -xcode=pic32 -xdebugformat=dwarf -xlibmieee -xmemalign=8s -xregs=no%appl -xs -xstrconst -xtime -xunroll=1 -o lot649 lot649.o
 /bin/printf "\nDONE  : ---------------------------------------\n"
 
 /bin/printf "\n If that was good try this \n ./lot649 6 8 3 7 16 17 19 21 27 42\n\n"

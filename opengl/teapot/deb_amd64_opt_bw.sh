@@ -123,7 +123,7 @@ unset PHP
 # PERL=/usr/bin/perl ; export PERL
 # SED=/bin/sed ; export SED
 
-CPPFLAGS=\-I/opt/bw/include\ \-D_POSIX_PTHREAD_SEMANTICS\ \-D_TS_ERRNO
+CPPFLAGS=\-I/opt/bw/include\ \-D_POSIX_PTHREAD_SEMANTICS
 export CPPFLAGS
 
 unset CXXFLAGS

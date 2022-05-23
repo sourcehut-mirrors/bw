@@ -64,7 +64,7 @@ export CC
 CFLAGS='-std=iso9899:1999 -pedantic -pedantic-errors -Wall -m32 -g -O0 -march=i686 -mtune=i686 -Wl,-rpath=/opt/bw/lib,--enable-new-dtags -fno-builtin -malign-double -mpc80'
 export CFLAGS
 
-CPPFLAGS='-I/opt/bw/include -D_POSIX_PTHREAD_SEMANTICS -D_TS_ERRNO -D_LARGEFILE64_SOURCE'
+CPPFLAGS='-I/opt/bw/include -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE'
 export CPPFLAGS 
 
 CXX=/usr/bin/g++-9

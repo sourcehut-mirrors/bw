@@ -737,7 +737,7 @@ Bbss.bss:
         .byte 0x0c
         .ascii "DBG_GEN 5.7.6\0"
         .ascii "/export/home/dclarke/\0"
-        .ascii "/opt/developerstudio12.6/bin/c99 -Xc -xcode=pic32 -xregs=no%appl -m64 -xmemalign=8s -xstrconst -xildoff -xlibmieee -mc -xs -ftrap=%none -xbuiltin=%none -xdebugformat=dwarf -xunroll=1 -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -S  ieee754_ld.c\0"
+        .ascii "/opt/developerstudio12.6/bin/c99 -Xc -xcode=pic32 -xregs=no%appl -m64 -xmemalign=8s -xstrconst -xildoff -xlibmieee -mc -xs -ftrap=%none -xbuiltin=%none -xdebugformat=dwarf -xunroll=1 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -S  ieee754_ld.c\0"
         .ascii "Xa;P;R=5.15<<Studio 12.6 Sun C 5.15 SunOS_sparc 2017/05/30>>;\0"
 !       <reloc> off=397 kind=2 l1=.debug_line loff=0
         .uaxword %section_symbol(".debug_line")
@@ -762,7 +762,7 @@ Bbss.bss:
         .byte 0x08,0x10,0x07,0x00,0x00,0x00
 ! End sdCreateSection
         .xstabs ".stab.index","V=10.0;DBG_GEN=5.7.6;Xa;P;R=5.15<<Studio 12.6 Sun C 5.15 SunOS_sparc 2017/05/30>>",60,0,0,0
-        .xstabs ".stab.index","/export/home/dclarke; /opt/developerstudio12.6/bin/c99 -Xc -xcode=pic32 -xregs=no%appl -m64 -xmemalign=8s -xstrconst -xildoff -xlibmieee -mc -xs -ftrap=%none -xbuiltin=%none -xdebugformat=dwarf -xunroll=1 -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -S  ieee754_ld.c",52,0,0,0
+        .xstabs ".stab.index","/export/home/dclarke; /opt/developerstudio12.6/bin/c99 -Xc -xcode=pic32 -xregs=no%appl -m64 -xmemalign=8s -xstrconst -xildoff -xlibmieee -mc -xs -ftrap=%none -xbuiltin=%none -xdebugformat=dwarf -xunroll=1 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -S  ieee754_ld.c",52,0,0,0
         .xstabs ".stab.index","main",42,0,0,16
 
 ! End Disassembling Debug Info

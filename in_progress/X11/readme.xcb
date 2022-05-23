@@ -7,7 +7,7 @@ europa$ echo $CFLAGS
 -std=iso9899:1999 -pedantic -pedantic-errors -Weverything -m64 -g -O0 -fno-builtin -fno-fast-math -pedantic -pedantic-errors -Weverything -Wno-reserved-id-macro -Wno-double-promotion -Wno-implicit-float-conversion -Wno-missing-prototypes
 europa$ 
 europa$ echo $CPPFLAGS 
--D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 europa$ 
 
 europa$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -L/usr/local/lib -Wno-documentation -o xcb_buff xcb_buff.c -lxcb

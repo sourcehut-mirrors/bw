@@ -61,7 +61,7 @@ CFLAGS=\-m64\ \-std=c99\ \-O0\ \-g\ \-Werror\ \
 \-fdiagnostics-format=vi\ \-fno-color-diagnostics
 export CFLAGS 
 
-CPPFLAGS=\-D_TS_ERRNO\ \-D_POSIX_PTHREAD_SEMANTICS\ \
+CPPFLAGS=\-D_POSIX_PTHREAD_SEMANTICS\ \
 \-D_LARGEFILE64_SOURCE
 export CPPFLAGS
 

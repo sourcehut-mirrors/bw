@@ -129,7 +129,7 @@
 
         $ /usr/bin/cc -std=iso9899:1999 -pedantic -pedantic-errors \
           -Weverything -Wno-reserved-id-macro -Wno-missing-prototypes \
-          -g -O0 -fno-fast-math -fno-builtin -o what what.c -D_TS_ERRNO \
+          -g -O0 -fno-fast-math -fno-builtin -o what what.c \
           -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
 
         $ ./what the heck is this crud

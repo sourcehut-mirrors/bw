@@ -4,8 +4,8 @@ uname -apKU says :
 FreeBSD phobos 14.0-CURRENT FreeBSD 14.0-CURRENT #1 main-n252744-656f5031c39: Sun Jan 30 10:59:44 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC  amd64 amd64 1400051 1400051
 
 
-$ /usr/bin/cc -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -I/usr/local/include -c -o glew_test.o glew_test.c
-$ /usr/bin/cc -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -L/usr/local/lib -o glew_test glew_test.o -lpng -lglfw -lGLEW -lGL -lGLU -lX11
+$ /usr/bin/cc -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -I/usr/local/include -c -o glew_test.o glew_test.c
+$ /usr/bin/cc -std=iso9899:2011 -m64 -g -O0 -fno-fast-math -fno-builtin -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -L/usr/local/lib -o glew_test glew_test.o -lpng -lglfw -lGLEW -lGL -lGLU -lX11
 $ 
 
 $ ./glew_test

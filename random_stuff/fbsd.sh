@@ -73,7 +73,7 @@ CFLAGS=\-m64\ \-std=c99\ \-fno-builtin\ \-O0\ \-g\ \
 \-fdiagnostics-format=vi\ \-fno-color-diagnostics
 export CFLAGS 
 
-CPPFLAGS=\-D_TS_ERRNO\ \-D_POSIX_PTHREAD_SEMANTICS\ \
+CPPFLAGS=\-D_POSIX_PTHREAD_SEMANTICS\ \
 \-D_LARGEFILE64_SOURCE\ \-D_XOPEN_SOURCE=600
 export CPPFLAGS
 

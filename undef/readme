@@ -4,7 +4,7 @@ compiler has plenty to say about this :
 
 amalthea$ 
 amalthea$ make -f Makefile.fbsd_amd64
-/usr/bin/cc -c -o undef.o undef.c -std=iso9899:1999 -pedantic -pedantic-errors -Weverything  -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0  -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE  -D_XOPEN_SOURCE=600
+/usr/bin/cc -c -o undef.o undef.c -std=iso9899:1999 -pedantic -pedantic-errors -Weverything  -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0  -fno-fast-math -fno-builtin -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE  -D_XOPEN_SOURCE=600
 undef.c:42:34: warning: adding 'int' to a string does not append to the string [-Wstring-plus-int]
     const char *s = "\0fedcba9X" + 9;
                     ~~~~~~~~~~~~~^~~
@@ -22,7 +22,7 @@ undef.c:40:30: warning: unsequenced modification and access to 'i' [-Wunsequence
     printf("%d%d%d%d\n", i, i++, i, i++);
                          ~   ^
 4 warnings generated.
-/usr/bin/cc -o undef undef.o -std=iso9899:1999 -pedantic -pedantic-errors -Weverything  -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0  -fno-fast-math -fno-builtin -D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE  -D_XOPEN_SOURCE=600
+/usr/bin/cc -o undef undef.o -std=iso9899:1999 -pedantic -pedantic-errors -Weverything  -Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0  -fno-fast-math -fno-builtin -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE  -D_XOPEN_SOURCE=600
 amalthea$
 
 gee ... just a few warnings. 

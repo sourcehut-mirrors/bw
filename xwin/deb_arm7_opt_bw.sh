@@ -76,7 +76,7 @@ CFLAGS=\-std=iso9899:1999\ \-fno-builtin\ \-g\ \-march=armv7-a\ \
 \-pedantic\ \-mno-sched-prolog\ \-mlittle-endian
 export CFLAGS
 
-CPPFLAGS=\-D_TS_ERRNO\ \-D_POSIX_PTHREAD_SEMANTICS\ \
+CPPFLAGS=\-D_POSIX_PTHREAD_SEMANTICS\ \
 \-D_LARGEFILE64_SOURCE\ \-D_X_OPEN_SOURCE=600
 export CPPFLAGS
 
