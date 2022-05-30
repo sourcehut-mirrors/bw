@@ -195,7 +195,7 @@ int main (int argc, char **argv) {
     char buffer_64k_rand_text[65537];
     int char_count, k_index;
 
-    /* curious what we get with _XOPEN_SOURCE 600 */
+    /* curious what we get with _XOPEN_SOURCE 600
     printf("\n\n--------- _XOPEN_SOURCE 600 -------\n");
     printf("_POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
     printf("_POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
@@ -203,6 +203,7 @@ int main (int argc, char **argv) {
     printf("_POSIX_PATH_MAX    = %i\n", _POSIX_PATH_MAX);
     printf("_POSIX_TZNAME_MAX  = %i\n", _POSIX_TZNAME_MAX);
     printf("---------------------------------------\n");
+    */
 
     char filename[FILENAME_MAX];
     char directory[FILENAME_MAX];
@@ -669,7 +670,6 @@ int main (int argc, char **argv) {
                     iteration_count = iteration_count + 1;
 
                     /* Compute an offset into the linear array file_ctime */
-
                     file_ctime_offset=offset(j - DIR_FIRST_LETTER_MIN,
                                              k - DIR_SECOND_LETTER_MIN,
                                              l - FILE_FIRST_LETTER_MIN,
@@ -704,7 +704,7 @@ int main (int argc, char **argv) {
     avg_file_io = ((double)iteration_count * SIXTYFOURK )
                 / ((double)totaltime * ONE_MEG * NANOSEC );
 
-    printf("\n TEST (1) Wall Clock Time was %.6f sec\n\n",
+    printf("\nTEST (1) wall clock time was %.6f sec\n\n",
                (double)totaltime/NANOSEC );
 
     printf("%6li files \n", iteration_count);
@@ -715,8 +715,12 @@ int main (int argc, char **argv) {
     printf("          IO avg rate =%.6f MB/s\n", avg_file_io);
     */
 
-    printf("Time required for random text generation = %.6f sec\n",
+    printf("           random text generation time %.6f sec\n",
                (double)r64_dump_time_hrt/NANOSEC );
+
+    printf("           actual file write time %.6f sec\n",
+                ((double)totaltime/NANOSEC)
+                -((double)r64_dump_time_hrt/NANOSEC));
 
     /*******************************************************************/
 
