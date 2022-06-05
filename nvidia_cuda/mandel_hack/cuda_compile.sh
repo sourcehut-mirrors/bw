@@ -2,6 +2,13 @@
 
 PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/cuda-11.4/bin:/opt/schily/bin
 
+if [ -d /usr/local/cuda-11.4 ]; then
+    CUDA_HOME=/usr/local/cuda-11.4
+    export CUDA_HOME
+    PATH=/usr/local/cuda-11.4/bin:$PATH
+    export PATH
+fi
+
 NVCC=`(command -v nvcc)` ; export NVCC
 
 rm -f mandel_hack.o mandel_hack > /dev/null 2>&1
