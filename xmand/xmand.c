@@ -46,8 +46,12 @@
 #include <time.h>
 #include <math.h>
 #include <limits.h>
+
+/* for a good read about fused multiply add operations please
+ * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845 */
 #include <fenv.h>
-/* #pragma STDC FENV_ACCESS ON */
+#pragma STDC FENV_ACCESS ON
+#pragma STDC FP_CONTRACT ON
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
