@@ -6,6 +6,7 @@ CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O0 -g \
 	-pedantic -pedantic-errors \
 	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
 	-fno-fast-math -malign-double \
+	-ffp-contract=on \
 	-m128bit-long-double -mlong-double-80 \
 	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx -Wall \
 	-fsanitize=undefined

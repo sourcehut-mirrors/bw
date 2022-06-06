@@ -441,7 +441,16 @@ int main(int argc, char *argv[])
 
     /*** CPU test stage ***/
 
-    /* for all of the data what was the height values in host_mval */
+
+    /***************************************************************
+     *
+     *    This will always fail if we can not enable the fused
+     *    multiply add feature for the CPU based computations.
+     *
+     ***************************************************************/
+
+
+    /* this won't work without the fused multiple add feature *******
 
     clock_gettime( CLOCK_REALTIME, &t0 );
     int error_count = 0;
@@ -476,6 +485,8 @@ int main(int argc, char *argv[])
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : data check done %" PRIu64 " nsecs\n", tdelta_nsec);
+
+    *******************************************************************/
 
     /* Free host memory */
     free(host_r);

@@ -2,22 +2,94 @@
 Expect that there will be errors as the NVidia hardware makes
 no promise of a correct result due to the fact that the CUDA
 compiler and the intermediate language used does not comply
-with the IEEE754-2008 specifications. 
+with the IEEE754-2008 specifications by default. We may enable
+some options to achieve good results that match the CPU style
+results. There is no promise that the CPU nor the GPU provide
+actually correct results but at the very least they shall agree
+on their wrong results. :)
 
-C_nix$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_30,code=sm_30 -c -o mandel_hack.o mandel_hack.cu 
-C_nix$ nvcc -ccbin g++ -m64 -gencode arch=compute_30,code=sm_30 -o mandel_hack mandel_hack.o -lgomp
+  Note the documentation from Nvidia is somewhat inconsistent on
+  how to achieve correct IEEE754 compliance. The below seems to
+  work just fine. Thus far. Until NVidia makes a breaking change.
+ 
+  From the NVidia CUDA docs :
+ 
+     --ftz {true|false} (-ftz)
+     Control single-precision denormals support.
+         --ftz=true flushes denormal values to zero
+         --ftz=false preserves denormal values.
+     The default is false. Note that --use_fast_math
+     implies --ftz=true.
+ 
+     ------------------------------------------------------
+ 
+     --prec-div {true|false} (-prec-div)
+     This option controls single-precision floating-point
+     division and reciprocals.
+ 
+     --prec-div=true enables the IEEE round-to-nearest mode
+     --prec-div=false enables the fast approximation mode.
+     * * * Note the use of the word approximate * * *
+ 
+     --use_fast_math implies --prec-div=false.
+ 
+     ------------------------------------------------------
+ 
+     --prec-sqrt {true|false} (-prec-sqrt)
+ 
+     This option controls single-precision floating-point
+     square root.
+ 
+     --prec-sqrt=true enables the IEEE round-to-nearest mode
+     --prec-sqrt=false enables the fast approximation mode.
+     * * * Note the use of the word approximate * * *
+ 
+     --use_fast_math implies --prec-sqrt=false.
+ 
+     The default is true and nvcc enables the IEEE mode.
+ 
+     ------------------------------------------------------
+ 
+  The Fused Multiply-Add (FMA)  
+ 
+     In 2008 the IEEE 754 standard was revised to include
+     the fused multiply-add operation (FMA). It is therefore
+     prudent to use this option for a slight increase in
+     performance with no loss in precision. However one must
+     be careful to also use FMA operations with any CPU based
+     computations or there will be a comparison error.
+ 
+     --fmad {true|false} (-fmad)
+ 
+     This option enables (disables) the contraction of floating
+     point multiplies and adds/subtracts into floating point
+     multiply-add operations (FMAD, FFMA, or DFMA).
+ 
+     --use_fast_math implies --fmad=true.
+     By default this option is set to true.
+ 
+     ------------------------------------------------------
+ 
+  Note that the fused multiply add feature is of value and a
+  well documented part of the IEEE754-2008 specification.
+
+  However, some hardware may not support it.  Good luck.
+
+  Try -ffp-contract=on with gcc ?
+
+
+C_nix$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -c -o mandel_hack.o mandel_hack.cu 
+C_nix$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -o mandel_hack mandel_hack.o -lgomp
 
 
 Te see the GPU and CPU disagreements from a log file : 
 
-/usr/bin/printf "\ndelta    real                   imaginary              height\n--------------------------------------------------------------\n"; grep '^[0-9]' K4200_16M_samples.log | awk '{printf("%-5s   %-22s %-22s  %s\n", $14, $4, $6, $9)}' | sort -nr | head -20; /usr/bin/printf "\n--------------------------------------------------------------\n\n"
+/usr/bin/printf "\ndelta    real                   imaginary              height\n--------------------------------------------------------------\n"; grep '^[0-9]' error.log | awk '{printf("%-5s   %-22s %-22s  %s\n", $14, $4, $6, $9)}' | sort -nr | head -20; /usr/bin/printf "\n--------------------------------------------------------------\n\n"
 
 
 In order to get IEEE754-2008 precision compliance on the GPU use : 
 
-ieee754$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_30,code=sm_30 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o mandel_hack.o mandel_hack.cu 
-
-ieee754$ nvcc -ccbin g++ -m64 -gencode arch=compute_30,code=sm_30 --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o mandel_hack mandel_hack.o -lgomp
+    --ftz=false --prec-div=true --prec-sqrt=true --fmad=true
 
 
 Monitor activity with : 
@@ -49,5 +121,29 @@ precisely represented in the FP64 format.
 =======================================================================================
 
 nb: nvidia-smi -q -d POWER,TEMPERATURE,MEMORY,PIDS -i 0 -l 5
+
+
+Note that typical output from the NVidia profiler will look like : 
+
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   99.21%  338.28ms         1  338.28ms  338.28ms  338.28ms  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    0.48%  1.6336ms         2  816.82us  798.93us  834.71us  [CUDA memcpy HtoD]
+                    0.31%  1.0587ms         1  1.0587ms  1.0587ms  1.0587ms  [CUDA memcpy DtoH]
+      API calls:   72.41%  338.34ms         1  338.34ms  338.34ms  338.34ms  cudaDeviceSynchronize
+                   25.76%  120.35ms         3  40.115ms  84.514us  120.17ms  cudaMalloc
+                    0.66%  3.0808ms         3  1.0269ms  868.04us  1.3316ms  cudaMemcpy
+                    0.33%  1.5315ms         3  510.50us  138.92us  696.55us  cudaFree
+                    0.29%  1.3698ms         1  1.3698ms  1.3698ms  1.3698ms  cudaDeviceReset
+                    0.23%  1.0583ms         1  1.0583ms  1.0583ms  1.0583ms  cuDeviceTotalMem
+                    0.14%  668.77us         1  668.77us  668.77us  668.77us  cudaGetDeviceProperties
+                    0.09%  398.11us         1  398.11us  398.11us  398.11us  cuDeviceGetPCIBusId
+                    0.08%  394.63us       101  3.9070us     455ns  163.88us  cuDeviceGetAttribute
+                    0.01%  44.691us         1  44.691us  44.691us  44.691us  cuDeviceGetName
+                    0.01%  25.877us         1  25.877us  25.877us  25.877us  cudaLaunchKernel
+                    0.00%  4.9410us         3  1.6470us     831ns  2.8850us  cuDeviceGetCount
+                    0.00%  2.6350us         2  1.3170us     724ns  1.9110us  cuDeviceGet
+                    0.00%  2.1110us         1  2.1110us  2.1110us  2.1110us  cudaGetDeviceCount
+                    0.00%     910ns         1     910ns     910ns     910ns  cuDeviceGetUuid
+                    0.00%     619ns         1     619ns     619ns     619ns  cudaGetLastError
 
 
