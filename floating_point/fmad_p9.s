@@ -1,5 +1,5 @@
 	.file	"fmad.c"
-	.machine power4
+	.machine power9
 	.section	".text"
 	.section	.rodata.str1.8,"aMS",@progbits,1
 	.align 3
@@ -53,40 +53,38 @@ main:
 .L.main:
 .LFB7:
 	.cfi_startproc
+	addis 9,2,.LC7@toc@ha
 	mflr 0
+	addis 3,2,.LC8@toc@ha
 	std 29,-40(1)
 	std 30,-32(1)
-	addis 9,2,.LC7@toc@ha
-	std 31,-24(1)
-	stfd 30,-16(1)
-	addis 3,2,.LC8@toc@ha
 	.cfi_register 65, 0
 	.cfi_offset 29, -40
 	.cfi_offset 30, -32
-	.cfi_offset 31, -24
-	.cfi_offset 62, -16
 	addis 30,2,.LC10@toc@ha
+	std 31,-24(1)
+	stfd 30,-16(1)
 	stfd 31,-8(1)
 	std 27,-56(1)
 	ld 4,.LC7@toc@l(9)
 	addis 9,2,.LC6@toc@ha
-	addi 3,3,.LC8@toc@l
 	std 28,-48(1)
-	li 31,4
-	addi 30,30,.LC10@toc@l
-	lfs 0,.LC6@toc@l(9)
-	std 0,16(1)
-	stdu 1,-224(1)
-	.cfi_def_cfa_offset 224
+	addi 3,3,.LC8@toc@l
+	.cfi_offset 31, -24
+	.cfi_offset 62, -16
 	.cfi_offset 63, -8
 	.cfi_offset 27, -56
 	.cfi_offset 28, -48
+	li 31,4
+	addi 30,30,.LC10@toc@l
+	lfs 0,.LC6@toc@l(9)
+	mtvsrd 1,4
+	std 0,16(1)
+	stdu 1,-208(1)
+	.cfi_def_cfa_offset 208
 	.cfi_offset 65, 16
-	std 4,144(1)
-	stfs 0,136(1)
 	addi 29,1,135
-	ori 2,2,0
-	lfd 1,144(1)
+	stfs 0,136(1)
 	bl printf
 	nop
 	addis 3,2,.LC9@toc@ha
@@ -104,18 +102,16 @@ main:
 	bne 0,.L2
 	li 3,10
 	addi 27,1,127
+	li 31,8
 	bl putchar
 	nop
 	addis 9,2,.LC11@toc@ha
 	addis 3,2,.LC12@toc@ha
-	addi 3,3,.LC12@toc@l
 	mr 29,27
-	lfd 1,.LC11@toc@l(9)
-	li 31,8
-	stfd 1,144(1)
-	stfd 1,128(1)
-	ori 2,2,0
-	ld 4,144(1)
+	ld 4,.LC11@toc@l(9)
+	addi 3,3,.LC12@toc@l
+	mtvsrd 1,4
+	std 4,128(1)
 	bl printf
 	nop
 	addis 3,2,.LC13@toc@ha
@@ -207,18 +203,12 @@ main:
 	bl __gcc_qadd
 	nop
 	addis 3,2,.LC22@toc@ha
-	addi 3,3,.LC22@toc@l
 	fmr 12,1
-	stfd 2,152(1)
-	ori 2,2,0
-	ld 11,152(1)
-	stfd 12,144(1)
-	mr 5,11
-	std 11,120(1)
-	ori 2,2,0
-	ld 10,144(1)
-	mr 4,10
-	std 10,112(1)
+	addi 3,3,.LC22@toc@l
+	mfvsrd 5,2
+	stfd 2,120(1)
+	mfvsrd 4,12
+	stfd 12,112(1)
 	bl printf
 	nop
 	addis 3,2,.LC23@toc@ha
@@ -263,17 +253,17 @@ main:
 	addi 3,3,.LC28@toc@l
 	bl puts
 	nop
-	addi 1,1,224
+	addi 1,1,208
 	.cfi_def_cfa_offset 0
 	li 3,42
 	ld 0,16(1)
-	lfd 30,-16(1)
-	lfd 31,-8(1)
 	ld 27,-56(1)
 	ld 28,-48(1)
 	ld 29,-40(1)
 	ld 30,-32(1)
 	ld 31,-24(1)
+	lfd 30,-16(1)
+	lfd 31,-8(1)
 	mtlr 0
 	.cfi_restore 65
 	.cfi_restore 63

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+size_t bin_printf ( uint8_t* f, size_t n );
+
 int main(int argc, char **argv)
 {
 
@@ -40,11 +42,12 @@ int main(int argc, char **argv)
 
 
     printf("d32   = %-+24.18e\n", dotme_fp32);
-    printf("\ndotme_fp32 is at %p\n", &dotme_fp32);
+    printf("dotme_fp32 is at %p\n", &dotme_fp32);
     for (int j=0; j<sizeof(float); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp32)[j] );
     }
     printf("\n");
+    bin_printf ( (uint8_t*)&dotme_fp32, sizeof(dotme_fp32));
 
     double dotme_fp64 =
 
@@ -63,7 +66,7 @@ int main(int argc, char **argv)
          a64[3] * b64[3];
 
     printf("d64   = %-+24.18e\n", dotme_fp64);
-    printf("\ndotme_fp64 is at %p\n", &dotme_fp64);
+    printf("dotme_fp64 is at %p\n", &dotme_fp64);
     for (int j=0; j<sizeof(double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
     }
@@ -86,7 +89,7 @@ int main(int argc, char **argv)
          a128[3] * b128[3];
 
     printf("d128  = %-+24.18Le\n", dotme_fp128);
-    printf("\ndotme_fp128 is at %p\n", &dotme_fp128);
+    printf("dotme_fp128 is at %p\n", &dotme_fp128);
     for (int j=0; j<sizeof(long double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
     }
@@ -94,7 +97,10 @@ int main(int argc, char **argv)
 
     printf("      = +5.595788259858e-02 is correct\n");
     printf("trust this 0x3faca682f76db9b9 from ARMv8\n");
-    printf("or maybe   0x3faca682f76db9c0 on Fujitsu SPARC VII+\n\n");
+    printf("or maybe   0x3faca682f76db9c0 on Fujitsu SPARC VII+\n");
+    printf("also fp128 0x3ffaca682f76db9db367bf4a016eb280\n");
+
+    printf ("\nNOTE : IBM Power systems may report strange hex values\n");
 
     return 42;
 

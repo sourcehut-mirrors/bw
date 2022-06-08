@@ -1,21 +1,25 @@
 
-CC=gcc
+CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -pedantic -g -O0 -fno-builtin -m64 \
-	-mcpu=970 -mno-altivec -mno-isel -mno-vsx \
-	-mno-crypto -mno-htm -mno-quad-memory-atomic -mfull-toc \
-	-mno-multiple -mupdate -mno-avoid-indexed-addresses \
-	-mno-dlmzb -mno-bit-align -mno-strict-align -mbig -mregnames \
-	-mno-recip -fno-unsafe-math-optimizations -pedantic-errors \
-	-Wall
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O0 -g \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-pedantic -pedantic-errors \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-ffp-contract=on \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx -Wall \
+	-fsanitize=undefined
 
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
-LIBS = -lX11 -lrt -lm -lpthread
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
+LD_OPTIONS=-L/opt/bw/lib
+LD_RUN_PATH=/opt/bw/lib
 
-LDIR=/usr/local/lib
-IDIR=/usr/local/include
+LIBS = -lX11 -lrt -lm -lpthread
 
 SRCS = ./mandel_col.c ./linear_inter.c ./mbrot.c \
 	./mbrot.c ./mbrot_vbox_pthread.c \
@@ -25,7 +29,8 @@ SRCS = ./mandel_col.c ./linear_inter.c ./mbrot.c \
 	../time_and_date/timediff.c \
 	../sysinfo/sysmem.c ../sysinfo/sysinfo.c
 
-OBJS = ./mandel_col.o ./linear_inter.o \
+
+OBJS = ./mandel_col.o ./linear_inter.o ./mbrot.o \
 	./mbrot.o ./mbrot_vbox_pthread.o \
 	../xwin/x_error_handler.o \
 	../xwin/create_gc.o \
@@ -33,11 +38,11 @@ OBJS = ./mandel_col.o ./linear_inter.o \
 	../time_and_date/timediff.o \
 	../sysinfo/sysmem.o ../sysinfo/sysinfo.o
 
-.c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR)  $(CPPFLAGS)
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 xmand: xmand.o $(OBJS)
-	$(CC) -o $@ xmand.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
 	rm -f $(OBJS) xmand.o xmand

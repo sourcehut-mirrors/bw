@@ -1,5 +1,5 @@
 	.file	"fmad.c"
-	.machine power4
+	.machine power10
 	.section	".text"
 	.section	.rodata.str1.8,"aMS",@progbits,1
 	.align 3
@@ -53,115 +53,97 @@ main:
 .L.main:
 .LFB7:
 	.cfi_startproc
+	plfs 0,.LC6@pcrel
+	pld 4,.LC7@pcrel
 	mflr 0
 	std 29,-40(1)
 	std 30,-32(1)
-	addis 9,2,.LC7@toc@ha
-	std 31,-24(1)
-	stfd 30,-16(1)
-	addis 3,2,.LC8@toc@ha
+	pla 3,.LC8@pcrel
 	.cfi_register 65, 0
 	.cfi_offset 29, -40
 	.cfi_offset 30, -32
+	pla 29,.LC10@pcrel
+	std 31,-24(1)
+	stfd 30,-16(1)
 	.cfi_offset 31, -24
 	.cfi_offset 62, -16
-	addis 30,2,.LC10@toc@ha
+	li 31,4
+	std 0,16(1)
 	stfd 31,-8(1)
 	std 27,-56(1)
-	ld 4,.LC7@toc@l(9)
-	addis 9,2,.LC6@toc@ha
-	addi 3,3,.LC8@toc@l
 	std 28,-48(1)
-	li 31,4
-	addi 30,30,.LC10@toc@l
-	lfs 0,.LC6@toc@l(9)
-	std 0,16(1)
-	stdu 1,-224(1)
-	.cfi_def_cfa_offset 224
+	mtvsrd 1,4
+	stdu 1,-208(1)
+	.cfi_def_cfa_offset 208
+	.cfi_offset 65, 16
 	.cfi_offset 63, -8
 	.cfi_offset 27, -56
 	.cfi_offset 28, -48
-	.cfi_offset 65, 16
-	std 4,144(1)
+	addi 30,1,135
 	stfs 0,136(1)
-	addi 29,1,135
-	ori 2,2,0
-	lfd 1,144(1)
 	bl printf
 	nop
-	addis 3,2,.LC9@toc@ha
 	addi 4,1,136
-	addi 3,3,.LC9@toc@l
+	pla 3,.LC9@pcrel
 	bl printf
 	nop
 .L2:
-	lbzu 4,1(29)
+	lbzu 4,1(30)
 	addi 31,31,-1
-	mr 3,30
+	mr 3,29
 	bl printf
 	nop
 	cmpwi 0,31,0
 	bne 0,.L2
 	li 3,10
-	addi 27,1,127
+	addi 28,1,127
+	li 31,8
+	pla 27,.LC10@pcrel
 	bl putchar
 	nop
-	addis 9,2,.LC11@toc@ha
-	addis 3,2,.LC12@toc@ha
-	addi 3,3,.LC12@toc@l
-	mr 29,27
-	lfd 1,.LC11@toc@l(9)
-	li 31,8
-	stfd 1,144(1)
+	plfd 1,.LC11@pcrel
+	pla 3,.LC12@pcrel
+	mr 30,28
+	mfvsrd 4,1
 	stfd 1,128(1)
-	ori 2,2,0
-	ld 4,144(1)
 	bl printf
 	nop
-	addis 3,2,.LC13@toc@ha
 	addi 4,1,128
-	addi 3,3,.LC13@toc@l
+	pla 3,.LC13@pcrel
 	bl printf
 	nop
 .L3:
-	lbz 4,1(29)
-	addi 28,29,1
-	mr 3,30
+	lbz 4,1(30)
+	addi 29,30,1
+	mr 3,27
 	addi 31,31,-1
-	addi 29,29,2
+	addi 30,30,2
 	addi 31,31,-1
 	bl printf
 	nop
-	lbz 4,1(28)
-	mr 3,30
+	lbz 4,1(29)
+	mr 3,27
 	bl printf
 	nop
 	cmpwi 0,31,0
 	bne 0,.L3
 	li 3,10
 	addi 31,1,111
+	pla 29,.LC10@pcrel
 	bl putchar
 	nop
-	addis 9,2,.LC14@toc@ha
-	addi 9,9,.LC14@toc@l
-	lfd 3,0(9)
-	lfd 4,8(9)
-	addis 9,2,.LC15@toc@ha
-	addi 9,9,.LC15@toc@l
-	lfd 1,0(9)
-	lfd 2,8(9)
+	plfd 3,.LC14@pcrel
+	plfd 4,.LC14+8@pcrel
+	plfd 1,.LC15@pcrel
+	plfd 2,.LC15+8@pcrel
 	bl __gcc_qmul
 	nop
-	addis 9,2,.LC16@toc@ha
-	addi 9,9,.LC16@toc@l
+	plfd 3,.LC16@pcrel
+	plfd 4,.LC16+8@pcrel
 	fmr 31,2
 	fmr 30,1
-	lfd 3,0(9)
-	lfd 4,8(9)
-	addis 9,2,.LC17@toc@ha
-	addi 9,9,.LC17@toc@l
-	lfd 1,0(9)
-	lfd 2,8(9)
+	plfd 2,.LC17+8@pcrel
+	plfd 1,.LC17@pcrel
 	bl __gcc_qmul
 	nop
 	fmr 4,2
@@ -170,16 +152,12 @@ main:
 	fmr 1,30
 	bl __gcc_qadd
 	nop
-	addis 9,2,.LC18@toc@ha
-	addi 9,9,.LC18@toc@l
+	plfd 3,.LC18@pcrel
+	plfd 4,.LC18+8@pcrel
 	fmr 31,2
 	fmr 30,1
-	lfd 3,0(9)
-	lfd 4,8(9)
-	addis 9,2,.LC19@toc@ha
-	addi 9,9,.LC19@toc@l
-	lfd 1,0(9)
-	lfd 2,8(9)
+	plfd 2,.LC19+8@pcrel
+	plfd 1,.LC19@pcrel
 	bl __gcc_qmul
 	nop
 	fmr 4,2
@@ -188,16 +166,12 @@ main:
 	fmr 1,30
 	bl __gcc_qadd
 	nop
-	addis 9,2,.LC20@toc@ha
-	addi 9,9,.LC20@toc@l
+	plfd 3,.LC20@pcrel
+	plfd 4,.LC20+8@pcrel
 	fmr 31,2
 	fmr 30,1
-	lfd 3,0(9)
-	lfd 4,8(9)
-	addis 9,2,.LC21@toc@ha
-	addi 9,9,.LC21@toc@l
-	lfd 1,0(9)
-	lfd 2,8(9)
+	plfd 2,.LC21+8@pcrel
+	plfd 1,.LC21@pcrel
 	bl __gcc_qmul
 	nop
 	fmr 4,2
@@ -206,74 +180,61 @@ main:
 	fmr 1,30
 	bl __gcc_qadd
 	nop
-	addis 3,2,.LC22@toc@ha
-	addi 3,3,.LC22@toc@l
+	pla 3,.LC22@pcrel
 	fmr 12,1
-	stfd 2,152(1)
-	ori 2,2,0
-	ld 11,152(1)
-	stfd 12,144(1)
-	mr 5,11
-	std 11,120(1)
-	ori 2,2,0
-	ld 10,144(1)
-	mr 4,10
-	std 10,112(1)
+	mfvsrd 5,2
+	stfd 2,120(1)
+	stfd 12,112(1)
+	mfvsrd 4,12
 	bl printf
 	nop
-	addis 3,2,.LC23@toc@ha
 	addi 4,1,112
-	addi 3,3,.LC23@toc@l
+	pla 3,.LC23@pcrel
 	bl printf
 	nop
 	.p2align 4,,15
 .L4:
 	lbz 4,1(31)
-	addi 29,31,1
-	mr 3,30
+	addi 30,31,1
+	mr 3,29
 	addi 31,31,2
 	bl printf
 	nop
-	lbz 4,1(29)
-	mr 3,30
+	lbz 4,1(30)
+	mr 3,29
 	bl printf
 	nop
-	cmpld 0,27,31
+	cmpld 0,28,31
 	bne 0,.L4
 	li 3,10
 	bl putchar
 	nop
-	addis 3,2,.LC24@toc@ha
-	addi 3,3,.LC24@toc@l
+	pla 3,.LC24@pcrel
 	bl puts
 	nop
-	addis 3,2,.LC25@toc@ha
-	addi 3,3,.LC25@toc@l
+	pla 3,.LC25@pcrel
 	bl puts
 	nop
-	addis 3,2,.LC26@toc@ha
-	addi 3,3,.LC26@toc@l
+	pla 3,.LC26@pcrel
 	bl puts
 	nop
-	addis 3,2,.LC27@toc@ha
-	addi 3,3,.LC27@toc@l
+	pla 3,.LC27@pcrel
 	bl puts
 	nop
-	addis 3,2,.LC28@toc@ha
-	addi 3,3,.LC28@toc@l
+	pla 3,.LC28@pcrel
 	bl puts
 	nop
-	addi 1,1,224
+	addi 1,1,208
 	.cfi_def_cfa_offset 0
 	li 3,42
 	ld 0,16(1)
-	lfd 30,-16(1)
-	lfd 31,-8(1)
 	ld 27,-56(1)
 	ld 28,-48(1)
 	ld 29,-40(1)
 	ld 30,-32(1)
 	ld 31,-24(1)
+	lfd 30,-16(1)
+	lfd 31,-8(1)
 	mtlr 0
 	.cfi_restore 65
 	.cfi_restore 63
