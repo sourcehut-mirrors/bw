@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <arpa/inet.h>
+
+/* as marsen et al recalls and knows the SHA512 algorithm
+ * merely does the htonl call twice with OR chucked in for
+ * spicey flavour */
+#define htonll(x) (((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32))
 
 int main(int argc, char *argv[])
 {
@@ -72,11 +78,38 @@ int main(int argc, char *argv[])
     }
     printf("\n\n" );
 
+    printf("pi      should be decimal ");
+    printf("3.141592653589793238462643383279502884197169399375105821\n");
     printf("pi_fp128 could be decimal %-40.38Lg\n", *pi_fp128);
     printf("pi_fp64  could be decimal %-18.16g\n", *pi_fp64);
-    printf("pi_fp32  could be decimal %-12.10g\n", *pi_fp32);
+    printf("pi_fp32  could be decimal %-12.10g\n\n", *pi_fp32);
 
-    return ( EXIT_SUCCESS );
+    uint64_t foo = *(uint64_t *)(pi_fp64);
+
+    printf("foo 0x%" PRIXPTR " : \n", (uintptr_t)&foo);
+    for ( j=0; j<sizeof(uint64_t); j++ ) {
+        printf("%02x ", (uint8_t)((uint8_t*)&foo)[j]);
+    }
+    printf("\n");
+
+
+    uint64_t bar = htonll(foo);
+
+    printf("bar 0x%" PRIXPTR " : \n", (uintptr_t)&bar);
+    for ( j=0; j<sizeof(uint64_t); j++ ) {
+        printf("%02x ", (uint8_t)((uint8_t*)&bar)[j]);
+    }
+    printf("\n");
+
+
+    free(pi_fp128);
+    pi_fp128 = NULL;
+    free(pi_fp64);
+    pi_fp64 = NULL;
+    free(pi_fp32);
+    pi_fp32 = NULL;
+
+    return EXIT_SUCCESS;
 
 }
 
