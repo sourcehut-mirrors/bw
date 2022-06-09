@@ -13,18 +13,18 @@ int main(int argc, char **argv)
    https://docs.nvidia.com/cuda/floating-point/index.html#comparison
  */
 
-    float a[4] = {  1.907607f,  -0.7862027f, 1.147311f,  0.9604002f };
-    float b[4] = { -0.9355000f, -0.6915108f, 1.724470f, -0.7097529f };
+    volatile float a[4] = {  1.907607f,  -0.7862027f, 1.147311f,  0.9604002f };
+    volatile float b[4] = { -0.9355000f, -0.6915108f, 1.724470f, -0.7097529f };
 
     /* by default we should get 64-bit floating point from the data */
-    double a64[4] = {  1.907607,  -0.7862027, 1.147311,  0.9604002 };
-    double b64[4] = { -0.9355000, -0.6915108, 1.724470, -0.7097529 };
+    volatile double a64[4] = {  1.907607,  -0.7862027, 1.147311,  0.9604002 };
+    volatile double b64[4] = { -0.9355000, -0.6915108, 1.724470, -0.7097529 };
 
     /* for the sake of being a geek */
-    long double a128[4] = {  1.907607L,  -0.7862027L, 1.147311L,  0.9604002L };
-    long double b128[4] = { -0.9355000L, -0.6915108L, 1.724470L, -0.7097529L };
+    volatile long double a128[4] = {  1.907607L,  -0.7862027L, 1.147311L,  0.9604002L };
+    volatile long double b128[4] = { -0.9355000L, -0.6915108L, 1.724470L, -0.7097529L };
 
-    float dotme_fp32 =
+    volatile float dotme_fp32 =
 
          a[0] * b[0]
 
@@ -47,9 +47,12 @@ int main(int argc, char **argv)
         printf("0x%02x ", ((uint8_t *)&dotme_fp32)[j] );
     }
     printf("\n");
-    bin_printf ( (uint8_t*)&dotme_fp32, sizeof(dotme_fp32));
 
-    double dotme_fp64 =
+/* if anyone desires a binary dump 
+    bin_printf ( (uint8_t*)&dotme_fp32, sizeof(dotme_fp32));
+ */
+
+    volatile double dotme_fp64 =
 
          a64[0] * b64[0]
 
@@ -72,7 +75,7 @@ int main(int argc, char **argv)
     }
     printf("\n");
 
-    long double dotme_fp128 =
+    volatile long double dotme_fp128 =
 
          a128[0] * b128[0]
 
