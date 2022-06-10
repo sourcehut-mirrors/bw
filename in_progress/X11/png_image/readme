@@ -1,0 +1,1 @@
+try  -o png_bork png_bork.c -L/usr/local/lib -I/usr/local/include -lX11 -lrt -lpng
