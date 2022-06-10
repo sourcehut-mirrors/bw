@@ -79,27 +79,42 @@ int main(int argc, char *argv[])
     printf("\n\n" );
 
     printf("pi      should be decimal ");
-    printf("3.141592653589793238462643383279502884197169399375105821\n");
+    printf("3.1415926535897932384626433832795028841971694\n");
     printf("pi_fp128 could be decimal %-40.38Lg\n", *pi_fp128);
     printf("pi_fp64  could be decimal %-18.16g\n", *pi_fp64);
     printf("pi_fp32  could be decimal %-12.10g\n\n", *pi_fp32);
 
-    uint64_t foo = *(uint64_t *)(pi_fp64);
+    /* note that the crud that follows serves no useful purpose
+     * on a big endian machine other than to cause confusion.
+     *
+     * The macro htonll(x) does not do what you expect :
+     *
+     * input foo will be this on a big endian machine
+     *         40 09 21 fb 54 44 2d 18
+     *
+     * the result of bar = htonll(foo) will be borked
+     *         54 44 2d 18 40 09 21 fb
+     *
+     */
+    if (little_endian) {
 
-    printf("foo 0x%" PRIXPTR " : \n", (uintptr_t)&foo);
-    for ( j=0; j<sizeof(uint64_t); j++ ) {
-        printf("%02x ", (uint8_t)((uint8_t*)&foo)[j]);
+        uint64_t foo = *(uint64_t *)(pi_fp64);
+
+        printf("foo 0x%" PRIXPTR " : \n", (uintptr_t)&foo);
+        for ( j=0; j<sizeof(uint64_t); j++ ) {
+            printf("%02x ", (uint8_t)((uint8_t*)&foo)[j]);
+        }
+        printf("\n");
+
+
+        uint64_t bar = htonll(foo);
+
+        printf("bar 0x%" PRIXPTR " : \n", (uintptr_t)&bar);
+        for ( j=0; j<sizeof(uint64_t); j++ ) {
+            printf("%02x ", (uint8_t)((uint8_t*)&bar)[j]);
+        }
+        printf("\n");
     }
-    printf("\n");
-
-
-    uint64_t bar = htonll(foo);
-
-    printf("bar 0x%" PRIXPTR " : \n", (uintptr_t)&bar);
-    for ( j=0; j<sizeof(uint64_t); j++ ) {
-        printf("%02x ", (uint8_t)((uint8_t*)&bar)[j]);
-    }
-    printf("\n");
 
 
     free(pi_fp128);
