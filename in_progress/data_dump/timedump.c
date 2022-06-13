@@ -57,51 +57,12 @@
 
 #define VERBOSE 1
 
-/* swap bytes around to change endian */
-#define htonll(x) (((uint64_t)htonl((x) & 0xFFFFFFFF) << 32) | htonl((x) >> 32))
-
-
-uint64_t rot8(uint64_t x)
-{
-
-    uint64_t result, b[8] = {0,0,0,0,0,0,0,0};
-
-    b[0] = ( ( x & 0xffULL ) << 56 );
-    b[1] = ( ( x & 0xff00ULL ) << 40 );
-    b[2] = ( ( x & 0xff0000ULL ) << 24 );
-    b[3] = ( ( x & 0xff000000ULL ) << 8 );
-    b[4] = ( ( x & 0xff00000000ULL ) >> 8 );
-    b[5] = ( ( x & 0xff0000000000ULL ) >> 24 );
-    b[6] = ( ( x & 0xff000000000000ULL ) >> 40 );
-    b[7] = ( x >> 56 );
-
-    result = b[0] | b[1] | b[2] | b[3] | b[4] | b[5] | b[6] | b[7];
-
-    return result;
-
-}
-
-
-uint32_t rot4(uint32_t x)
-{
-    uint32_t result, b[4] = {0,0,0,0};
-
-    b[0] = ( ( x & 0xff ) << 24 );
-    b[1] = ( ( x & 0xff00 ) << 8 );
-    b[2] = ( ( x & 0xff0000 ) >> 8 );
-    b[3] = ( ( x & 0xff000000 ) >> 24 );
-
-    result = b[0] | b[1] | b[2] | b[3];
-
-    return result;
-
-}
-
-
-
+uint64_t rot8(uint64_t x);
+uint32_t rot4(uint32_t x);
 int sysinfo(int verbose);
 
-int main ( int argc, char **argv) {
+int main (int argc, char **argv)
+{
 
     FILE *fp;
     struct stat status_buffer;
@@ -196,10 +157,20 @@ int main ( int argc, char **argv) {
 
     fprintf (stderr,"INFO : file %s/%s dump begins.\n",tmpdir,timestamp);
     /* if the machine is big endian we get endian_flag = 0x10 */
+
+
+
+    /****************************************************************
+     *
+     *     we do not care about the endian state of the machine
+     *
+     *                  in the output file
+     *
+     ****************************************************************
     num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
     printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
             sizeof(uint8_t), num_written);
-
+     */
 
     /* if this machine is big endian then we swap around the bytes
      * to give us little endian output in the file */
@@ -264,6 +235,41 @@ int main ( int argc, char **argv) {
     timestamp_filename = NULL;
 
     return EXIT_SUCCESS;
+
+}
+
+uint64_t rot8(uint64_t x)
+{
+
+    uint64_t result, b[8] = {0,0,0,0,0,0,0,0};
+
+    b[0] = ( ( x & 0xffULL ) << 56 );
+    b[1] = ( ( x & 0xff00ULL ) << 40 );
+    b[2] = ( ( x & 0xff0000ULL ) << 24 );
+    b[3] = ( ( x & 0xff000000ULL ) << 8 );
+    b[4] = ( ( x & 0xff00000000ULL ) >> 8 );
+    b[5] = ( ( x & 0xff0000000000ULL ) >> 24 );
+    b[6] = ( ( x & 0xff000000000000ULL ) >> 40 );
+    b[7] = ( x >> 56 );
+
+    result = b[0] | b[1] | b[2] | b[3] | b[4] | b[5] | b[6] | b[7];
+
+    return result;
+
+}
+
+uint32_t rot4(uint32_t x)
+{
+    uint32_t result, b[4] = {0,0,0,0};
+
+    b[0] = ( ( x & 0xff ) << 24 );
+    b[1] = ( ( x & 0xff00 ) << 8 );
+    b[2] = ( ( x & 0xff0000 ) >> 8 );
+    b[3] = ( ( x & 0xff000000 ) >> 24 );
+
+    result = b[0] | b[1] | b[2] | b[3];
+
+    return result;
 
 }
 
