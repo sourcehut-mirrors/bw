@@ -1,1 +1,4 @@
+
+one may fetch the beastie via  https://www.FreeBSD.org/images/beastie.png
+
 try  -o png_bork png_bork.c -L/usr/local/lib -I/usr/local/include -lX11 -lrt -lpng
