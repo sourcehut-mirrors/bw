@@ -39,7 +39,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iso646.h>
 #include <limits.h>
 #include <inttypes.h>
 #include <time.h>
@@ -48,17 +47,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
-#define NUM_ELEMENTS 16777216
-#define BAIL_OUT 32768
-#define MAGNIFY 268435456
-#define REAL_COORD 0.399750960350502282381
-#define IMAG_COORD 0.205251797480741515756
+#include "timedump.h"
 
 #define VERBOSE 1
 
-uint64_t rot8(uint64_t x);
-uint32_t rot4(uint32_t x);
 int sysinfo(int verbose);
 
 int main (int argc, char **argv)
@@ -235,41 +227,6 @@ int main (int argc, char **argv)
     timestamp_filename = NULL;
 
     return EXIT_SUCCESS;
-
-}
-
-uint64_t rot8(uint64_t x)
-{
-
-    uint64_t result, b[8] = {0,0,0,0,0,0,0,0};
-
-    b[0] = ( ( x & 0xffULL ) << 56 );
-    b[1] = ( ( x & 0xff00ULL ) << 40 );
-    b[2] = ( ( x & 0xff0000ULL ) << 24 );
-    b[3] = ( ( x & 0xff000000ULL ) << 8 );
-    b[4] = ( ( x & 0xff00000000ULL ) >> 8 );
-    b[5] = ( ( x & 0xff0000000000ULL ) >> 24 );
-    b[6] = ( ( x & 0xff000000000000ULL ) >> 40 );
-    b[7] = ( x >> 56 );
-
-    result = b[0] | b[1] | b[2] | b[3] | b[4] | b[5] | b[6] | b[7];
-
-    return result;
-
-}
-
-uint32_t rot4(uint32_t x)
-{
-    uint32_t result, b[4] = {0,0,0,0};
-
-    b[0] = ( ( x & 0xff ) << 24 );
-    b[1] = ( ( x & 0xff00 ) << 8 );
-    b[2] = ( ( x & 0xff0000 ) >> 8 );
-    b[3] = ( ( x & 0xff000000 ) >> 24 );
-
-    result = b[0] | b[1] | b[2] | b[3];
-
-    return result;
 
 }
 

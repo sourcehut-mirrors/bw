@@ -1,15 +1,13 @@
 
-CC=/usr/bin/cc
+CC=gcc
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O0 -g \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
-	-pedantic -pedantic-errors \
-	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
-	-fno-fast-math -malign-double \
-	-ffp-contract=on \
-	-m128bit-long-double -mlong-double-80 \
-	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx -Wall \
-	-fsanitize=undefined
+CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -m64 -mcpu=970 \
+	-mno-altivec -mno-isel -mno-vsx -mno-crypto -mno-htm \
+	-mno-quad-memory-atomic -mfull-toc -mno-multiple -mupdate \
+	-mno-avoid-indexed-addresses -mno-dlmzb -mno-bit-align \
+	-mno-strict-align -mbig -mregnames -mno-recip \
+	-fno-unsafe-math-optimizations -Wall
 
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600

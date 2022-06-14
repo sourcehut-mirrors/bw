@@ -2,7 +2,7 @@
 CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
-SRCS = timedump.c ../../sysinfo/sysinfo.c
+SRCS = timedump.c rot8.c rot4.c ../../sysinfo/sysinfo.c
 
 OBJS = ${SRCS:.c=.o}
 

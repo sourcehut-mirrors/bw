@@ -1791,7 +1791,6 @@ replot:
                                      * account for the offset into the centre of a square
                                      * sample.
                                      */
-
                                     x_prime = x_prime + half_sample_offset_real;
                                     y_prime = y_prime + half_sample_offset_imag;
 
