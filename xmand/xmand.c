@@ -1238,14 +1238,14 @@ int main(int argc, char*argv[])
                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                         vbox_ll_x = vbox_x * vbox_w + mand_x_pix;
 
-                        win_x = ( ( ( 1.0 * vbox_ll_x ) / eff_width ) * 2.0 - 1.0 ) + 0.0;
-                        win_y = ( -1.0 * ( ( ( 1.0 * ( eff_height - vbox_ll_y ) ) / eff_height ) * 2.0 - 1.0 ) ) + 0.0;
+                        sample_r = vbox_ll_x;
+                        sample_j = vbox_ll_y;
 
-                        x_prime = obs_x_width * win_x / 2.0;
-                        y_prime = obs_y_height * win_y / 2.0;
+                        win_x = -1.0 + ( 2.0 * sample_r ) / eff_width;
+                        win_y = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
 
-                        x_prime = x_prime + real_translate + half_sample_offset_real;
-                        y_prime = y_prime + imag_translate + half_sample_offset_imag;
+                        x_prime = obs_x_width * win_x / 2.0 + real_translate + half_sample_offset_real;
+                        y_prime = obs_y_height * win_y / 2.0 + imag_translate + half_sample_offset_imag;
 
                         mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
 
@@ -1788,51 +1788,14 @@ replot:
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                                     vbox_ll_x = vbox_x * vbox_w + mand_x_pix;
 
-                                    /* The double precision floating point value
-                                     * of ( win_x, win_y ) represents the position
-                                     * within the plotting region with the lower
-                                     * left most corner being ( -1, -1 ) and the
-                                     * upper right corner is ( +1, +1 )
-                                     */
+                                    sample_r = vbox_ll_x;
+                                    sample_j = vbox_ll_y;
 
-                                    /*
-                                    sample_r = ( mouse_x - offset_x );
-                                    sample_j = ( eff_height - mouse_y + offset_y );
-                                    win_x = ( 1.0 * sample_r ) / eff_width;
-                                    win_y = ( 1.0 * sample_j ) / eff_height;
-                                    */
+                                    win_x = -1.0 + ( 2.0 * sample_r ) / eff_width;
+                                    win_y = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
 
-                                    win_x = ( ( ( 1.0 * vbox_ll_x ) / eff_width ) * 2.0 - 1.0 );
-
-                                    win_y = ( -1.0 *
-                                              ( (
-                                                   ( 1.0 * ( eff_height - vbox_ll_y ) ) / eff_height
-                                                ) * 2.0 - 1.0
-                                              ) ) + 0.0;
-
-                                    /* note that the observable x width is just our
-                                     * defined 4.0 / magnify and thus if we assume a
-                                     * trivial magnify of 1 then the point on the
-                                     * complex plane for (x_prime,y_prime) will simply
-                                     * be the lower left corner of our default complex
-                                     * plane bounded by ( -2, -2j ) in the lower left
-                                     * corner and ( 2, 2j ) in the upper right corner.
-                                     */
-                                    x_prime = obs_x_width * win_x / 2.0;
-                                    y_prime = obs_y_height * win_y / 2.0;
-
-                                    /* we then translate the entire complex plane by our
-                                     * selected centre position.
-                                     */
-                                    x_prime = x_prime + real_translate;
-                                    y_prime = y_prime + imag_translate;
-
-                                    /* we need a trivial adjustment to ( x_prime, y_prime ) to
-                                     * account for the offset into the centre of a square
-                                     * sample.
-                                     */
-                                    x_prime = x_prime + half_sample_offset_real;
-                                    y_prime = y_prime + half_sample_offset_imag;
+                                    x_prime = obs_x_width * win_x / 2.0 + real_translate + half_sample_offset_real;
+                                    y_prime = obs_y_height * win_y / 2.0 + imag_translate + half_sample_offset_imag;
 
                                     if ( vbox_flag[vbox_x][vbox_y] == 1 ) {
                                         mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
