@@ -202,6 +202,10 @@ int main(int argc, char*argv[])
     double x_prime = -8.0;
     double y_prime = -8.0;
 
+    /* eventually we will need to refer to a digital coordinate
+     * that overlaps the complex coordinate space */
+    int sample_r, sample_j;
+
     /* use the vbox lower left coords as reference */
     int vbox_ll_x, vbox_ll_y;
 
@@ -364,6 +368,18 @@ int main(int argc, char*argv[])
         srand48( (long) now_time.tv_nsec );
     }
     sysinfo(VERBOSE);
+
+    printf("\n\n--------- _XOPEN_SOURCE 600 -------\n");
+    printf("_POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
+    printf("_POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
+    printf("_POSIX_OPEN_MAX    = %i\n", _POSIX_OPEN_MAX);
+    printf("_POSIX_PATH_MAX    = %i\n", _POSIX_PATH_MAX);
+    printf("_POSIX_TZNAME_MAX  = %i\n", _POSIX_TZNAME_MAX);
+    printf("---------------------------------------\n");
+
+#ifdef FLT_EVAL_METHOD
+    printf("FLT_EVAL_METHOD    = %i\n", FLT_EVAL_METHOD);
+#endif
 
     /* these two calls are silly and not of much value other than
      * to determine the speed of the clock_gettime() call. Which
@@ -621,18 +637,18 @@ int main(int argc, char*argv[])
         return EXIT_FAILURE;
     }
 
-    /* hard coded screen offset */
-    offset_x = 20;
-    offset_y = 20;
+    /* These are entirely temporary hard coded screen offsets */
+    int win_offset_x = 20;
+    int win_offset_y = 20;
 
-    printf("     : offset x=%i y=%i\n", offset_x, offset_y);
+    printf("     : offset x=%i y=%i\n", win_offset_x, win_offset_y);
 
     /* Our primary plotting window has a pale grey background
      * but for debugging mouse locations then it may be nice
      * to use Rebecca Purple 0x663399 */
     unsigned long gc_bg = 0x0f0f0f;
     win = create_borderless_topwin(dsp, width, height,
-                                        offset_x, offset_y,
+                                        win_offset_x, win_offset_y,
                                         gc_bg);
     gc = create_gc(dsp, win);
 
@@ -794,21 +810,15 @@ int main(int argc, char*argv[])
     XDrawRectangle(dsp, win3, gc3, 5, 5, 430, 320);
 
     /* set our graph box inside by OFFSET pixels
-     *
-     * reuse the offset_foo vars from above as we do not
-     * need them for window location anymore. So we can
-     * use them as interior offset distances for our plot.
-     *
-     * TODO : maybe make these a unique name and not just
-     * redefine the values we used earlier. Maybe. */
+     * use them as interior offset distances for our plot */
     offset_x = 10;
     offset_y = 10;
 
-    /* upper left point */
+    /* X11 upper left pixel in a plot region */
     ux = offset_x;
     uy = offset_y;
 
-    /* lower right point */
+    /* X11 lower right pixel in a plot region */
     lx = (int)width - offset_x;
     ly = (int)height - offset_y;
 
@@ -835,9 +845,17 @@ int main(int argc, char*argv[])
     sprintf(buf,"REPLOT");
     XDrawImageString( dsp, win2, gc2, 332, 207, buf, (int)strlen(buf));
 
-    /* create a file dump button */
+    /* maybe create a file dump button */
     char *tmpdir = getenv("TMPDIR");
-    if ( tmpdir == NULL ) {
+    /* most compilers won't care that I separate these two checks */
+    if (tmpdir == NULL) {
+        dumper_flag = -1;
+    } else if (strlen(tmpdir) > _POSIX_PATH_MAX) {
+        dumper_flag = -1;
+    }
+
+    if ( dumper_flag == -1 ) {
+        /* forget the dumper for now */
         sprintf(buf,"No TMPDIR");
         XSetForeground(dsp, gc2, red.pixel);
         XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
@@ -846,13 +864,11 @@ int main(int argc, char*argv[])
         XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
         XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
         XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
-        dumper_flag = -1;
     } else {
         XSetForeground(dsp, gc2, magenta.pixel);
         XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
         sprintf(buf,"DUMPER");
         XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
-        dumper_flag = 0;
     }
 
     /****************************************************************
@@ -1041,10 +1057,11 @@ int main(int argc, char*argv[])
         fprintf(stderr,"%s\n", buf);
         XDrawImageString( dsp, win3, gc3, 10, 40, buf, (int)strlen(buf));
 
-        /* classic FiggleFratz jank adjustment of one or two pixels
-         * however on 24 Sept 2020 we see that the arrow tip of the 
-         * mouse cursor seems to be off by a slight amount. Thus we
-         * may need to fraggle figgle smush these numbers a little */
+        /* jank adjustment of one or two pixels
+         * we see that the arrow tip of the 
+         * mouse cursor seems to be off by a little
+         * figgle smush these numbers a little
+         * and also we keep the mouse_x_raw and mouse_y_raw data */
         mouse_x = mouse_x - 1;
         mouse_y = mouse_y - 2;
 
@@ -1291,11 +1308,9 @@ int main(int argc, char*argv[])
 
             } else {
 
-                /* TODO here we implement the FiggleFratz "jank" slider
-                 * idea for input controls to modify essential
-                 * parameters */
-
-                /* are we inside the top jank slider for magnify ? */
+                /* We need to locate the mouse in graphics context gc2 and here
+                 * the raw values for mouse position serve correctly. Thus the
+                 * question is are we inside the top jank slider for magnify ? */
                 if (   ( mouse_x_raw > 1268 ) && ( mouse_y_raw > 733 )
                     && ( mouse_x_raw < 1440 ) && ( mouse_y_raw < 742 ) ) {
 
@@ -1566,7 +1581,6 @@ int main(int argc, char*argv[])
                                 struct stat status_buffer;
                                 time_t time_now;
 
-                                /* TODO check the TMPDIR pathname len somewhere earlier */
                                 char timestamp[32];
                                 time(&time_now);
                                 struct tm *ptm = gmtime(&time_now);
@@ -1655,15 +1669,26 @@ int main(int argc, char*argv[])
         } else if ( button == Button2 ) {
 
 replot:
+            /* determine if we are inside the primary window plotting region */
             if (    ( mouse_x >=  offset_x ) && ( mouse_y >= offset_y )
                  && ( mouse_x < ( eff_width + offset_x ) )
                  && ( mouse_y < ( eff_height + offset_y ) ) ) {
 
-                /* we are inside the primary window plotting region */
-                win_x = ( 1.0 * ( mouse_x - offset_x ) ) / eff_width;
-                win_y = ( 1.0 * ( eff_height - mouse_y + offset_y ) ) / eff_height;
+                /****************************************************
+                 * The next chunk is pretty but means little for the
+                 * actual computions needed later. All we do is look
+                 * at the mouse coordinates here/
+                 * **************************************************/
 
-                printf("DBUG : button 2 pressed\n");
+                /* digital sample coordinates in the sample space? */
+                sample_r = ( mouse_x - offset_x );
+                sample_j = ( eff_height - mouse_y + offset_y );
+                printf("DBUG : sample space [ %-6i, %-6i ]\n", sample_r, sample_j);
+
+                win_x = ( 1.0 * sample_r ) / eff_width;
+                win_y = ( 1.0 * sample_j ) / eff_height;
+
+                printf("     : button 2 pressed\n");
                 printf("     : win_x = %-+26.20e\n", win_x );
                 printf("     : win_y = %-+26.20e\n", win_y );
 
@@ -1691,7 +1716,7 @@ replot:
                  * center point shall be ( 0.0, 0.0 ) */
                 win_x = win_x * 2.0 - 1.0;
                 win_y = win_y * 2.0 - 1.0;
-                printf("DBUG : after offset\n");
+                printf("     : after offset\n");
                 printf("     : win_x = %-+26.20e\n", win_x );
                 printf("     : win_y = %-+26.20e\n", win_y );
 
@@ -1705,27 +1730,35 @@ replot:
                 printf("     : x_prime = %-+26.20e\n", x_prime );
                 printf("     : y_prime = %-+26.20e\n", y_prime );
 
-                /* translation */
+                /* translation and offset into the centre of a sample region */
                 x_prime = x_prime + real_translate + half_sample_offset_real;
                 y_prime = y_prime + imag_translate + half_sample_offset_imag;
 
-                printf("DBUG : after translation\n");
+                printf("     : after translation\n");
                 printf("     : r_trn   = %-+26.20e\n", real_translate );
                 printf("     : j_trn   = %-+26.20e\n", imag_translate );
                 printf("     : x_prime = %-+26.20e\n", x_prime );
                 printf("     : y_prime = %-+26.20e\n", y_prime );
+                /****************************************************
+                 *    NONE OF THE ABOVE HAS much to do with the
+                 *    actual computations needed. All we did was
+                 *    determine the complex coordinates of the
+                 *    mouse in the sample space.
+                 ****************************************************/
 
                 XSetForeground(dsp, gc3, red.pixel);
                 sprintf(buf," select = %-+16.12e, %-+16.12e  ", x_prime, y_prime );
-
                 XDrawImageString( dsp, win3, gc3, 10, 80, buf, (int)strlen(buf));
+
                 XSetForeground(dsp, gc3, green.pixel);
                 sprintf(buf,"bailout = %-8i          ", mand_bail);
                 printf("     : %s\n", buf);
                 XDrawImageString( dsp, win3, gc3, 10, 100, buf, (int)strlen(buf));
+
                 sprintf(buf,"magnify = %-12.10e", magnify);
                 printf("     : magnify = %-18.12e\n", magnify);
                 XDrawImageString( dsp, win3, gc3, 10, 120, buf, (int)strlen(buf));
+
                 sprintf(buf," centre = %-+16.12e, %-+16.12e  ", real_translate, imag_translate);
                 printf("     : centre = %-+26.20e, %-+26.20e\n", real_translate, imag_translate);
                 XDrawImageString( dsp, win3, gc3, 10, 140, buf, (int)strlen(buf));
@@ -1761,8 +1794,15 @@ replot:
                                      * left most corner being ( -1, -1 ) and the
                                      * upper right corner is ( +1, +1 )
                                      */
-                                    win_x = ( ( ( 1.0 * vbox_ll_x )
-                                                / eff_width ) * 2.0 - 1.0 ) + 0.0;
+
+                                    /*
+                                    sample_r = ( mouse_x - offset_x );
+                                    sample_j = ( eff_height - mouse_y + offset_y );
+                                    win_x = ( 1.0 * sample_r ) / eff_width;
+                                    win_y = ( 1.0 * sample_j ) / eff_height;
+                                    */
+
+                                    win_x = ( ( ( 1.0 * vbox_ll_x ) / eff_width ) * 2.0 - 1.0 );
 
                                     win_y = ( -1.0 *
                                               ( (
