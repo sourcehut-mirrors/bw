@@ -29,3 +29,18 @@ alpha $ ./report
            system uptime   52 days    0 hour   20 mins   48 secs
 -------------------------------------------------------------------
 alpha $ 
+
+
+Also a perfectly reasonable patch may cause questions : 
+
+enceladus$ curl -4 -L --url 'https://paste.debian.net/plain/1244259' | git am 
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  3203    0  3203    0     0   2395      0 --:--:--  0:00:01 --:--:--  2397
+Applying: IBM xlC on AIX support
+.git/rebase-apply/patch:16: trailing whitespace.
+CFLAGS= -qlanglvl=stdc99 -O0 -q64 
+warning: 1 line adds whitespace errors.
+enceladus$ 
+
+

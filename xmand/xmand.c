@@ -1576,151 +1576,202 @@ int main(int argc, char*argv[])
                                 XDrawLine(dsp, win2, gc2, 72, 162, 320, 20);
                                 dumper_flag = -1;
                             } else {
-                                /* TODO dump file data */
-                                FILE *fp;
-                                struct stat status_buffer;
-                                time_t time_now;
+                                /* dump some file data if we have the data ready */
 
-                                char timestamp[32];
-                                time(&time_now);
-                                struct tm *ptm = gmtime(&time_now);
-
-                                size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
-                                char *timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
-                                char *err_status = strcat(timestamp_filename, tmpdir);
-                                err_status = strcat(timestamp_filename, "/");
-                                err_status = strcat(timestamp_filename, timestamp);
-
-                                status = stat(timestamp_filename, &status_buffer);
-                                if ( status == 0 ) {
-                                    fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
-                                    dumper_flag = -1;
-                                } else {
-                                    errno = 0;
-                                    fp = fopen(timestamp_filename, "wb");
-                                    if ( fp == NULL ) {
-                                        perror("FAIL ");
-                                        dumper_flag = -1;
-                                    } else {
-                                        /* finally we know we have a file */
-                                        fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
-                                        size_t num_written;
-                                        uint64_t rotated64;
-                                        uint32_t rotated32;
-
-                                        /* guess the architecture endianess */
-                                        int end_check = 1;
-                                        /* strictly speaking this is not a wise way to do this */
-                                        uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
-
-                                        /* if the machine is big endian we get endian_flag = 0x10 */
-                                        /* we don't care anymore .... do we ??
-                                         *
-                                        size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
-                                        printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
-                                                sizeof(uint8_t), num_written);
-                                         */
-
-                                        /* for the header data do the rotates separate */
-                                        if ( endian_flag ) {
-                                            rotated32 = rot4(num_elements);
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-                                        } else {
-                                            num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
-                                        }
-                                        printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
-                                                    sizeof(uint32_t), num_written);
-                                        printf("     : num_elements = %8i\n",num_elements);
-                                    
-                                        if ( endian_flag ) {
-                                            rotated32 = rot4(mand_bail);
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-                                        } else {
-                                            num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
-                                        }
-                                        printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
-                                                sizeof(uint32_t), num_written);
-                                        printf("     : mand_bail = %8i\n",mand_bail);
-                                    
-                                        /* need to swap around bytes of the 8-byte floating point double */
-                                        if ( endian_flag ) {
-                                            rotated64 = rot8(*((uint64_t *)&magnify));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                        } else {
-                                            num_written = fwrite(&magnify, sizeof(double), 1, fp);
-                                        }
-                                        printf("     : %2lu byte double magnify        num_written = %lu\n",
-                                                sizeof(double), num_written);
-                                        printf("     :        magnify = %-+26.20e\n", magnify);
-                                    
-                                        if ( endian_flag ) {
-                                            rotated64 = rot8(*((uint64_t *)&real_translate));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                        } else {
-                                            num_written = fwrite(&real_translate, sizeof(double), 1, fp);
-                                        }
-                                        printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
-                                                sizeof(double), num_written);
-                                        printf("     : real_translate = %-+26.20e\n",real_translate);
-                                    
-                                        if ( endian_flag ) {
-                                            rotated64 = rot8(*((uint64_t *)&imag_translate));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                        } else {
-                                            num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
-                                        }
-                                        printf("     : %2lu byte double imag_translate num_written = %lu\n",
-                                                sizeof(double), num_written);
-                                        printf("     : imag_translate = %-+26.20e\n",imag_translate);
-
-
-/*
-
-                                        num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
-                                        printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
-                                                sizeof(uint32_t), num_written);
-                                        printf("     : num_elements = %8i\n",num_elements);
-
-                                        num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
-                                        printf("     : %2lu byte uint32_t bail_out     num_written = %lu\n",
-                                                sizeof(uint32_t), num_written);
-                                        printf("     : mand_bail = %8i\n",mand_bail);
-
-                                        num_written = fwrite(&magnify, sizeof(double), 1, fp);
-                                        printf("     : %2lu byte double magnify        num_written = %lu\n",
-                                                sizeof(double), num_written);
-                                        printf("     :        magnify = %-+26.20e\n", magnify);
-
-                                        num_written = fwrite(&real_translate, sizeof(double), 1, fp);
-                                        printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
-                                                sizeof(double), num_written);
-                                        printf("     : real_translate = %-+26.20e\n",real_translate);
-
-                                        num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
-                                        printf("     : %2lu byte double imag_translate num_written = %lu\n",
-                                                sizeof(double), num_written);
-                                        printf("     : imag_translate = %-+26.20e\n",imag_translate);
-*/
-
-                                        fclose(fp);
-                                        fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
+                                int data_ready = 1;
+                                for ( vbox_y = 0; vbox_y < VBOX_IMAG_COUNT; vbox_y++ ) {
+                                    for ( vbox_x = 0; vbox_x < VBOX_REAL_COUNT; vbox_x++ ) {
+                                        data_ready &= vbox_flag[vbox_x][vbox_y];
                                     }
                                 }
-                                free(timestamp_filename);
-                                /* if the dumper flag is -1 then we need to
-                                 * indicate that the dump is impossible */
-                                if ( dumper_flag < 0 ) {
-                                    sprintf(buf,"Bad TMPDIR");
-                                    XSetForeground(dsp, gc2, red.pixel);
-                                    XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+
+                                if ( data_ready ) {
+
+                                    /* indicate that the data is ready */
+                                    sprintf(buf,"Data Ready");
+                                    XSetForeground(dsp, gc2, green.pixel);
                                     XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
-                                    sprintf(buf,"DUMPER");
-                                    XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
-                                    XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
-                                    XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
+
+                                    FILE *fp;
+                                    struct stat status_buffer;
+                                    time_t time_now;
+    
+                                    char timestamp[32];
+                                    time(&time_now);
+                                    struct tm *ptm = gmtime(&time_now);
+    
+                                    size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
+                                    char *timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+                                    char *err_status = strcat(timestamp_filename, tmpdir);
+                                    err_status = strcat(timestamp_filename, "/");
+                                    err_status = strcat(timestamp_filename, timestamp);
+    
+                                    status = stat(timestamp_filename, &status_buffer);
+                                    if ( status == 0 ) {
+                                        fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
+                                        dumper_flag = -1;
+                                    } else {
+                                        errno = 0;
+                                        fp = fopen(timestamp_filename, "wb");
+                                        if ( fp == NULL ) {
+                                            perror("FAIL ");
+                                            dumper_flag = -1;
+                                        } else {
+                                            /* finally we know we have a file */
+                                            fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
+                                            size_t num_written;
+                                            uint64_t rotated64;
+                                            uint32_t rotated32;
+    
+                                            /* guess the architecture endianess */
+                                            int end_check = 1;
+                                            /* strictly speaking this is not a wise way to do this */
+                                            uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
+    
+                                            /* if the machine is big endian we get endian_flag = 0x10 */
+                                            /* we don't care anymore .... do we ??
+                                             *
+                                            size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
+                                            printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
+                                                    sizeof(uint8_t), num_written);
+                                             */
+    
+                                            /* for the header data do the rotates separate */
+                                            if ( endian_flag ) {
+                                                rotated32 = rot4(num_elements);
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                            } else {
+                                                num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
+                                            }
+                                            printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
+                                                        sizeof(uint32_t), num_written);
+                                            printf("     : num_elements = %8i\n",num_elements);
+                                        
+                                            if ( endian_flag ) {
+                                                rotated32 = rot4(mand_bail);
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                            } else {
+                                                num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
+                                            }
+                                            printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
+                                                    sizeof(uint32_t), num_written);
+                                            printf("     : mand_bail = %8i\n",mand_bail);
+                                        
+                                            /* need to swap around bytes of the 8-byte floating point double */
+                                            if ( endian_flag ) {
+                                                rotated64 = rot8(*((uint64_t *)&magnify));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            } else {
+                                                num_written = fwrite(&magnify, sizeof(double), 1, fp);
+                                            }
+                                            printf("     : %2lu byte double magnify        num_written = %lu\n",
+                                                    sizeof(double), num_written);
+                                            printf("     :        magnify = %-+26.20e\n", magnify);
+                                        
+                                            if ( endian_flag ) {
+                                                rotated64 = rot8(*((uint64_t *)&real_translate));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            } else {
+                                                num_written = fwrite(&real_translate, sizeof(double), 1, fp);
+                                            }
+                                            printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
+                                                    sizeof(double), num_written);
+                                            printf("     : real_translate = %-+26.20e\n",real_translate);
+                                        
+                                            if ( endian_flag ) {
+                                                rotated64 = rot8(*((uint64_t *)&imag_translate));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            } else {
+                                                num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
+                                            }
+                                            printf("     : %2lu byte double imag_translate num_written = %lu\n",
+                                                    sizeof(double), num_written);
+                                            printf("     : imag_translate = %-+26.20e\n",imag_translate);
+
+                                            /* TODO dump a few reference data points */
+                                            if ( endian_flag ) {
+                                                /* reference at [ 0][ 0][ 0][ 0]
+                                                 * Special NOTE : Nico says 
+                                                 * I have seen this sort of stuff not work
+                                                 * better do (&coord_r[index(0,0,0,0)])
+                                                 */
+                                                rotated64 = rot8(*((uint64_t *)(coord_r + index(0,0,0,0))));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated64 = rot8(*((uint64_t *)(coord_j + index(0,0,0,0))));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                /* the mandel_val is essentially an int */
+                                                rotated32 = rot4(mandel_val[0][0][0][0] );
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                            } else {
+                                                /* fuck it for now */
+                                                int foo = 1;
+                                            }
+
+
+
+                                            /*
+
+
+            printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_r + index(0,0,0,0)));
+            printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_j + index(0,0,0,0)));
+            printf("     :       mand_height = %9i\n", mandel_val[0][0][0][0] );
+
+            printf("     : r[ 7][ 7][63][63] = %-+26.20e\n", *(coord_r + index(7,7,63,63)));
+            printf("     : j[ 7][ 7][63][63] = %-+26.20e\n", *(coord_j + index(7,7,63,63)));
+            printf("     :       mand_height = %9i\n", mandel_val[ 7][ 7][63][63] );
+
+            printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_r + index(8,8,0,0)));
+            printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_j + index(8,8,0,0)));
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][0][0] );
+
+            printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_r + index(8,8,1,0)));
+            printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_j + index(8,8,1,0)));
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][1][0] );
+
+            printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", *(coord_r + index(8,8,32,32)));
+            printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", *(coord_j + index(8,8,32,32)));
+            printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
+
+            printf("     : r[ 3][12][44][21] = %-+26.20e\n", *(coord_r + index(3,12,44,21)));
+            printf("     : j[ 3][12][44][21] = %-+26.20e\n", *(coord_j + index(3,12,44,21)));
+            printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
+
+            printf("     : r[15][15][63][63] = %-+26.20e\n", *(coord_r + index(15,15,63,63)));
+            printf("     : j[15][15][63][63] = %-+26.20e\n", *(coord_j + index(15,15,63,63)));
+            printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
+
+            printf("--------------------------- full plot done -----------------------------\n");
+
+
+            */
+
+    
+                                            fclose(fp);
+                                            fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
+                                        }
+                                    }
+                                    free(timestamp_filename);
+                                    /* if the dumper flag is -1 then we need to
+                                     * indicate that the dump is impossible */
+                                    if ( dumper_flag < 0 ) {
+                                        sprintf(buf,"Bad TMPDIR");
+                                        XSetForeground(dsp, gc2, red.pixel);
+                                        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                                        XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
+                                        sprintf(buf,"DUMPER");
+                                        XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+                                        XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
+                                        XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
+                                    } else {
+                                        fprintf(stderr,"INFO : dumper_flag = 0\n");
+                                        dumper_flag = 0;
+                                    }
+    
                                 } else {
-                                    fprintf(stderr,"INFO : dumper_flag = 0\n");
-                                    dumper_flag = 0;
+                                    /* indicate that the data is not ready */
+                                    sprintf(buf,"No Data");
+                                    XSetForeground(dsp, gc2, red.pixel);
+                                    XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
                                 }
                             }
                         }
