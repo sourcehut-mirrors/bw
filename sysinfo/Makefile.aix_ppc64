@@ -1,0 +1,22 @@
+
+CC=/opt/IBM/xlC/16.1.0/bin/xlc
+
+CFLAGS= -qlanglvl=stdc99 -O0 -q64 
+
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lm
+
+SRCS = report.c sysinfo.c
+
+OBJS = report.o sysinfo.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: report.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report.o sysinfo.o report

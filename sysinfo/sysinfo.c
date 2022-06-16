@@ -51,6 +51,17 @@
 #include <sys/sysctl.h>
 #endif
 
+/* Some platform don't have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES in sysconf().
+ * Let's assume we do, then disable it for certain compilers/platforms.
+ */
+#define HAVE_PAGE_INFO
+#ifdef __MVS__
+#   undef HAVE_PAGE_INFO
+#endif
+#ifdef __IBMC__
+#   undef HAVE_PAGE_INFO
+#endif
+
 #define ONEGB 1073741824
 
 int sysinfo(int verbose) {
@@ -61,7 +72,7 @@ int sysinfo(int verbose) {
     long uptime_day, uptime_hour, uptime_min, uptime_sec;
  
     uint64_t pages = 0;
-#ifndef __MVS__
+#ifdef HAVE_PAGE_INFO
     errno = 0;
     err_flag = sysconf(_SC_PHYS_PAGES);
     if ( err_flag < 0 ){
@@ -157,7 +168,7 @@ int sysinfo(int verbose) {
             return EXIT_FAILURE;
         }
 #else
-#ifndef __MVS__
+#ifdef HAVE_PAGE_INFO
         err_flag = sysconf(_SC_AVPHYS_PAGES);
         if ( err_flag < 0 ){
             perror("sysconf(_SC_AVPHYS_PAGES) : ");
@@ -167,7 +178,7 @@ int sysinfo(int verbose) {
 #endif
 #endif
 
-#ifdef __MVS__
+#ifndef HAVE_PAGE_INFO
         avail_memory = pages_avail * pagesize;
 #endif
         clock_ticks_sec = (uint64_t)sysconf(_SC_CLK_TCK);
@@ -348,7 +359,7 @@ int sysinfo(int verbose) {
         printf ( "                     release = %s\n", uname_data.release );
         printf ( "                     version = %s\n", uname_data.version );
         printf ( "                     machine = %s\n", uname_data.machine );
-#ifndef __MVS__
+#ifdef HAVE_PAGE_INFO
         printf ( "                   page size = %" PRIu64 "\n", pagesize );
         printf ( "               system memory = %" PRIu64 "\n", sysmem );
         printf ( "                             = %" PRIu64 " kB\n",
@@ -374,7 +385,7 @@ int sysinfo(int verbose) {
 #endif
 
         if ( verbose ) {
-#ifndef __MVS__
+#ifdef HAVE_PAGE_INFO
             printf("                 avail pages = %" PRIu64 "\n", pages_avail);
             printf("                avail memory = %" PRIu64 "\n", avail_memory);
             printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
