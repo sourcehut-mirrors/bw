@@ -1,0 +1,46 @@
+
+CC=/opt/developerstudio12.6/bin/c99
+
+CFLAGS= -I$(IDIR) -fast -m64 -xregs=no%appl
+
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LIBS = -lX11 -lrt -lm -lpthread
+LDIR=/opt/bw/lib
+IDIR=/opt/bw/include
+RPATH=/opt/bw/lib
+
+SRCS = ./mandel_col.c \
+	./linear_inter.c \
+	./mbrot.c ./mbrot_vbox_pthread.c \
+	../xwin/x_error_handler.c \
+	../xwin/create_gc.c \
+	../xwin/create_borderless_topwin.c \
+	../time_and_date/timediff.c \
+	../sysinfo/sysmem.c ../sysinfo/sysinfo.c \
+	../in_progress/data_dump/rot4.c \
+	../in_progress/data_dump/rot8.c
+
+
+
+OBJS = ./mandel_col.o \
+	./linear_inter.o \
+	./mbrot.o ./mbrot_vbox_pthread.o \
+	../xwin/x_error_handler.o \
+	../xwin/create_gc.o \
+	../xwin/create_borderless_topwin.o \
+	../time_and_date/timediff.o \
+	../sysinfo/sysmem.o ../sysinfo/sysinfo.o \
+	../in_progress/data_dump/rot4.o \
+	../in_progress/data_dump/rot8.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I. -I$(IDIR)
+
+xmand: xmand.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) -R$(RPATH) $(LIBS)
+
+clean:
+	rm -f $(OBJS) xmand.o xmand
+
