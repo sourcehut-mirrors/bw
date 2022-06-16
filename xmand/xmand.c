@@ -1604,6 +1604,9 @@ int main(int argc, char*argv[])
                                     } else {
                                         /* finally we know we have a file */
                                         fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
+                                        size_t num_written;
+                                        uint64_t rotated64;
+                                        uint32_t rotated32;
 
                                         /* guess the architecture endianess */
                                         int end_check = 1;
@@ -1611,9 +1614,67 @@ int main(int argc, char*argv[])
                                         uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
 
                                         /* if the machine is big endian we get endian_flag = 0x10 */
+                                        /* we don't care anymore .... do we ??
+                                         *
                                         size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
                                         printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
                                                 sizeof(uint8_t), num_written);
+                                         */
+
+                                        /* for the header data do the rotates separate */
+                                        if ( endian_flag ) {
+                                            rotated32 = rot4(num_elements);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
+                                                    sizeof(uint32_t), num_written);
+                                        printf("     : num_elements = %8i\n",num_elements);
+                                    
+                                        if ( endian_flag ) {
+                                            rotated32 = rot4(mand_bail);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : mand_bail = %8i\n",mand_bail);
+                                    
+                                        /* need to swap around bytes of the 8-byte floating point double */
+                                        if ( endian_flag ) {
+                                            rotated64 = rot8(*((uint64_t *)&magnify));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&magnify, sizeof(double), 1, fp);
+                                        }
+                                        printf("     : %2lu byte double magnify        num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     :        magnify = %-+26.20e\n", magnify);
+                                    
+                                        if ( endian_flag ) {
+                                            rotated64 = rot8(*((uint64_t *)&real_translate));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&real_translate, sizeof(double), 1, fp);
+                                        }
+                                        printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     : real_translate = %-+26.20e\n",real_translate);
+                                    
+                                        if ( endian_flag ) {
+                                            rotated64 = rot8(*((uint64_t *)&imag_translate));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
+                                        }
+                                        printf("     : %2lu byte double imag_translate num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     : imag_translate = %-+26.20e\n",imag_translate);
+
+
+/*
 
                                         num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
                                         printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
@@ -1639,6 +1700,7 @@ int main(int argc, char*argv[])
                                         printf("     : %2lu byte double imag_translate num_written = %lu\n",
                                                 sizeof(double), num_written);
                                         printf("     : imag_translate = %-+26.20e\n",imag_translate);
+*/
 
                                         fclose(fp);
                                         fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);

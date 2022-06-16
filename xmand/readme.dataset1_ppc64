@@ -9,7 +9,7 @@ enceladus$ ./xmand 32768 268435456 0.399750960350502282381 0.2052517974807415157
                system memory = 8368095232
                              = 8171968 kB
                              = 7980 MB
-                 avail pages = 108610
+                 avail pages = 108424
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200809
@@ -20,7 +20,7 @@ enceladus$ ./xmand 32768 268435456 0.399750960350502282381 0.2052517974807415157
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    5 days   20 hours   26 mins   11 secs
+           system uptime    5 days   23 hours   48 mins   38 secs
 -------------------------------------------------------------------
 
 
@@ -74,7 +74,7 @@ DBUG : sample space [ 512   , 512    ]
      : bailout = 32768             
      : magnify = 2.684354560000e+08
      : centre = +3.99750960350502282381e-01, +2.05251797480741515756e-01
-[mand] =    46633442538 nsec   4.663344e+01 sec
+[mand] =    46651064624 nsec   4.665106e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -100,3 +100,21 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +2.05251804924046155065e-01
      :       mand_height =     16877
 --------------------------- full plot done -----------------------------
+click at 522 522 
+raw  [ 1385 , 889  ]
+INFO : dumper_flag = 1
+click at 1384 887 
+raw  [ 1385 , 889  ]
+INFO : file /var/tmp/dclarke/20220616015752 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    32768
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +2.68435456000000000000e+08
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = +3.99750960350502282381e-01
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +2.05251797480741515756e-01
+INFO : file /var/tmp/dclarke/20220616015752 closed.
+INFO : dumper_flag = 0
