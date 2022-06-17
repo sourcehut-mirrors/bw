@@ -15,7 +15,8 @@ OBJS=		./mandel_col.o \
 		../xwin/create_gc.o \
 		../xwin/create_borderless_topwin.o \
 		../time_and_date/timediff.o \
-		../sysinfo/sysmem.o \
+		../in_progress/data_dump/rot4.o \
+		../in_progress/data_dump/rot8.o \
 		../sysinfo/sysinfo.o
 
 .PHONY: all
