@@ -1,0 +1,137 @@
+hydra$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = hydra
+                     release = 13.1-RELEASE
+                     version = FreeBSD 13.1-RELEASE releng/13.1-n250148-fc952ac2212 GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 14692311040
+                             = 14347960 kB
+                             = 14011 MB
+                 avail pages = 3586990
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    6 days   18 hours   24 mins   38 secs
+-------------------------------------------------------------------
+
+
+--------- _XOPEN_SOURCE 600 -------
+_POSIX_CHILD_MAX   = 25
+_POSIX_NGROUPS_MAX = 8
+_POSIX_OPEN_MAX    = 20
+_POSIX_PATH_MAX    = 256
+_POSIX_TZNAME_MAX  = 6
+---------------------------------------
+INFO : baseline tdelta =            244 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( +3.99750960350502e-01 , +2.05251797480742e-01 )
+      magnify = +2.684354560000e+08
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +1.45519152283668518066406250e-11
+pixel_imag_h = +1.45519152283668518066406250e-11
+raw  [ 523  , 524  ]
+DBUG : sample space [ 512   , 512    ]
+     : button 2 pressed
+     : win_x = +5.00000000000000000000e-01
+     : win_y = +5.00000000000000000000e-01
+     : invert_mouse_x =  512
+     : invert_mouse_y =  512
+     : vbox  [ 008 , 008 ]
+     : after offset
+     : win_x = +0.0000000000000000000000e+00 
+     : win_y = +0.0000000000000000000000e+00 
+     : after translation
+     : r_trn   = +3.9975096035050228238106e-01 
+     : j_trn   = +2.0525179748074151575565e-01 
+     : x_prime = +3.9975096035777823999524e-01 
+     : y_prime = +2.0525179748801747336984e-01 
+     : bailout = 32768             
+     : magnify = 2.684354560000e+08
+     : centre = +3.9975096035050228238106e-01 , +2.0525179748074151575565e-01 
+[mand] =    31822060540 nsec   3.182206e+01 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = +3.99750952907197643071413040e-01
+     : j[ 0][ 0][ 0][ 0] = +2.05251790037436876446008682e-01
+     :       mand_height =      3199
+     : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
+     : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
+     :       mand_height =     10878
+     : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
+     : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
+     :       mand_height =      6052
+     : r[ 8][ 8][ 1][ 0] = +3.99750960372330155223608017e-01
+     : j[ 8][ 8][ 1][ 0] = +2.05251797488017473369836807e-01
+     :       mand_height =      5990
+     : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
+     : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
+     :       mand_height =      5289
+     : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
+     : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
+     :       mand_height =      3467
+     : r[15][15][63][63] = +3.99750967793806921690702438e-01
+     : j[15][15][63][63] = +2.05251804924046155065298080e-01
+     :       mand_height =     16877
+--------------------------- full plot done -----------------------------
+click at 522 522 
+raw  [ 1385 , 889  ]
+INFO : dumper_flag = 1
+click at 1384 887 
+raw  [ 1385 , 889  ]
+INFO : file /var/tmp/dclarke/20220617093852 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    32768
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +2.68435456000000000000e+08
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = +3.99750960350502282381e-01
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +2.05251797480741515756e-01
+INFO : file /var/tmp/dclarke/20220617093852 closed.
+INFO : dumper_flag = 0
+
+hydra$ hdump -Ax -t x1 -v /var/tmp/dclarke/20220617093852
+     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
+    10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+    20:  00 00 52 05 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f
+    30:  7f 0c 00 00 00 00 4e 0d 85 95 d9 3f 00 00 cc de
+    40:  b0 45 ca 3f 7e 2a 00 00 00 00 52 0d 85 95 d9 3f
+    50:  00 00 d4 de b0 45 ca 3f a4 17 00 00 00 00 56 0d
+    60:  85 95 d9 3f 00 00 d4 de b0 45 ca 3f 66 17 00 00
+    70:  00 00 d2 0d 85 95 d9 3f 00 00 d4 df b0 45 ca 3f
+    80:  a9 14 00 00 00 00 02 09 85 95 d9 3f 00 00 7c e7
+    90:  b0 45 ca 3f 8b 0d 00 00 00 00 4e 15 85 95 d9 3f
+    a0:  00 00 cc ee b0 45 ca 3f ed 41 00 00
+    ac: 
+hydra$ 
+hydra$ openssl dgst -sha256 -r /var/tmp/dclarke/20220617093852
+c1e5d2ee43728de2a982e5c0c4179b368a39042a77893bfb438d58decf3d02a7 */var/tmp/dclarke/20220617093852
