@@ -10,18 +10,18 @@ $ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
                              = 67108864 kB
                              = 65536 MB
                              = 64 GB
-                 avail pages = 292325
+                 avail pages = 293177
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200112
                POSIX Version = 200112
                       endian = big endian
-       sizeof(unsigned long) = 4
+       sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
-               sizeof(void*) = 4
+               sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    4 hours    5 mins    4 secs
+           system uptime    1 day    6 hours   12 mins   10 secs
 -------------------------------------------------------------------
 
 
@@ -54,6 +54,8 @@ pthread_limit = 4
      : eff_width =  1024    eff_height =  1024
 
 --------------------------------------------
+pixel_real_w = +1.4551915228366851806641e-11 
+pixel_imag_h = +1.4551915228366851806641e-11 
 raw  [ 523  , 524  ]
 DBUG : sample space [ 512   , 512    ]
      : button 2 pressed
@@ -63,19 +65,17 @@ DBUG : sample space [ 512   , 512    ]
      : invert_mouse_y =  512
      : vbox  [ 008 , 008 ]
      : after offset
-     : win_x = +0.00000000000000000000e+00
-     : win_y = +0.00000000000000000000e+00
-     : x_prime = +0.00000000000000000000e+00
-     : y_prime = +0.00000000000000000000e+00
+     : win_x = +0.0000000000000000000000e+00 
+     : win_y = +0.0000000000000000000000e+00 
      : after translation
-     : r_trn   = +3.99750960350502282381e-01
-     : j_trn   = +2.05251797480741515756e-01
-     : x_prime = +3.99750960357778239995e-01
-     : y_prime = +2.05251797488017473370e-01
+     : r_trn   = +3.9975096035050228238106e-01 
+     : j_trn   = +2.0525179748074151575565e-01 
+     : x_prime = +3.9975096035777823999524e-01 
+     : y_prime = +2.0525179748801747336984e-01 
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-     : centre = +3.99750960350502282381e-01, +2.05251797480741515756e-01
-[mand] =    41318473600 nsec   4.131847e+01 sec
+     : centre = +3.9975096035050228238106e-01 , +2.0525179748074151575565e-01 
+[mand] =    40538773400 nsec   4.053877e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -102,11 +102,11 @@ raw data values -------------------------------------------------------
      :       mand_height =     16877
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1384 , 890  ]
+raw  [ 1397 , 891  ]
 INFO : dumper_flag = 1
-click at 1383 888 
-raw  [ 1384 , 890  ]
-INFO : file /var/tmp/dclarke/20220616044616 dump begins.
+click at 1396 889 
+raw  [ 1397 , 891  ]
+INFO : file /var/tmp/dclarke/20220617065319 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -117,4 +117,5 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = +3.99750960350502282381e-01
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +2.05251797480741515756e-01
-INFO : file /var/tmp/dclarke/20220616044616 closed.
+INFO : file /var/tmp/dclarke/20220617065319 closed.
+INFO : dumper_flag = 0
