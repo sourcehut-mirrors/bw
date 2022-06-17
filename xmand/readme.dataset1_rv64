@@ -135,3 +135,6 @@ rv64$ od -Ax -t x1 -v /var/tmp/dclarke/20220617085427
 00000ac
 rv64$ 
 
+rv64$ openssl dgst -sha256 -r /var/tmp/dclarke/20220617085427
+c1e5d2ee43728de2a982e5c0c4179b368a39042a77893bfb438d58decf3d02a7 */var/tmp/dclarke/20220617085427
+
