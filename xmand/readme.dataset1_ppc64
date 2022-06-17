@@ -133,3 +133,5 @@ enceladus$ hdump -Ax -t x1 -v /var/tmp/dclarke/20220617075505
     a0:  00 00 cc ee b0 45 ca 3f ed 41 00 00
     ac: 
 
+enceladus$ openssl dgst -sha256 -r /var/tmp/dclarke/20220617075505
+c1e5d2ee43728de2a982e5c0c4179b368a39042a77893bfb438d58decf3d02a7 */var/tmp/dclarke/20220617075505
