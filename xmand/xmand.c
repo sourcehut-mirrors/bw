@@ -833,8 +833,8 @@ int main(int argc, char*argv[])
      * */
     pixel_real_width = obs_x_width / (double)eff_width;
     pixel_imag_height = obs_y_height / (double)eff_height;
-    printf("pixel_real_w = %-+30.22e\n",pixel_real_width);
-    printf("pixel_imag_h = %-+30.22e\n",pixel_imag_height);
+    printf("pixel_real_w = %-+32.26e\n",pixel_real_width);
+    printf("pixel_imag_h = %-+32.26e\n",pixel_imag_height);
 
     XSetLineAttributes(dsp, gc, 1, LineSolid,
                                    CapButt,
@@ -1175,12 +1175,12 @@ int main(int argc, char*argv[])
                 /* what is the real and imaginary axi pixel width which
                  * gets used by the physical screen ? */
                 pixel_real_width = obs_x_width / (double)eff_width;
-                printf("pixel_real_w = %-+30.22e\n",pixel_real_width);
+                printf("pixel_real_w = %-+32.26e\n",pixel_real_width);
                 sprintf(buf,"pixel_real_w = %-+16.12e",pixel_real_width);
                 XDrawImageString(dsp, win3, gc3, 10, 180, buf, (int)strlen(buf));
 
                 pixel_imag_height = obs_y_height / (double)eff_height;
-                printf("pixel_imag_h = %-+30.22e\n",pixel_imag_height);
+                printf("pixel_imag_h = %-+32.26e\n",pixel_imag_height);
                 sprintf(buf,"pixel_imag_h = %-+16.12e",pixel_imag_height);
                 XDrawImageString(dsp, win3, gc3, 10, 200, buf, (int)strlen(buf));
 
@@ -1313,8 +1313,10 @@ int main(int argc, char*argv[])
                                 if ((p!=1)&&(q!=1)) {
                                     mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
                                 } else {
-                                    /* TODO just use the previously computed value */
+                                    /* TODO just use the previously computed value
                                     mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
+                                    */
+                                    mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
                                 }
 
                                 /* check if we landed in a maximal black region */
@@ -1679,7 +1681,7 @@ int main(int argc, char*argv[])
                                                     sizeof(uint8_t), num_written);
                                              */
     
-                                            /* for the header data do the rotates separate */
+                                            /* for the header data do the rotates separately? */
                                             if ( endian_flag ) {
                                                 rotated32 = rot4(num_elements);
                                                 num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
@@ -1731,66 +1733,90 @@ int main(int argc, char*argv[])
                                                     sizeof(double), num_written);
                                             printf("     : imag_translate = %-+26.20e\n",imag_translate);
 
-                                            /* TODO dump a few reference data points */
+                                            /* dump a few select reference data points */
                                             if ( endian_flag ) {
-                                                /* reference at [ 0][ 0][ 0][ 0]
-                                                 * Special NOTE : Nico says 
-                                                 * I have seen this sort of stuff not work
-                                                 * better do (&coord_r[index(0,0,0,0)])
-                                                 */
+
                                                 rotated64 = rot8(*((uint64_t *)(&coord_r[index(0,0,0,0)])));
                                                 num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(coord_j + index(0,0,0,0))));
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(0,0,0,0)])));
                                                 num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                                 /* the mandel_val is essentially an int */
                                                 rotated32 = rot4(mandel_val[0][0][0][0] );
                                                 num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
 
-                                                rotated64 = rot8(*((uint64_t *)(coord_r + index(7,7,63,63))));
+                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(7,7,63,63)])));
                                                 num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(coord_j + index(7,7,63,63))));
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(7,7,63,63)])));
                                                 num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                /* the mandel_val is essentially an int */
                                                 rotated32 = rot4(mandel_val[7][7][63][63] );
                                                 num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
 
+                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,0,0)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,0,0)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated32 = rot4(mandel_val[8][8][0][0] );
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,1,0)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,1,0)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated32 = rot4(mandel_val[8][8][1][0] );
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,32,32)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,32,32)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated32 = rot4(mandel_val[8][8][32][32] );
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(3,12,44,21)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(3,12,44,21)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated32 = rot4(mandel_val[3][12][44][21] );
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(15,15,63,63)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(15,15,63,63)])));
+                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                rotated32 = rot4(mandel_val[15][15][63][63] );
+                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
                                             } else {
-                                                /* fuck it for now */
-                                                int foo = 1;
+                                                /* dump the data from little endian machines */
+                                                num_written = fwrite(&coord_r[index(0,0,0,0)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(0,0,0,0)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[0][0][0][0], sizeof(uint32_t), 1, fp);
+
+                                                num_written = fwrite(&coord_r[index(7,7,63,63)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(7,7,63,63)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[7][7][63][63], sizeof(uint32_t), 1, fp);
+
+                                                num_written = fwrite(&coord_r[index(8,8,0,0)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(8,8,0,0)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[8][8][0][0], sizeof(uint32_t), 1, fp);
+
+                                                num_written = fwrite(&coord_r[index(8,8,1,0)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(8,8,1,0)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[8][8][1][0], sizeof(uint32_t), 1, fp);
+
+                                                num_written = fwrite(&coord_r[index(8,8,32,32)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(8,8,32,32)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[8][8][32][32], sizeof(uint32_t), 1, fp);
+
+                                                num_written = fwrite(&coord_r[index(3,12,44,21)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(3,12,44,21)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[3][12][44][21], sizeof(uint32_t), 1, fp);
+
+                                                num_written = fwrite(&coord_r[index(15,15,63,63)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&coord_j[index(15,15,63,63)], sizeof(double), 1, fp);
+                                                num_written = fwrite(&mandel_val[15][15][63][63], sizeof(uint32_t), 1, fp);
                                             }
 
-
-
-                                            /*
-
-
-
-            printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_r + index(8,8,0,0)));
-            printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_j + index(8,8,0,0)));
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][0][0] );
-
-            printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_r + index(8,8,1,0)));
-            printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_j + index(8,8,1,0)));
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][1][0] );
-
-            printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", *(coord_r + index(8,8,32,32)));
-            printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", *(coord_j + index(8,8,32,32)));
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
-
-            printf("     : r[ 3][12][44][21] = %-+26.20e\n", *(coord_r + index(3,12,44,21)));
-            printf("     : j[ 3][12][44][21] = %-+26.20e\n", *(coord_j + index(3,12,44,21)));
-            printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
-
-            printf("     : r[15][15][63][63] = %-+26.20e\n", *(coord_r + index(15,15,63,63)));
-            printf("     : j[15][15][63][63] = %-+26.20e\n", *(coord_j + index(15,15,63,63)));
-            printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
-
-            printf("--------------------------- full plot done -----------------------------\n");
-
-
-            */
-
-    
                                             fclose(fp);
                                             fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
                                         }
@@ -2060,32 +2086,32 @@ replot:
 
             printf("\nraw data values -------------------------------------------------------\n");
 
-            printf("     : r[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_r + index(0,0,0,0)));
-            printf("     : j[ 0][ 0][ 0][ 0] = %-+26.20e\n", *(coord_j + index(0,0,0,0)));
+            printf("     : r[ 0][ 0][ 0][ 0] = %-+32.26e\n", *(coord_r + index(0,0,0,0)));
+            printf("     : j[ 0][ 0][ 0][ 0] = %-+32.26e\n", *(coord_j + index(0,0,0,0)));
             printf("     :       mand_height = %9i\n", mandel_val[0][0][0][0] );
 
-            printf("     : r[ 7][ 7][63][63] = %-+26.20e\n", *(coord_r + index(7,7,63,63)));
-            printf("     : j[ 7][ 7][63][63] = %-+26.20e\n", *(coord_j + index(7,7,63,63)));
+            printf("     : r[ 7][ 7][63][63] = %-+32.26e\n", *(coord_r + index(7,7,63,63)));
+            printf("     : j[ 7][ 7][63][63] = %-+32.26e\n", *(coord_j + index(7,7,63,63)));
             printf("     :       mand_height = %9i\n", mandel_val[ 7][ 7][63][63] );
 
-            printf("     : r[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_r + index(8,8,0,0)));
-            printf("     : j[ 8][ 8][ 0][ 0] = %-+26.20e\n", *(coord_j + index(8,8,0,0)));
+            printf("     : r[ 8][ 8][ 0][ 0] = %-+32.26e\n", *(coord_r + index(8,8,0,0)));
+            printf("     : j[ 8][ 8][ 0][ 0] = %-+32.26e\n", *(coord_j + index(8,8,0,0)));
             printf("     :       mand_height = %9i\n", mandel_val[8][8][0][0] );
 
-            printf("     : r[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_r + index(8,8,1,0)));
-            printf("     : j[ 8][ 8][ 1][ 0] = %-+26.20e\n", *(coord_j + index(8,8,1,0)));
+            printf("     : r[ 8][ 8][ 1][ 0] = %-+32.26e\n", *(coord_r + index(8,8,1,0)));
+            printf("     : j[ 8][ 8][ 1][ 0] = %-+32.26e\n", *(coord_j + index(8,8,1,0)));
             printf("     :       mand_height = %9i\n", mandel_val[8][8][1][0] );
 
-            printf("     : r[ 8][ 8][32][32] = %-+26.20e\n", *(coord_r + index(8,8,32,32)));
-            printf("     : j[ 8][ 8][32][32] = %-+26.20e\n", *(coord_j + index(8,8,32,32)));
+            printf("     : r[ 8][ 8][32][32] = %-+32.26e\n", *(coord_r + index(8,8,32,32)));
+            printf("     : j[ 8][ 8][32][32] = %-+32.26e\n", *(coord_j + index(8,8,32,32)));
             printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
 
-            printf("     : r[ 3][12][44][21] = %-+26.20e\n", *(coord_r + index(3,12,44,21)));
-            printf("     : j[ 3][12][44][21] = %-+26.20e\n", *(coord_j + index(3,12,44,21)));
+            printf("     : r[ 3][12][44][21] = %-+32.26e\n", *(coord_r + index(3,12,44,21)));
+            printf("     : j[ 3][12][44][21] = %-+32.26e\n", *(coord_j + index(3,12,44,21)));
             printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
 
-            printf("     : r[15][15][63][63] = %-+26.20e\n", *(coord_r + index(15,15,63,63)));
-            printf("     : j[15][15][63][63] = %-+26.20e\n", *(coord_j + index(15,15,63,63)));
+            printf("     : r[15][15][63][63] = %-+32.26e\n", *(coord_r + index(15,15,63,63)));
+            printf("     : j[15][15][63][63] = %-+32.26e\n", *(coord_j + index(15,15,63,63)));
             printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
 
             printf("--------------------------- full plot done -----------------------------\n");
