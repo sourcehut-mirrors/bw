@@ -64,6 +64,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
 
     fprintf (stderr,"[ t%02i ] : %-2i -> %-2i\n", p->t_num, mand_y_pix_start, mand_y_pix_stop - 1);
 
+    /* note that we do not go all the way up to mand_y_pix_stop */
     for ( mand_y_pix = mand_y_pix_start; mand_y_pix < mand_y_pix_stop; mand_y_pix++ ) {
 
         /* lower left corner of this threads little rectangle */
@@ -76,14 +77,14 @@ void *mbrot_vbox_pthread(void *recv_parm)
              * imaginary axis. */
             vbox_ll_x = p->vbox_x * p->vbox_w + mand_x_pix;
 
-            win_x = ( ( ( 1.0 * vbox_ll_x ) / p->eff_width ) * 2.0 - 1.0 ) + 0.0;
-            win_y = ( -1.0 * ( ( ( 1.0 * ( p->eff_height - vbox_ll_y ) ) / p->eff_height ) * 2.0 - 1.0 ) ) + 0.0;
 
-            x_prime = p->obs_x_width * win_x / 2.0;
-            y_prime = p->obs_y_height * win_y / 2.0;
+            win_x = ( ( ( 1.0 * vbox_ll_x ) / p->eff_width ) * 2.0 - 1.0 );
+            win_y = ( -1.0 * ( ( ( 1.0 * ( p->eff_height - vbox_ll_y ) ) / p->eff_height ) * 2.0 - 1.0 ) );
 
-            x_prime = x_prime + p->r_translate;
-            y_prime = y_prime + p->i_translate;
+
+            x_prime = p->obs_x_width * win_x / 2.0 + p->r_translate;
+            y_prime = p->obs_y_height * win_y / 2.0 + p->i_translate;
+
 
             height = 0;
             zr = 0.0;
