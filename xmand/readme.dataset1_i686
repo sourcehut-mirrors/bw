@@ -3,13 +3,13 @@ esther$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 
                  system name = FreeBSD
                    node name = esther
                      release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #4 main-n255202-0aef8628458: Fri May 13 23:16:03 GMT 2022     root@esther:/usr/obj/usr/src/i386.i386/sys/GENERIC
+                     version = FreeBSD 14.0-CURRENT #5 main-n256192-6d25ea6d964: Sun Jun 19 09:08:13 UTC 2022     root@esther:/usr/obj/usr/src/i386.i386/sys/GENERIC
                      machine = i386
                    page size = 4096
-               system memory = 17094500352
-                             = 16693848 kB
-                             = 16302 MB
-                 avail pages = 4173462
+               system memory = 976736256
+                             = 953844 kB
+                             = 931 MB
+                 avail pages = 238461
                 avail memory = 0
          clock ticks per sec = 128
              threads support = 200112
@@ -20,7 +20,7 @@ esther$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 
                  sizeof(int) = 4
                sizeof(void*) = 4
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    0 hour    8 mins   49 secs
+           system uptime    0 day    0 hour   42 mins    6 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =             66 nsec
+INFO : baseline tdelta =          27932 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -74,7 +74,7 @@ DBUG : sample space [ 512   , 512    ]
      : bailout = 32768             
      : magnify = 2.684354560000e+08
      : centre = +3.9975096035050228238106e-01 , +2.0525179748074151575565e-01 
-[mand] =    27167397705 nsec   2.716740e+01 sec
+[mand] =  1046452590574 nsec   1.046453e+03 sec
 
 
 raw data values -------------------------------------------------------
@@ -101,11 +101,11 @@ raw data values -------------------------------------------------------
      :       mand_height =     16877
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1383 , 890  ]
+raw  [ 1384 , 889  ]
 INFO : dumper_flag = 1
-click at 1382 888 
-raw  [ 1383 , 890  ]
-INFO : file /var/tmp/dclarke/20220618215642 dump begins.
+click at 1383 887 
+raw  [ 1384 , 889  ]
+INFO : file /var/tmp/dclarke/20220619214011 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -116,10 +116,10 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = +3.99750960350502282381e-01
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +2.05251797480741515756e-01
-INFO : file /var/tmp/dclarke/20220618215642 closed.
+INFO : file /var/tmp/dclarke/20220619214011 closed.
 INFO : dumper_flag = 0
-esther$ 
-esther$ hdump -Ax -t x1 -v /var/tmp/dclarke/20220618215642
+
+esther$ /opt/schily/bin/hdump -Ax -t x1 -v /var/tmp/dclarke/20220619214011
      0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
     10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
     20:  00 00 52 05 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f
@@ -132,6 +132,7 @@ esther$ hdump -Ax -t x1 -v /var/tmp/dclarke/20220618215642
     90:  b0 45 ca 3f 8b 0d 00 00 00 00 4e 15 85 95 d9 3f
     a0:  00 00 cc ee b0 45 ca 3f ed 41 00 00
     ac: 
-esther$ openssl dgst -sha256 -r /var/tmp/dclarke/20220618215642
-c1e5d2ee43728de2a982e5c0c4179b368a39042a77893bfb438d58decf3d02a7 */var/tmp/dclarke/20220618215642
+esther$ 
+esther$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220619214011
+c1e5d2ee43728de2a982e5c0c4179b368a39042a77893bfb438d58decf3d02a7  /var/tmp/dclarke/20220619214011
 esther$ 
