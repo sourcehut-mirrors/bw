@@ -1206,7 +1206,12 @@ int main(int argc, char*argv[])
                  * Therefore we may use the strange conditional here of 
                  *     ( 1 || ( vbox_flag[vbox_x][vbox_y] == 0 ) )
                  * which will forever be true. Thus we grind the gears and do
-                 * the thread dispatch every time. */
+                 * the thread dispatch every time.
+                 *
+                 * 22 Jun 2022 :
+                 * Sadly the threads are doing the wrong computation. At this
+                 * time.
+                 */
                 if ( vbox_flag[vbox_x][vbox_y] == 0 ) {
                     for ( pt = 0; pt < pthread_limit; pt++ ) {
                         parm[pt]->t_num = pt;
@@ -1274,31 +1279,37 @@ int main(int argc, char*argv[])
                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                         vbox_ll_x = vbox_x * vbox_w + mand_x_pix;
 
+                        /* use the data returned by the thread computation */
+                        mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
+
+                        /* TODO make these make sense someday soon */
                         sample_r = vbox_ll_x;
                         sample_j = vbox_ll_y;
 
+                        /* this will never change much ... we need the fp64 values inside
+                         * the plot region */
                         win_x = -1.0 + ( 2.0 * sample_r ) / eff_width;
                         win_y = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
 
+                        /* these are needed below for the sub-pixel walk on gc2 */
                         x_prime = obs_x_width * win_x / 2.0 + real_translate + half_sample_offset_real;
                         y_prime = obs_y_height * win_y / 2.0 + imag_translate + half_sample_offset_imag;
 
-                        mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
-
                         if ( mand_height == mand_bail ) {
+                            /* really we should use the color Black for portable stuff */
                             XSetForeground(dsp, gc, (unsigned long)0 );
                         } else {
                             mandlebrot.pixel = lsd_trippy[ (uint8_t)(mand_height & 0xff) ];
                             XSetForeground(dsp, gc, mandlebrot.pixel);
                         }
 
+                        /* plot onto the main plot graphics context gc */
                         XDrawPoint(dsp, win, gc,
                                    vbox_ll_x + offset_x,
                                    ( eff_height - vbox_ll_y + offset_y ) );
 
                         /* A few manual offsets of ( 16, 13 ) pixels to centre the
                          * plot data into a subwindow of gc2 */
-
                         gc2_x = 16 + ( 3 * mand_x_pix );
                         gc2_y = 13 + ( 192 - ( 3 * mand_y_pix ) );
 
@@ -1307,6 +1318,7 @@ int main(int argc, char*argv[])
                         for ( p = 0; p < 3; p++ ) {
                             for ( q = 0; q < 3; q++ ) {
 
+                                /* these are the complex coordinates of the sub-sample location */
                                 sub_pixel_real = x_prime + ( p - 1 ) * pixel_real_width / 3.0;
                                 sub_pixel_imag = y_prime + ( q - 1 ) * pixel_imag_height / -3.0;
 
