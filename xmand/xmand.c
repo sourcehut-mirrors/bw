@@ -1109,8 +1109,10 @@ int main(int argc, char*argv[])
                 XDrawImageString( dsp, win2, gc2, 10, 270, buf, (int)strlen(buf));
 
                 /* Offset the floating point values such that the
-                 * center point shall be ( 0.0, 0.0 ). Here we
-                 * may employ the fused multiply add call fma() */
+                 * center point shall be ( 0.0, 0.0 ) and the result
+				 * coordinates are always  -1.0 <= win_x, win_y <= +1.0
+				 *
+				 * Here we may employ the fused multiply add call fma() */
                 win_x = fma(win_x, 2.0, - 1.0);
                 win_y = fma(win_y, 2.0, - 1.0);
 
@@ -1150,11 +1152,6 @@ int main(int argc, char*argv[])
                 y_prime = obs_y_height * win_y / 2.0;
                 x_prime = x_prime + real_translate + half_sample_offset_real;
                 y_prime = y_prime + imag_translate + half_sample_offset_imag;
-
-                /* fukkered 
-                x_prime = fma(obs_x_width,fma(win_x, 0.5, real_translate),half_sample_offset_real);
-                y_prime = fma(obs_y_height,fma(win_y, 0.5, imag_translate),half_sample_offset_imag);
-                */
 
                 printf("c = ( %-+30.22e,\n      %-+30.22e )\n", x_prime, y_prime );
 
