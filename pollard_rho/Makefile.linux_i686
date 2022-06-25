@@ -1,5 +1,5 @@
 
-CC=/usr/bin/gcc-9
+CC=gcc
 
 CFLAGS= -I$(IDIR) -std=iso9899:1999 -m32 -g -O0 -pedantic \
 	-pedantic-errors -Wall \
