@@ -12,6 +12,7 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <time.h>
 #include <X11/Xlib.h>
 
 /* At the moment the main plot graphics context is a 1024
@@ -106,4 +107,7 @@ typedef struct {
 void fp_region(int real, int imag,
                int real_range, int imag_range,
                fp64 *locate);
+
+void fp_translate(double r, double j, double magnify,
+                  double t_r, double t_j, fp64 *cplex);
 

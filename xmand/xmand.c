@@ -1077,10 +1077,16 @@ int main(int argc, char*argv[])
                  */
 
                 /* translation and offset into the centre of a sample region */
+                fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
+
+                /*
                 x_prime = obs_real * win_r / 2.0;
                 y_prime = obs_imag * win_j / 2.0;
                 x_prime = x_prime + real_translate + half_sample_offset_real;
                 y_prime = y_prime + imag_translate + half_sample_offset_imag;
+                */
+                x_prime = coord.r;
+                y_prime = coord.j;
 
                 printf("c = ( %-+30.22e,\n      %-+30.22e )\n", x_prime, y_prime );
 
@@ -1212,14 +1218,13 @@ int main(int argc, char*argv[])
                         sample_r = vbox_ll_x;
                         sample_j = vbox_ll_y;
 
-                        /* this will never change much ... we need the fp64 values inside
-                         * the plot region */
-                        win_r = -1.0 + ( 2.0 * sample_r ) / eff_width;
-                        win_j = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
+                        fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                        win_r = coord.r;
+                        win_j = coord.j;
 
-                        /* these are needed below for the sub-pixel walk on gc2 */
-                        x_prime = obs_real * win_r / 2.0 + real_translate + half_sample_offset_real;
-                        y_prime = obs_imag * win_j / 2.0 + imag_translate + half_sample_offset_imag;
+                        fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
+                        x_prime = coord.r;
+                        y_prime = coord.j;
 
                         if ( mand_height == mand_bail ) {
                             /* really we should use the color Black for portable stuff */
@@ -1814,6 +1819,7 @@ replot:
                 sample_r = ( mouse_x - offset_x );
                 sample_j = invert_mouse_y;
                 printf("DBUG : sample space [ %-6i, %-6i ]\n", sample_r, sample_j);
+
                 fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
                 win_r = coord.r;
                 win_j = coord.j;
@@ -1837,10 +1843,17 @@ replot:
                 XDrawImageString( dsp, win2, gc2, 10, 290, buf, (int)strlen(buf));
 
                 /* translation and offset into the centre of a sample region */
+                fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
+                x_prime = coord.r;
+                y_prime = coord.j;
+
+
+                /*
                 x_prime = obs_real * win_r / 2.0;
                 y_prime = obs_imag * win_j / 2.0;
                 x_prime = x_prime + real_translate + half_sample_offset_real;
                 y_prime = y_prime + imag_translate + half_sample_offset_imag;
+                */
 
                 printf("     : after translation\n");
                 printf("     : r_trn   = %-+30.22e\n", real_translate );
@@ -1899,15 +1912,20 @@ replot:
                                     sample_r = vbox_ll_x;
                                     sample_j = vbox_ll_y;
 
-                                    /* some extra parentheses just for clarity here */
-                                    win_r = -1.0 + ( ( 2.0 * sample_r ) / eff_width );
-                                    win_j = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
+                                    fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                                    win_r = coord.r;
+                                    win_j = coord.j;
 
-                                    /* translation and offset into the centre of a sample region */
-                                    x_prime = obs_real * win_r / 2.0;
-                                    y_prime = obs_imag * win_j / 2.0;
-                                    x_prime = x_prime + real_translate + half_sample_offset_real;
-                                    y_prime = y_prime + imag_translate + half_sample_offset_imag;
+                                    fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
+                                    x_prime = coord.r;
+                                    y_prime = coord.j;
+
+                                    /* DEBUGGARY */
+                                    if (( vbox_r == 3 ) && ( vbox_j == 12 ) && ( mand_x_pix == 44) && ( mand_y_pix == 21) ) {
+                                        printf("wtf\n");
+                                        printf("WTF  : r[ 3][12][44][21] = %-+32.26e\n", x_prime);
+                                        printf("WTF  : j[ 3][12][44][21] = %-+32.26e\n", y_prime);
+                                    }
 
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
                                         mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
