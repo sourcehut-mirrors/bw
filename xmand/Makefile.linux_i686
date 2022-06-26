@@ -1,5 +1,5 @@
 
-CC=/usr/bin/gcc
+CC=gcc
 
 CFLAGS= -I$(IDIR) -std=iso9899:1999 -m32 -g -O0 -pedantic \
 	-pedantic-errors -Wall \
@@ -34,7 +34,9 @@ SRCS = ./mandel_col.c ./linear_inter.c ./mbrot.c \
 	../xwin/create_gc.c \
 	../xwin/create_borderless_topwin.c \
 	../time_and_date/timediff.c \
-	../sysinfo/sysmem.c ../sysinfo/sysinfo.c \
+	../in_progress/data_dump/rot4.c \
+	../in_progress/data_dump/rot8.c \
+	../sysinfo/sysinfo.c \
 	../sysinfo/ru.c
 
 OBJS = ./mandel_col.o ./linear_inter.o \
@@ -43,7 +45,9 @@ OBJS = ./mandel_col.o ./linear_inter.o \
 	../xwin/create_gc.o \
 	../xwin/create_borderless_topwin.o \
 	../time_and_date/timediff.o \
-	../sysinfo/sysmem.o ../sysinfo/sysinfo.o \
+	../in_progress/data_dump/rot4.o \
+	../in_progress/data_dump/rot8.o \
+	../sysinfo/sysinfo.o \
 	../sysinfo/ru.o
 
 .c.o:
