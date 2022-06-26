@@ -11,6 +11,7 @@ OBJS=		./mandel_col.o \
 		./linear_inter.o \
 		./mbrot.o \
 		./mbrot_vbox_pthread.o \
+		./fp_region.o \
 		../xwin/x_error_handler.o \
 		../xwin/create_gc.o \
 		../xwin/create_borderless_topwin.o \

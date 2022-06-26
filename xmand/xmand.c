@@ -68,53 +68,9 @@
 
 #include "mandelbrot.h"
 
-#define EPSILON 1.0e-12
-#define VERBOSE 1
-
-Window create_borderless_topwin(Display *dsp,
-                         unsigned int width, unsigned int height,
-                         int x, int y,
-                         unsigned long bg_color);
-
-GC create_gc(Display *dsp, Window win);
-
-int X_error_handler(Display *dsp, XErrorEvent *errevt);
-
-uint64_t timediff( struct timespec st, struct timespec en );
-
-int sysinfo(int verbose);
-
-unsigned long mandle_col( uint8_t height );
-
-uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
-
-int index(int Vbox_r, int Vbox_j, int Sr, int Sj);
-
-/* local defs where 1044 pixels is more or less full screen
- * and 660 pixels square fits into a neat 720p res OBS setup */
-#define WIN_WIDTH 1044
-#define WIN_HEIGHT 1044
-
-/* how many little sample boxes are there within the plot
- * region?  We start with a 16x16 grid of these vbox
- * square sample sets. */
-#define VBOX_REAL_COUNT 16
-#define VBOX_IMAG_COUNT 16
-
-/* how many sample spots are there within a given vbox? */
-#define VBOX_SAMPLE_REAL 64
-#define VBOX_SAMPLE_IMAG 64
-
-/* lets live with the crazy notion that we may have a bonkers
- * AMD ThreadRipper in our lives someday and just say sure we
- * can dispatch 256 threads at once. Someday. In dreams. */
-#define NUM_THREADS 256
-
-void *mbrot_vbox_pthread(void *recv_parm);
-
 int main(int argc, char*argv[])
 {
-    pthread_t tid[NUM_THREADS]; /* array of thread IDs */
+    pthread_t tid[MAX_THREADS]; /* array of thread IDs */
     /* our display and window and graphics context */
     Display *dsp;
     Window win, win2, win3;
@@ -161,7 +117,7 @@ int main(int argc, char*argv[])
 
     /* setup mouse x and y */
     int mouse_x = -1, mouse_y = -1;
-    int invert_mouse_x, invert_mouse_y;
+    int invert_mouse_y;
     int mouse_x_raw, mouse_y_raw;
 
     /* these next five are just mouse button counters where the
@@ -193,10 +149,15 @@ int main(int argc, char*argv[])
     int lx, ly, ux, uy;
     int gc2_x, gc2_y;
     int eff_width, eff_height, vbox_w, vbox_h;
-    double obs_x_width, obs_y_height;
+    double obs_real, obs_imag;
     double sub_pixel_real, sub_pixel_imag;
     double pixel_real_width, pixel_imag_height;
     double magnify, real_translate, imag_translate;
+
+    /* what is the default width and height on the complex plane ? */
+    double default_real = DEFAULT_REAL_WIDTH;
+    double default_imag = DEFAULT_IMAG_HEIGHT;
+
 
     /* ensure these are initialized */
     double x_prime = -8.0;
@@ -216,7 +177,7 @@ int main(int argc, char*argv[])
     int vbox_flag[VBOX_REAL_COUNT][VBOX_IMAG_COUNT];
     /* Also we finally have use for the little box grid that we
      * lay out and thus we will need the box coordinates */
-    int vbox_x, vbox_y;
+    int vbox_r, vbox_j;
 
     /* It is a surprise to me that this array fits into the stack
      * memory of modern linux systems. We shall get this to the
@@ -330,9 +291,12 @@ int main(int argc, char*argv[])
 
     int mand_x_pix, mand_y_pix;
 
-    /* These are the initial and normalized mouse fp64 values
-     * from within the viewport. */
-    double win_x, win_y;
+    /* These are the initial values within the viewport.
+     * They have the domain  -1.0 < win_r < +1.0 and 
+     * also the same for win_j. */
+    double win_r, win_j;
+    /* general purpose fp64 coordinates to toss around */
+    fp64 coord;
 
     /* small general purpose char buffer */
     char *buf = calloc((size_t)128,sizeof(unsigned char));
@@ -562,10 +526,10 @@ int main(int argc, char*argv[])
     } else {
         fprintf(stderr,"WARN : No arguments received thus we have\n");
         fprintf(stderr,"     : some hard coded values ... enjoy.\n");
-        mand_bail = 4096;
-        magnify = 1.0;
-        real_translate = 0.0;
-        imag_translate = 0.0;
+        mand_bail = DEFAULT_BAILOUT;
+        magnify = DEFAULT_MAGNIFY;
+        real_translate = DEFAULT_REAL_CENTRE;
+        imag_translate = DEFAULT_IMAG_CENTRE;
     }
 
     printf("\n    mand_bail = %i\n", mand_bail);
@@ -576,7 +540,7 @@ int main(int argc, char*argv[])
 
     printf("      magnify = %-+18.12e\n\n", magnify );
 
-    /* TODO allow adjustment of these values */
+    /* TODO allow adjustment of these colourscheme values */
     gamma = 2.5;
     hue = 1.8;
     rotation = 5.0;
@@ -586,8 +550,8 @@ int main(int argc, char*argv[])
     /* TODO perhaps use the terms real and imaginary for the
      * data axi and not just x and y. However x and y are nice
      * and short */
-    obs_x_width = 4.0 / magnify;
-    obs_y_height = 4.0 / magnify;
+    obs_real = default_real / magnify;
+    obs_imag = default_imag / magnify;
 
     /* ensure we start with clear vbox flags */
     memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
@@ -831,8 +795,8 @@ int main(int argc, char*argv[])
      *
      * These values will change of course.
      * */
-    pixel_real_width = obs_x_width / (double)eff_width;
-    pixel_imag_height = obs_y_height / (double)eff_height;
+    pixel_real_width = obs_real / (double)eff_width;
+    pixel_imag_height = obs_imag / (double)eff_height;
     printf("pixel_real_w = %-+32.26e\n",pixel_real_width);
     printf("pixel_imag_h = %-+32.26e\n",pixel_imag_height);
 
@@ -901,8 +865,8 @@ int main(int argc, char*argv[])
     vbox_w = eff_width/VBOX_REAL_COUNT;
     vbox_h = eff_height/VBOX_IMAG_COUNT;
 
-    double vbox_real_width = obs_x_width / ( 1.0 * VBOX_REAL_COUNT );
-    double vbox_imag_height = obs_y_height / ( 1.0 * VBOX_IMAG_COUNT );
+    double vbox_real_width = obs_real / ( 1.0 * VBOX_REAL_COUNT );
+    double vbox_imag_height = obs_imag / ( 1.0 * VBOX_IMAG_COUNT );
     double sample_real_width = vbox_real_width / ( 1.0 * VBOX_SAMPLE_REAL );
     double sample_imag_height = vbox_imag_height / ( 1.0 * VBOX_SAMPLE_IMAG );
     double half_sample_offset_real = sample_real_width / 2.0;
@@ -978,7 +942,7 @@ int main(int argc, char*argv[])
      * controls and need to bounce way back up here and setup a
      * whole new plot globally. For now we are going to get our threads
      * setup. */
-    thread_parm *parm[NUM_THREADS];
+    thread_parm *parm[MAX_THREADS];
     errno = 0;
 
     for ( pt = 0; pt < pthread_limit; pt++ ){
@@ -1078,47 +1042,31 @@ int main(int argc, char*argv[])
                  && ( mouse_x < ( eff_width + offset_x ) )
                  && ( mouse_y < ( eff_height + offset_y ) ) ) {
 
-                /* we are inside the primary window plotting region
-                 * so lets try to create floating point values for
-                 * the coordinates selected. We start with just a
-                 * normalized value from zero to one. */
-                win_x = ( 1.0 * ( mouse_x - offset_x ) ) / eff_width;
-                win_y = ( 1.0 * ( eff_height - mouse_y + offset_y ) ) / eff_height;
-
                 /* invert the y axis because X11 is upside down */
-                invert_mouse_x = mouse_x - offset_x;
                 invert_mouse_y = eff_height - mouse_y + offset_y;
-                sprintf(buf,"inv  [ %4i , %4i ]  ", invert_mouse_x, invert_mouse_y );
-                fprintf(stderr,"%s\n", buf);
+
+                sample_r = ( mouse_x - offset_x );
+                sample_j = invert_mouse_y;
+
+                fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                win_r = coord.r;
+                win_j = coord.j;
 
                 XSetForeground(dsp, gc2, green.pixel);
-                XDrawImageString( dsp, win2, gc2, 10, 230, buf, (int)strlen(buf));
-
-                sprintf(buf,"fp64( %-+10.8e , %-+10.8e )", win_x, win_y );
-                printf("fp64( %-+30.22e,\n      %-+30.22e )\n", win_x, win_y );
-                XDrawImageString( dsp, win2, gc2, 10, 250, buf, (int)strlen(buf));
 
                 /* a useful value is the vbox coordinates for
                  * each of the 16x16 grid we previously laid out.
                  * Since these are all integers we don't need to
                  * care about rounding or fractional results. */
-                vbox_x = ( mouse_x - offset_x ) / vbox_w;
-                vbox_y = ( eff_height - mouse_y + offset_y ) / vbox_h;
-                sprintf(buf,"vbox  [ %03i , %03i ]", vbox_x, vbox_y );
+                vbox_r = ( mouse_x - offset_x ) / vbox_w;
+                vbox_j = ( eff_height - mouse_y + offset_y ) / vbox_h;
+                sprintf(buf,"vbox  [ %03i , %03i ]", vbox_r, vbox_j );
                 fprintf(stderr,"%s\n", buf);
                 XDrawImageString( dsp, win2, gc2, 10, 270, buf, (int)strlen(buf));
 
-                /* Offset the floating point values such that the
-                 * center point shall be ( 0.0, 0.0 ) and the result
-				 * coordinates are always  -1.0 <= win_x, win_y <= +1.0
-				 *
-				 * Here we may employ the fused multiply add call fma() */
-                win_x = fma(win_x, 2.0, - 1.0);
-                win_y = fma(win_y, 2.0, - 1.0);
-
                 XSetForeground(dsp, gc2, cornflowerblue.pixel);
-                sprintf(buf,"fp64( %-+10.8e , %-+10.8e )", win_x, win_y );
-                printf("fp64( %-+30.22e,\n      %-+30.22e )\n", win_x, win_y );
+                sprintf(buf,"fp64( %-+10.8e , %-+10.8e )", win_r, win_j );
+                printf("fp64( %-+30.22e,\n      %-+30.22e )\n", win_r, win_j );
                 XDrawImageString(dsp, win2, gc2, 10, 290, buf, (int)strlen(buf));
 
                 /* At this moment we have normalized values for a
@@ -1126,30 +1074,11 @@ int main(int argc, char*argv[])
                  * scale those values by half of the viewport width
                  * and height to get actual x_prime and y_prime
                  * values.
-                 *
-                 * All of the above allows us to compute a starting
-                 * point on the observation plane
-                 * 
-                 * We had the following : 
-                 *
-                 *     x_prime = obs_x_width *
-                 *
-                 *                       ( win_x / 2.0 + real_translate )
-                 *
-                 *                                 + half_sample_offset_real;
-                 *
-                 *
-                 *     y_prime = obs_y_height *
-                 *
-                 *                       ( win_y / 2.0 + imag_translate )
-                 *
-                 *                                 + half_sample_offset_imag;
-                 *
                  */
 
                 /* translation and offset into the centre of a sample region */
-                x_prime = obs_x_width * win_x / 2.0;
-                y_prime = obs_y_height * win_y / 2.0;
+                x_prime = obs_real * win_r / 2.0;
+                y_prime = obs_imag * win_j / 2.0;
                 x_prime = x_prime + real_translate + half_sample_offset_real;
                 y_prime = y_prime + imag_translate + half_sample_offset_imag;
 
@@ -1171,12 +1100,12 @@ int main(int argc, char*argv[])
 
                 /* what is the real and imaginary axi pixel width which
                  * gets used by the physical screen ? */
-                pixel_real_width = obs_x_width / (double)eff_width;
+                pixel_real_width = obs_real / (double)eff_width;
                 printf("pixel_real_w = %-+32.26e\n",pixel_real_width);
                 sprintf(buf,"pixel_real_w = %-+16.12e",pixel_real_width);
                 XDrawImageString(dsp, win3, gc3, 10, 180, buf, (int)strlen(buf));
 
-                pixel_imag_height = obs_y_height / (double)eff_height;
+                pixel_imag_height = obs_imag / (double)eff_height;
                 printf("pixel_imag_h = %-+32.26e\n",pixel_imag_height);
                 sprintf(buf,"pixel_imag_h = %-+16.12e",pixel_imag_height);
                 XDrawImageString(dsp, win3, gc3, 10, 200, buf, (int)strlen(buf));
@@ -1201,7 +1130,7 @@ int main(int argc, char*argv[])
                  * other then to grind the gears and get a timing report.
                  *
                  * Therefore we may use the strange conditional here of 
-                 *     ( 1 || ( vbox_flag[vbox_x][vbox_y] == 0 ) )
+                 *     ( 1 || ( vbox_flag[vbox_r][vbox_j] == 0 ) )
                  * which will forever be true. Thus we grind the gears and do
                  * the thread dispatch every time.
                  *
@@ -1209,16 +1138,16 @@ int main(int argc, char*argv[])
                  * Sadly the threads are doing the wrong computation. At this
                  * time.
                  */
-                if ( vbox_flag[vbox_x][vbox_y] == 0 ) {
+                if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
                     for ( pt = 0; pt < pthread_limit; pt++ ) {
                         parm[pt]->t_num = pt;
                         parm[pt]->t_total = pthread_limit;
                         parm[pt]->r_translate = real_translate;
                         parm[pt]->i_translate = imag_translate;
-                        parm[pt]->obs_x_width = obs_x_width;
-                        parm[pt]->obs_y_height = obs_y_height;
-                        parm[pt]->vbox_x = vbox_x;
-                        parm[pt]->vbox_y = vbox_y;
+                        parm[pt]->obs_real = obs_real;
+                        parm[pt]->obs_imag = obs_imag;
+                        parm[pt]->vbox_r = vbox_r;
+                        parm[pt]->vbox_j = vbox_j;
                         parm[pt]->eff_width = eff_width;
                         parm[pt]->eff_height = eff_height;
                         parm[pt]->vbox_w = vbox_w;
@@ -1261,7 +1190,7 @@ int main(int argc, char*argv[])
                         pthread_join( tid[pt], NULL );
                         printf("PTHRD: join %i done\n", pt);
                     }
-                    vbox_flag[vbox_x][vbox_y] = 1;
+                    vbox_flag[vbox_r][vbox_j] = 1;
                 }
                 clock_gettime(CLOCK_REALTIME, &soln_t1 );
 
@@ -1272,12 +1201,12 @@ int main(int argc, char*argv[])
                 XDrawImageString( dsp, win3, gc3, 10, 270, buf, (int)strlen(buf));
 
                 for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
-                    vbox_ll_y = vbox_y * vbox_h + mand_y_pix;
+                    vbox_ll_y = vbox_j * vbox_h + mand_y_pix;
                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
-                        vbox_ll_x = vbox_x * vbox_w + mand_x_pix;
+                        vbox_ll_x = vbox_r * vbox_w + mand_x_pix;
 
                         /* use the data returned by the thread computation */
-                        mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
+                        mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
 
                         /* TODO make these make sense someday soon */
                         sample_r = vbox_ll_x;
@@ -1285,12 +1214,12 @@ int main(int argc, char*argv[])
 
                         /* this will never change much ... we need the fp64 values inside
                          * the plot region */
-                        win_x = -1.0 + ( 2.0 * sample_r ) / eff_width;
-                        win_y = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
+                        win_r = -1.0 + ( 2.0 * sample_r ) / eff_width;
+                        win_j = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
 
                         /* these are needed below for the sub-pixel walk on gc2 */
-                        x_prime = obs_x_width * win_x / 2.0 + real_translate + half_sample_offset_real;
-                        y_prime = obs_y_height * win_y / 2.0 + imag_translate + half_sample_offset_imag;
+                        x_prime = obs_real * win_r / 2.0 + real_translate + half_sample_offset_real;
+                        y_prime = obs_imag * win_j / 2.0 + imag_translate + half_sample_offset_imag;
 
                         if ( mand_height == mand_bail ) {
                             /* really we should use the color Black for portable stuff */
@@ -1325,7 +1254,7 @@ int main(int argc, char*argv[])
                                     /* TODO just use the previously computed value
                                     mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
                                     */
-                                    mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
+                                    mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
                                 }
 
                                 /* check if we landed in a maximal black region */
@@ -1564,8 +1493,8 @@ int main(int argc, char*argv[])
 
                         magnify *= magnify_factor;
                         fprintf(stderr,"INFO : magnify changed to %-+16.10e\n", magnify);
-                        obs_x_width = 4.0 / magnify;
-                        obs_y_height = 4.0 / magnify;
+                        obs_real = 4.0 / magnify;
+                        obs_imag = 4.0 / magnify;
 
                         colour_method_flag = 1;
                         invert_me_dammit = 0;
@@ -1578,6 +1507,13 @@ int main(int argc, char*argv[])
                         real_translate = x_prime;
                         imag_translate = y_prime;
                         fprintf(stderr,"INFO : c = %-+16.12e, %-+16.12e  ", x_prime, y_prime);
+
+                        /* flush away all the data we computed before */
+                        for ( vbox_r=0; vbox_r<VBOX_REAL_COUNT; vbox_r++ ) {
+                            for ( vbox_j=0; vbox_j<VBOX_IMAG_COUNT; vbox_j++ ) {
+                                vbox_flag[vbox_r][vbox_j] == 0;
+                            }
+                        }
 
                         goto replot;
 
@@ -1633,9 +1569,9 @@ int main(int argc, char*argv[])
                                 /* dump some file data if we have the data ready */
 
                                 int data_ready = 1;
-                                for ( vbox_y = 0; vbox_y < VBOX_IMAG_COUNT; vbox_y++ ) {
-                                    for ( vbox_x = 0; vbox_x < VBOX_REAL_COUNT; vbox_x++ ) {
-                                        data_ready &= vbox_flag[vbox_x][vbox_y];
+                                for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
+                                    for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
+                                        data_ready &= vbox_flag[vbox_r][vbox_j];
                                     }
                                 }
 
@@ -1690,7 +1626,7 @@ int main(int argc, char*argv[])
                                                     sizeof(uint8_t), num_written);
                                              */
     
-                                            /* for the header data do the rotates separately? */
+                                            /* for the header data do the rotates separately */
                                             if ( endian_flag ) {
                                                 rotated32 = rot4(num_elements);
                                                 num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
@@ -1873,66 +1809,38 @@ replot:
                  * at the mouse coordinates here/
                  * **************************************************/
 
-                /* digital sample coordinates in the sample space? */
-                sample_r = ( mouse_x - offset_x );
-                sample_j = ( eff_height - mouse_y + offset_y );
-                printf("DBUG : sample space [ %-6i, %-6i ]\n", sample_r, sample_j);
-
-                win_x = ( 1.0 * sample_r ) / eff_width;
-                win_y = ( 1.0 * sample_j ) / eff_height;
-
-                printf("     : button 2 pressed\n");
-                printf("     : win_x = %-+26.20e\n", win_x );
-                printf("     : win_y = %-+26.20e\n", win_y );
-
                 /* invert the y axis */
-                invert_mouse_x = mouse_x - offset_x;
                 invert_mouse_y = eff_height - mouse_y + offset_y;
-                sprintf(buf,"inv  [ %4i , %4i ]  ", invert_mouse_x, invert_mouse_y );
-                printf("     : invert_mouse_x = %4i\n", invert_mouse_x);
-                printf("     : invert_mouse_y = %4i\n", invert_mouse_y);
+                sample_r = ( mouse_x - offset_x );
+                sample_j = invert_mouse_y;
+                printf("DBUG : sample space [ %-6i, %-6i ]\n", sample_r, sample_j);
+                fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                win_r = coord.r;
+                win_j = coord.j;
 
                 XSetForeground(dsp, gc2, green.pixel);
-                XDrawImageString( dsp, win2, gc2, 10, 230, buf, (int)strlen(buf));
-
-                sprintf(buf,"fp64( %-10.8e , %-10.8e )", win_x, win_y );
+                sprintf(buf,"fp64( %-10.8e , %-10.8e )", win_r, win_j );
                 XDrawImageString( dsp, win2, gc2, 10, 250, buf, (int)strlen(buf));
 
                 /* vbox[] coordinates for the 16x16 grid */
-                vbox_x = ( mouse_x - offset_x ) / vbox_w;
-                vbox_y = ( eff_height - mouse_y + offset_y ) / vbox_h;
-                sprintf(buf,"vbox  [ %03i , %03i ]", vbox_x, vbox_y );
+                vbox_r = ( mouse_x - offset_x ) / vbox_w;
+                vbox_j = ( eff_height - mouse_y + offset_y ) / vbox_h;
+                sprintf(buf,"vbox  [ %03i , %03i ]", vbox_r, vbox_j );
                 printf("     : %s\n",buf);
                 XDrawImageString( dsp, win2, gc2, 10, 270, buf, (int)strlen(buf));
 
-                /* Offset the floating point values such that the
-                 * center point shall be ( 0.0, 0.0 ) 
-                 *
-                 * In the past we had this :
-                 *
-                 *    win_x = win_x * 2.0 - 1.0;
-                 *    win_y = win_y * 2.0 - 1.0;
-                 */
-                win_x = fma(win_x, 2.0, -1.0);
-                win_y = fma(win_y, 2.0, -1.0);
-                printf("     : after offset\n");
-                printf("     : win_x = %-+30.22e\n", win_x );
-                printf("     : win_y = %-+30.22e\n", win_y );
+                printf("     : win_r = %-+30.22e\n", win_r );
+                printf("     : win_j = %-+30.22e\n", win_j );
 
                 XSetForeground(dsp, gc2, cornflowerblue.pixel);
-                sprintf(buf,"fp64( %-+10.8e , %-+10.8e )  ", win_x, win_y );
+                sprintf(buf,"fp64( %-+10.8e , %-+10.8e )  ", win_r, win_j );
                 XDrawImageString( dsp, win2, gc2, 10, 290, buf, (int)strlen(buf));
 
                 /* translation and offset into the centre of a sample region */
-                x_prime = obs_x_width * win_x / 2.0;
-                y_prime = obs_y_height * win_y / 2.0;
+                x_prime = obs_real * win_r / 2.0;
+                y_prime = obs_imag * win_j / 2.0;
                 x_prime = x_prime + real_translate + half_sample_offset_real;
                 y_prime = y_prime + imag_translate + half_sample_offset_imag;
-
-                /* fukkered 
-                x_prime = fma(obs_x_width,fma(win_x, 0.5, real_translate),half_sample_offset_real);
-                y_prime = fma(obs_y_height,fma(win_y, 0.5, imag_translate),half_sample_offset_imag);
-                */
 
                 printf("     : after translation\n");
                 printf("     : r_trn   = %-+30.22e\n", real_translate );
@@ -1978,47 +1886,42 @@ replot:
                 }
 
                 /* here we loop over the vbox coords */
-                for ( vbox_y = 0; vbox_y < VBOX_IMAG_COUNT; vbox_y++ ) {
-                    for ( vbox_x = 0; vbox_x < VBOX_REAL_COUNT; vbox_x++ ) {
-                        /* TODO please fix this */
-                        if ( 1 ) {  /* vbox_flag[vbox_x][vbox_y] == 0 */
+                for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
+                    for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
+                        /* TODO please fix this as we are grinding the gears */
+                        if ( 1 ) {  /* vbox_flag[vbox_r][vbox_j] == 0 */
                             clock_gettime(CLOCK_REALTIME, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
-                                vbox_ll_y = vbox_y * vbox_h + mand_y_pix;
+                                vbox_ll_y = vbox_j * vbox_h + mand_y_pix;
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
-                                    vbox_ll_x = vbox_x * vbox_w + mand_x_pix;
+                                    vbox_ll_x = vbox_r * vbox_w + mand_x_pix;
 
                                     sample_r = vbox_ll_x;
                                     sample_j = vbox_ll_y;
 
                                     /* some extra parentheses just for clarity here */
-                                    win_x = -1.0 + ( ( 2.0 * sample_r ) / eff_width );
-                                    win_y = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
+                                    win_r = -1.0 + ( ( 2.0 * sample_r ) / eff_width );
+                                    win_j = -1.0 * ( ( 2.0 * ( eff_height - sample_j ) ) / eff_height - 1.0 );
 
                                     /* translation and offset into the centre of a sample region */
-                                    x_prime = obs_x_width * win_x / 2.0;
-                                    y_prime = obs_y_height * win_y / 2.0;
+                                    x_prime = obs_real * win_r / 2.0;
+                                    y_prime = obs_imag * win_j / 2.0;
                                     x_prime = x_prime + real_translate + half_sample_offset_real;
                                     y_prime = y_prime + imag_translate + half_sample_offset_imag;
 
-                                    /* fukkered
-                                    x_prime = fma(obs_x_width,fma(win_x, 0.5, real_translate),half_sample_offset_real);
-                                    y_prime = fma(obs_y_height,fma(win_y, 0.5, imag_translate),half_sample_offset_imag);
-                                    */
-
-                                    if ( vbox_flag[vbox_x][vbox_y] == 1 ) {
-                                        mand_height = mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix];
+                                    if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
+                                        mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
                                     } else {
                                         /* In the past we abused the stack with a trivial
                                          * and massive array. Now we shall index into heap
                                          * as described in index_check.c */
-                                        *(coord_r + index(vbox_x,vbox_y,mand_x_pix,mand_y_pix)) = x_prime;
-                                        *(coord_j + index(vbox_x,vbox_y,mand_x_pix,mand_y_pix)) = y_prime;
+                                        *(coord_r + index(vbox_r,vbox_j,mand_x_pix,mand_y_pix)) = x_prime;
+                                        *(coord_j + index(vbox_r,vbox_j,mand_x_pix,mand_y_pix)) = y_prime;
 
                                         /* the actual mandelbrot computation for (x_prime, y_prime) */
                                         mand_height = mbrot(x_prime, y_prime, mand_bail);
                                         /* TODO get the result off the stack */
-                                        mandel_val[vbox_x][vbox_y][mand_x_pix][mand_y_pix] = mand_height;
+                                        mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix] = mand_height;
                                     }
 
                                     if ( colour_method_flag == 1 ) {
@@ -2070,15 +1973,15 @@ replot:
 
                                 }
                             }
-                            vbox_flag[vbox_x][vbox_y] = 1;
+                            vbox_flag[vbox_r][vbox_j] = 1;
                             clock_gettime(CLOCK_REALTIME, &vbox_t1 );
                             t_delta = timediff( vbox_t0, vbox_t1);
                             sprintf(buf,"[vbox] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
                             XSetForeground(dsp, gc3, yellow.pixel);
                             XDrawImageString( dsp, win3, gc3, 10, 310, buf, (int)strlen(buf));
                         }
-                    } /* vbox_x for */
-                } /* vbox_y for */
+                    } /* vbox_r for */
+                } /* vbox_j for */
 
                 /* reset the mand_bail adjustment parameters */
                 bail_out_factor = 1.0;

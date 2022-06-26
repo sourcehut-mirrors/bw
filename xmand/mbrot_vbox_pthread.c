@@ -68,22 +68,22 @@ void *mbrot_vbox_pthread(void *recv_parm)
     for ( mand_y_pix = mand_y_pix_start; mand_y_pix < mand_y_pix_stop; mand_y_pix++ ) {
 
         /* lower left corner of this threads little rectangle */
-        vbox_ll_y = p->vbox_y * p->vbox_h + mand_y_pix;
+        vbox_ll_y = p->vbox_j * p->vbox_h + mand_y_pix;
 
         for ( mand_x_pix = 0; mand_x_pix < p->vbox_w; mand_x_pix++ ) {
 
             /* we compute from the lower left corner of the on screen
              * vbox going left to right and upwards along the positive
              * imaginary axis. */
-            vbox_ll_x = p->vbox_x * p->vbox_w + mand_x_pix;
+            vbox_ll_x = p->vbox_r * p->vbox_w + mand_x_pix;
 
 
             win_x = ( ( ( 1.0 * vbox_ll_x ) / p->eff_width ) * 2.0 - 1.0 );
             win_y = ( -1.0 * ( ( ( 1.0 * ( p->eff_height - vbox_ll_y ) ) / p->eff_height ) * 2.0 - 1.0 ) );
 
 
-            x_prime = p->obs_x_width * win_x / 2.0 + p->r_translate;
-            y_prime = p->obs_y_height * win_y / 2.0 + p->i_translate;
+            x_prime = p->obs_real * win_x / 2.0 + p->r_translate;
+            y_prime = p->obs_imag * win_y / 2.0 + p->i_translate;
 
 
             height = 0;
@@ -100,7 +100,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
                 height += 1;
             }
 
-            (*(p->v))[p->vbox_x][p->vbox_y][mand_x_pix][mand_y_pix] = height;
+            (*(p->v))[p->vbox_r][p->vbox_j][mand_x_pix][mand_y_pix] = height;
 
         }
     }
