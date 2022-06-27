@@ -1,5 +1,5 @@
 
-/* index_check.c  Verify that the math for index into the four
+/* offset_check.c  Verify that the math for index into the four
  *                dimensional floating point array will be
  *                correct.
  *
@@ -52,7 +52,7 @@
 int main(int argc, char **argv) {
 
     int Sr, Sj, Vbox_r, Vbox_j;
-    int index_result;
+    int result;
 
     /* For a sample [Sr,Sj] within a
      * vbox [Vbox_r,Vbox_j] we may index :
@@ -72,8 +72,8 @@ int main(int argc, char **argv) {
             for ( Sr = 0; Sr < VBOX_SAMPLE_REAL; Sr++ ) {
                 for ( Sj = 0; Sj < VBOX_SAMPLE_REAL; Sj++ ) {
 
-                    index_result = index(Vbox_r, Vbox_j, Sr, Sj);
-                    printf("%7i\n",index_result);
+                    result = array_offset(Vbox_r, Vbox_j, Sr, Sj);
+                    printf("%7i\n",result);
 
                 } /* end Sj for */
             } /* end Sr for */

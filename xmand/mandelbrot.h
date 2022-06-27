@@ -81,7 +81,7 @@ unsigned long mandle_col( uint8_t height );
 
 uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
 
-int index(int Vr, int Vj, int Sr, int Sj);
+int array_offset(int Vr, int Vj, int Sr, int Sj);
 
 void *mbrot_vbox_pthread(void *recv_parm);
 

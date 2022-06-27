@@ -1,6 +1,6 @@
 
 /*
- * index.c compute array offset
+ * array_offset.c compute array offset
  *
  * Copyright (C) Dennis Clarke 2022
  *
@@ -70,7 +70,7 @@
 
 #include "mandelbrot.h"
 
-int index(int Vr, int Vj, int Sr, int Sj) {
+int array_offset(int Vr, int Vj, int Sr, int Sj) {
 
     return   Vr * VBOX_SAMPLE_REAL + Sr
 

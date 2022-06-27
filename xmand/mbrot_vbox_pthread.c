@@ -101,6 +101,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
             win_r = cplex.r;
             win_j = cplex.j;
 
+            /*
             sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].Wr = %-+32.26e",
                     p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, win_r);
             puts(buff);
@@ -110,11 +111,13 @@ void *mbrot_vbox_pthread(void *recv_parm)
                     p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, win_j);
             puts(buff);
             buff[0]='\0';
+            */
 
             fp_translate(win_r, win_j, p->magnify, p->r_translate, p->i_translate, &cplex);
             x_prime = cplex.r;
             y_prime = cplex.j;
 
+            /*
             sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].x\' = %-+32.26e",
                     p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, x_prime);
             puts(buff);
@@ -124,6 +127,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
                     p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, y_prime);
             puts(buff);
             buff[0]='\0';
+            */
 
             height = 0;
             zr = 0.0;
@@ -141,10 +145,12 @@ void *mbrot_vbox_pthread(void *recv_parm)
 
             (*(p->v))[p->vbox_r][p->vbox_j][mand_x_pix][mand_y_pix] = height;
 
+            /*
             sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].M = %6i",
                     p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, height);
             puts(buff);
             buff[0]='\0';
+            */
         }
     }
 
