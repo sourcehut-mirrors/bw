@@ -1851,7 +1851,7 @@ replot:
                 /* here we loop over the vbox coords */
                 for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                     for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
-                        printf("     : vbox [ %-3i, %-3i ]\n", vbox_r, vbox_j);
+                        /* printf("     : vbox [ %-3i, %-3i ]\n", vbox_r, vbox_j); */
                         /* loop over the pixels ( samples ) inside a vbox */
                         /* TODO grind the gears */
                         if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
