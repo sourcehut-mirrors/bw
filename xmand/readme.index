@@ -1,0 +1,29 @@
+
+
+The index_chaec routine will verify that all possible
+array offset values are computed and only once with
+no overlap.
+
+hydra$ echo $CC
+/usr/bin/cc
+hydra$ echo $CFLAGS
+-std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -Weverything -Wno-reserved-identifier -Wno-unused-variable -Wno-reserved-id-macro -Wno-missing-prototypes -Wno-unused-parameter -fno-fast-math -fno-builtin
+hydra$ echo $CPPFLAGS
+-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+hydra$ 
+hydra$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -c -o index.o index.c
+index.c:34:9: warning: macro is not used [-Wunused-macros]
+#define _XOPEN_SOURCE 600
+        ^
+1 warning generated.
+hydra$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -c -o index_check.o index_check.c
+hydra$ 
+hydra$ $CC $CFLAGS $CPPFLAGS -o index_check index_check.o index.o
+hydra$ 
+hydra$ ./index_check > /var/tmp/dclarke/index.list 
+hydra$ wc -l /var/tmp/dclarke/index.list 
+ 1048576 /var/tmp/dclarke/index.list
+hydra$ cat /var/tmp/dclarke/index.list  | sort -n | uniq | wc -l 
+ 1048576
+hydra$ 
+

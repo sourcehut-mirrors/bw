@@ -175,55 +175,24 @@ int main(int argc, char*argv[])
      * don't want to recompute the same region over and
      * over and over. */
     int vbox_flag[VBOX_REAL_COUNT][VBOX_IMAG_COUNT];
+    /* ensure we start with clear vbox flags */
+    memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
+
     /* Also we finally have use for the little box grid that we
      * lay out and thus we will need the box coordinates */
     int vbox_r, vbox_j;
 
     /* It is a surprise to me that this array fits into the stack
      * memory of modern linux systems. We shall get this to the
-     * heap real soon now. Consider that a TODO. Sure. */
+     * heap real soon now. Consider that a TODO.
+     *
+     * Why hasn't this been done?
+     * */
     uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
-    memset(&mandel_val, 0x00, VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
-                             *VBOX_REAL_COUNT*VBOX_IMAG_COUNT * sizeof(uint32_t));
+    uint32_t num_elements =  VBOX_SAMPLE_REAL * VBOX_SAMPLE_IMAG
+                           * VBOX_REAL_COUNT  * VBOX_IMAG_COUNT;
 
-    /* The actual complex coordinates are stored in 
-     * two large arrays. coord_r will be all the real
-     * values whereas coord_j shall hold the imaginary
-     * component of any given sample point.
-     *
-     * The plot surface is also the sample set and it consists
-     * of VBOX_REAL_COUNT*VBOX_IMAG_COUNT smaller "vbox" regions
-     * with a total of VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG samples
-     * each.
-     *
-     * If we use the default numbers : 
-     *
-     *     VBOX_REAL_COUNT = 16
-     *     VBOX_IMAG_COUNT = 16
-     *     VBOX_SAMPLE_REAL = 64
-     *     VBOX_SAMPLE_IMAG = 64
-     *
-     * then we easily see we have a 16x16 grid of sample set vbox
-     * regions with 64x64 samples each. To index into the memory
-     * arrays created below we need a small bit of math to find
-     * the correct sample point.  For a sample [Sr,Sj] within a
-     * vbox [Vbox_r,Vbox_j] we may index thus :
-     *
-     *                         
-     *              index = Vbox_r * VBOX_SAMPLE_REAL + Sr
-     *
-     *                    + Vbox_j * VBOX_REAL_COUNT
-     *                             * VBOX_SAMPLE_REAL
-     *                             * VBOX_SAMPLE_IMAG
-     *
-     *                    + Sj * VBOX_REAL_COUNT * VBOX_SAMPLE_REAL;
-     *
-     * Please see test code index_check.c where this has been
-     * verified.
-     */
-
-    uint32_t num_elements = VBOX_SAMPLE_REAL*VBOX_SAMPLE_IMAG
-                         *VBOX_REAL_COUNT*VBOX_IMAG_COUNT;
+    memset(&mandel_val, 0x00,(size_t)num_elements * sizeof(uint32_t));
 
     double *coord_r = calloc((size_t)num_elements, sizeof(double));
 
@@ -535,10 +504,10 @@ int main(int argc, char*argv[])
     printf("\n    mand_bail = %i\n", mand_bail);
     printf("pthread_limit = %i\n", pthread_limit);
 
-    printf("    translate = ( %-+18.14e , %-+18.14e )\n",
+    printf("    translate = ( %-+32.26e , %-+32.26e )\n",
                                       real_translate, imag_translate );
 
-    printf("      magnify = %-+18.12e\n\n", magnify );
+    printf("      magnify = %-+32.26e\n\n", magnify );
 
     /* TODO allow adjustment of these colourscheme values */
     gamma = 2.5;
@@ -552,9 +521,6 @@ int main(int argc, char*argv[])
      * and short */
     obs_real = default_real / magnify;
     obs_imag = default_imag / magnify;
-
-    /* ensure we start with clear vbox flags */
-    memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
     width = WIN_WIDTH;
     height = WIN_HEIGHT;
@@ -1066,8 +1032,8 @@ int main(int argc, char*argv[])
 
                 XSetForeground(dsp, gc2, cornflowerblue.pixel);
                 sprintf(buf,"fp64( %-+10.8e , %-+10.8e )", win_r, win_j );
-                printf("fp64( %-+30.22e,\n      %-+30.22e )\n", win_r, win_j );
                 XDrawImageString(dsp, win2, gc2, 10, 290, buf, (int)strlen(buf));
+                printf("fp64( %-+32.26e,\n      %-+32.26e )\n", win_r, win_j );
 
                 /* At this moment we have normalized values for a
                  * location within the observation viewport. We can
@@ -1079,30 +1045,24 @@ int main(int argc, char*argv[])
                 /* translation and offset into the centre of a sample region */
                 fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
 
-                /*
-                x_prime = obs_real * win_r / 2.0;
-                y_prime = obs_imag * win_j / 2.0;
-                x_prime = x_prime + real_translate + half_sample_offset_real;
-                y_prime = y_prime + imag_translate + half_sample_offset_imag;
-                */
                 x_prime = coord.r;
                 y_prime = coord.j;
 
-                printf("c = ( %-+30.22e,\n      %-+30.22e )\n", x_prime, y_prime );
+                printf("c = ( %-+32.26e,\n      %-+32.26e )\n", x_prime, y_prime );
 
                 XSetForeground(dsp, gc3, red.pixel);
                 sprintf(buf," select = %-+16.12e, %-+16.12e  ", x_prime, y_prime );
-                XDrawImageString( dsp, win3, gc3, 10, 80, buf, (int)strlen(buf));
+                XDrawImageString(dsp, win3, gc3, 10, 80, buf, (int)strlen(buf));
 
                 XSetForeground(dsp, gc3, green.pixel);
                 sprintf(buf,"bailout = %-8i with a pthread_limit = %-3i", mand_bail, pthread_limit);
-                XDrawImageString( dsp, win3, gc3, 10, 100, buf, (int)strlen(buf));
+                XDrawImageString(dsp, win3, gc3, 10, 100, buf, (int)strlen(buf));
 
                 sprintf(buf,"magnify = %-12.10e", magnify);
-                XDrawImageString( dsp, win3, gc3, 10, 120, buf, (int)strlen(buf));
+                XDrawImageString(dsp, win3, gc3, 10, 120, buf, (int)strlen(buf));
 
                 sprintf(buf," centre = %-+16.12e, %-+16.12e  ", real_translate, imag_translate);
-                XDrawImageString( dsp, win3, gc3, 10, 140, buf, (int)strlen(buf));
+                XDrawImageString(dsp, win3, gc3, 10, 140, buf, (int)strlen(buf));
 
                 /* what is the real and imaginary axi pixel width which
                  * gets used by the physical screen ? */
@@ -1208,15 +1168,13 @@ int main(int argc, char*argv[])
 
                 for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                     vbox_ll_y = vbox_j * vbox_h + mand_y_pix;
+                    sample_j = vbox_ll_y;
                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                         vbox_ll_x = vbox_r * vbox_w + mand_x_pix;
+                        sample_r = vbox_ll_x;
 
                         /* use the data returned by the thread computation */
                         mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
-
-                        /* TODO make these make sense someday soon */
-                        sample_r = vbox_ll_x;
-                        sample_j = vbox_ll_y;
 
                         fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
                         win_r = coord.r;
@@ -1225,6 +1183,8 @@ int main(int argc, char*argv[])
                         fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
                         x_prime = coord.r;
                         y_prime = coord.j;
+                        /* TODO put the result of (x_prime,y_prime) in to the array coord_r
+                         * and coord_j */
 
                         if ( mand_height == mand_bail ) {
                             /* really we should use the color Black for portable stuff */
@@ -1516,7 +1476,7 @@ int main(int argc, char*argv[])
                         /* flush away all the data we computed before */
                         for ( vbox_r=0; vbox_r<VBOX_REAL_COUNT; vbox_r++ ) {
                             for ( vbox_j=0; vbox_j<VBOX_IMAG_COUNT; vbox_j++ ) {
-                                vbox_flag[vbox_r][vbox_j] == 0;
+                                vbox_flag[vbox_r][vbox_j] = 0;
                             }
                         }
 
@@ -1561,239 +1521,230 @@ int main(int argc, char*argv[])
                             sprintf(buf,"DUMPER");
                             XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
     
-                            /* check for a TMPDIR env var */
-                            char *tmpdir = getenv("TMPDIR");
-                            if ( tmpdir == NULL ) {
-                                sprintf(buf,"No TMPDIR");
-                                XSetForeground(dsp, gc2, red.pixel);
-                                XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
-                                XDrawLine(dsp, win2, gc2, 72, 20, 320, 162);
-                                XDrawLine(dsp, win2, gc2, 72, 162, 320, 20);
-                                dumper_flag = -1;
-                            } else {
-                                /* dump some file data if we have the data ready */
+                            /* dump some file data if we have the data ready */
 
-                                int data_ready = 1;
-                                for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
-                                    for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
-                                        data_ready &= vbox_flag[vbox_r][vbox_j];
-                                    }
+                            int data_ready = 1;
+                            for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
+                                for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
+                                    data_ready &= vbox_flag[vbox_r][vbox_j];
                                 }
+                            }
 
-                                if ( data_ready ) {
+                            if ( data_ready ) {
 
-                                    /* indicate that the data is ready */
-                                    sprintf(buf,"Data Ready");
-                                    XSetForeground(dsp, gc2, green.pixel);
-                                    XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
+                                /* indicate that the data is ready */
+                                sprintf(buf,"Data Ready");
+                                XSetForeground(dsp, gc2, green.pixel);
+                                XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
 
-                                    FILE *fp;
-                                    struct stat status_buffer;
-                                    time_t time_now;
-    
-                                    char timestamp[32];
-                                    time(&time_now);
-                                    struct tm *ptm = gmtime(&time_now);
-    
-                                    size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
-                                    char *timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
-                                    char *err_status = strcat(timestamp_filename, tmpdir);
-                                    err_status = strcat(timestamp_filename, "/");
-                                    err_status = strcat(timestamp_filename, timestamp);
-    
-                                    status = stat(timestamp_filename, &status_buffer);
-                                    if ( status == 0 ) {
-                                        fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
+                                FILE *fp;
+                                struct stat status_buffer;
+                                time_t time_now;
+
+                                char timestamp[32];
+                                time(&time_now);
+                                struct tm *ptm = gmtime(&time_now);
+
+                                size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
+                                char *timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+
+                                /* at the moment we are not even using the error status return */
+                                char *err_status = strcat(timestamp_filename, tmpdir);
+                                err_status = strcat(timestamp_filename, "/");
+                                err_status = strcat(timestamp_filename, timestamp);
+
+                                status = stat(timestamp_filename, &status_buffer);
+                                if ( status == 0 ) {
+                                    fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
+                                    dumper_flag = -1;
+                                } else {
+                                    errno = 0;
+                                    fp = fopen(timestamp_filename, "wb");
+                                    if ( fp == NULL ) {
+                                        perror("FAIL ");
                                         dumper_flag = -1;
                                     } else {
-                                        errno = 0;
-                                        fp = fopen(timestamp_filename, "wb");
-                                        if ( fp == NULL ) {
-                                            perror("FAIL ");
-                                            dumper_flag = -1;
+                                        /* finally we know we have a file */
+                                        fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
+                                        size_t num_written;
+                                        uint64_t rotated64;
+                                        uint32_t rotated32;
+
+                                        /* guess the architecture endianess */
+                                        int end_check = 1;
+                                        /* strictly speaking this is not a wise way to do this */
+                                        uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
+
+                                        /* if the machine is big endian we get endian_flag = 0x10 */
+                                        /* we don't care anymore .... do we ??
+                                         *
+                                        size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
+                                        printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
+                                                sizeof(uint8_t), num_written);
+                                         */
+
+                                        /* for the header data do the rotates separately */
+                                        if ( endian_flag ) {
+                                            rotated32 = rot4(num_elements);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
-                                            /* finally we know we have a file */
-                                            fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
-                                            size_t num_written;
-                                            uint64_t rotated64;
-                                            uint32_t rotated32;
-    
-                                            /* guess the architecture endianess */
-                                            int end_check = 1;
-                                            /* strictly speaking this is not a wise way to do this */
-                                            uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
-    
-                                            /* if the machine is big endian we get endian_flag = 0x10 */
-                                            /* we don't care anymore .... do we ??
-                                             *
-                                            size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
-                                            printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
-                                                    sizeof(uint8_t), num_written);
-                                             */
-    
-                                            /* for the header data do the rotates separately */
-                                            if ( endian_flag ) {
-                                                rotated32 = rot4(num_elements);
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-                                            } else {
-                                                num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
-                                            }
-                                            printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
-                                                        sizeof(uint32_t), num_written);
-                                            printf("     : num_elements = %8i\n",num_elements);
-                                        
-                                            if ( endian_flag ) {
-                                                rotated32 = rot4(mand_bail);
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-                                            } else {
-                                                num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
-                                            }
-                                            printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
-                                                    sizeof(uint32_t), num_written);
-                                            printf("     : mand_bail = %8i\n",mand_bail);
-                                        
-                                            /* need to swap around bytes of the 8-byte floating point double */
-                                            if ( endian_flag ) {
-                                                rotated64 = rot8(*((uint64_t *)&magnify));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            } else {
-                                                num_written = fwrite(&magnify, sizeof(double), 1, fp);
-                                            }
-                                            printf("     : %2lu byte double magnify        num_written = %lu\n",
-                                                    sizeof(double), num_written);
-                                            printf("     :        magnify = %-+26.20e\n", magnify);
-                                        
-                                            if ( endian_flag ) {
-                                                rotated64 = rot8(*((uint64_t *)&real_translate));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            } else {
-                                                num_written = fwrite(&real_translate, sizeof(double), 1, fp);
-                                            }
-                                            printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
-                                                    sizeof(double), num_written);
-                                            printf("     : real_translate = %-+26.20e\n",real_translate);
-                                        
-                                            if ( endian_flag ) {
-                                                rotated64 = rot8(*((uint64_t *)&imag_translate));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            } else {
-                                                num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
-                                            }
-                                            printf("     : %2lu byte double imag_translate num_written = %lu\n",
-                                                    sizeof(double), num_written);
-                                            printf("     : imag_translate = %-+26.20e\n",imag_translate);
-
-                                            /* dump a few select reference data points */
-                                            if ( endian_flag ) {
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(0,0,0,0)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(0,0,0,0)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                /* the mandel_val is essentially an int */
-                                                rotated32 = rot4(mandel_val[0][0][0][0] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(7,7,63,63)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(7,7,63,63)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated32 = rot4(mandel_val[7][7][63][63] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,0,0)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,0,0)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated32 = rot4(mandel_val[8][8][0][0] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,1,0)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,1,0)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated32 = rot4(mandel_val[8][8][1][0] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,32,32)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,32,32)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated32 = rot4(mandel_val[8][8][32][32] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(3,12,44,21)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(3,12,44,21)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated32 = rot4(mandel_val[3][12][44][21] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                                rotated64 = rot8(*((uint64_t *)(&coord_r[index(15,15,63,63)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated64 = rot8(*((uint64_t *)(&coord_j[index(15,15,63,63)])));
-                                                num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                rotated32 = rot4(mandel_val[15][15][63][63] );
-                                                num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                            } else {
-                                                /* dump the data from little endian machines */
-                                                num_written = fwrite(&coord_r[index(0,0,0,0)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(0,0,0,0)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[0][0][0][0], sizeof(uint32_t), 1, fp);
-
-                                                num_written = fwrite(&coord_r[index(7,7,63,63)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(7,7,63,63)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[7][7][63][63], sizeof(uint32_t), 1, fp);
-
-                                                num_written = fwrite(&coord_r[index(8,8,0,0)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(8,8,0,0)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[8][8][0][0], sizeof(uint32_t), 1, fp);
-
-                                                num_written = fwrite(&coord_r[index(8,8,1,0)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(8,8,1,0)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[8][8][1][0], sizeof(uint32_t), 1, fp);
-
-                                                num_written = fwrite(&coord_r[index(8,8,32,32)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(8,8,32,32)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[8][8][32][32], sizeof(uint32_t), 1, fp);
-
-                                                num_written = fwrite(&coord_r[index(3,12,44,21)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(3,12,44,21)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[3][12][44][21], sizeof(uint32_t), 1, fp);
-
-                                                num_written = fwrite(&coord_r[index(15,15,63,63)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&coord_j[index(15,15,63,63)], sizeof(double), 1, fp);
-                                                num_written = fwrite(&mandel_val[15][15][63][63], sizeof(uint32_t), 1, fp);
-                                            }
-
-                                            fclose(fp);
-                                            fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
+                                            num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
                                         }
+                                        printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
+                                                    sizeof(uint32_t), num_written);
+                                        printf("     : num_elements = %8i\n",num_elements);
+                                    
+                                        if ( endian_flag ) {
+                                            rotated32 = rot4(mand_bail);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : mand_bail = %8i\n",mand_bail);
+                                    
+                                        /* need to swap around bytes of the 8-byte floating point double */
+                                        if ( endian_flag ) {
+                                            rotated64 = rot8(*((uint64_t *)&magnify));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&magnify, sizeof(double), 1, fp);
+                                        }
+                                        printf("     : %2lu byte double magnify        num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     :        magnify = %-+32.26e\n", magnify);
+                                    
+                                        if ( endian_flag ) {
+                                            rotated64 = rot8(*((uint64_t *)&real_translate));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&real_translate, sizeof(double), 1, fp);
+                                        }
+                                        printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     : real_translate = %-+32.26e\n",real_translate);
+                                    
+                                        if ( endian_flag ) {
+                                            rotated64 = rot8(*((uint64_t *)&imag_translate));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
+                                        }
+                                        printf("     : %2lu byte double imag_translate num_written = %lu\n",
+                                                sizeof(double), num_written);
+                                        printf("     : imag_translate = %-+32.26e\n",imag_translate);
+
+                                        /* dump a few select reference data points */
+                                        if ( endian_flag ) {
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(0,0,0,0)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(0,0,0,0)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            /* the mandel_val is essentially an int */
+                                            rotated32 = rot4(mandel_val[0][0][0][0] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(7,7,63,63)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(7,7,63,63)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated32 = rot4(mandel_val[7][7][63][63] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,0,0)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,0,0)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated32 = rot4(mandel_val[8][8][0][0] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,1,0)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,1,0)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated32 = rot4(mandel_val[8][8][1][0] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(8,8,32,32)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(8,8,32,32)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated32 = rot4(mandel_val[8][8][32][32] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(3,12,44,21)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(3,12,44,21)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated32 = rot4(mandel_val[3][12][44][21] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                            rotated64 = rot8(*((uint64_t *)(&coord_r[index(15,15,63,63)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated64 = rot8(*((uint64_t *)(&coord_j[index(15,15,63,63)])));
+                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                            rotated32 = rot4(mandel_val[15][15][63][63] );
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+
+                                        } else {
+                                            /* dump the data from little endian machines */
+                                            num_written = fwrite(&coord_r[index(0,0,0,0)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(0,0,0,0)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[0][0][0][0], sizeof(uint32_t), 1, fp);
+
+                                            num_written = fwrite(&coord_r[index(7,7,63,63)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(7,7,63,63)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[7][7][63][63], sizeof(uint32_t), 1, fp);
+
+                                            num_written = fwrite(&coord_r[index(8,8,0,0)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(8,8,0,0)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[8][8][0][0], sizeof(uint32_t), 1, fp);
+
+                                            num_written = fwrite(&coord_r[index(8,8,1,0)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(8,8,1,0)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[8][8][1][0], sizeof(uint32_t), 1, fp);
+
+                                            num_written = fwrite(&coord_r[index(8,8,32,32)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(8,8,32,32)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[8][8][32][32], sizeof(uint32_t), 1, fp);
+
+                                            num_written = fwrite(&coord_r[index(3,12,44,21)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(3,12,44,21)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[3][12][44][21], sizeof(uint32_t), 1, fp);
+
+                                            num_written = fwrite(&coord_r[index(15,15,63,63)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&coord_j[index(15,15,63,63)], sizeof(double), 1, fp);
+                                            num_written = fwrite(&mandel_val[15][15][63][63], sizeof(uint32_t), 1, fp);
+                                        }
+
+                                        fclose(fp);
+                                        fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
                                     }
-                                    free(timestamp_filename);
-                                    /* if the dumper flag is -1 then we need to
-                                     * indicate that the dump is impossible */
-                                    if ( dumper_flag < 0 ) {
-                                        sprintf(buf,"Bad TMPDIR");
-                                        XSetForeground(dsp, gc2, red.pixel);
-                                        XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
-                                        XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
-                                        sprintf(buf,"DUMPER");
-                                        XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
-                                        XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
-                                        XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
-                                    } else {
-                                        fprintf(stderr,"INFO : dumper_flag = 0\n");
-                                        dumper_flag = 0;
-                                    }
-    
-                                } else {
-                                    /* indicate that the data is not ready */
-                                    sprintf(buf,"No Data");
-                                    XSetForeground(dsp, gc2, red.pixel);
-                                    XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
                                 }
+                                free(timestamp_filename);
+                                /* if the dumper flag is -1 then we need to
+                                 * indicate that the dump is impossible */
+                                if ( dumper_flag < 0 ) {
+                                    sprintf(buf,"Bad TMPDIR");
+                                    XSetForeground(dsp, gc2, red.pixel);
+                                    XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
+                                    XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
+                                    sprintf(buf,"DUMPER");
+                                    XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
+                                    XDrawLine(dsp, win2, gc2, 320, 162, 392, 182);
+                                    XDrawLine(dsp, win2, gc2, 320, 182, 392, 162);
+                                } else {
+                                    fprintf(stderr,"INFO : dumper_flag = 0\n");
+                                    dumper_flag = 0;
+                                }
+
+                            } else {
+                                /* indicate that the data is not ready */
+                                sprintf(buf,"No Data");
+                                XSetForeground(dsp, gc2, red.pixel);
+                                XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
                             }
                         }
                     }
@@ -1835,8 +1786,8 @@ replot:
                 printf("     : %s\n",buf);
                 XDrawImageString( dsp, win2, gc2, 10, 270, buf, (int)strlen(buf));
 
-                printf("     : win_r = %-+30.22e\n", win_r );
-                printf("     : win_j = %-+30.22e\n", win_j );
+                printf("     : win_r = %-+32.26e\n", win_r );
+                printf("     : win_j = %-+32.26e\n", win_j );
 
                 XSetForeground(dsp, gc2, cornflowerblue.pixel);
                 sprintf(buf,"fp64( %-+10.8e , %-+10.8e )  ", win_r, win_j );
@@ -1847,19 +1798,11 @@ replot:
                 x_prime = coord.r;
                 y_prime = coord.j;
 
-
-                /*
-                x_prime = obs_real * win_r / 2.0;
-                y_prime = obs_imag * win_j / 2.0;
-                x_prime = x_prime + real_translate + half_sample_offset_real;
-                y_prime = y_prime + imag_translate + half_sample_offset_imag;
-                */
-
                 printf("     : after translation\n");
-                printf("     : r_trn   = %-+30.22e\n", real_translate );
-                printf("     : j_trn   = %-+30.22e\n", imag_translate );
-                printf("     : x_prime = %-+30.22e\n", x_prime );
-                printf("     : y_prime = %-+30.22e\n", y_prime );
+                printf("     : r_trn   = %-+32.26e\n", real_translate );
+                printf("     : j_trn   = %-+32.26e\n", imag_translate );
+                printf("     : x_prime = %-+32.26e\n", x_prime );
+                printf("     : y_prime = %-+32.26e\n", y_prime );
                 /****************************************************
                  *    NONE OF THE ABOVE HAS much to do with the
                  *    actual computations needed. All we did was
@@ -1881,7 +1824,6 @@ replot:
                 XDrawImageString( dsp, win3, gc3, 10, 120, buf, (int)strlen(buf));
 
                 sprintf(buf," centre = %-+16.12e, %-+16.12e  ", real_translate, imag_translate);
-                printf("     : centre = %-+30.22e, %-+30.22e\n", real_translate, imag_translate);
                 XDrawImageString( dsp, win3, gc3, 10, 140, buf, (int)strlen(buf));
                 XSetForeground(dsp, gc3, cyan.pixel);
 
@@ -1901,18 +1843,20 @@ replot:
                 /* here we loop over the vbox coords */
                 for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                     for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
-                        /* TODO please fix this as we are grinding the gears */
-                        if ( 1 ) {  /* vbox_flag[vbox_r][vbox_j] == 0 */
+                        printf("     : vbox [ %-3i, %-3i ]\n", vbox_r, vbox_j);
+                        /* loop over the pixels ( samples ) inside a vbox */
+                        /* TODO grind the gears */
+                        if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
                             clock_gettime(CLOCK_REALTIME, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                 vbox_ll_y = vbox_j * vbox_h + mand_y_pix;
+                                sample_j = vbox_ll_y;
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                                     vbox_ll_x = vbox_r * vbox_w + mand_x_pix;
 
                                     sample_r = vbox_ll_x;
-                                    sample_j = vbox_ll_y;
 
-                                    fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                                    fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
                                     win_r = coord.r;
                                     win_j = coord.j;
 
@@ -1920,25 +1864,30 @@ replot:
                                     x_prime = coord.r;
                                     y_prime = coord.j;
 
-                                    /* DEBUGGARY */
+                                    /* DEBUGGARY *
+                                    printf("     : sample[%-4i][%-4i] -> Wr = %-+32.26e\n", sample_r, sample_j, win_r);
+                                    printf("     :                    -> Wj = %-+32.26e\n", win_j);
+                                    printf("     : r[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",vbox_r,vbox_j,mand_x_pix,mand_y_pix,x_prime);
+                                    printf("     : j[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",vbox_r,vbox_j,mand_x_pix,mand_y_pix,y_prime);
+
+
                                     if (( vbox_r == 3 ) && ( vbox_j == 12 ) && ( mand_x_pix == 44) && ( mand_y_pix == 21) ) {
                                         printf("wtf\n");
+                                        printf("WTF  :     normalized Wr = %-+32.26e\n", win_r);
+                                        printf("WTF  :                Wj = %-+32.26e\n", win_j);
                                         printf("WTF  : r[ 3][12][44][21] = %-+32.26e\n", x_prime);
                                         printf("WTF  : j[ 3][12][44][21] = %-+32.26e\n", y_prime);
                                     }
+                                    */
 
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
                                         mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
                                     } else {
-                                        /* In the past we abused the stack with a trivial
-                                         * and massive array. Now we shall index into heap
-                                         * as described in index_check.c */
-                                        *(coord_r + index(vbox_r,vbox_j,mand_x_pix,mand_y_pix)) = x_prime;
-                                        *(coord_j + index(vbox_r,vbox_j,mand_x_pix,mand_y_pix)) = y_prime;
-
+                                        coord_r[index(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = x_prime; 
+                                        coord_j[index(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = y_prime;
                                         /* the actual mandelbrot computation for (x_prime, y_prime) */
                                         mand_height = mbrot(x_prime, y_prime, mand_bail);
-                                        /* TODO get the result off the stack */
+                                        /* TODO only you can prevent stack abuse */
                                         mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix] = mand_height;
                                     }
 
@@ -2107,17 +2056,5 @@ replot:
     coord_j = NULL;
 
     return EXIT_SUCCESS;
-}
-
-int index(int Vbox_r, int Vbox_j, int Sr, int Sj) {
-
-    return Vbox_r * VBOX_SAMPLE_REAL + Sr
-
-           + Vbox_j * VBOX_REAL_COUNT
-                    * VBOX_SAMPLE_REAL
-                    * VBOX_SAMPLE_IMAG
-      
-           + Sj * VBOX_REAL_COUNT * VBOX_SAMPLE_REAL;
-
 }
 

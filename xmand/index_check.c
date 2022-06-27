@@ -47,16 +47,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define VBOX_REAL_COUNT 16
-#define VBOX_IMAG_COUNT 16
-#define VBOX_SAMPLE_REAL 64
-#define VBOX_SAMPLE_IMAG 64
+#include "mandelbrot.h"
 
 int main(int argc, char **argv) {
 
     int Sr, Sj, Vbox_r, Vbox_j;
-    int index;
+    int index_result;
 
     /* For a sample [Sr,Sj] within a
      * vbox [Vbox_r,Vbox_j] we may index :
@@ -76,15 +72,8 @@ int main(int argc, char **argv) {
             for ( Sr = 0; Sr < VBOX_SAMPLE_REAL; Sr++ ) {
                 for ( Sj = 0; Sj < VBOX_SAMPLE_REAL; Sj++ ) {
 
-                    index = Vbox_r * VBOX_SAMPLE_REAL + Sr
-
-                          + Vbox_j * VBOX_REAL_COUNT
-                                   * VBOX_SAMPLE_REAL
-                                   * VBOX_SAMPLE_IMAG
-
-                          + Sj * VBOX_REAL_COUNT * VBOX_SAMPLE_REAL;
-
-                    printf("%7i\n",index);
+                    index_result = index(Vbox_r, Vbox_j, Sr, Sj);
+                    printf("%7i\n",index_result);
 
                 } /* end Sj for */
             } /* end Sr for */

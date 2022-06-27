@@ -81,7 +81,7 @@ unsigned long mandle_col( uint8_t height );
 
 uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
 
-int index(int Vbox_r, int Vbox_j, int Sr, int Sj);
+int index(int Vr, int Vj, int Sr, int Sj);
 
 void *mbrot_vbox_pthread(void *recv_parm);
 
@@ -110,4 +110,8 @@ void fp_region(int real, int imag,
 
 void fp_translate(double r, double j, double magnify,
                   double t_r, double t_j, fp64 *cplex);
+
+void fp_vbox(int Vr, int Vj, int Sr, int Sj,
+             int real_range, int imag_range,
+             fp64 *cplex);
 

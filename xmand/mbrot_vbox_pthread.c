@@ -47,12 +47,18 @@
 void *mbrot_vbox_pthread(void *recv_parm)
 {
     thread_parm *p = (thread_parm *)recv_parm;
-    double win_x, win_y, x_prime, y_prime;
+    double win_r, win_j, x_prime, y_prime;
     int mand_x_pix, mand_y_pix, vbox_ll_x, vbox_ll_y;
     int mand_y_pix_start, mand_y_pix_stop;
 
-   /* point c belongs to the Mandelbrot set if and only if
-    * the magnitude of the f(c) <= 2.0 */
+    /* required for some fp routines */
+    fp64 cplex;
+
+    /* throw away buffer */
+    char buff[256];
+
+    /* point c belongs to the Mandelbrot set if and only if
+     * the magnitude of the f(c) <= 2.0 */
     uint32_t height;
     double zr, zi, tmp_r, tmp_i, mag;
 
@@ -62,29 +68,62 @@ void *mbrot_vbox_pthread(void *recv_parm)
     /* actually the stop line is one less than this next thing */
     mand_y_pix_stop = mand_y_pix_start + ( p->vbox_h / p->t_total );
 
-    fprintf (stderr,"[ t%02i ] : %-2i -> %-2i\n", p->t_num, mand_y_pix_start, mand_y_pix_stop - 1);
+    /* It may be better to use flockfile() and funlockfile() but
+     * those are blocking and the recent kernel on Linux and FreeBSD
+     * seem to assure us that stdio output functions like printf
+     * and puts are thread safe. At the very least output from
+     * other threads will not be intermingled and mangled on a
+     * single output line.
+     */
+    sprintf(buff,"[ t%02i ] : v[%-2i][%-2i] rows %-2i -> %-2i", 
+            p->t_num, p->vbox_r, p->vbox_j, mand_y_pix_start, mand_y_pix_stop - 1);
+    puts(buff);
+    buff[0]='\0';
 
     /* note that we do not go all the way up to mand_y_pix_stop */
     for ( mand_y_pix = mand_y_pix_start; mand_y_pix < mand_y_pix_stop; mand_y_pix++ ) {
 
-        /* lower left corner of this threads little rectangle */
-        vbox_ll_y = p->vbox_j * p->vbox_h + mand_y_pix;
+        /* lower left corner of this threads little rectangle
+         * vbox_ll_y = p->vbox_j * p->vbox_h + mand_y_pix;
+         */
 
         for ( mand_x_pix = 0; mand_x_pix < p->vbox_w; mand_x_pix++ ) {
 
             /* we compute from the lower left corner of the on screen
              * vbox going left to right and upwards along the positive
-             * imaginary axis. */
+             * imaginary axis. 
             vbox_ll_x = p->vbox_r * p->vbox_w + mand_x_pix;
+            */
 
+            fp_vbox(p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix,
+                    p->eff_width, p->eff_height, &cplex);
 
-            win_x = ( ( ( 1.0 * vbox_ll_x ) / p->eff_width ) * 2.0 - 1.0 );
-            win_y = ( -1.0 * ( ( ( 1.0 * ( p->eff_height - vbox_ll_y ) ) / p->eff_height ) * 2.0 - 1.0 ) );
+            win_r = cplex.r;
+            win_j = cplex.j;
 
+            sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].Wr = %-+32.26e",
+                    p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, win_r);
+            puts(buff);
+            buff[0]='\0';
 
-            x_prime = p->obs_real * win_x / 2.0 + p->r_translate;
-            y_prime = p->obs_imag * win_y / 2.0 + p->i_translate;
+            sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].Wj = %-+32.26e",
+                    p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, win_j);
+            puts(buff);
+            buff[0]='\0';
 
+            fp_translate(win_r, win_j, p->magnify, p->r_translate, p->i_translate, &cplex);
+            x_prime = cplex.r;
+            y_prime = cplex.j;
+
+            sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].x\' = %-+32.26e",
+                    p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, x_prime);
+            puts(buff);
+            buff[0]='\0';
+
+            sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].y\' = %-+32.26e",
+                    p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, y_prime);
+            puts(buff);
+            buff[0]='\0';
 
             height = 0;
             zr = 0.0;
@@ -102,12 +141,16 @@ void *mbrot_vbox_pthread(void *recv_parm)
 
             (*(p->v))[p->vbox_r][p->vbox_j][mand_x_pix][mand_y_pix] = height;
 
+            sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].M = %6i",
+                    p->t_num, p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix, height);
+            puts(buff);
+            buff[0]='\0';
         }
     }
 
     p->ret_val = 0;
 
-    return ( NULL );
+    return NULL;
 
 }
 
