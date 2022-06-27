@@ -47,8 +47,11 @@ void fp_region(int real, int imag,
      * the results such that the center is ( 0.0, 0.0 ) and
      * coordinates are always  -1.0 <= r,j <= +1.0 */
 
-    locate->r = fma( (( 1.0 * real ) / ( 1.0 * real_range )), 2.0, -1.0);
-    locate->j = fma( (( 1.0 * imag ) / ( 1.0 * imag_range )), 2.0, -1.0);
+    locate->r = fma( (( 1.0 * real ) / ( 1.0 * real_range )), 2.0, -1.0)
+                + ( 1.0 / real_range );
+
+    locate->j = fma( (( 1.0 * imag ) / ( 1.0 * imag_range )), 2.0, -1.0)
+                + ( 1.0 / imag_range );
 
 }
 
