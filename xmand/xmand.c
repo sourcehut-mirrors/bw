@@ -257,6 +257,7 @@ int main(int argc, char*argv[])
     double candidate_double = 0.0;
     int fpe_raised = 0;
     uint32_t mand_height, mand_bail;
+    uint32_t sub_pixel_mand_height;
 
     int mand_x_pix, mand_y_pix;
 
@@ -1181,22 +1182,25 @@ int main(int argc, char*argv[])
                         /* use the data returned by the thread computation */
                         mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
 
-                        fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                        /*
+                        fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
                         win_r = coord.r;
                         win_j = coord.j;
-
-                        /* BORK see if fp_vbox computes the same results *
-                        fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
-                        if ( ( ( coord.r - win_r ) > EPSILON ) || ( ( coord.j - win_j ) > EPSILON ) ) {
-                            fprintf(stderr,"BORK : v[%2i][%2i][%2i][%2i]\n", vbox_r, vbox_j, mand_x_pix, mand_y_pix);
-                        }
                         */
 
+                        /* BORK see if both methods compute the same results *
+                        fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
+                        if ( ( ( coord.r - win_r ) > EPSILON ) || ( ( coord.j - win_j ) > EPSILON ) ) {
+                            fprintf(stderr,"BORK : v[%2i][%2i][%2i][%2i]", vbox_r, vbox_j, mand_x_pix, mand_y_pix);
+                            if ( ( coord.r - win_r ) > EPSILON ) fprintf(stderr," deltaWr = %-+36.22e", ( coord.r - win_r ));
+                            if ( ( coord.j - win_j ) > EPSILON ) fprintf(stderr," deltaWj = %-+36.22e", ( coord.j - win_j ));
+                        } */
+
+                        /*
                         fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
                         x_prime = coord.r;
                         y_prime = coord.j;
-                        /* TODO put the result of (x_prime,y_prime) in to the array coord_r
-                         * and coord_j */
+                        */
 
                         if ( mand_height == mand_bail ) {
                             /* really we should use the color Black for portable stuff */
@@ -1221,25 +1225,26 @@ int main(int argc, char*argv[])
                         for ( p = 0; p < 3; p++ ) {
                             for ( q = 0; q < 3; q++ ) {
 
-                                /* these are the complex coordinates of the sub-sample location */
-                                sub_pixel_real = x_prime + ( p - 1 ) * pixel_real_width / 3.0;
-                                sub_pixel_imag = y_prime + ( q - 1 ) * pixel_imag_height / -3.0;
+                                /* coordinates of the sub-sample location */
+                                sub_pixel_real = coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)]
+                                                 + ( p - 1 ) * pixel_real_width / 3.0;
 
+                                sub_pixel_imag = coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)]
+                                                 - ( q - 1 ) * pixel_imag_height / 3.0;
+
+                                sub_pixel_mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
+                                /*
                                 if ((p!=1)&&(q!=1)) {
                                     mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
                                 } else {
-                                    /* TODO just use the previously computed value
-                                    mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
-                                    */
                                     mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
-                                }
+                                } */
 
-                                /* check if we landed in a maximal black region */
-                                if ( mand_height == mand_bail ) {
+                                if ( sub_pixel_mand_height == mand_bail ) {
                                     XSetForeground(dsp, gc2, (unsigned long)0 );
                                 } else {
-                                    /* use a trivial color computation here */
-                                    mandlebrot.pixel = lsd_trippy[ (uint8_t)(mand_height & 0xff) ];
+                                    /* trivial color */
+                                    mandlebrot.pixel = lsd_trippy[ (uint8_t)(sub_pixel_mand_height & 0xff) ];
                                     XSetForeground(dsp, gc2, mandlebrot.pixel);
                                 }
 
@@ -1247,14 +1252,6 @@ int main(int argc, char*argv[])
 
                             }
                         }
-                        /* TODO we have the opportunity here to average the result
-                         * of the above 3x3 sub-pixel computation. Then plot some 
-                         * resultant average into the main window. 
-                         *
-                         * However unless we always do sub-pixel sample computation
-                         * the result of a given vbox will be something strange that
-                         * looks like none of its neighbours. 
-                         */
                     }
                 }
 
