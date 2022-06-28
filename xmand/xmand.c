@@ -262,7 +262,7 @@ int main(int argc, char*argv[])
     int mand_x_pix, mand_y_pix;
 
     /* These are the initial values within the viewport.
-     * They have the domain  -1.0 < win_r < +1.0 and 
+     * They have the domain  -1.0 < win_r < +1.0 and
      * also the same for win_j. */
     double win_r, win_j;
     /* general purpose fp64 coordinates to toss around */
@@ -275,7 +275,7 @@ int main(int argc, char*argv[])
 
     /* I am not checking the status of the setlocale call here
      * because it had better be impossible to fail for a "C"
-     * or POSIX locale : 
+     * or POSIX locale :
      *
      * RETURN VALUES
      *     Upon successful completion, setlocale() returns the string
@@ -995,7 +995,7 @@ int main(int argc, char*argv[])
         XDrawImageString( dsp, win3, gc3, 10, 40, buf, (int)strlen(buf));
 
         /* jank adjustment of one or two pixels
-         * we see that the arrow tip of the 
+         * we see that the arrow tip of the
          * mouse cursor seems to be off by a little
          * figgle smush these numbers a little
          * and also we keep the mouse_x_raw and mouse_y_raw data */
@@ -1087,7 +1087,7 @@ int main(int argc, char*argv[])
                  *        That is to say, do we always recompute the data in
                  *        a selected vbox regardless if we have already done
                  *        the whole process before, either globally or with
-                 *        a single left mouse click. 
+                 *        a single left mouse click.
                  *
                  * The key issue here is should we redo the computation if the
                  * data already exists in the vbox? It is quite normal to paint
@@ -1096,7 +1096,7 @@ int main(int argc, char*argv[])
                  * a pile of threads to redo the computation serves no purpose
                  * other then to grind the gears and get a timing report.
                  *
-                 * Therefore we may use the strange conditional here of 
+                 * Therefore we may use the strange conditional here of
                  *     ( 1 || ( vbox_flag[vbox_r][vbox_j] == 0 ) )
                  * which will forever be true. Thus we grind the gears and do
                  * the thread dispatch every time.
@@ -1517,19 +1517,19 @@ int main(int argc, char*argv[])
                             XDrawImageString( dsp, win2, gc2, 324, 177, buf, (int)strlen(buf));
                             dumper_flag = 1;
                             fprintf(stderr,"INFO : dumper_flag = 1\n");
-    
+
                         } else {
-    
+
                             /* We are confirmed. Switch the dumper button back to
                              * magenta and create a new data file in the users TMPDIR
                              * if we can.
                              */
-    
+
                             XSetForeground(dsp, gc2, magenta.pixel);
                             XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
                             sprintf(buf,"DUMPER");
                             XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
-    
+
                             /* dump some file data if we have the data ready */
 
                             int data_ready = 1;
@@ -1584,14 +1584,6 @@ int main(int argc, char*argv[])
                                         /* strictly speaking this is not a wise way to do this */
                                         uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
 
-                                        /* if the machine is big endian we get endian_flag = 0x10 */
-                                        /* we don't care anymore .... do we ??
-                                         *
-                                        size_t num_written = fwrite(&endian_flag, sizeof(uint8_t), 1, fp);
-                                        printf("DBUG : %2lu byte uint8_t endian_flag   num_written = %lu\n",
-                                                sizeof(uint8_t), num_written);
-                                         */
-
                                         /* for the header data do the rotates separately */
                                         if ( endian_flag ) {
                                             rotated32 = rot4(num_elements);
@@ -1602,7 +1594,7 @@ int main(int argc, char*argv[])
                                         printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
                                                     sizeof(uint32_t), num_written);
                                         printf("     : num_elements = %8i\n",num_elements);
-                                    
+
                                         if ( endian_flag ) {
                                             rotated32 = rot4(mand_bail);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
@@ -1612,7 +1604,7 @@ int main(int argc, char*argv[])
                                         printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
                                                 sizeof(uint32_t), num_written);
                                         printf("     : mand_bail = %8i\n",mand_bail);
-                                    
+
                                         /* need to swap around bytes of the 8-byte floating point double */
                                         if ( endian_flag ) {
                                             rotated64 = rot8(*((uint64_t *)&magnify));
@@ -1623,7 +1615,7 @@ int main(int argc, char*argv[])
                                         printf("     : %2lu byte double magnify        num_written = %lu\n",
                                                 sizeof(double), num_written);
                                         printf("     :        magnify = %-+32.26e\n", magnify);
-                                    
+
                                         if ( endian_flag ) {
                                             rotated64 = rot8(*((uint64_t *)&real_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
@@ -1633,7 +1625,7 @@ int main(int argc, char*argv[])
                                         printf("DBUG : %2lu byte double real_translate num_written = %lu\n",
                                                 sizeof(double), num_written);
                                         printf("     : real_translate = %-+32.26e\n",real_translate);
-                                    
+
                                         if ( endian_flag ) {
                                             rotated64 = rot8(*((uint64_t *)&imag_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
@@ -1644,90 +1636,35 @@ int main(int argc, char*argv[])
                                                 sizeof(double), num_written);
                                         printf("     : imag_translate = %-+32.26e\n",imag_translate);
 
-                                        /* dump a few select reference data points */
-                                        if ( endian_flag ) {
+                                        /* dump all data */
+                                        for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
+                                            for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
+                                                for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
+                                                    sample_j = vbox_j * vbox_h + mand_y_pix;
+                                                    for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
+                                                        sample_r = vbox_r * vbox_w + mand_x_pix;
+                                                        if ( endian_flag ) {
 
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(0,0,0,0)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(0,0,0,0)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            /* the mandel_val is essentially an int */
-                                            rotated32 = rot4(mandel_val[0][0][0][0] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
+                                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
+                                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+                                                            rotated32 = rot4(mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix] );
+                                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
 
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(7,7,63,63)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(7,7,63,63)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated32 = rot4(mandel_val[7][7][63][63] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                                        } else {
 
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(8,8,0,0)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(8,8,0,0)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated32 = rot4(mandel_val[8][8][0][0] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                                            /* dump data from little endian machines */
+                                                            num_written = fwrite(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(double), 1, fp);
+                                                            num_written = fwrite(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(double), 1, fp);
+                                                            num_written = fwrite(&mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix], sizeof(uint32_t), 1, fp);
 
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(8,8,1,0)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(8,8,1,0)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated32 = rot4(mandel_val[8][8][1][0] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                                        }
 
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(8,8,32,32)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(8,8,32,32)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated32 = rot4(mandel_val[8][8][32][32] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(3,12,44,21)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(3,12,44,21)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated32 = rot4(mandel_val[3][12][44][21] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(15,15,63,63)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(15,15,63,63)])));
-                                            num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                            rotated32 = rot4(mandel_val[15][15][63][63] );
-                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
-                                        } else {
-                                            /* dump the data from little endian machines */
-                                            num_written = fwrite(&coord_r[array_offset(0,0,0,0)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(0,0,0,0)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[0][0][0][0], sizeof(uint32_t), 1, fp);
-
-                                            num_written = fwrite(&coord_r[array_offset(7,7,63,63)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(7,7,63,63)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[7][7][63][63], sizeof(uint32_t), 1, fp);
-
-                                            num_written = fwrite(&coord_r[array_offset(8,8,0,0)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(8,8,0,0)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[8][8][0][0], sizeof(uint32_t), 1, fp);
-
-                                            num_written = fwrite(&coord_r[array_offset(8,8,1,0)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(8,8,1,0)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[8][8][1][0], sizeof(uint32_t), 1, fp);
-
-                                            num_written = fwrite(&coord_r[array_offset(8,8,32,32)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(8,8,32,32)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[8][8][32][32], sizeof(uint32_t), 1, fp);
-
-                                            num_written = fwrite(&coord_r[array_offset(3,12,44,21)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(3,12,44,21)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[3][12][44][21], sizeof(uint32_t), 1, fp);
-
-                                            num_written = fwrite(&coord_r[array_offset(15,15,63,63)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&coord_j[array_offset(15,15,63,63)], sizeof(double), 1, fp);
-                                            num_written = fwrite(&mandel_val[15][15][63][63], sizeof(uint32_t), 1, fp);
+                                                    }
+                                                }
+                                            }
                                         }
-
                                         fclose(fp);
                                         fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
                                     }
@@ -1892,7 +1829,7 @@ replot:
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
                                         mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
                                     } else {
-                                        coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = x_prime; 
+                                        coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = x_prime;
                                         coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = y_prime;
                                         /* the actual mandelbrot computation for (x_prime, y_prime) */
                                         mand_height = mbrot(x_prime, y_prime, mand_bail);
@@ -2003,7 +1940,7 @@ replot:
             printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
 
             printf("--------------------------- full plot done -----------------------------\n");
-            
+
         } else if ( button == Button3 ) {
 
             printf("right click\n");
