@@ -1123,6 +1123,10 @@ int main(int argc, char*argv[])
 
                         /* pass along a pointer to where we want a result integer */
                         parm[pt]->v = &mandel_val;
+
+                        /* we also want the complex plane coordinates */
+                        parm[pt]->coord_r = coord_r;
+                        parm[pt]->coord_j = coord_j;
                         parm[pt]->ret_val = 0;
 
                         pthread_create( &tid[pt], NULL, mbrot_vbox_pthread, (void *)parm[pt] );

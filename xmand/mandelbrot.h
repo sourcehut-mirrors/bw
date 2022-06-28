@@ -89,6 +89,7 @@ void *mbrot_vbox_pthread(void *recv_parm);
 typedef struct {
     double r_translate, i_translate, magnify;
     double obs_real, obs_imag;
+    double *coord_r, *coord_j;
     uint32_t (*v)[16][16][64][64];
     uint64_t ret_val;
     int vbox_r, vbox_j;

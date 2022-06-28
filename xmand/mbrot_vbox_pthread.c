@@ -62,11 +62,13 @@ void *mbrot_vbox_pthread(void *recv_parm)
     uint32_t height;
     double zr, zi, tmp_r, tmp_i, mag;
 
-    /* lets come up with an imaginary axis start_i and stop_i
+    /* lets come up with an imaginary axis start and stop
      * based on this thread t_num */
     mand_y_pix_start = ( p->vbox_h / p->t_total ) * p->t_num;
-    /* actually the stop line is one less than this next thing */
-    mand_y_pix_stop = mand_y_pix_start + ( p->vbox_h / p->t_total );
+
+    mand_y_pix_stop = mand_y_pix_start
+                      + ( p->vbox_h / p->t_total )
+                      - 1;
 
     /* It may be better to use flockfile() and funlockfile() but
      * those are blocking and the recent kernel on Linux and FreeBSD
@@ -76,12 +78,12 @@ void *mbrot_vbox_pthread(void *recv_parm)
      * single output line.
      */
     sprintf(buff,"[ t%02i ] : v[%-2i][%-2i] rows %-2i -> %-2i", 
-            p->t_num, p->vbox_r, p->vbox_j, mand_y_pix_start, mand_y_pix_stop - 1);
+            p->t_num, p->vbox_r, p->vbox_j,
+            mand_y_pix_start, mand_y_pix_stop);
     puts(buff);
     buff[0]='\0';
 
-    /* note that we do not go all the way up to mand_y_pix_stop */
-    for ( mand_y_pix = mand_y_pix_start; mand_y_pix < mand_y_pix_stop; mand_y_pix++ ) {
+    for ( mand_y_pix = mand_y_pix_start; mand_y_pix <= mand_y_pix_stop; mand_y_pix++ ) {
 
         /* lower left corner of this threads little rectangle
          * vbox_ll_y = p->vbox_j * p->vbox_h + mand_y_pix;
@@ -116,6 +118,10 @@ void *mbrot_vbox_pthread(void *recv_parm)
             fp_translate(win_r, win_j, p->magnify, p->r_translate, p->i_translate, &cplex);
             x_prime = cplex.r;
             y_prime = cplex.j;
+
+            /* store the coordinate data */
+            p->coord_r[array_offset(p->vbox_r,p->vbox_j,mand_x_pix,mand_y_pix)] = x_prime;
+            p->coord_j[array_offset(p->vbox_r,p->vbox_j,mand_x_pix,mand_y_pix)] = y_prime;
 
             /*
             sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].x\' = %-+32.26e",
