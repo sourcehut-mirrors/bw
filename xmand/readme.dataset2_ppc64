@@ -2,14 +2,14 @@ enceladus$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.0206192108879
 -------------------------------------------------------------------
                  system name = Linux
                    node name = enceladus
-                     release = 5.18.3-genunix
-                     version = #1 SMP Thu Jun 9 14:14:26 EDT 2022
+                     release = 5.18.5-genunix
+                     version = #1 SMP Sat Jun 18 19:45:56 EDT 2022
                      machine = ppc64
                    page size = 65536
-               system memory = 8368095232
-                             = 8171968 kB
+               system memory = 8367767552
+                             = 8171648 kB
                              = 7980 MB
-                 avail pages = 107803
+                 avail pages = 112685
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200809
@@ -20,7 +20,7 @@ enceladus$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.0206192108879
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    7 days    7 hours   40 mins   49 secs
+           system uptime    9 days   21 hours   55 mins   43 secs
 -------------------------------------------------------------------
 
 
@@ -40,8 +40,8 @@ imag : Perfectly safe to ignore FE_INEXACT
 
     mand_bail = 32768
 pthread_limit = 4
-    translate = ( -1.57887752805700e-02 , +1.02061921088800e+00 )
-      magnify = +2.748779069440e+11
+    translate = ( -1.57887752805699992098009687e-02 , +1.02061921088799989476569863e+00 )
+      magnify = +2.74877906944000000000000000e+11
 
 
  X11 : default width=1044 height=1044
@@ -57,24 +57,17 @@ pixel_real_w = +1.42108547152020037174224854e-14
 pixel_imag_h = +1.42108547152020037174224854e-14
 raw  [ 523  , 524  ]
 DBUG : sample space [ 512   , 512    ]
-     : button 2 pressed
-     : win_x = +5.00000000000000000000e-01
-     : win_y = +5.00000000000000000000e-01
-     : invert_mouse_x =  512
-     : invert_mouse_y =  512
      : vbox  [ 008 , 008 ]
-     : after offset
-     : win_x = +0.0000000000000000000000e+00 
-     : win_y = +0.0000000000000000000000e+00 
+     : win_r = +9.76562500000000000000000000e-04
+     : win_j = +9.76562500000000000000000000e-04
      : after translation
-     : r_trn   = -1.5788775280569999209801e-02 
-     : j_trn   = +1.0206192108879998947657e+00 
-     : x_prime = -1.5788775280562893782443e-02 
-     : y_prime = +1.0206192108880070001931e+00 
+     : r_trn   = -1.57887752805699992098009687e-02
+     : j_trn   = +1.02061921088799989476569863e+00
+     : x_prime = -1.57887752805628937824433677e-02
+     : y_prime = +1.02061921088800700019305623e+00
      : bailout = 32768             
      : magnify = 2.748779069440e+11
-     : centre = -1.5788775280569999209801e-02 , +1.0206192108879998947657e+00 
-[mand] =    29917728802 nsec   2.991773e+01 sec
+[mand] =    86370681544 nsec   8.637068e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -101,46 +94,32 @@ raw data values -------------------------------------------------------
      :       mand_height =      2065
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1383 , 889  ]
+raw  [ 1384 , 889  ]
 INFO : dumper_flag = 1
-click at 1382 887 
-raw  [ 1383 , 889  ]
-INFO : file /var/tmp/dclarke/20220617094948 dump begins.
+click at 1383 887 
+raw  [ 1384 , 889  ]
+INFO : file /var/tmp/dclarke/20220628222757 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
      : mand_bail =    32768
      :  8 byte double magnify        num_written = 1
-     :        magnify = +2.74877906944000000000e+11
+     :        magnify = +2.74877906944000000000000000e+11
 DBUG :  8 byte double real_translate num_written = 1
-     : real_translate = -1.57887752805699992098e-02
+     : real_translate = -1.57887752805699992098009687e-02
      :  8 byte double imag_translate num_written = 1
-     : imag_translate = +1.02061921088799989477e+00
-INFO : file /var/tmp/dclarke/20220617094948 closed.
+     : imag_translate = +1.02061921088799989476569863e+00
+INFO : file /var/tmp/dclarke/20220628222757 closed.
 INFO : dumper_flag = 0
-click at 1382 887 
-raw  [ 1020 , 913  ]
+click at 1383 887 
+raw  [ 1022 , 921  ]
 right click
-click at 1019 911 
-raw  [ 1020 , 913  ]
+click at 1021 919 
+raw  [ 1022 , 921  ]
 right click
 
 
 
-enceladus$ hdump -Ax -t x1 -v /var/tmp/dclarke/20220617094948
-     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 50 42
-    10:  e3 50 e5 c5 ee 2a 90 bf be ee 46 cf 74 54 f0 3f
-    20:  e3 48 05 c6 ee 2a 90 bf de 6e 46 cf 74 54 f0 3f
-    30:  ba 07 00 00 e3 58 e5 c5 ee 2a 90 bf 9e ee 46 cf
-    40:  74 54 f0 3f c7 10 00 00 e3 48 e5 c5 ee 2a 90 bf
-    50:  de ee 46 cf 74 54 f0 3f 44 0f 00 00 e3 38 e5 c5
-    60:  ee 2a 90 bf de ee 46 cf 74 54 f0 3f 5e 0f 00 00
-    70:  e3 48 e3 c5 ee 2a 90 bf de f6 46 cf 74 54 f0 3f
-    80:  c6 0e 00 00 e3 88 f6 c5 ee 2a 90 bf 1e 34 47 cf
-    90:  74 54 f0 3f ba 0e 00 00 e3 58 c5 c5 ee 2a 90 bf
-    a0:  9e 6e 47 cf 74 54 f0 3f 11 08 00 00
-    ac: 
-enceladus$ 
-enceladus$ openssl dgst -sha256 -r /var/tmp/dclarke/20220617094948
-432bf94ff46e7f4c74c9031dcdfe4c410ed6a804b4fedc994b4c86ed5ab0f36d */var/tmp/dclarke/20220617094948
+enceladus$ mdigest -a sha256 /var/tmp/dclarke/20220628222757
+0185154e797afdf219199d2922ed6d20bf9877a0f46a3ab6a19ba996985bfbb1  /var/tmp/dclarke/20220628222757
 enceladus$ 
