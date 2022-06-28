@@ -832,13 +832,6 @@ int main(int argc, char*argv[])
     vbox_w = eff_width/VBOX_REAL_COUNT;
     vbox_h = eff_height/VBOX_IMAG_COUNT;
 
-    double vbox_real_width = obs_real / ( 1.0 * VBOX_REAL_COUNT );
-    double vbox_imag_height = obs_imag / ( 1.0 * VBOX_IMAG_COUNT );
-    double sample_real_width = vbox_real_width / ( 1.0 * VBOX_SAMPLE_REAL );
-    double sample_imag_height = vbox_imag_height / ( 1.0 * VBOX_SAMPLE_IMAG );
-    double half_sample_offset_real = sample_real_width / 2.0;
-    double half_sample_offset_imag = sample_imag_height / 2.0;
-
     /* horizontal tic marks */
     for ( j=offset_x + vbox_w; j<lx; j+=vbox_w ){
         XDrawLine(dsp, win, gc, j, 8, j, 12);

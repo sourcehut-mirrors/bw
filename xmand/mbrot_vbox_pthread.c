@@ -48,7 +48,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
 {
     thread_parm *p = (thread_parm *)recv_parm;
     double win_r, win_j, x_prime, y_prime;
-    int mand_x_pix, mand_y_pix, vbox_ll_x, vbox_ll_y;
+    int mand_x_pix, mand_y_pix;
     int mand_y_pix_start, mand_y_pix_stop;
 
     /* required for some fp routines */
@@ -85,17 +85,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
 
     for ( mand_y_pix = mand_y_pix_start; mand_y_pix <= mand_y_pix_stop; mand_y_pix++ ) {
 
-        /* lower left corner of this threads little rectangle
-         * vbox_ll_y = p->vbox_j * p->vbox_h + mand_y_pix;
-         */
-
         for ( mand_x_pix = 0; mand_x_pix < p->vbox_w; mand_x_pix++ ) {
-
-            /* we compute from the lower left corner of the on screen
-             * vbox going left to right and upwards along the positive
-             * imaginary axis. 
-            vbox_ll_x = p->vbox_r * p->vbox_w + mand_x_pix;
-            */
 
             fp_vbox(p->vbox_r, p->vbox_j, mand_x_pix, mand_y_pix,
                     p->eff_width, p->eff_height, &cplex);

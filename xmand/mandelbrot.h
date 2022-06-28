@@ -12,6 +12,7 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <stdint.h>
 #include <time.h>
 #include <X11/Xlib.h>
 
