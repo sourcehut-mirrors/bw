@@ -1,10 +1,9 @@
 
 CC=/usr/bin/cc
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O3 \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
-	-mstackrealign -mpreferred-stack-boundary=4 \
-	-ffp-contract=on
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O3 -march=native \
+	-mfma -ffp-contract=on \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
