@@ -91,7 +91,7 @@ typedef struct {
     double r_translate, i_translate, magnify;
     double obs_real, obs_imag;
     double *coord_r, *coord_j;
-    uint32_t (*v)[16][16][64][64];
+    uint32_t *mandel_val;
     uint64_t ret_val;
     int vbox_r, vbox_j;
     int eff_width, eff_height;

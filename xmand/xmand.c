@@ -127,14 +127,9 @@ int main(int argc, char*argv[])
      * roll_up and roll_dn are mouse wheel events */
     int button = 0;
     int left_count, mid_count, right_count, roll_up, roll_dn;
-    left_count = 0;
-    mid_count = 0;
-    right_count = 0;
-    roll_up = 0;
-    roll_dn = 0;
 
+    /* various timers and time stuff */
     uint64_t t_delta;
-
     struct timespec t0, t1, now_time;
     struct timespec vbox_t0, vbox_t1;
     struct timespec soln_t0, soln_t1;
@@ -161,7 +156,6 @@ int main(int argc, char*argv[])
     double default_real = DEFAULT_REAL_WIDTH;
     double default_imag = DEFAULT_IMAG_HEIGHT;
 
-
     /* ensure these are initialized */
     double x_prime = -8.0;
     double y_prime = -8.0;
@@ -178,6 +172,7 @@ int main(int argc, char*argv[])
      * don't want to recompute the same region over and
      * over and over. */
     int vbox_flag[VBOX_REAL_COUNT][VBOX_IMAG_COUNT];
+
     /* ensure we start with clear vbox flags */
     memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
@@ -185,33 +180,60 @@ int main(int argc, char*argv[])
      * lay out and thus we will need the box coordinates */
     int vbox_r, vbox_j;
 
-    /* It is a surprise to me that this array fits into the stack
-     * memory of modern linux systems. We shall get this to the
-     * heap real soon now. Consider that a TODO.
-     *
-     * Why hasn't this been done?
-     * */
-    uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
+    /* eventually we need to dump out a file */
+    FILE *fp;
+    size_t filename_len;
+    char *err_status;
+    int data_ready;
+    size_t num_written;
+    struct stat status_buffer;
+    time_t time_now;
+    char timestamp[32];
+    struct tm *ptm;
+    char *timestamp_filename;
+
+    /* we  may need to swap around bytes from a big endian machine */
+    uint64_t rotated64;
+    uint32_t rotated32;
+
+    /* guess the architecture endianess */
+    int end_check = 1;
+    /* strictly speaking this is not a wise way to do this */
+    uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
+
+    /*
+     * uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
+     */
     uint32_t num_elements =  VBOX_SAMPLE_REAL * VBOX_SAMPLE_IMAG
                            * VBOX_REAL_COUNT  * VBOX_IMAG_COUNT;
 
-    memset(&mandel_val, 0x00,(size_t)num_elements * sizeof(uint32_t));
+    uint32_t *mandel_val = calloc((size_t)num_elements, sizeof(uint32_t));
 
-    double *coord_r = calloc((size_t)num_elements, sizeof(double));
-
-    if ( coord_r == NULL ) {
+    if ( mandel_val == NULL ) {
         /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
-            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                    __FILE__, __LINE__ );
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
         } else {
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                    __FILE__, __LINE__ );
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
         }
         perror("FAIL ");
         /* NOTE : it is very nasty to bail out this way
          *        but why bother to continue ?
          */
+        return EXIT_FAILURE;
+    }
+
+    /* memset(&mandel_val, 0x00,(size_t)num_elements * sizeof(uint32_t)); */
+
+    double *coord_r = calloc((size_t)num_elements, sizeof(double));
+
+    if ( coord_r == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
         return EXIT_FAILURE;
     }
 
@@ -219,18 +241,12 @@ int main(int argc, char*argv[])
     double *coord_j = calloc((size_t)num_elements, sizeof(double));
 
     if ( coord_j == NULL ) {
-        /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
-            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                    __FILE__, __LINE__ );
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
         } else {
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                    __FILE__, __LINE__ );
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
         }
         perror("FAIL ");
-        /* NOTE : it is very nasty to bail out this way
-         *        but why bother to continue ?
-         */
         return EXIT_FAILURE;
     }
 
@@ -238,6 +254,13 @@ int main(int argc, char*argv[])
     for ( k=0; k<256; k++ ) {
         lsd_trippy[k] = mandle_col((uint8_t)k);
     }
+
+    /* count some mouse events */
+    left_count = 0;
+    mid_count = 0;
+    right_count = 0;
+    roll_up = 0;
+    roll_dn = 0;
 
     int candidate_int = 0;
     long long unsigned int candidate_magnify = 0;
@@ -1119,7 +1142,7 @@ int main(int argc, char*argv[])
                         parm[pt]->bail_out = mand_bail;
 
                         /* pass along a pointer to where we want a result integer */
-                        parm[pt]->v = &mandel_val;
+                        parm[pt]->mandel_val = mandel_val;
 
                         /* we also want the complex plane coordinates */
                         parm[pt]->coord_r = coord_r;
@@ -1176,7 +1199,7 @@ int main(int argc, char*argv[])
                         sample_r = vbox_ll_x;
 
                         /* use the data returned by the thread computation */
-                        mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
+                        mand_height = mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)];
 
                         /*
                         fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
@@ -1527,8 +1550,7 @@ int main(int argc, char*argv[])
                             XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
 
                             /* dump some file data if we have the data ready */
-
-                            int data_ready = 1;
+                            data_ready = 1;
                             for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                                 for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
                                     data_ready &= vbox_flag[vbox_r][vbox_j];
@@ -1542,19 +1564,14 @@ int main(int argc, char*argv[])
                                 XSetForeground(dsp, gc2, green.pixel);
                                 XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
 
-                                FILE *fp;
-                                struct stat status_buffer;
-                                time_t time_now;
-
-                                char timestamp[32];
                                 time(&time_now);
-                                struct tm *ptm = gmtime(&time_now);
+                                ptm = gmtime(&time_now);
 
-                                size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
-                                char *timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+                                timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+                                filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
 
                                 /* at the moment we are not even using the error status return */
-                                char *err_status = strcat(timestamp_filename, tmpdir);
+                                err_status = strcat(timestamp_filename, tmpdir);
                                 err_status = strcat(timestamp_filename, "/");
                                 err_status = strcat(timestamp_filename, timestamp);
 
@@ -1571,14 +1588,6 @@ int main(int argc, char*argv[])
                                     } else {
                                         /* finally we know we have a file */
                                         fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
-                                        size_t num_written;
-                                        uint64_t rotated64;
-                                        uint32_t rotated32;
-
-                                        /* guess the architecture endianess */
-                                        int end_check = 1;
-                                        /* strictly speaking this is not a wise way to do this */
-                                        uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
 
                                         /* for the header data do the rotates separately */
                                         if ( endian_flag ) {
@@ -1645,7 +1654,7 @@ int main(int argc, char*argv[])
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                                             rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                            rotated32 = rot4(mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix] );
+                                                            rotated32 = rot4(*((uint32_t *)(&mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
 
                                                         } else {
@@ -1653,7 +1662,7 @@ int main(int argc, char*argv[])
                                                             /* dump data from little endian machines */
                                                             num_written = fwrite(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(double), 1, fp);
                                                             num_written = fwrite(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(double), 1, fp);
-                                                            num_written = fwrite(&mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix], sizeof(uint32_t), 1, fp);
+                                                            num_written = fwrite(&mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(uint32_t), 1, fp);
 
                                                         }
 
@@ -1823,14 +1832,13 @@ replot:
                                     */
 
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
-                                        mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
+                                        mand_height = mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)];
                                     } else {
                                         coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = x_prime;
                                         coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = y_prime;
                                         /* the actual mandelbrot computation for (x_prime, y_prime) */
                                         mand_height = mbrot(x_prime, y_prime, mand_bail);
-                                        /* TODO only you can prevent stack abuse */
-                                        mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix] = mand_height;
+                                        mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = mand_height;
                                     }
 
                                     if ( colour_method_flag == 1 ) {
@@ -1909,31 +1917,31 @@ replot:
 
             printf("     : r[ 0][ 0][ 0][ 0] = %-+32.26e\n", *(coord_r + array_offset(0,0,0,0)));
             printf("     : j[ 0][ 0][ 0][ 0] = %-+32.26e\n", *(coord_j + array_offset(0,0,0,0)));
-            printf("     :       mand_height = %9i\n", mandel_val[0][0][0][0] );
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(0,0,0,0)));
 
             printf("     : r[ 7][ 7][63][63] = %-+32.26e\n", *(coord_r + array_offset(7,7,63,63)));
             printf("     : j[ 7][ 7][63][63] = %-+32.26e\n", *(coord_j + array_offset(7,7,63,63)));
-            printf("     :       mand_height = %9i\n", mandel_val[ 7][ 7][63][63] );
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(7,7,63,63)));
 
             printf("     : r[ 8][ 8][ 0][ 0] = %-+32.26e\n", *(coord_r + array_offset(8,8,0,0)));
             printf("     : j[ 8][ 8][ 0][ 0] = %-+32.26e\n", *(coord_j + array_offset(8,8,0,0)));
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][0][0] );
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(8,8,0,0)));
 
             printf("     : r[ 8][ 8][ 1][ 0] = %-+32.26e\n", *(coord_r + array_offset(8,8,1,0)));
             printf("     : j[ 8][ 8][ 1][ 0] = %-+32.26e\n", *(coord_j + array_offset(8,8,1,0)));
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][1][0] );
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(8,8,1,0)));
 
             printf("     : r[ 8][ 8][32][32] = %-+32.26e\n", *(coord_r + array_offset(8,8,32,32)));
             printf("     : j[ 8][ 8][32][32] = %-+32.26e\n", *(coord_j + array_offset(8,8,32,32)));
-            printf("     :       mand_height = %9i\n", mandel_val[8][8][32][32] );
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(8,8,32,32)));
 
             printf("     : r[ 3][12][44][21] = %-+32.26e\n", *(coord_r + array_offset(3,12,44,21)));
             printf("     : j[ 3][12][44][21] = %-+32.26e\n", *(coord_j + array_offset(3,12,44,21)));
-            printf("     :       mand_height = %9i\n", mandel_val[3][12][44][21]);
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(3,12,44,21)));
 
             printf("     : r[15][15][63][63] = %-+32.26e\n", *(coord_r + array_offset(15,15,63,63)));
             printf("     : j[15][15][63][63] = %-+32.26e\n", *(coord_j + array_offset(15,15,63,63)));
-            printf("     :       mand_height = %9i\n", mandel_val[15][15][63][63]);
+            printf("     :       mand_height = %9i\n",    *(mandel_val + array_offset(15,15,63,63)));
 
             printf("--------------------------- full plot done -----------------------------\n");
 

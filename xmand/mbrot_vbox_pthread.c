@@ -145,7 +145,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
                 height += 1;
             }
 
-            (*(p->v))[p->vbox_r][p->vbox_j][mand_x_pix][mand_y_pix] = height;
+            p->mandel_val[array_offset(p->vbox_r,p->vbox_j,mand_x_pix,mand_y_pix)] = height;
 
             /*
             sprintf(buff,"[ t%02i ] : v[%-2i][%-2i][%-2i][%-2i].M = %6i",
