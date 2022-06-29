@@ -1,5 +1,11 @@
 
 
+29 Jun 2022 : when in doubt do a disasseble 
+
+                objdump -D -Mintel -j .text xmand > xmand.dis
+
+
+
 24 Mar 2022 : currently focused on a single dataset in order to 
               get repeatable data into timestamp files named with
               a timestamp. Date to be used to test and verify the
