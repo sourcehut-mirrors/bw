@@ -48,9 +48,12 @@
 #include <limits.h>
 
 /* for a good read about fused multiply add operations please
- * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845 */
+ * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845 
+ * Also https://reviews.llvm.org/D72675 */
 #include <fenv.h>
+#ifndef __FAST_MATH__
 #pragma STDC FENV_ACCESS ON
+#endif
 #pragma STDC FP_CONTRACT ON
 
 #define __STDC_FORMAT_MACROS

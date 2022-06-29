@@ -34,6 +34,12 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <fenv.h>
+#ifndef __FAST_MATH__
+#pragma STDC FENV_ACCESS ON
+#endif
+#pragma STDC FP_CONTRACT ON
+
 #include <math.h>
 #include "mandelbrot.h"
 
