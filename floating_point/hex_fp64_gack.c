@@ -110,18 +110,7 @@ int main ( int argc, char *argv[] ) {
         printf("   r = %-+36.22e\n", *(double*)&rbe);
         printf("   j = %-+36.22e\n", *(double*)&jbe);
     } else {
-        printf("little endian data ");
-        for (k=0; k<8; k++) {
-            printf("0x%02x ", ((uint8_t *)&r)[k] );
-        }
-        printf("\n");
         printf("   r = %-+36.22e\n", *(double*)&r);
-
-        printf("out ");
-        for ( k=0; k<8; k++) {
-            printf("0x%02x ", ((uint8_t *)&j)[k] );
-        }
-        printf("\n");
         printf("   j = %-+36.22e\n", *(double*)&j);
     }
 
