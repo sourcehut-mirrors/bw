@@ -1,31 +1,35 @@
 
-europa$ 
-europa$ echo $CC
-/usr/bin/cc
-europa$ 
-europa$ echo $CFLAGS 
--std=iso9899:1999 -pedantic -pedantic-errors -Weverything -m64 -g -O0 -fno-builtin -fno-fast-math -pedantic -pedantic-errors -Weverything -Wno-reserved-id-macro -Wno-double-promotion -Wno-implicit-float-conversion -Wno-missing-prototypes
-europa$ 
-europa$ echo $CPPFLAGS 
--D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
-europa$ 
+actually pretty trivial on a decent linux with a recent gcc 
 
-europa$ $CC $CFLAGS $CPPFLAGS -I/usr/local/include -L/usr/local/lib -Wno-documentation -o xcb_buff xcb_buff.c -lxcb
-In file included from xcb_buff.c:8:
-In file included from /usr/local/include/xcb/xcb.h:205:
-/usr/local/include/xcb/xproto.h:5674:4: warning: unknown command tag name [-Wdocumentation-unknown-command]
- * \n
-   ^~
-xcb_buff.c:21:26: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to
-      'uint8_t' (aka 'unsigned char') [-Wimplicit-int-conversion]
-    uint8_t string_len = strlen(string);
-            ~~~~~~~~~~   ^~~~~~~~~~~~~~
-xcb_buff.c:10:15: warning: unused parameter 'argc' [-Wunused-parameter]
-int main (int argc, char **argv) {
-              ^
-xcb_buff.c:10:28: warning: unused parameter 'argv' [-Wunused-parameter]
-int main (int argc, char **argv) {
-                           ^
-4 warnings generated.
-europa$ 
+enceladus$ 
+enceladus$ uname -a 
+Linux enceladus 5.18.5-genunix #1 SMP Sat Jun 18 19:45:56 EDT 2022 ppc64 GNU/Linux
+enceladus$ 
+enceladus$ echo $CC
+/opt/gcc/imed/gcc12/bin/gcc
+enceladus$ $CC --version
+gcc (genunix Fri May 13 17:07:13 UTC 2022) 12.1.0
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+enceladus$ 
+enceladus$ echo $CFLAGS
+-std=iso9899:1999 -pedantic -g -O0 -fno-builtin -m64 -mcpu=970 -mno-altivec -mno-isel -mno-vsx -mno-crypto -mno-htm -mno-quad-memory-atomic -mfull-toc -mno-multiple -mupdate -mno-avoid-indexed-addresses -mno-dlmzb -mno-bit-align -mno-strict-align -mbig -mregnames -mno-recip -fno-unsafe-math-optimizations -pedantic-errors -Wall
+enceladus$ 
+enceladus$ echo $CPPFLAGS 
+-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+enceladus$ 
+enceladus$ $CC $CFLAGS $CPPFLAGS -o xcb_buff xcb_buff.c -lxcb
+enceladus$ 
+enceladus$ ldd xcb_buff
+        linux-vdso64.so.1 (0x00007fffb6d20000)
+        libxcb.so.1 => /lib/powerpc64-linux-gnu/libxcb.so.1 (0x00007fffb6c90000)
+        libc.so.6 => /lib/powerpc64-linux-gnu/libc.so.6 (0x00007fffb6a50000)
+        libXau.so.6 => /lib/powerpc64-linux-gnu/libXau.so.6 (0x00007fffb6a20000)
+        libXdmcp.so.6 => /lib/powerpc64-linux-gnu/libXdmcp.so.6 (0x00007fffb69f0000)
+        /lib64/ld64.so.1 (0x00007fffb6d30000)
+        libbsd.so.0 => /lib/powerpc64-linux-gnu/libbsd.so.0 (0x00007fffb69b0000)
+        libmd.so.0 => /lib/powerpc64-linux-gnu/libmd.so.0 (0x00007fffb6980000)
+enceladus$ 
 
