@@ -234,6 +234,8 @@ int main(int argc, char*argv[])
             fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
         }
         perror("FAIL ");
+        free(mandel_val);
+        mandel_val = NULL;
         return EXIT_FAILURE;
     }
 
@@ -247,6 +249,10 @@ int main(int argc, char*argv[])
             fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
         }
         perror("FAIL ");
+        free(mandel_val);
+        mandel_val = NULL;
+        free(coord_r);
+        coord_r = NULL;
         return EXIT_FAILURE;
     }
 
@@ -296,6 +302,22 @@ int main(int argc, char*argv[])
 
     /* small general purpose char buffer */
     char *buf = calloc((size_t)128,sizeof(unsigned char));
+
+    if ( buf == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        free(mandel_val);
+        mandel_val = NULL;
+        free(coord_r);
+        coord_r = NULL;
+        free(coord_j);
+        coord_j = NULL;
+        return EXIT_FAILURE;
+    }
 
     char *disp_name = NULL;
 
@@ -933,30 +955,34 @@ int main(int argc, char*argv[])
 
     for ( pt = 0; pt < pthread_limit; pt++ ){
         parm[pt] = calloc( (size_t) 1, (size_t) sizeof(thread_parm) );
-        /* ERRORS
-         *  The malloc(), calloc(), and realloc() functions will fail
-         *  if:
-         *
-         *  ENOMEM    The physical limits of the system are exceeded by
-         *            size bytes of memory which cannot be allocated.
-         *
-         *  EAGAIN    There is not enough memory available to allocate
-         *            size bytes of memory; but the application could
-         *            try again later.
-         *
-         * TODO put in a clean bail out procedure wherein we free up
-         * and thread structures that were already calloc'd
-         */
         if ( parm[pt] == NULL ) {
             if ( errno == ENOMEM ) {
-                fprintf(stderr,"FAIL : calloc says ENOMEM\n");
-                fprintf(stderr,"     : so best buy some more.\n");
-                perror("     ");
-                return EXIT_FAILURE;
+                fprintf(stderr,"FAIL : calloc ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+            } else {
+                fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
             }
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+            
             perror("FAIL ");
+
+            /* free up the big arrays */
+            free(mandel_val);
+            mandel_val = NULL;
+            free(coord_r);
+            coord_r = NULL;
+            free(coord_j);
+            coord_j = NULL;
+
+            /* now free up the previously allocated parm[k] if they
+             * exist */
+            if ( pt > 0 ) {
+                for ( q=pt-1; q>=0; --q ) {
+                    free(parm[q]);
+                    parm[q] = NULL;
+                }
+            }
+
             return EXIT_FAILURE;
+
         }
     }
 
@@ -1201,26 +1227,6 @@ int main(int argc, char*argv[])
                         /* use the data returned by the thread computation */
                         mand_height = mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)];
 
-                        /*
-                        fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
-                        win_r = coord.r;
-                        win_j = coord.j;
-                        */
-
-                        /* BORK see if both methods compute the same results *
-                        fp_region(sample_r, sample_j, eff_width, eff_height, &coord);
-                        if ( ( ( coord.r - win_r ) > EPSILON ) || ( ( coord.j - win_j ) > EPSILON ) ) {
-                            fprintf(stderr,"BORK : v[%2i][%2i][%2i][%2i]", vbox_r, vbox_j, mand_x_pix, mand_y_pix);
-                            if ( ( coord.r - win_r ) > EPSILON ) fprintf(stderr," deltaWr = %-+36.22e", ( coord.r - win_r ));
-                            if ( ( coord.j - win_j ) > EPSILON ) fprintf(stderr," deltaWj = %-+36.22e", ( coord.j - win_j ));
-                        } */
-
-                        /*
-                        fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
-                        x_prime = coord.r;
-                        y_prime = coord.j;
-                        */
-
                         if ( mand_height == mand_bail ) {
                             /* really we should use the color Black for portable stuff */
                             XSetForeground(dsp, gc, (unsigned long)0 );
@@ -1252,7 +1258,8 @@ int main(int argc, char*argv[])
                                                  - ( q - 1 ) * pixel_imag_height / 3.0;
 
                                 sub_pixel_mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
-                                /*
+
+                                /* TODO this has my mystified why it does not work 
                                 if ((p!=1)&&(q!=1)) {
                                     mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
                                 } else {
@@ -1268,7 +1275,6 @@ int main(int argc, char*argv[])
                                 }
 
                                 XDrawPoint( dsp, win2, gc2, gc2_x + p, gc2_y + q );
-
                             }
                         }
                     }
@@ -1549,7 +1555,7 @@ int main(int argc, char*argv[])
                             sprintf(buf,"DUMPER");
                             XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
 
-                            /* dump some file data if we have the data ready */
+                            /* do we have all sample data ready? */
                             data_ready = 1;
                             for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                                 for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
@@ -1567,6 +1573,7 @@ int main(int argc, char*argv[])
                                 time(&time_now);
                                 ptm = gmtime(&time_now);
 
+                                /* TODO we need to check the calloc return value */
                                 timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
                                 filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
 
@@ -1583,13 +1590,13 @@ int main(int argc, char*argv[])
                                     errno = 0;
                                     fp = fopen(timestamp_filename, "wb");
                                     if ( fp == NULL ) {
-                                        perror("FAIL ");
+                                        perror("FAIL fopen of filename");
                                         dumper_flag = -1;
                                     } else {
                                         /* finally we know we have a file */
                                         fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
 
-                                        /* for the header data do the rotates separately */
+                                        /* header data is done separately */
                                         if ( endian_flag ) {
                                             rotated32 = rot4(num_elements);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
@@ -1645,27 +1652,21 @@ int main(int argc, char*argv[])
                                         for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                                             for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
                                                 for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
-                                                    sample_j = vbox_j * vbox_h + mand_y_pix;
                                                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
-                                                        sample_r = vbox_r * vbox_w + mand_x_pix;
                                                         if ( endian_flag ) {
-
+                                                            /* dump data from big endian machines */
                                                             rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                                             rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                                             rotated32 = rot4(*((uint32_t *)(&mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
-
                                                         } else {
-
                                                             /* dump data from little endian machines */
                                                             num_written = fwrite(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(double), 1, fp);
                                                             num_written = fwrite(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(double), 1, fp);
                                                             num_written = fwrite(&mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)], sizeof(uint32_t), 1, fp);
-
                                                         }
-
                                                     }
                                                 }
                                             }
@@ -1693,7 +1694,7 @@ int main(int argc, char*argv[])
 
                             } else {
                                 /* indicate that the data is not ready */
-                                sprintf(buf,"No Data");
+                                sprintf(buf,"Not Ready");
                                 XSetForeground(dsp, gc2, red.pixel);
                                 XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
                             }
@@ -1994,10 +1995,14 @@ replot:
      * free() but why not have belt and suspenders safety? */
     free(buf);
     buf = NULL;
+
     for ( pt = 0; pt < pthread_limit; pt++ ){
         free( parm[pt] );
         parm[pt] = NULL;
     }
+
+    free(mandel_val);
+    mandel_val = NULL;
 
     free(coord_r);
     coord_r = NULL;
@@ -2006,5 +2011,6 @@ replot:
     coord_j = NULL;
 
     return EXIT_SUCCESS;
+
 }
 
