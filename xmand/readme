@@ -11,7 +11,7 @@
         e4348e24b0bcedde099f07203037a5063504af9b98fda5612128fd823cfd1c3c
 
     An old Pentium II 400MHz machine from 1998 agrees with the second
-    result above.
+    result above as does a 32-bit armv7l based linux machine.
 
     The dataset2 parameters result in reasonable results also :
 
@@ -20,8 +20,6 @@
     results from old Pentium II :
 
         0185154e797afdf219199d2922ed6d20bf9877a0f46a3ab6a19ba996985bfbb1
-
-
 
 
 29 Jun 2022 : when in doubt do a disasseble to check for FMA opcodes
