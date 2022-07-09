@@ -1805,7 +1805,6 @@ replot:
                                 sample_j = vbox_ll_y;
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                                     vbox_ll_x = vbox_r * vbox_w + mand_x_pix;
-
                                     sample_r = vbox_ll_x;
 
                                     fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
@@ -1816,20 +1815,18 @@ replot:
                                     x_prime = coord.r;
                                     y_prime = coord.j;
 
-                                    /* DEBUGGARY *
-                                    printf("     : sample[%-4i][%-4i] -> Wr = %-+32.26e\n", sample_r, sample_j, win_r);
-                                    printf("     :                    -> Wj = %-+32.26e\n", win_j);
-                                    printf("     : r[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",vbox_r,vbox_j,mand_x_pix,mand_y_pix,x_prime);
-                                    printf("     : j[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",vbox_r,vbox_j,mand_x_pix,mand_y_pix,y_prime);
+                                    /* DEBUG *
+                                    printf("     : sample[%-4i][%-4i] -> Wr = %-+32.26e\n",
+                                                   sample_r, sample_j, win_r);
 
+                                    printf("     :                    -> Wj = %-+32.26e\n",
+                                                   win_j);
 
-                                    if (( vbox_r == 3 ) && ( vbox_j == 12 ) && ( mand_x_pix == 44) && ( mand_y_pix == 21) ) {
-                                        printf("wtf\n");
-                                        printf("WTF  :     normalized Wr = %-+32.26e\n", win_r);
-                                        printf("WTF  :                Wj = %-+32.26e\n", win_j);
-                                        printf("WTF  : r[ 3][12][44][21] = %-+32.26e\n", x_prime);
-                                        printf("WTF  : j[ 3][12][44][21] = %-+32.26e\n", y_prime);
-                                    }
+                                    printf("     : r[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",
+                                                   vbox_r,vbox_j,mand_x_pix,mand_y_pix,x_prime);
+
+                                    printf("     : j[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",
+                                                   vbox_r,vbox_j,mand_x_pix,mand_y_pix,y_prime);
                                     */
 
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {

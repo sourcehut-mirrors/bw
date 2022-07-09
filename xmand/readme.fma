@@ -1,0 +1,53 @@
+
+The x86_64 code with optimization will result in FMA opcodes
+within the fp_region() code.  However the fp_vbox() code does
+not employ FMA.
+
+0000000000007640 <fp_region>:
+    7640:   c5 f0 57 c9             vxorps xmm1,xmm1,xmm1
+    7644:   c5 f9 28 1d e4 30 00    vmovapd xmm3,XMMWORD PTR [rip+0x30e4]        # a730 <_IO_stdin_used+0x1730>
+    764b:   00
+    764c:   c5 f3 2a c1             vcvtsi2sd xmm0,xmm1,ecx
+    7650:   c5 f3 2a d2             vcvtsi2sd xmm2,xmm1,edx
+    7654:   c5 e9 14 d0             vunpcklpd xmm2,xmm2,xmm0
+    7658:   c5 f3 2a c7             vcvtsi2sd xmm0,xmm1,edi
+    765c:   c5 f3 2a ce             vcvtsi2sd xmm1,xmm1,esi
+    7660:   c5 f9 14 c1             vunpcklpd xmm0,xmm0,xmm1
+    7664:   c5 f9 28 0d d4 30 00    vmovapd xmm1,XMMWORD PTR [rip+0x30d4]        # a740 <_IO_stdin_used+0x1740>
+    766b:   00
+    766c:   c5 f9 5e c2             vdivpd xmm0,xmm0,xmm2
+    7670:   c5 f1 5e d2             vdivpd xmm2,xmm1,xmm2
+    7674:   c4 e2 e1 98 05 a3 30    vfmadd132pd xmm0,xmm3,XMMWORD PTR [rip+0x30a3]        # a720 <_IO_stdin_used+0x1720>
+    767b:   00 00
+    767d:   c5 e9 58 c0             vaddpd xmm0,xmm2,xmm0
+    7681:   c4 c1 79 11 00          vmovupd XMMWORD PTR [r8],xmm0
+    7686:   c3                      ret
+    7687:   66 0f 1f 84 00 00 00    nop    WORD PTR [rax+rax*1+0x0]
+    768e:   00 00
+
+00000000000076c0 <fp_vbox>:
+    76c0:   c1 e7 06                shl    edi,0x6
+    76c3:   c1 e6 06                shl    esi,0x6
+    76c6:   c5 f8 57 c0             vxorps xmm0,xmm0,xmm0
+    76ca:   48 8b 44 24 08          mov    rax,QWORD PTR [rsp+0x8]
+    76cf:   01 d7                   add    edi,edx
+    76d1:   01 ce                   add    esi,ecx
+    76d3:   01 ff                   add    edi,edi
+    76d5:   01 f6                   add    esi,esi
+    76d7:   44 29 c7                sub    edi,r8d
+    76da:   44 29 ce                sub    esi,r9d
+    76dd:   ff c7                   inc    edi
+    76df:   ff c6                   inc    esi
+    76e1:   c5 fb 2a d6             vcvtsi2sd xmm2,xmm0,esi
+    76e5:   c5 fb 2a cf             vcvtsi2sd xmm1,xmm0,edi
+    76e9:   c5 f1 14 ca             vunpcklpd xmm1,xmm1,xmm2
+    76ed:   c4 c1 7b 2a d0          vcvtsi2sd xmm2,xmm0,r8d
+    76f2:   c4 c1 7b 2a c1          vcvtsi2sd xmm0,xmm0,r9d
+    76f7:   c5 e9 14 c0             vunpcklpd xmm0,xmm2,xmm0
+    76fb:   c5 f1 5e c0             vdivpd xmm0,xmm1,xmm0
+    76ff:   c5 f9 11 00             vmovupd XMMWORD PTR [rax],xmm0
+    7703:   c3                      ret
+    7704:   66 2e 0f 1f 84 00 00    nop    WORD PTR cs:[rax+rax*1+0x0]
+    770b:   00 00 00
+    770e:   66 90                   xchg   ax,ax
+
