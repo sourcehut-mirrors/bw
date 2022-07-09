@@ -1598,7 +1598,7 @@ int main(int argc, char*argv[])
 
                                         /* header data is done separately */
                                         if ( endian_flag ) {
-                                            rotated32 = rot4(num_elements);
+                                            rotated32 = swap_four(num_elements);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
                                             num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
@@ -1608,7 +1608,7 @@ int main(int argc, char*argv[])
                                         printf("     : num_elements = %8i\n",num_elements);
 
                                         if ( endian_flag ) {
-                                            rotated32 = rot4(mand_bail);
+                                            rotated32 = swap_four(mand_bail);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
                                             num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
@@ -1619,7 +1619,7 @@ int main(int argc, char*argv[])
 
                                         /* need to swap around bytes of the 8-byte floating point double */
                                         if ( endian_flag ) {
-                                            rotated64 = rot8(*((uint64_t *)&magnify));
+                                            rotated64 = swap_eight(*((uint64_t *)&magnify));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
                                             num_written = fwrite(&magnify, sizeof(double), 1, fp);
@@ -1629,7 +1629,7 @@ int main(int argc, char*argv[])
                                         printf("     :        magnify = %-+32.26e\n", magnify);
 
                                         if ( endian_flag ) {
-                                            rotated64 = rot8(*((uint64_t *)&real_translate));
+                                            rotated64 = swap_eight(*((uint64_t *)&real_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
                                             num_written = fwrite(&real_translate, sizeof(double), 1, fp);
@@ -1639,7 +1639,7 @@ int main(int argc, char*argv[])
                                         printf("     : real_translate = %-+32.26e\n",real_translate);
 
                                         if ( endian_flag ) {
-                                            rotated64 = rot8(*((uint64_t *)&imag_translate));
+                                            rotated64 = swap_eight(*((uint64_t *)&imag_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
                                             num_written = fwrite(&imag_translate, sizeof(double), 1, fp);
@@ -1655,11 +1655,11 @@ int main(int argc, char*argv[])
                                                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
                                                         if ( endian_flag ) {
                                                             /* dump data from big endian machines */
-                                                            rotated64 = rot8(*((uint64_t *)(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
+                                                            rotated64 = swap_eight(*((uint64_t *)(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                            rotated64 = rot8(*((uint64_t *)(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
+                                                            rotated64 = swap_eight(*((uint64_t *)(&coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-                                                            rotated32 = rot4(*((uint32_t *)(&mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
+                                                            rotated32 = swap_four(*((uint32_t *)(&mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                                         } else {
                                                             /* dump data from little endian machines */

@@ -37,6 +37,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "mandelbrot.h"
+
 uint32_t mbrot( double c_r, double c_i, uint32_t bail_out )
 {
 

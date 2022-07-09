@@ -38,6 +38,8 @@
 #include <unistd.h>
 #include <inttypes.h>
 
+#include "mandelbrot.h"
+
 unsigned long linear_inter( uint8_t  in_val,
                             uint32_t low_col, uint32_t high_col,
                             uint8_t  low_val, uint8_t upper_val)

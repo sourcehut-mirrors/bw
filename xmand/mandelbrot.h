@@ -62,8 +62,13 @@
 #define EPSILON 1.0e-12
 #define VERBOSE 1
 
-uint64_t rot8(uint64_t x);
-uint32_t rot4(uint32_t x);
+/* These two little functions will reverse the order of bytes
+ * inside a four byte or eight byte datatype. This allows data
+ * from a big endian machine to be written out to a file with
+ * the same byte order as the more popular little endian systems.
+ */
+uint64_t swap_eight(uint64_t x);
+uint32_t swap_four(uint32_t x);
 
 Window create_borderless_topwin(Display *dsp,
                          unsigned int width, unsigned int height,
@@ -77,6 +82,11 @@ int X_error_handler(Display *dsp, XErrorEvent *errevt);
 uint64_t timediff( struct timespec st, struct timespec en );
 
 int sysinfo(int verbose);
+
+
+unsigned long linear_inter( uint8_t  in_val,
+                            uint32_t low_col, uint32_t high_col,
+                            uint8_t  low_val, uint8_t upper_val);
 
 unsigned long mandle_col( uint8_t height );
 

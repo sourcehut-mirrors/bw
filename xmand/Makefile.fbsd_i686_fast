@@ -1,3 +1,6 @@
-CFLAGS= -std=iso9899:1999 -m32 -O3
+
+CFLAGS= -std=iso9899:1999 -m32 -O3 \
+	-ffast-math -ffp-contract=on -march=native \
+	-mfma
 
 include common.mk
