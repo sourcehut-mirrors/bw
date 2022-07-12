@@ -1,4 +1,5 @@
-CC?=		/usr/bin/cc
+CC?=	/usr/bin/cc
+
 CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 		-D_XOPEN_SOURCE=600
 

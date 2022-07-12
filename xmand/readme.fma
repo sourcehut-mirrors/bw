@@ -51,3 +51,219 @@ not employ FMA.
     770b:   00 00 00
     770e:   66 90                   xchg   ax,ax
 
+
+similar results are seen with Oracle Solaris 11.3 running on Fujitsu SPARC-VII+
+hardware with the Oracle Studio 12.6 compiler tools : 
+
+!
+! SUBROUTINE fp_region
+!
+! OFFSET    SOURCE LINE LABEL   INSTRUCTION
+
+                        .global fp_region
+                       
+
+                        fp_region:
+                       
+! predecessor blocks: fp_region
+
+                        .L900000112:
+/* 000000         48 */         add     %sp,-192,%sp
+/* 0x0004            */         mov     %o7,%g1
+/* 0x0008            */         prefetch        [%o4+8],2
+                       
+
+                        .L900000107:
+/* 0x000c         48 */         call    (.+0x8) ! getpc
+/* 0x0010            */         mov     %o7,%o7
+/* 0x0014            */         sethi   %pc22(_GLOBAL_OFFSET_TABLE_-(.L900000107-.)),%g5
+
+!   50                !    /* We assume that the real and imag integers are inside
+!   51                !     * the primary plotting region pixel space. Then offset
+!   52                !     * the results such that the center is ( 0.0, 0.0 ) and
+!   53                !     * coordinates are always  -1.0 <= r,j <= +1.0 */
+!   55                !    locate->r = fma( (( 1.0 * real ) / ( 1.0 * real_range )), 2.0, -1.0)
+!   56                !                + ( 1.0 / real_range );
+!   58                !    locate->j = fma( (( 1.0 * imag ) / ( 1.0 * imag_range )), 2.0, -1.0)
+!   59                !                + ( 1.0 / imag_range );
+
+/* 0x0018         59 */         st      %o1,[%sp+2223]
+/* 0x001c            */         st      %o3,[%sp+2227]
+/* 0x0020          0 */         sethi   %gdop_hix22(.L___const_seg_900000101),%o5
+/* 0x0024         56 */         st      %o0,[%sp+2231]
+/* 0x0028            */         st      %o2,[%sp+2235]
+/* 0x002c         48 */         add     %g5,%pc10(_GLOBAL_OFFSET_TABLE_-(.L900000107-.)),%g5
+/* 0x0030          0 */         xor     %o5,%gdop_lox10(.L___const_seg_900000101),%o3
+/* 0x0034         59 */         ld      [%sp+2223],%f1
+/* 0x0038            */         ld      [%sp+2227],%f0
+/* 0x003c         48 */         add     %g5,%o7,%o1
+/* 0x0040            */         mov     %g1,%o7
+/* 0x0044         56 */         ld      [%sp+2231],%f3
+/* 0x0048            */         ld      [%sp+2235],%f2
+/* 0x004c          0 */         ldx     [%o1+%o3],%g1,%gdop(.L___const_seg_900000101)
+/* 0x0050         59 */         fitod   %f0,%f32
+/* 0x0054            */         fitod   %f1,%f34
+/* 0x0058         56 */         fitod   %f2,%f36
+/* 0x005c            */         fitod   %f3,%f38
+/* 0x0060            */         ldd     [%g1],%f40
+/* 0x0064            */         ldd     [%g1+8],%f42
+/* 0x0068         59 */         fdivd   %f40,%f32,%f44
+/* 0x006c            */         fmuld   %f32,%f40,%f48
+/* 0x0070         56 */         fdivd   %f40,%f36,%f46
+/* 0x0074         59 */         fmuld   %f34,%f40,%f50
+/* 0x0078         56 */         fmuld   %f36,%f40,%f52
+/* 0x007c            */         fmuld   %f38,%f40,%f54
+/* 0x0080            */         fnegd   %f40,%f58
+/* 0x0084         59 */         fdivd   %f50,%f48,%f56
+/* 0x0088         56 */         fdivd   %f54,%f52,%f60
+/* 0x008c         59 */         fmaddd  %f56,%f42,%f58,%f62
+/* 0x0090         56 */         fmaddd  %f60,%f42,%f58,%f34
+/* 0x0094         59 */         faddd   %f62,%f44,%f32
+/* 0x0098            */         std     %f32,[%o4+8]
+/* 0x009c         56 */         faddd   %f34,%f46,%f36
+/* 0x00a0            */         std     %f36,[%o4]
+/* 0x00a4         59 */         retl    ! Result = 
+/* 0x00a8            */         add     %sp,192,%sp
+/* 0x00ac          0 */         .type   fp_region,#function
+/* 0x00ac          0 */         .size   fp_region,(.-fp_region)
+                       
+
+                        .L900000113:
+
+        .section        ".text",#alloc,#execinstr,#progbits
+                       
+
+                        .L900000119:
+
+        .section        ".annotate",#exclude,#progbits
+/* 000000          0 */         .asciz  "anotate"
+/* 0x0008          0 */         .word   6,0
+/* 0x0010          0 */         .xword  160
+/* 0x0018          0 */         .word   0,16
+/* 0x0020          0 */         .xword  (.L900000119-0xec)
+/* 0x0028          0 */         .xword  236
+/* 0x0030          0 */         .word   2,32
+/* 0x0038          0 */         .xword  .L900000112
+/* 0x0040          0 */         .xword  (.L900000113-.L900000112)
+/* 0x0048          0 */         .xword  .L___const_seg_900000101
+/* 0x0050          0 */         .word   -2145638272,0
+/* 0x0058          0 */         .word   5,24
+/* 0x0060          0 */         .xword  (.L900000107+0x8)
+/* 0x0068          0 */         .xword  _GLOBAL_OFFSET_TABLE_
+/* 0x0070          0 */         .xword  .L900000107
+/* 0x0078          0 */         .word   6,24
+/* 0x0080          0 */         .xword  (.L900000107+0x20)
+/* 0x0088          0 */         .xword  _GLOBAL_OFFSET_TABLE_
+/* 0x0090          0 */         .xword  .L900000107
+/* 0x0098          0 */         .word   7,24
+/* 0x00a0          0 */         .xword  .L___const_seg_900000101
+/* 0x00a8          0 */         .xword  16
+/* 0x00b0          0 */         .xword  8
+
+
+
+Also the fp_vbox() does not employ FMA at all : 
+
+!
+! SUBROUTINE fp_vbox
+!
+! OFFSET    SOURCE LINE LABEL   INSTRUCTION
+
+                        .global fp_vbox
+                       
+
+                        fp_vbox:
+                       
+! predecessor blocks: fp_vbox
+
+                        .L900000110:
+/* 000000         49 */         save    %sp,-192,%sp
+
+!   51                !    /* try to reduce the number of floating point operations */
+!   52                !    int numerator = 2 * Vr * VBOX_SAMPLE_REAL + 2 * Sr - real_range + 1;
+!   53                !    cplex->r = numerator / ( 1.0 * real_range );
+!   55                !    numerator = 2 * Vj * VBOX_SAMPLE_IMAG + 2 * Sj - imag_range + 1;
+!   56                !    cplex->j = numerator / ( 1.0 * imag_range );
+
+/* 0x0004         56 */         st      %i5,[%sp+2223]
+/* 0x0008         53 */         st      %i4,[%sp+2231]
+/* 0x000c         49 */         mov     %o7,%g1
+/* 0x0010         56 */         sll     %i1,7,%l4
+                       
+
+                        .L900000105:
+/* 0x0014         49 */         call    (.+0x8) ! getpc
+/* 0x0018            */         mov     %o7,%o7
+/* 0x001c            */         sethi   %pc22(_GLOBAL_OFFSET_TABLE_-(.L900000105-.)),%l6
+/* 0x0020         53 */         sll     %i0,7,%l0
+/* 0x0024         56 */         ld      [%sp+2223],%f0
+/* 0x0028         53 */         ld      [%sp+2231],%f1
+/* 0x002c         49 */         add     %l6,%pc10(_GLOBAL_OFFSET_TABLE_-(.L900000105-.)),%l6
+/* 0x0030            */         ldx     [%fp+2223],%l3
+/* 0x0034         56 */         sll     %i3,1,%l5
+/* 0x0038          0 */         sethi   %gdop_hix22(.L___const_seg_900000101),%o5
+/* 0x003c         53 */         sll     %i2,1,%o4
+/* 0x0040         49 */         add     %l6,%o7,%l2
+/* 0x0044         56 */         add     %l5,1,%l1
+/* 0x0048            */         sub     %l4,%i5,%o2
+/* 0x004c          0 */         xor     %o5,%gdop_lox10(.L___const_seg_900000101),%o3
+/* 0x0050         53 */         add     %o4,1,%o1
+/* 0x0054         56 */         fitod   %f0,%f4
+/* 0x0058         53 */         fitod   %f1,%f8
+/* 0x005c            */         sub     %l0,%i4,%o0
+/* 0x0060         49 */         mov     %g1,%o7
+/* 0x0064          0 */         ldx     [%l2+%o3],%g1,%gdop(.L___const_seg_900000101)
+/* 0x0068         56 */         add     %o2,%l1,%g5
+/* 0x006c         53 */         add     %o0,%o1,%g4
+/* 0x0070         56 */         st      %g5,[%sp+2227]
+/* 0x0074         53 */         st      %g4,[%sp+2235]
+/* 0x0078         56 */         ld      [%sp+2227],%f3
+/* 0x007c         53 */         ld      [%sp+2235],%f2
+/* 0x0080            */         ldd     [%g1],%f6
+/* 0x0084         56 */         fitod   %f3,%f10
+/* 0x0088         53 */         fitod   %f2,%f12
+/* 0x008c         56 */         fmuld   %f4,%f6,%f14
+/* 0x0090         53 */         fmuld   %f8,%f6,%f16
+/* 0x0094         56 */         fdivd   %f10,%f14,%f18
+/* 0x0098         53 */         fdivd   %f12,%f16,%f20
+/* 0x009c         56 */         std     %f18,[%l3+8]
+/* 0x00a0         53 */         std     %f20,[%l3]
+/* 0x00a4         56 */         return  %i7+8   ! Result = 
+/* 0x00a8            */         nop
+/* 0x00ac          0 */         .type   fp_vbox,#function
+/* 0x00ac          0 */         .size   fp_vbox,(.-fp_vbox)
+                       
+
+                        .L900000111:
+
+        .section        ".text",#alloc,#execinstr,#progbits
+                       
+
+                        .L900000116:
+
+        .section        ".annotate",#exclude,#progbits
+/* 000000          0 */         .asciz  "anotate"
+/* 0x0008          0 */         .word   6,0
+/* 0x0010          0 */         .xword  160
+/* 0x0018          0 */         .word   0,16
+/* 0x0020          0 */         .xword  (.L900000116-0xec)
+/* 0x0028          0 */         .xword  236
+/* 0x0030          0 */         .word   2,32
+/* 0x0038          0 */         .xword  .L900000110
+/* 0x0040          0 */         .xword  (.L900000111-.L900000110)
+/* 0x0048          0 */         .xword  .L___const_seg_900000101
+/* 0x0050          0 */         .word   -2145636224,0
+/* 0x0058          0 */         .word   5,24
+/* 0x0060          0 */         .xword  (.L900000105+0x8)
+/* 0x0068          0 */         .xword  _GLOBAL_OFFSET_TABLE_
+/* 0x0070          0 */         .xword  .L900000105
+/* 0x0078          0 */         .word   6,24
+/* 0x0080          0 */         .xword  (.L900000105+0x18)
+/* 0x0088          0 */         .xword  _GLOBAL_OFFSET_TABLE_
+/* 0x0090          0 */         .xword  .L900000105
+/* 0x0098          0 */         .word   7,24
+/* 0x00a0          0 */         .xword  .L___const_seg_900000101
+/* 0x00a8          0 */         .xword  8
+/* 0x00b0          0 */         .xword  8
+
+
