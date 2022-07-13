@@ -1,13 +1,44 @@
-CC?=		/usr/bin/cc
-CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-		-D_XOPEN_SOURCE=600
 
-LIBS=		-lX11 -lrt -lm
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
 
-LDIR?=		/usr/local/lib
-IDIR?=		/usr/local/include
+LIBS = -lX11 -lrt -lm
 
 CMPLEX_DIR=../complex_vector
+
+SRCS = xray.c \
+	../xwin/x_error_handler.c \
+	../xwin/create_gc.c \
+	../xwin/create_borderless_topwin.c \
+	../time_and_date/timediff.c \
+	../complex_vector/icept.c \
+	../complex_vector/surface_icept_pt.c \
+	../complex_vector/gradient.c \
+	../complex_vector/cplex_add.c \
+	../complex_vector/cplex_check.c \
+	../complex_vector/cplex_div.c \
+	../complex_vector/cplex_mag.c \
+	../complex_vector/cplex_mult.c \
+	../complex_vector/cplex_quad.c \
+	../complex_vector/cplex_sq.c \
+	../complex_vector/cplex_sqrt.c \
+	../complex_vector/cplex_sub.c \
+	../complex_vector/cplex_theta.c \
+	../complex_vector/cplex_vec_add.c \
+	../complex_vector/cplex_vec_copy.c \
+	../complex_vector/cplex_vec_dot.c \
+	../complex_vector/cplex_vec_set.c \
+	../complex_vector/cplex_vec_print.c \
+	../complex_vector/cplex_vec_scale.c \
+	../complex_vector/cplex_vec_mag.c \
+	../complex_vector/cplex_vec_normalize.c \
+	../complex_vector/cplex_vec_cross.c \
+	../complex_vector/cplex_cramer.c \
+	../complex_vector/cplex_det.c \
+	../complex_vector/line_plane_icept.c \
+	../complex_vector/cplex_vec_check.c \
+	../sysinfo/sysinfo.c
+
 
 OBJS = ../xwin/x_error_handler.o \
 	../xwin/create_gc.o \
@@ -18,7 +49,6 @@ OBJS = ../xwin/x_error_handler.o \
 	../complex_vector/gradient.o \
 	../complex_vector/cplex_add.o \
 	../complex_vector/cplex_check.o \
-	../complex_vector/cplex_vec_check.o \
 	../complex_vector/cplex_div.o \
 	../complex_vector/cplex_mag.o \
 	../complex_vector/cplex_mult.o \
@@ -39,17 +69,14 @@ OBJS = ../xwin/x_error_handler.o \
 	../complex_vector/cplex_cramer.o \
 	../complex_vector/cplex_det.o \
 	../complex_vector/line_plane_icept.o \
+	../complex_vector/cplex_vec_check.o \
 	../sysinfo/sysinfo.o
 
-.PHONY: all
-all: xray
-
-.c.o:
+%.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(CMPLEX_DIR) -I$(IDIR)
 
 xray: xray.o $(OBJS)
-	$(CC) -o xray xray.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
-.PHONY: clean
 clean:
 	rm -f $(OBJS) xray.o xray
