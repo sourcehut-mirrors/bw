@@ -28,9 +28,7 @@
 #include <string.h>
 #include <locale.h>
 
-/* char *strtrim( char *str ); */
-
-char *longbows_trim(char *str);
+char *strtrim( char *str );
 
 int main(int argc, char *argv[]) {
 
@@ -43,17 +41,18 @@ int main(int argc, char *argv[]) {
         " fifth string  ",
         "sixth   string ",
         "  this   -     thing ",
-        "and more",
-        "a long  string   that    says nothing  much",
-        "another empty thing of such and such",
+        "and more\t",
+        "\ta long  string   that    says nothing  much",
+        "\tanother empty thing of such and such\t",
         "thus quoth the raven and a rose in tatters on the gardens path",
         "issued         a compile and gave utterance to wrath",
         "a",
         "",
+        "     ",
         NULL
     };
     char buffer[255] = "\0";
-    char *longbow = NULL;
+    char *result = NULL;
     int j;
 
     /* we are not checking the return from setlocale() */
@@ -61,40 +60,31 @@ int main(int argc, char *argv[]) {
 
     printf( "----------------------------------------------------\n" );
     printf( "TEST: strtrim()\n\n" );
-    for( j = 0; ( j<14 ) ; ++j ) {
+    for( j = 0; ( j<15 ) ; ++j ) {
         /* NOTE we never pass in a pointer to a string literal
          * and we use the buffer safely */
         strcpy( buffer, some_string[j] );
         printf("input : \"%s\"\n", buffer);
 
-        longbow = longbows_trim( buffer );
-        if ( longbow != NULL ) {
-            printf("output: \"%s\"\n\n", longbow);
-            free(longbow);
-            longbow = NULL;
+        result = strtrim( buffer );
+        if ( result != NULL ) {
+            printf("output: \"%s\"\n\n", result);
         } else {
             printf("output: NULL pointer\n\n");
         }
     }
 
     /* the final NULL is a bugger */
-    longbow = longbows_trim( some_string[14] );
-    if ( longbow == NULL ) {
+    result = strtrim( some_string[15] );
+    if ( result == NULL ) {
         printf( "input : NULL\noutput: NULL pointer\n\n");
     } else {
         /* magic ? n0se demons ? */
-        printf( "input : NULL\noutput: \"%s\"\n\n", longbow );
+        printf( "input : NULL\noutput: \"%s\"\n\n", result );
         /* should be impossible */
-        free(longbow);
-        longbow = NULL;
+        free(result);
+        result = NULL;
     }
-
-    /* we need to free that some_string[14] mess 
-    if ( some_string[14] != NULL ) {
-        free( some_string[14] );
-        some_string[14] = NULL;
-    }
-    */
 
     return EXIT_SUCCESS;
 

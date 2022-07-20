@@ -20,18 +20,7 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-/*********************************************************************
- * The Open Group Base Specifications Issue 6
- * IEEE Std 1003.1, 2004 Edition
- *
- *    An XSI-conforming application should ensure that the feature
- *    test macro _XOPEN_SOURCE is defined with the value 600 before
- *    inclusion of any header. This is needed to enable the
- *    functionality described in The _POSIX_C_SOURCE Feature Test
- *    Macro and in addition to enable the XSI extension.
- *
- *********************************************************************/
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 500
 
 #include <ctype.h>
 #include <stdio.h>
@@ -75,7 +64,8 @@ char *strtrim( const char *str ) {
     }
 
     /* A simple condition is that we are given a single
-     * byte string.  If it is not whitespace just bail out.
+     * byte string. If it is whitespace just bail out.
+     * This saves us from doing pointer games later on.
      */
     if ( len == 1 ) {
         if (isspace(r[0])) {
@@ -99,8 +89,8 @@ char *strtrim( const char *str ) {
     if ( ( r0 + len - 1 ) != r1 ) {
         *(r1 + 1) = '\0';
     } else {
-        if ( ( frontp != str ) && ( temp == frontp ) ) {
-            *str = '\0';
+        if ( ( frontp != r0 ) && ( r0 == frontp ) ) {
+            *r0 = '\0';
         }
     }
 
