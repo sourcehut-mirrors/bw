@@ -1,25 +1,4 @@
 
-/*
- * test.c toss some test strings at the strtrim() function
- *
- * Copyright (C) Dennis Clarke 2012
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
- */
-
 #define _XOPEN_SOURCE 500
 
 #include <ctype.h>
@@ -28,9 +7,8 @@
 #include <string.h>
 #include <locale.h>
 
-/* char *strtrim( char *str ); */
-
 char *longbows_trim(char *str);
+static char *longbow_str_hack(const char *src, size_t n);
 
 int main(int argc, char *argv[]) {
 
@@ -43,11 +21,11 @@ int main(int argc, char *argv[]) {
         " fifth string  ",
         "sixth   string ",
         "  this   -     thing ",
-        "and more",
+        "and more\t",
+        "     ",
         "a long  string   that    says nothing  much",
-        "another empty thing of such and such",
-        "thus quoth the raven and a rose in tatters on the gardens path",
-        "issued         a compile and gave utterance to wrath",
+        "\tthus quoth the raven and a rose in tatters on the gardens path",
+        "\tissued   a compile and gave utterance to\t\nwrath\t",
         "a",
         "",
         NULL
@@ -97,6 +75,62 @@ int main(int argc, char *argv[]) {
     */
 
     return EXIT_SUCCESS;
+
+}
+
+static char *longbow_str_hack(const char *src, size_t n) {
+    /* trailing \0 char is included in the n+1 byte */
+    char *ret=calloc(n+1, sizeof(unsigned char));
+    memcpy(ret,src,n);
+    return ret;
+}
+
+char *longbows_trim(char *str)
+{
+    size_t start_off=0;
+    size_t end_off;
+    char *ret = NULL;
+
+    if(!str) {
+        return NULL;
+    }
+
+    /* strlen does not count the trailing nul byte */
+    end_off=strlen(str) - 1;
+
+    /* if this is a single byte string then we check
+     * for whitespace and return '\0' if so. */
+    if ( end_off == 0 ) {
+        ret=longbow_str_hack(str,1);
+        if ( isspace(str[0]) ) {
+            ret[0] = '\0';
+        }
+        return ret;
+    }
+
+    /* check for some MAX_LENGTH someday */
+    while(isspace(str[start_off])) {
+        start_off++;
+    }
+
+    /* we ensure that end_off > start_off such that we never
+     * end up doing a strndup() of zero chars.
+     *
+     * However this is a total hack ... see longbow_str_hack */
+    while((isspace(str[end_off])) && (end_off > start_off)) {
+        end_off--;
+    }
+
+    /* bad mojo here?
+     * however we should never land in this code. */
+    if( end_off<start_off ) {
+        return NULL;
+    }
+
+    /* we hope to enforce the trailing nul char */
+    ret=longbow_str_hack(&str[start_off],end_off-start_off+1);
+
+    return ret;
 
 }
 
