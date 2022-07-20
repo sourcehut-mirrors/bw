@@ -44,10 +44,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
-char *strtrim( char *str );
+#define VERBOSE 1
+int sysinfo(int verbose);
+
+/* char *strtrim( char *str ); */
+
+char *longbows_trim(char *str);
 
 int main(int argc, char *argv[]) {
+
     char *some_string[] =
     {
         "one string",
@@ -67,24 +74,49 @@ int main(int argc, char *argv[]) {
         NULL
     };
     char buffer[255] = "\0";
+    char *longbow = NULL;
     int j;
+
+    /* we are not checking the return from setlocale() */
+    setlocale(LC_ALL,"C");
+    sysinfo(VERBOSE);
 
     printf( "----------------------------------------------------\n" );
     printf( "TEST: strtrim()\n\n" );
     for( j = 0; ( j<14 ) ; ++j ) {
+        /* NOTE we never pass in a pointer to a string literal
+         * and we use the buffer safely */
         strcpy( buffer, some_string[j] );
-        printf( "input : \"%s\"\noutput: \"%s\"\n\n",
-                          some_string[j], strtrim( buffer ) );
+        printf("input : \"%s\"\n", buffer);
+
+        longbow = longbows_trim( buffer );
+        if ( longbow != NULL ) {
+            printf("output: \"%s\"\n\n", longbow);
+            free(longbow);
+            longbow = NULL;
+        } else {
+            printf("output: NULL pointer\n\n");
+        }
     }
 
     /* the final NULL is a bugger */
-    printf( "input : NULL\noutput: \"%s\"\n\n", strtrim( some_string[14] ) );
+    longbow = longbows_trim( some_string[14] );
+    if ( longbow == NULL ) {
+        printf( "input : NULL\noutput: NULL pointer\n\n");
+    } else {
+        /* magic ? n0se demons ? */
+        printf( "input : NULL\noutput: \"%s\"\n\n", longbow );
+        /* should be impossible */
+        free(longbow);
+        longbow = NULL;
+    }
 
-    /* we need to free that some_string[14] mess */
+    /* we need to free that some_string[14] mess 
     if ( some_string[14] != NULL ) {
         free( some_string[14] );
         some_string[14] = NULL;
     }
+    */
 
     return EXIT_SUCCESS;
 

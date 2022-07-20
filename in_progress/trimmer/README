@@ -3,3 +3,160 @@
 very well. If you need to deal with UTF-8 or similar then
 you have a whole other stack of problems.
 
+Also the strtrim should not ever malloc or mess with memory
+pointers that were passed to it. Bad undefined nose demon type
+behavior will happen.
+
+See  strtrim_ub.c 
+
+hydra$ 
+hydra$ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test
+==29476== Memcheck, a memory error detector
+==29476== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==29476== Using Valgrind-3.20.0.GIT-unknown and LibVEX; rerun with -h for copyright info
+==29476== Command: ./test
+==29476== 
+--29476-- Valgrind options:
+--29476--    --leak-check=full
+--29476--    --show-leak-kinds=all
+--29476--    --track-origins=yes
+--29476--    --verbose
+--29476-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx
+--29476-- Page sizes: currently 4096, max supported 4096
+--29476-- Valgrind library directory: /usr/local/libexec/valgrind
+--29476-- Reading syms from /usr/home/dclarke/pgm/bw/in_progress/trimmer/test
+--29476-- Set osrel for current process with value 1301000
+--29476-- Reading syms from /libexec/ld-elf.so.1
+--29476--    object doesn't have a symbol table
+--29476-- Reading syms from /usr/local/libexec/valgrind/memcheck-amd64-freebsd
+--29476-- ELF section outside all mapped regions
+--29476-- Scheduler: using generic scheduler lock implementation.
+--29476-- Reading suppressions file: /usr/local/libexec/valgrind/default.supp
+==29476== embedded gdbserver: reading from /var/tmp/dclarke/vgdb-pipe-from-vgdb-to-29476-by-dclarke-on-???
+==29476== embedded gdbserver: writing to   /var/tmp/dclarke/vgdb-pipe-to-vgdb-from-29476-by-dclarke-on-???
+==29476== embedded gdbserver: shared mem   /var/tmp/dclarke/vgdb-pipe-shared-mem-vgdb-29476-by-dclarke-on-???
+==29476== 
+==29476== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==29476== don't want to do, unless you know exactly what you're doing,
+==29476== or are doing some strange experiment):
+==29476==   /usr/local/libexec/valgrind/../../bin/vgdb --pid=29476 ...command...
+==29476== 
+==29476== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==29476==   /path/to/gdb ./test
+==29476== and then give GDB the following command
+==29476==   target remote | /usr/local/libexec/valgrind/../../bin/vgdb --pid=29476
+==29476== --pid is optional if only one valgrind process is running
+==29476== 
+--29476-- Reading syms from /usr/local/libexec/valgrind/vgpreload_core-amd64-freebsd.so
+--29476--    object doesn't have a symbol table
+--29476-- Reading syms from /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so
+--29476--    object doesn't have a symbol table
+--29476-- Reading syms from /lib/libc.so.7
+--29476--    object doesn't have a symbol table
+--29476-- REDIR: 0x49b3b70 (libc.so.7:memset) redirected to 0x48561a0 (memset)
+--29476-- REDIR: 0x4a253b0 (libc.so.7:strncmp) redirected to 0x48540c0 (strncmp)
+--29476-- REDIR: 0x4a24d70 (libc.so.7:strcpy) redirected to 0x48534f0 (strcpy)
+--29476-- REDIR: 0x4a24950 (libc.so.7:index) redirected to 0x4852c10 (index)
+--29476-- REDIR: 0x49b3e30 (libc.so.7:strlen) redirected to 0x4853490 (strlen)
+--29476-- REDIR: 0x49b3db0 (libc.so.7:strcmp) redirected to 0x4854630 (strcmp)
+--29476-- REDIR: 0x49d2a40 (libc.so.7:malloc) redirected to 0x484cb20 (malloc)
+--29476-- REDIR: 0x4a23c30 (libc.so.7:memchr) redirected to 0x4854720 (memchr)
+--29476-- REDIR: 0x49b3690 (libc.so.7:memcpy) redirected to 0x4854780 (memcpy)
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = hydra
+                     release = 13.1-RELEASE
+                     version = FreeBSD 13.1-RELEASE releng/13.1-n250148-fc952ac2212 GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 14692311040
+                             = 14347960 kB
+                             = 14011 MB
+                 avail pages = 3586990
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime   11 days   10 hours   45 mins   48 secs
+-------------------------------------------------------------------
+----------------------------------------------------
+TEST: strtrim()
+
+input : "one string"
+output: "one string"
+
+input : "    two strings"
+output: "two strings"
+
+input : "three strings  "
+output: "three strings"
+
+input : " four "
+output: "four"
+
+input : " fifth string  "
+output: "fifth string"
+
+input : "sixth   string "
+output: "sixth   string"
+
+input : "  this   -     thing "
+output: "this   -     thing"
+
+input : "and more"
+output: "and more"
+
+input : "a long  string   that    says nothing  much"
+output: "a long  string   that    says nothing  much"
+
+input : "another empty thing of such and such"
+output: "another empty thing of such and such"
+
+input : "thus quoth the raven and a rose in tatters on the gardens path"
+output: "thus quoth the raven and a rose in tatters on the gardens path"
+
+input : "issued         a compile and gave utterance to wrath"
+output: "issued         a compile and gave utterance to wrath"
+
+input : "a"
+output: "a"
+
+input : ""
+output: ""
+
+input : NULL
+output: ""
+
+==29476== 
+==29476== HEAP SUMMARY:
+==29476==     in use at exit: 4,104 bytes in 2 blocks
+==29476==   total heap usage: 2 allocs, 0 frees, 4,104 bytes allocated
+==29476== 
+==29476== Searching for pointers to 2 not-freed blocks
+==29476== Checked 10,856,256 bytes
+==29476== 
+==29476== 8 bytes in 1 blocks are definitely lost in loss record 1 of 2
+==29476==    at 0x484CBA4: malloc (in /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so)
+==29476==    by 0x202758: strtrim (strtrim.c:84)
+==29476==    by 0x2026EF: main (test.c:91)
+==29476== 
+==29476== LEAK SUMMARY:
+==29476==    definitely lost: 8 bytes in 1 blocks
+==29476==    indirectly lost: 0 bytes in 0 blocks
+==29476==      possibly lost: 0 bytes in 0 blocks
+==29476==    still reachable: 0 bytes in 0 blocks
+==29476==         suppressed: 4,096 bytes in 1 blocks
+==29476== 
+==29476== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+--29476-- 
+--29476-- used_suppression:      1 MEMCHECK-LIBC-REACHABLE-1 /usr/local/libexec/valgrind/default.supp:582 suppressed: 4,096 bytes in 1 blocks
+==29476== 
+==29476== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+hydra$ 
+
