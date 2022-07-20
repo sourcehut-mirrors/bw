@@ -4,7 +4,7 @@ CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS = -lX11 -lrt -lm
 
-CMPLEX_DIR=../complex_vector
+CMPLEX_DIR= ../complex_vector
 
 SRCS = xray.c \
 	../xwin/x_error_handler.c \
@@ -73,7 +73,7 @@ OBJS = ../xwin/x_error_handler.o \
 	../sysinfo/sysinfo.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(CMPLEX_DIR) -I$(IDIR)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(CMPLEX_DIR)
 
 xray: xray.o $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)

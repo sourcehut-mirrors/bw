@@ -1,0 +1,5 @@
+
+    None of this will deal with non-ascii trivial chars
+very well. If you need to deal with UTF-8 or similar then
+you have a whole other stack of problems.
+

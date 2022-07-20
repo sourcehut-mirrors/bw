@@ -10,4 +10,3 @@ CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
 	-fno-unsafe-math-optimizations -Wall
 
 include common.mk
-
