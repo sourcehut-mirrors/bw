@@ -1,8 +1,8 @@
 
 CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=600
+	-D_XOPEN_SOURCE=500
 
-SRCS = test.c strtrim.c ../../sysinfo/sysinfo.c
+SRCS = test.c strtrim.c
 
 OBJS = ${SRCS:.c=.o}
 

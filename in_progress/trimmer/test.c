@@ -28,7 +28,7 @@
 #include <string.h>
 #include <locale.h>
 
-char *strtrim( char *str );
+#include "strtrim.h"
 
 int main(int argc, char *argv[]) {
 
@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
         "and more\t",
         "\ta long  string   that    says nothing  much",
         "\tanother empty thing of such and such\t",
-        "thus quoth the raven and a rose in tatters on the gardens path",
-        "issued         a compile and gave utterance to wrath",
+        "\t\n\t\nthus quoth the raven\n\t and a rose in tatters on the gardens path\n",
+        "issued         a compile and gave\n\t utterance to wrath \t \n \t \n",
         "a",
         "",
         "     ",

@@ -27,89 +27,72 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "strtrim.h"
-
 /* WARNING : If the caller provides a NULL pointer then
- * we return a valid char pointer to 8 bytes of memory
- * which shall be nothing more than a nul string.
- *
- * It is the responsibility of the caller to deal with a
- * free() of their pointer. We do not own it but we will
- * ensure it is not a NULL.
- *
- * 20 Jul 2022  a few words from the wild Greek who says :
- *
- *    GCC doesn't complain at all but my intuition says this is UB
- *    but I've been wrong before so I'm looking into it.
- *    I know for instance that char *foo="bar"; foo[0]='B'; is UB.
- *    but I am not sure what happens if you allocate an array of
- *    pointers.
- *    Best bet is to look at the assembly I guess.
- *    If the strings go in the stack it is fine
- *    since char[] foo="bar"; foo[0]='B'; well defined.
- *    The difference is pretty much where the string memory goes
- *
- *    I'm saying you can't pass string literals to that.
+ * we return a NULL pointer.
  *
  * 20 Jul 2022 marsen says
  *   "garbage in, garbage out". If the caller passes NULL either fail
  *   (like strlen, strdup, strcpy do) or return NULL again.
  *
- * some geek says :
+ *
  *    It may be far more sane to return a pointer to a new string
  *    in memory and not ever modify the callers string pointer.
  */
-char *strtrim( char *str ) {
+char *strtrim( const char *str ) {
     /* Given a string pointer, toss out all
-     * leading and trailing whitespace.
-     */
+     * leading and trailing whitespace. Return
+     * a new pointer to memory allocated on the
+     * heap.  */
     size_t  len;
     char    *frontp;
-    char    *temp = NULL;
+    char    *r0 = NULL;
+    char    *r1 = NULL;
 
-    /* Are we given NULL ?
-     * If so then the caller is a jerk. Return the NULL
-     * right back at them and let them deal with it.
-     */
+    /* Are we given NULL ?  */
     if ( str == NULL ) {
         return str;
     }
 
-    /* we were given nothing. */
-    if ( str[0] == '\0' )
-        return str;
-
-    /* Bail out on the condition that this is only one byte
-     * AND it is a whitespace.
-     *
-     * Another simple condition is that we are given a single
-     * byte string.  If it is not whitespace just bail out.
-     */
+    /* TODO : check if the len is something insane. Perhaps
+     * define a MAX_LENGTH somewhere. */
     len = strlen(str);
-    if ( len == 1 ) {
-        if (isspace(str[0])) {
-            str[0] = '\0';
-        }
-        return str;
+    r0 = strdup(str);
+
+    /* Is the input string just a nul byte? */
+    if ( r[0] == '\0' ) {
+        return r0;
     }
 
-    frontp = str - 1; /* will need to pre-increment this */
-    temp = str + len;
+    /* A simple condition is that we are given a single
+     * byte string. If it is whitespace just bail out.
+     * This saves us from doing pointer games later on.
+     */
+    if ( len == 1 ) {
+        if (isspace(r[0])) {
+            r[0] = '\0';
+        }
+        return r0;
+    }
+
+    frontp = r0 - 1;
+    r1 = r0 + len;
 
     /* Move the front and back pointers to address
      * of the first non-whitespace characters from
      * each end. Note that frontp gets pre-incremented
-     * which is fine given its definition as (str - 1)
+     * which is fine given its definition as (r0 - 1)
      */
-    while ( isspace(*(++frontp)) ); /* n.b: frontp = str - 1 */
-    while ( isspace(*(--temp)) && ( temp != frontp ) );
+    while ( isspace(*(++frontp)) );
+    while ( isspace(*(--r1)) && ( r1 != frontp ) );
 
     /* clean up in case we removed all characters */
-    if ( ( str + len - 1 ) != temp )
-        *(temp + 1) = '\0';
-    else
-        if ( ( frontp != str ) && ( temp == frontp ) )
-            *str = '\0';
+    if ( ( r0 + len - 1 ) != r1 ) {
+        *(r1 + 1) = '\0';
+    } else {
+        if ( ( frontp != r0 ) && ( r0 == frontp ) ) {
+            *r0 = '\0';
+        }
+    }
 
     /* now let's start over from the front of the
      * first non-whitespace char and move one char

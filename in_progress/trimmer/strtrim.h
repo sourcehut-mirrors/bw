@@ -1,0 +1,2 @@
+
+char *strtrim( char *str );
