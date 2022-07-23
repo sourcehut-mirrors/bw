@@ -65,12 +65,16 @@ int main (int argc, char **argv)
     char *filename, *fid;
     char timestamp[32];
 
-    double c_r, c_j, magnify;
-    uint32_t bail_out, num_elements;
     uint32_t temp32bit;
     uint64_t temp64bit;
     uint64_t rotated64;
+    double *fp64;
     uint32_t rotated32;
+
+    /* the actual data we are trying to read */
+    uint32_t num_elements, mandel_bail_out;
+    double magnify, c_r, c_j;
+
 
     setlocale (LC_ALL, "C");
 
@@ -217,7 +221,7 @@ int main (int argc, char **argv)
         temp32bit = rotated32;
     }
     num_elements = temp32bit;
-    printf("     : uint32_t num_elements = %i\n", num_elements);
+    printf("     : uint32_t    num_elements = %i\n", num_elements);
 
     /* check for early end of file */
     clearerr(fp);
@@ -233,8 +237,7 @@ int main (int argc, char **argv)
         fprintf(stderr,"     : check the filename.\n");
         goto bail_out;
     }
-    printf("INFO : read %i items of type uint32_t from file %s\n",
-                                                       num_read, fid);
+    printf("INFO : read %i items of type uint32_t\n", num_read);
     if ( num_read < 1 ) {
         /* we have a short read 
          * check if end of file */
@@ -247,14 +250,11 @@ int main (int argc, char **argv)
     }
 
     if ( endian_flag ) {
-        /* we are on a big endian machine so we need
-         * to swap around the bye order of the data
-         * read from the little endian file. */
         rotated32 = rot4(temp32bit);
         temp32bit = rotated32;
     }
-    bail_out = temp32bit;
-    printf("     : uint32_t bail_out = %i\n", bail_out);
+    mandel_bail_out = temp32bit;
+    printf("     : uint32_t mandel_bail_out = %i\n", mandel_bail_out);
 
     /* check for early end of file */
     clearerr(fp);
@@ -263,39 +263,107 @@ int main (int argc, char **argv)
         goto bail_out;
     }
 
-
-    /*
-    if ( endian_flag ) {
-        rotated64 = rot8(*((uint64_t *)&magnify));
-        num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
-    } else {
-        num_written = fwrite(&magnify, sizeof(double), 1, fp);
+    /* Now we read in 64bits of data and deal with it
+     * as IEEE-754 floating point double later.
+     * Why ?
+     * Because a big endian machine would interpret
+     * the little endian data as a NaN or a sub-normal
+     * or perhaps just nasty messy double value. */
+    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : some read error occured.\n");
+        fprintf(stderr,"     : check the filename.\n");
+        goto bail_out;
     }
-    printf("     : %2lu byte double magnify        num_written = %lu\n",
-            sizeof(double), num_written);
-    printf("     :        magnify = %-+26.20e\n", magnify);
+    printf("INFO : read %i items of type uint64_t\n", num_read);
+    if ( num_read < 1 ) {
+        /* check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
 
     if ( endian_flag ) {
-        rotated64 = rot8(*((uint64_t *)&c_r));
-        num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+        rotated64 = rot8(temp64bit);
+        fp64 = memcpy(&magnify,(void *)&rotated64, sizeof(double));
     } else {
-        num_written = fwrite(&c_r, sizeof(double), 1, fp);
+        fp64 = memcpy(&magnify,(void *)&temp64bit, sizeof(double));
     }
-    printf("DBUG : %2lu byte double c_r num_written = %lu\n",
-            sizeof(double), num_written);
-    printf("     : c_r = %-+26.20e\n",c_r);
+    printf("     : double           magnify = %-+32.26e\n", magnify);
+
+
+    /* check for early end of file */
+    clearerr(fp);
+    if ( feof(fp) != 0 ) {
+        fprintf(stderr,"ERR  : End of file\n");
+        goto bail_out;
+    }
+
+    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : some read error occured.\n");
+        fprintf(stderr,"     : check the filename.\n");
+        goto bail_out;
+    }
+    printf("INFO : read %i items of type uint64_t\n", num_read);
+    if ( num_read < 1 ) {
+        /* check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
 
     if ( endian_flag ) {
-        rotated64 = rot8(*((uint64_t *)&c_j));
-        num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
+        rotated64 = rot8(temp64bit);
+        fp64 = memcpy(&c_r,(void *)&rotated64, sizeof(double));
     } else {
-        num_written = fwrite(&c_j, sizeof(double), 1, fp);
+        fp64 = memcpy(&c_r,(void *)&temp64bit, sizeof(double));
     }
-    printf("     : %2lu byte double c_j num_written = %lu\n",
-            sizeof(double), num_written);
-    printf("     : c_j = %-+26.20e\n",c_j);
+    printf("     : double               c_r = %-+32.26e\n", c_r);
 
-    */
+
+
+    /* check for early end of file */
+    clearerr(fp);
+    if ( feof(fp) != 0 ) {
+        fprintf(stderr,"ERR  : End of file\n");
+        goto bail_out;
+    }
+
+    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : some read error occured.\n");
+        fprintf(stderr,"     : check the filename.\n");
+        goto bail_out;
+    }
+    printf("INFO : read %i items of type uint64_t\n", num_read);
+    if ( num_read < 1 ) {
+        /* check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
+
+    if ( endian_flag ) {
+        rotated64 = rot8(temp64bit);
+        fp64 = memcpy(&c_j,(void *)&rotated64, sizeof(double));
+    } else {
+        fp64 = memcpy(&c_j,(void *)&temp64bit, sizeof(double));
+    }
+    printf("     : double               c_j = %-+32.26e\n", c_j);
+
 
 bail_out:
     fclose(fp);

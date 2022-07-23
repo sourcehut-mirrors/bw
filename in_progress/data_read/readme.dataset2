@@ -1,0 +1,13 @@
+INFO : file /var/tmp/dclarke/20220723083519 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    32768
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +2.74877906944000000000000000e+11
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.57887752805699992098009687e-02
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +1.02061921088799989476569863e+00
+INFO : file /var/tmp/dclarke/20220723083519 closed.
+
