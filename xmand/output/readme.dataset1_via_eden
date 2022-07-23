@@ -1,3 +1,5 @@
+
+C_esther$ 
 C_esther$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
                  system name = Linux
@@ -6,10 +8,10 @@ C_esther$ ./xmand 32768 268435456 0.399750960350502282381 0.20525179748074151575
                      version = #1 SMP PREEMPT_DYNAMIC Debian 5.18.5-1 (2022-06-16)
                      machine = i686
                    page size = 4096
-               system memory = 979922944
-                             = 956956 kB
+               system memory = 979742720
+                             = 956780 kB
                              = 934 MB
-                 avail pages = 190712
+                 avail pages = 153506
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200809
@@ -20,7 +22,7 @@ C_esther$ ./xmand 32768 268435456 0.399750960350502282381 0.20525179748074151575
                  sizeof(int) = 4
                sizeof(void*) = 4
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    5 hours   14 mins   25 secs
+           system uptime   14 days    6 hours   22 mins   19 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +33,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =           5307 nsec
+INFO : baseline tdelta =           5028 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -67,7 +69,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =  1844784499229 nsec   1.844784e+03 sec
+[mand] =  3705956349017 nsec   3.705956e+03 sec
 
 
 raw data values -------------------------------------------------------
@@ -94,11 +96,11 @@ raw data values -------------------------------------------------------
      :       mand_height =     16977
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1384 , 889  ]
+raw  [ 1383 , 889  ]
 INFO : dumper_flag = 1
-click at 1383 887 
-raw  [ 1384 , 889  ]
-INFO : file /var/tmp/dclarke/20220628025449 dump begins.
+click at 1382 887 
+raw  [ 1383 , 889  ]
+INFO : file /var/tmp/dclarke/20220723130005 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -109,17 +111,18 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = +3.99750960350502282381057739e-01
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +2.05251797480741515755653381e-01
-INFO : file /var/tmp/dclarke/20220628025449 closed.
+INFO : file /var/tmp/dclarke/20220723130005 closed.
 INFO : dumper_flag = 0
-click at 1383 887 
-raw  [ 1006 , 931  ]
+click at 1382 887 
+raw  [ 1013 , 926  ]
 right click
-click at 1005 929 
-raw  [ 1006 , 931  ]
+click at 1012 924 
+raw  [ 1013 , 926  ]
 right click
 
 
 
-C_esther$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220628025449
-71235c7dbb3f7223ad584bbc09cb8f6732b5d73390b68e89ddfde7b9017e6085  /var/tmp/dclarke/20220628025449
-C_esther$
+C_esther$ openssl dgst -sha256 -r /var/tmp/dclarke/20220723130005
+71235c7dbb3f7223ad584bbc09cb8f6732b5d73390b68e89ddfde7b9017e6085 */var/tmp/dclarke/20220723130005
+C_esther$ 
+
