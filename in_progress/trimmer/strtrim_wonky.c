@@ -27,16 +27,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "strtrim.h"
+
 /* WARNING : If the caller provides a NULL pointer then
  * we return a NULL pointer.
  *
  * 20 Jul 2022 marsen says
- *   "garbage in, garbage out". If the caller passes NULL either fail
- *   (like strlen, strdup, strcpy do) or return NULL again.
- *
- *
- *    It may be far more sane to return a pointer to a new string
- *    in memory and not ever modify the callers string pointer.
+ *   "garbage in, garbage out". If the caller passes NULL
+ *   either fail (like strlen, strdup, strcpy do) or return NULL
+ *   again.
  */
 char *strtrim( const char *str ) {
     /* Given a string pointer, toss out all
@@ -44,18 +43,23 @@ char *strtrim( const char *str ) {
      * a new pointer to memory allocated on the
      * heap.  */
     size_t  len;
-    char    *frontp;
+    char    *frontp, *endp;
     char    *r0 = NULL;
-    char    *r1 = NULL;
+    char *temp;
 
-    /* Are we given NULL ?  */
+    /* Are we given NULL ? If so then the caller is
+     * a bit of a jerk and let them deal with it.  */
     if ( str == NULL ) {
         return str;
     }
 
-    /* TODO : check if the len is something insane. Perhaps
-     * define a MAX_LENGTH somewhere. */
     len = strlen(str);
+
+    /* if the input string is longer than MAX_LENGTH
+     * we return a NULL. The caller has to deal with
+     * it themselves. */
+    if ( len > MAX_LENGTH ) return NULL;
+
     r0 = strdup(str);
 
     /* Is the input string just a nul byte? */
@@ -64,8 +68,8 @@ char *strtrim( const char *str ) {
     }
 
     /* A simple condition is that we are given a single
-     * byte string. If it is whitespace just bail out.
-     * This saves us from doing pointer games later on.
+     * byte string. If it is whitespace we retrun a nul
+     * string.
      */
     if ( len == 1 ) {
         if (isspace(r[0])) {
@@ -75,19 +79,19 @@ char *strtrim( const char *str ) {
     }
 
     frontp = r0 - 1;
-    r1 = r0 + len;
+    endp = r0 + len;
 
     /* Move the front and back pointers to address
-     * of the first non-whitespace characters from
+     * of the first non-whitespace character from
      * each end. Note that frontp gets pre-incremented
      * which is fine given its definition as (r0 - 1)
      */
     while ( isspace(*(++frontp)) );
-    while ( isspace(*(--r1)) && ( r1 != frontp ) );
+    while ( isspace(*(--endp)) && ( endp != frontp ) );
 
     /* clean up in case we removed all characters */
-    if ( ( r0 + len - 1 ) != r1 ) {
-        *(r1 + 1) = '\0';
+    if ( ( r0 + len - 1 ) != endp ) {
+        *(endp + 1) = '\0';
     } else {
         if ( ( frontp != r0 ) && ( r0 == frontp ) ) {
             *r0 = '\0';
