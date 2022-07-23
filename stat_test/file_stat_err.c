@@ -39,25 +39,30 @@ int file_stat_err( int file_errno )
                 fprintf (stderr,"      : Too many symbolic links\n");
                 fprintf (stderr,"      : encountered while traversing\n");
                 fprintf (stderr,"      : the path.\n");
+                break;
 
             case EACCES :
                 fprintf (stderr,"ERROR : EACCES\n");
                 fprintf (stderr,"      : Search permission is denied\n");
                 fprintf (stderr,"      : for one of the directories\n");
                 fprintf (stderr,"      : in the path prefix of pathname.\n");
+                break;
 
             case ENAMETOOLONG :
                 fprintf (stderr,"ERROR : ENAMETOOLONG\n");
                 fprintf (stderr,"      : pathname is too long.\n"); 
+                break;
 
             case ENOMEM :
                 fprintf (stderr,"ERROR : ENOMEM\n");
                 fprintf (stderr,"      : Out of memory (kernel memory?)\n");
+                break;
 
             case ENOTDIR :
                 fprintf(stderr,"ERROR : ENOTDIR\n");
                 fprintf(stderr,"      : A component of the path prefix\n");
                 fprintf(stderr,"      : of pathname is not a directory.\n");
+                break;
 
             case EOVERFLOW :
                 fprintf(stderr,"ERROR : EOVERFLOW\n");
@@ -70,9 +75,11 @@ int file_stat_err( int file_errno )
                 fprintf(stderr,"      : compiled on a 32-bit platform without\n");
                 fprintf(stderr,"      : -D_FILE_OFFSET_BITS=64 calls stat() on\n");
                 fprintf(stderr,"      : a file whose size exceeds (1<<31)-1 bytes.\n");
+                break;
 
             default :
                 fprintf ( stderr, "ERROR : something bad happened.\n" );
+
         }
         perror("ERROR ");
 

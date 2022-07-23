@@ -72,6 +72,19 @@ int sysinfo(int verbose) {
     long uptime_day, uptime_hour, uptime_min, uptime_sec;
  
     uint64_t pages = 0;
+    uint64_t pagesize, sysmem;
+    uint64_t avail_memory = 0;
+    uint64_t pages_avail = 0;
+    uint64_t version = 0;
+    uint64_t threads = 0;
+    uint64_t clock_ticks_sec = 0;
+
+    size_t len;
+
+    int fp_round_mode;
+    int end_check = 1;
+    int little_endian;
+
 #ifdef HAVE_PAGE_INFO
     errno = 0;
     err_flag = sysconf(_SC_PHYS_PAGES);
@@ -89,19 +102,13 @@ int sysinfo(int verbose) {
         perror("sysconf(_SC_PAGE_SIZE) : ");
         return EXIT_FAILURE;
     }
-    uint64_t pagesize = (uint64_t)err_flag;
-    uint64_t sysmem = pages * pagesize;
-    uint64_t avail_memory = 0;
-
-    uint64_t pages_avail = 0;
-    uint64_t version = 0;
-    uint64_t threads = 0;
-    uint64_t clock_ticks_sec = 0;
+    pagesize = (uint64_t)err_flag;
+    sysmem = pages * pagesize;
 
     errno = 0;
     if ( verbose ) {
 #if defined(__FreeBSD__)
-        size_t len = sizeof(pages_avail);
+        len = sizeof(pages_avail);
 
         err_flag = sysctlbyname("hw.availpages", &pages_avail, &len, NULL, 0);
 
@@ -339,12 +346,10 @@ int sysinfo(int verbose) {
      * The value of CLK_TCK can be variable and it should not be
      * assumed that CLK_TCK is a compile-time constant.
      */
-    int fp_round_mode;
 
     /* can we guess the architecture endianess? */
-    int end_check = 1;
     /* strictly speaking this is not a wise way to do this */
-    int little_endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
+    little_endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
 
     setlocale( LC_MESSAGES, "C" );
     if ( uname( &uname_data ) < 0 ) {
