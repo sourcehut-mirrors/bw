@@ -255,6 +255,35 @@ problem of floating point exception flags.
 Another possible situation is that we may wish to seek into the data
 dump file and read a particular record or even an entire vbox.
 
+For any given vbox record ( Vr, Vj ) we may index into the dump file
+using the offset size of the initial header along with a factor of the
+size of any given vbox itself. A single vbox will contain a square grid
+of VBOX_SAMPLE_REAL x VBOX_SAMPLE_IMAG samples at 20 bytes each. Thus
+we may say :
+
+    VBOX_BYTES = VBOX_SAMPLE_REAL x VBOX_SAMPLE_IMAG x 20 bytes
+
+An entire horizontal row of these vbox regions will therefore be : 
+
+    VBOX_ROW_BYTES = VBOX_BYTES * VBOX_REAL_COUNT
+
+Therefore for any vbox record ( Vr, Vj ) we have a file seek offset
+thus : 
+
+    vbox_offset = 32 + Vj * VBOX_ROW_BYTES + Vr * VBOX_BYTES
+
+The initial 32 bytes is the size of the header data section.
+
+Then for any given sample within any given vbox we shall need a 
+similar computation as the offset beyond vbox_offset. In the same
+way that we need to deal with entire horizontal rows of samples
+at 20 bytes each we need to deal with sample [ Sr, Sj ] thus : 
+
+    sample_offset =  Sj * VBOX_SAMPLE_REAL x 20bytes per
+                   + Sr * 20bytes per
+
+To read a single sample record at ( Vr, Vj )[ Sr, Sj ] we add the
+vbox_offset + sample_offset and then process 20 bytes.
 
 
 ----------------------------------------------------------------------------
