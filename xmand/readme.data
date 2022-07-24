@@ -166,7 +166,7 @@ The exact order of vbox regions dumped is thus :
     ( 0, 1), ( 1, 1), ( 2, 1), ( 3, 1), .... (13, 1), (14, 1), (15, 1),
     ( 0, 2), ( 1, 2), ( 2, 2), ( 3, 2), .... (13, 2), (14, 2), (15, 2),
          .
-         .
+         .                .... ( 3,12), ....
          .
     ( 0,14), ( 1,14), ( 2,14), ( 3,14), .... (13,14), (14,14), (15,14),
     ( 0,15), ( 1,15), ( 2,15), ( 3,15), .... (13,15), (14,15), (15,15)
@@ -175,7 +175,8 @@ That order above covers all of the current 256 vbox regions from the
 lowermost row and upwards to the top row as seen on screen. Each of
 these vbox regions will contain 4096 samples in a similar order to
 cover the VBOX_SAMPLE_REAL x VBOX_SAMPLE_IMAG total. Thus the actual
-sample data [ r, j] within any given vbox ( p, q ) is ordered thus : 
+sample data [ r, j] within any given vbox such as ( 3, 12 )  will be
+is ordered thus : 
 
     [ 0, 0], [ 1, 0], [ 2, 0], [ 3, 0], .... [61, 0], [62, 0], [63, 0],
     [ 0, 1], [ 1, 1], [ 2, 1], [ 3, 1], .... [61, 1], [62, 1], [63, 1],
@@ -185,7 +186,7 @@ sample data [ r, j] within any given vbox ( p, q ) is ordered thus :
     [ 0,62], [ 1,62], [ 2,62], [ 3,62], .... [61,62], [62,62], [63,62],
     [ 0,63], [ 1,63], [ 2,63], [ 3,63], .... [61,63], [62,63], [63,63]
 
-This order will cover all 4096 samples within a given vbox.
+This order will cover all 4096 samples within any given vbox.
 
 ----------------------------------------------------------------------
 SAMPLE Record:
@@ -220,5 +221,59 @@ trivial as 0.1 decimal does not exist within floating point. Thus the
 above values are best estimate for the complex plane sample point for
 our 64bit limitations.
 
+The question would be how to read in all of the data dump file such
+that the data is well ordered into data structures that represent all
+of the above. It seems one may do a trivial loop set thus : 
 
+  /* process the initial header data first */
+  /* outer most vbox loop is for vertical upwards count on
+   * the imaginary axis */
+  for ( Vj = 0; Vj < VBOX_IMAG_COUNT; Vj++ ) {
+      /* internal vbox loop is for left to right count on
+       * the real axis */
+      for ( Vr = 0; Vr < VBOX_REAL_COUNT; Vr++ ) {
+          /* process samples in a similar order */
+          for ( Sj = 0; Sj < VBOX_SAMPLE_IMAG; Sj++ ) {
+              for ( Sr = 0; Sr < VBOX_SAMPLE_REAL; Sr++ ) {
+
+                  /* read 32bit uint32_t   mandel_val */
+                  /* read 64bit double     real_coord */
+                  /* read 64bit double     imag_coord */
+
+                  /* use array_offset(Vr, Vj, Sr, Sj) to save the data */
+
+
+The above should do the job nicely. However there is the possibility
+that the machine is big endian and in such a situation we need to swap
+the order of the data bytes. It is best to read the 64bit double data
+as if it were uint64_t type and then reverse those bytes. This will
+avoid the possibility that a little endian floating point double data
+element would be interpreted as a NaN or sub-normal as well as the
+problem of floating point exception flags.
+
+Another possible situation is that we may wish to seek into the data
+dump file and read a particular record or even an entire vbox. The
+process should be very similar to the array_offset computation for
+our data in memory.
+
+
+
+----------------------------------------------------------------------------
+notes for later  when we try to read in the data from a particular
+location : 
+
+       int fseek(FILE *stream, long offset, int whence);
+
+       long ftell(FILE *stream);
+
+       int fgetpos(FILE *stream, fpos_t *pos);
+
+       int fsetpos(FILE *stream, const fpos_t *pos);
+
+DESCRIPTION
+       The fseek() function sets the file position indicator for the
+stream pointed to by stream.  The new position, measured in bytes, is
+obtained by adding offset bytes to the position specified by whence.
+If whence is set to  SEEK_SET,  SEEK_CUR, or  SEEK_END,  the  offset
+is relative to the start of the file,
 
