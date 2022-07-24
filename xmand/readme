@@ -1,3 +1,6 @@
+
+24 Jul 2022 : see document readme.data for the data dump format
+
 08 Jul 2022 : any attempt to use FMA on some old hardware throws SIGILL
 
 08 Jul 2022 : thus far I do see two different results from the
