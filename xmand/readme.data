@@ -1,0 +1,224 @@
+
+The data computed by this mandelbrot code mess may be dumped
+out into a file within the users TMPDIR. If the user does not
+have the environment variable TMPDIR set then there is no way
+to output the data and the DUMPER button will not work.
+
+The filename will always be the current time expressed in the
+GMT0 timezone as YYYYMMDDHHMMSS such as 20220724124542. There
+is no file extension as that is a wonky DOS concept.
+
+The mandelbrot data displayed on the X11 screen is arranged in
+a somewhat strange format. We see a grid of boxes on the screen
+and they are all the same size. See the header file mandelbrot.h
+where it says :
+
+    /* How many little sample boxes are there within the plot
+     * region?  We start with a 16x16 grid of these vbox
+     * square sample sets. */
+    #define VBOX_REAL_COUNT 16
+    #define VBOX_IMAG_COUNT 16
+
+Therefore, at the moment there are 256 of these little boxes on
+the screen and they are arranged in a perfectly square which is
+sixteen wide and sixteen high. This allows the the location of
+a particular box to be addressed as a single hex byte 0xRJ where
+the value R identifies the location across the bottom of the
+screen from left to right and we begin counting at zero. The same
+sort of numbering is used vertically with zero at the bottom and
+fifteen at the top. Thus any given visual computation region may
+easily be described in a single byte such as 0x3C for the visual
+box at ( 3, 12 ). Note that the lower left box is ( 0, 0 ). These
+are refered to a "vbox" regions on the screen and data is always
+processed in terms of a "vbox" collection of samples.
+
+Each of these "vbox" regions will contain a sample grid which is
+also a square array and the defaults are described in the header
+file mandelbrot.h thus :
+
+    /* How many samples are there within a given vbox? */
+    #define VBOX_SAMPLE_REAL 64
+    #define VBOX_SAMPLE_IMAG 64
+
+We may easily increase the sample grid within a vbox upwards with
+the only limit being system memory. At the moment the code is a
+bit messy in that all of the vbox data is kept in memory on the
+heap regardless if we need it or not. At any given moment we may
+have a display of data on the screen but the actual computation
+stage only ever deals with a single sample within a single vbox
+at any given moment. This may improve in the future. Maybe.
+
+A quick calculation shows that we have 64 x 64 = 4096 samples in
+any given vbox region. There are 16 x 16 = 256 of these vbox areas
+and thus a total 256 x 4096 = 1048576 samples in the entire set.
+
+Data may be dumped out into a binary file within the users TMPDIR
+path with a header section and a data pack section. The header has
+the following format :
+
+    HEADER :
+
+               4 byte uint32_t     num_elements
+               4 byte uint32_t     mand_bail
+               8 byte double       magnify
+               8 byte double       real_translate
+               8 byte double       imag_translate
+
+Consider a sample dataset described with the input parameters :
+
+    32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+
+Those input parameters refer to a central point on the complex plane
+at ( 0.399750960350502282381, 0.205251797480741515756 ) and the entire
+region we see computed on the screen will be magnified by 268435456.
+The default region we see on the plot region is 4 units square with an
+input magnify value of 1. Therefore the data region for the above input
+will be 4 / 268435456 square. Thus all samples within all the vbox
+regions must lay in a complex plane set about 1.490116x10^(-8) square.
+
+The number 32768 will indicate the maximaum number of loops we may do
+inside the mandelbrot computation before a "bail out" occurs. A loop
+count less than 32768 will be reported as a trivial uint32_t integer
+and the maximum value is simply considered zero. Therefore a maximum
+loop count is usually displayed as a black point and this is thought
+to be within the mandelbrot set. In actual fact the computation is an
+infinite series but computers are terrible as that sort of thing. We
+just give up after 32768 loops and consider the sample point to be a
+zero value. All other values may be given some colour value in any way
+that you please. Endless variations exist. The data dump files do not
+report colour in any way whatsoever.
+
+The complex plane point described above is treated as a translation of
+the square sample set matrix away from the origin at ( 0, 0 ).
+
+----------------------------------------------------------------------
+HEADER Region :
+
+Therefore the header data for the above parameters will be :
+
+  Datatype        Variable_Name   Hexadecimal           Decimal
+  4 byte uint32_t num_elements            0x00100000h =   1048576
+  4 byte uint32_t mand_bail               0x00008000h =     32768
+  8 byte double   magnify         0x41b0000000000000h = 268435456
+  8 byte double   real_translate  0x3fd995850d500000h = 0.399750960...
+  8 byte double   imag_translate  0x3fca45b0ded00000h = 0.205251797...
+
+A big endian machine would represent the data exactly as we see above
+whereas a little endian machine would output :
+
+         00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
+         00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+
+Given that little endian machines are vastly more popular than the big
+endian variations the code always outputs in little endian format. This
+makes for a bit of overhead on systems such as IBM Power4 or POWER8 in
+big endian mode. That same is true for Fujitsu/Oracle SPARC64 servers.
+The process of swapping around bytes on those systems is trivial and we
+will always get an output data dump file in little endian format. All of
+the ARM systems ( 64-bit and 32-bit ) as well as x86 systems seem to be
+little endian only. The RISC-V rv64imafdc system tested was based on the
+SiFive UnMatched prototype board which has a U740 SoC chip processor and
+the data format in memory is little endian. It should be noted that the
+IEEE754-2008 data type formats are consistent across all machines tested
+where the only variation is seen with long double 128-bit data. It was
+seen that all x86 systems fail to implement such a datatype. In fact
+the x86 systems will use a full 16bytes of memory to represent a 128bit
+data element but only ten bytes contain data in some 80bit proprietary
+Intel format. The remaining six bytes are wasted memory and this x86
+systems literally throw away 32.5% of the memory for long double data.
+One must resort to software implementations. Most IBM systems seemed
+to use a 128-bit datatype which is actually two 64-bit double elements in
+memory and therefore not actually the IEEE754-2008 compliant format. An
+IBM POWER9 server does implement actual 128-bit math operations in hardware
+however this sort of compliance with the floating point specifications in
+hardware is very rare and was only ever seen on POWER9 and an IBM Mainframe
+class systems. Thus all computations are done with 64-bit datatypes and
+this allows for excellent comparison across a multitude of systems. We
+should note that most NVidia GPU hardware seen were able to perform
+the 64bit computations but at a vastly reduced performance cost. Only
+the float type 32bit operations seem to perform well. This is likely
+the result of a factory option that disables 64bit operations on the
+NVidia hardware and we only see reasonable performance on "Quadro"
+type GPU options such as the NVidia GV100 and similar.
+
+----------------------------------------------------------------------
+DATAPACK Region :
+
+The data for all num_elements is arranged in vbox order. This may seem
+to be counter intuitive however the objective was to arrange for small
+sections of computation that may be distributed across POSIX threads
+or multiple network attached systems. Thus the vbox data sample sets
+are considered to be the unit of work for this process. The data pack
+region of the data dump is arranged as real axis samples from left to
+right within a given vbox. Once a single horizontal row of samples has
+been written the next row will be upwards in a positive direction on
+the imaginary axis and still inside a single vbox. Thus a single vbox
+will consist of ( VBOX_SAMPLE_REAL ) x ( VBOX_SAMPLE_IMAG ) samples.
+The entire data pack region of the dump file will have a total number
+of ( VBOX_REAL_COUNT ) x ( VBOX_IMAG_COUNT ) such records. The first
+vbox region dumped with be ( 0, 0 ) with the next being ( 1, 0 ) and
+onwards across the vbox row from left to right. The next row of vbox
+regions is then dumped on the row upwards along the complex plane.
+
+The exact order of vbox regions dumped is thus :
+
+    ( 0, 0), ( 1, 0), ( 2, 0), ( 3, 0), .... (13, 0), (14, 0), (15, 0),
+    ( 0, 1), ( 1, 1), ( 2, 1), ( 3, 1), .... (13, 1), (14, 1), (15, 1),
+    ( 0, 2), ( 1, 2), ( 2, 2), ( 3, 2), .... (13, 2), (14, 2), (15, 2),
+         .
+         .
+         .
+    ( 0,14), ( 1,14), ( 2,14), ( 3,14), .... (13,14), (14,14), (15,14),
+    ( 0,15), ( 1,15), ( 2,15), ( 3,15), .... (13,15), (14,15), (15,15)
+
+That order above covers all of the current 256 vbox regions from the
+lowermost row and upwards to the top row as seen on screen. Each of
+these vbox regions will contain 4096 samples in a similar order to
+cover the VBOX_SAMPLE_REAL x VBOX_SAMPLE_IMAG total. Thus the actual
+sample data [ r, j] within any given vbox ( p, q ) is ordered thus : 
+
+    [ 0, 0], [ 1, 0], [ 2, 0], [ 3, 0], .... [61, 0], [62, 0], [63, 0],
+    [ 0, 1], [ 1, 1], [ 2, 1], [ 3, 1], .... [61, 1], [62, 1], [63, 1],
+         .
+         .
+         .
+    [ 0,62], [ 1,62], [ 2,62], [ 3,62], .... [61,62], [62,62], [63,62],
+    [ 0,63], [ 1,63], [ 2,63], [ 3,63], .... [61,63], [62,63], [63,63]
+
+This order will cover all 4096 samples within a given vbox.
+
+----------------------------------------------------------------------
+SAMPLE Record:
+
+Each sample consists of the follow data :
+
+               8 byte double       real_coord
+               8 byte double       imag_coord
+               4 byte uint32_t     mandel_val
+
+Thus we have 20 bytes per sample and a very typical output will look
+like so : 
+
+         57 0e 00 00 00 00 4e 06 85 95 d9 3f 00 00 e4 ce b0 45 ca 3f
+
+If we report that sample record in a more natural big endian format
+we see : 
+
+  Datatype        Variable_Name   Hexadecimal           Decimal
+  4 byte uint32_t mandel_val              0x00000e57h = 3671
+  8 byte double   real_coord      0x3fd99585064e0000h = 0.3997509538..
+  8 byte double   imag_coord      0x3fca45b0cee40000h = 0.2052517900..
+
+The actual value of the 64bit floating point data may be :
+
+              real_coord = +3.9975095382396830245852e-01       
+              imag_coord = +2.0525179006654070690274e-01      
+
+I would question the precision of the above given that floating point
+data usually can only estimate some actual decimal value. A number as
+trivial as 0.1 decimal does not exist within floating point. Thus the
+above values are best estimate for the complex plane sample point for
+our 64bit limitations.
+
+
+
