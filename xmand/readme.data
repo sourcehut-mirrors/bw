@@ -240,7 +240,8 @@ of the above. It seems one may do a trivial loop set thus :
                   /* read 64bit double     real_coord */
                   /* read 64bit double     imag_coord */
 
-                  /* use array_offset(Vr, Vj, Sr, Sj) to save the data */
+                  /* use array_offset(Vr, Vj, Sr, Sj) to  *
+                   * store the data in memory on the heap */
 
 
 The above should do the job nicely. However there is the possibility
@@ -252,9 +253,7 @@ element would be interpreted as a NaN or sub-normal as well as the
 problem of floating point exception flags.
 
 Another possible situation is that we may wish to seek into the data
-dump file and read a particular record or even an entire vbox. The
-process should be very similar to the array_offset computation for
-our data in memory.
+dump file and read a particular record or even an entire vbox.
 
 
 
