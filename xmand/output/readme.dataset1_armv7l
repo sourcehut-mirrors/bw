@@ -9,7 +9,7 @@ io$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
                system memory = 2086854656
                              = 2037944 kB
                              = 1990 MB
-                 avail pages = 382816
+                 avail pages = 198885
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200809
@@ -20,7 +20,7 @@ io$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
                  sizeof(int) = 4
                sizeof(void*) = 4
            fp rounding mode is FE_TONEAREST
-           system uptime    1 day    4 hours   59 mins   17 secs
+           system uptime   16 days    1 hour   27 mins    3 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =            875 nsec
+INFO : baseline tdelta =           6417 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -67,7 +67,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =   114491511268 nsec   1.144915e+02 sec
+[mand] =    61281249990 nsec   6.128125e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -98,7 +98,7 @@ raw  [ 1384 , 889  ]
 INFO : dumper_flag = 1
 click at 1383 887 
 raw  [ 1384 , 889  ]
-INFO : file /var/tmp/dclarke/20220628151309 dump begins.
+INFO : file /var/tmp/dclarke/20220725113113 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -109,24 +109,30 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = +3.99750960350502282381057739e-01
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +2.05251797480741515755653381e-01
-INFO : file /var/tmp/dclarke/20220628151309 closed.
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220725113113 closed.
 INFO : dumper_flag = 0
+click at 1383 887 
+raw  [ 1008 , 926  ]
+right click
+click at 1007 924 
+raw  [ 1008 , 926  ]
+right click
 
 
-io$ 
-io$ mdigest -a sha256 /var/tmp/dclarke/20220628151309
-e4348e24b0bcedde099f07203037a5063504af9b98fda5612128fd823cfd1c3c  /var/tmp/dclarke/20220628151309
-io$ 
-io$ hdump -Ax -t x1 -N 128 /var/tmp/dclarke/20220628151309
+
+io$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725113113
      0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
     10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
-    20:  00 00 52 05 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f
-    30:  7f 0c 00 00 00 00 56 05 85 95 d9 3f 00 00 d4 ce
-    40:  b0 45 ca 3f 7f 0c 00 00 00 00 5a 05 85 95 d9 3f
-    50:  00 00 d4 ce b0 45 ca 3f 80 0c 00 00 00 00 5e 05
-    60:  85 95 d9 3f 00 00 d4 ce b0 45 ca 3f 80 0c 00 00
-    70:  00 00 62 05 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f
-    80: 
-io$ 
-
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+io$ mdigest -a sha256 /var/tmp/dclarke/20220725113113
+5cf86cd71f5e76575cfff7c35b78ed0637100947121d13b924e33f0925e682cf  /var/tmp/dclarke/20220725113113
 
