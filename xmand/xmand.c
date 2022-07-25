@@ -48,7 +48,7 @@
 #include <limits.h>
 
 /* for a good read about fused multiply add operations please
- * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845 
+ * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845
  * Also https://reviews.llvm.org/D72675 */
 #include <fenv.h>
 #ifndef __FAST_MATH__
@@ -195,6 +195,7 @@ int main(int argc, char*argv[])
     /* we  may need to swap around bytes from a big endian machine */
     uint64_t rotated64;
     uint32_t rotated32;
+    uint32_t temp32bit;
 
     /* guess the architecture endianess */
     int end_check = 1;
@@ -939,12 +940,6 @@ int main(int argc, char*argv[])
     sprintf(buf,"[0000] tdelta = %14" PRIu64 " nsec", t_delta);
     XDrawImageString( dsp, win3, gc3, 10, 20, buf, (int)strlen(buf));
 
-    /* TODO WTF ??
-     * plot some points on the grid that we created
-    XSetForeground(dsp, gc, yellow.pixel);
-    XDrawPoint(dsp, win, gc, 5, 5);
-    */
-
     /* TODO
      * someday we are going to provide zoom controls and colour edit
      * controls and need to bounce way back up here and setup a
@@ -961,7 +956,7 @@ int main(int argc, char*argv[])
             } else {
                 fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
             }
-            
+
             perror("FAIL ");
 
             /* free up the big arrays */
@@ -1259,7 +1254,7 @@ int main(int argc, char*argv[])
 
                                 sub_pixel_mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
 
-                                /* TODO this has my mystified why it does not work 
+                                /* TODO this has me mystified why it does not work
                                 if ((p!=1)&&(q!=1)) {
                                     mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
                                 } else {
@@ -1540,6 +1535,9 @@ int main(int argc, char*argv[])
                             XDrawRectangle(dsp, win2, gc2, 320, 162, 72, 20);
                             sprintf(buf,">DUMPER<");
                             XDrawImageString( dsp, win2, gc2, 324, 177, buf, (int)strlen(buf));
+                            sprintf(buf,"Confirm ? ");
+                            XSetForeground(dsp, gc2, green.pixel);
+                            XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
                             dumper_flag = 1;
                             fprintf(stderr,"INFO : dumper_flag = 1\n");
 
@@ -1648,6 +1646,52 @@ int main(int argc, char*argv[])
                                                 sizeof(double), num_written);
                                         printf("     : imag_translate = %-+32.26e\n",imag_translate);
 
+                                        /* append the VBOX and SAMPLE structure data */
+                                        temp32bit = VBOX_REAL_COUNT;
+                                        if ( endian_flag ) {
+                                            rotated32 = swap_four(temp32bit);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t VBOX_REAL_COUNT num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : VBOX_REAL_COUNT = %8i\n",VBOX_REAL_COUNT);
+
+                                        temp32bit = VBOX_IMAG_COUNT;
+                                        if ( endian_flag ) {
+                                            rotated32 = swap_four(temp32bit);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t VBOX_REAL_COUNT num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : VBOX_IMAG_COUNT = %8i\n",VBOX_IMAG_COUNT);
+
+
+                                        temp32bit = VBOX_SAMPLE_REAL;
+                                        if ( endian_flag ) {
+                                            rotated32 = swap_four(temp32bit);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t VBOX_SAMPLE_REAL num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : VBOX_SAMPLE_REAL = %8i\n",VBOX_SAMPLE_REAL);
+
+                                        temp32bit = VBOX_SAMPLE_IMAG;
+                                        if ( endian_flag ) {
+                                            rotated32 = swap_four(temp32bit);
+                                            num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
+                                        } else {
+                                            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+                                        }
+                                        printf("     : %2lu byte uint32_t VBOX_SAMPLE_IMAG num_written = %lu\n",
+                                                sizeof(uint32_t), num_written);
+                                        printf("     : VBOX_SAMPLE_IMAG = %8i\n",VBOX_SAMPLE_IMAG);
+
                                         /* dump all data */
                                         for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                                             for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
@@ -1676,6 +1720,9 @@ int main(int argc, char*argv[])
                                     }
                                 }
                                 free(timestamp_filename);
+                                sprintf(buf,"File Done ");
+                                XSetForeground(dsp, gc2, green.pixel);
+                                XDrawImageString(dsp, win2, gc2, 220, 178, buf, (int)strlen(buf));
                                 /* if the dumper flag is -1 then we need to
                                  * indicate that the dump is impossible */
                                 if ( dumper_flag < 0 ) {

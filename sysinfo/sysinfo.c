@@ -79,7 +79,9 @@ int sysinfo(int verbose) {
     uint64_t threads = 0;
     uint64_t clock_ticks_sec = 0;
 
+#if defined(__FreeBSD__)
     size_t len;
+#endif
 
     int fp_round_mode;
     int end_check = 1;

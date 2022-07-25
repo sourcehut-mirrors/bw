@@ -48,6 +48,14 @@
 
 #include "dumpread.h"
 
+/* this is a somewhat janky little function to compute
+ * and index into the large data arrays */
+static int array_index(int Vr, int Vj,
+                       int Sr, int Sj,
+                       int vbox_real_count,  
+                       int vbox_sample_real, 
+                       int vbox_sample_imag );
+
 int main (int argc, char **argv)
 {
 
@@ -56,24 +64,38 @@ int main (int argc, char **argv)
     int status, file_error_status;
     char *tmpdir, *tmp;
     size_t num_read, len;
+    long file_position;
     struct tm *ptm;
 
     int end_check = 1;
     uint8_t endian_flag;
 
     time_t time_now;
+    char st_ctime_buffer[128];
     char *filename, *fid;
     char timestamp[32];
 
     uint32_t temp32bit;
     uint64_t temp64bit;
     uint64_t rotated64;
-    double *fp64;
+    double *fp64, temp_double;
     uint32_t rotated32;
 
     /* the actual data we are trying to read */
     uint32_t num_elements, mandel_bail_out;
     double magnify, c_r, c_j;
+    uint32_t vbox_real_count, vbox_imag_count; 
+    uint32_t vbox_sample_real, vbox_sample_imag;
+
+    /* these are the actual data arrays */
+    uint32_t *mandel_val;
+    double *coord_r, *coord_j;
+
+    /* easy index vars for later */
+    int Vr, Vj, Sr, Sj;
+
+    /* we will need to know if we read the correct amount of data */
+    uint32_t sample_counter;
 
 
     setlocale (LC_ALL, "C");
@@ -166,8 +188,14 @@ int main (int argc, char **argv)
         filename = NULL;
         return EXIT_FAILURE;
     } else {
-        printf("INFO : creation time of file is st_ctime) = \"%s\"\n",
+        sprintf(st_ctime_buffer,
+                "INFO : creation time of file = %s",
                                        ctime(&status_buffer.st_ctime));
+        /* ctime tosses in a \n at the end
+        len = strlen(st_ctime_buffer);
+        st_ctime_buffer[len-1] = '\0';
+        */
+        printf(st_ctime_buffer);
     }
 
     errno = 0;
@@ -196,7 +224,6 @@ int main (int argc, char **argv)
     file_error_status = ferror(fp);
     if ( file_error_status != 0 ) {
         fprintf(stderr,"ERR  : some read error occured.\n");
-        fprintf(stderr,"     : check the filename.\n");
         goto bail_out;
     }
     printf("INFO : read %i items of type uint32_t from file %s\n",
@@ -233,8 +260,7 @@ int main (int argc, char **argv)
     num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, fp);
     file_error_status = ferror(fp);
     if ( file_error_status != 0 ) {
-        fprintf(stderr,"ERR  : some read error occured.\n");
-        fprintf(stderr,"     : check the filename.\n");
+        fprintf(stderr,"ERR  : read error occured.\n");
         goto bail_out;
     }
     printf("INFO : read %i items of type uint32_t\n", num_read);
@@ -272,8 +298,7 @@ int main (int argc, char **argv)
     num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
     file_error_status = ferror(fp);
     if ( file_error_status != 0 ) {
-        fprintf(stderr,"ERR  : some read error occured.\n");
-        fprintf(stderr,"     : check the filename.\n");
+        fprintf(stderr,"ERR  : read error occured.\n");
         goto bail_out;
     }
     printf("INFO : read %i items of type uint64_t\n", num_read);
@@ -306,8 +331,7 @@ int main (int argc, char **argv)
     num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
     file_error_status = ferror(fp);
     if ( file_error_status != 0 ) {
-        fprintf(stderr,"ERR  : some read error occured.\n");
-        fprintf(stderr,"     : check the filename.\n");
+        fprintf(stderr,"ERR  : read error occured.\n");
         goto bail_out;
     }
     printf("INFO : read %i items of type uint64_t\n", num_read);
@@ -341,8 +365,7 @@ int main (int argc, char **argv)
     num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
     file_error_status = ferror(fp);
     if ( file_error_status != 0 ) {
-        fprintf(stderr,"ERR  : some read error occured.\n");
-        fprintf(stderr,"     : check the filename.\n");
+        fprintf(stderr,"ERR  : read error occured.\n");
         goto bail_out;
     }
     printf("INFO : read %i items of type uint64_t\n", num_read);
@@ -365,6 +388,421 @@ int main (int argc, char **argv)
     printf("     : double               c_j = %-+32.26e\n", c_j);
 
 
+
+    /* TODO make a function we can call to do this 32bit read */
+    num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : read error occured.\n");
+        goto bail_out;
+    }
+    printf("INFO : read %i items of type uint32_t\n", num_read);
+    if ( num_read < 1 ) {
+        /* we have a short read 
+         * check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
+
+    if ( endian_flag ) {
+        rotated32 = rot4(temp32bit);
+        temp32bit = rotated32;
+    }
+    vbox_real_count = temp32bit;
+    printf("     : uint32_t vbox_real_count = %i\n", vbox_real_count);
+
+    /* check for early end of file */
+    clearerr(fp);
+    if ( feof(fp) != 0 ) {
+        fprintf(stderr,"ERR  : End of file\n");
+        goto bail_out;
+    }
+
+
+    num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : read error occured.\n");
+        goto bail_out;
+    }
+    printf("INFO : read %i items of type uint32_t\n", num_read);
+    if ( num_read < 1 ) {
+        /* we have a short read 
+         * check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
+
+    if ( endian_flag ) {
+        rotated32 = rot4(temp32bit);
+        temp32bit = rotated32;
+    }
+    vbox_imag_count = temp32bit;
+    printf("     : uint32_t vbox_imag_count = %i\n", vbox_imag_count);
+
+
+
+
+
+    /* check for early end of file */
+    clearerr(fp);
+    if ( feof(fp) != 0 ) {
+        fprintf(stderr,"ERR  : End of file\n");
+        goto bail_out;
+    }
+
+    num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : some read error occured.\n");
+        fprintf(stderr,"     : check the filename.\n");
+        goto bail_out;
+    }
+    printf("INFO : read %i items of type uint32_t\n", num_read);
+    if ( num_read < 1 ) {
+        /* we have a short read 
+         * check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
+
+    if ( endian_flag ) {
+        rotated32 = rot4(temp32bit);
+        temp32bit = rotated32;
+    }
+    vbox_sample_real = temp32bit;
+    printf("     : uint32_t vbox_sample_real = %i\n", vbox_sample_real);
+
+
+
+
+    /* check for early end of file */
+    clearerr(fp);
+    if ( feof(fp) != 0 ) {
+        fprintf(stderr,"ERR  : End of file\n");
+        goto bail_out;
+    }
+
+    num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, fp);
+    file_error_status = ferror(fp);
+    if ( file_error_status != 0 ) {
+        fprintf(stderr,"ERR  : read error occured.\n");
+        goto bail_out;
+    }
+    printf("INFO : read %i items of type uint32_t\n", num_read);
+    if ( num_read < 1 ) { 
+        /* we have a short read 
+         * check if end of file */
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"ERR  : End of file\n");
+        } else {
+            fprintf(stderr,"ERR  : insufficient data read\n");
+        }
+        goto bail_out;
+    }
+
+    if ( endian_flag ) {
+        rotated32 = rot4(temp32bit);
+        temp32bit = rotated32;
+    }
+    vbox_sample_imag = temp32bit;  
+    printf("     : uint32_t vbox_sample_imag = %i\n", vbox_sample_imag);
+
+    /* check for early end of file */
+    clearerr(fp);
+    if ( feof(fp) != 0 ) {
+        fprintf(stderr,"ERR  : End of file\n");
+        goto bail_out;
+    }
+
+    /* TODO verify that the data structure described in the header
+     * contains the correct number of elements */
+
+
+
+    /* allocate memory for the data section */
+    mandel_val = calloc((size_t)num_elements, sizeof(uint32_t));
+    if ( mandel_val == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        goto bail_out;
+    }
+
+    coord_r = calloc((size_t)num_elements, sizeof(double));
+    if ( coord_r == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        free(mandel_val);
+        mandel_val = NULL;
+        goto bail_out;
+    }
+
+    coord_j = calloc((size_t)num_elements, sizeof(double));
+    if ( coord_j == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        free(mandel_val);
+        mandel_val = NULL;
+        free(coord_r);
+        coord_r = NULL;
+        goto bail_out;
+    }
+
+    /* Now read the data section one vbox section at a time
+     * working from the lower left ( 0, 0 ) upwards to 
+     * the mysterious ( 15, 15 ). How could we know that
+     * from the header data ? 
+     *
+     * TODO : modify the header data 
+     */
+
+    sample_counter = 0;
+    for ( Vj = 0; Vj < vbox_imag_count; Vj++ ) {
+        for ( Vr = 0; Vr < vbox_real_count; Vr++ ) {
+            for ( Sj = 0; Sj < vbox_sample_imag; Sj++ ) {
+                for ( Sr = 0; Sr < vbox_sample_real; Sr++ ) {
+                    /* Each sample consists of
+                     *
+                     *  8 byte double    real_coord
+                     *  8 byte double    imag_coord
+                     *  4 byte uint32_t  mandel_val
+                     */
+
+                    /* read in the real component of the coordinate */
+                    clearerr(fp);
+                    if ( feof(fp) != 0 ) {
+                        fprintf(stderr,"ERR  : End of file\n");
+                        goto clean_up;
+                    }
+
+                    /* note that we read a uint64_t type  */
+                    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
+                    file_error_status = ferror(fp);
+                    if ( file_error_status != 0 ) {
+                        fprintf(stderr,"ERR  : read error occured.\n");
+                        goto clean_up;
+                    }
+
+                    if ( num_read < 1 ) {
+                        /* check if end of file */
+                        if ( feof(fp) != 0 ) {
+                            fprintf(stderr,"ERR  : End of file\n");
+                        } else {
+                            fprintf(stderr,"ERR  : insufficient data read\n");
+                        }
+                        goto clean_up;
+                    }
+
+                    if ( endian_flag ) {
+                        rotated64 = rot8(temp64bit);
+                        fp64 = memcpy(&temp_double,(void *)&rotated64, sizeof(double));
+                    } else {
+                        fp64 = memcpy(&temp_double,(void *)&temp64bit, sizeof(double));
+                    }
+
+                    coord_r[array_index(Vr,Vj,Sr,Sj,vbox_real_count,vbox_sample_real,vbox_sample_imag)] = temp_double;
+
+
+                    /* read in the imaginary component of the coordinate */
+                    clearerr(fp);
+                    if ( feof(fp) != 0 ) {
+                        fprintf(stderr,"ERR  : End of file\n");
+                        goto clean_up;
+                    }
+
+                    /* note that we read a uint64_t type  */
+                    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, fp);
+                    file_error_status = ferror(fp);
+                    if ( file_error_status != 0 ) {
+                        fprintf(stderr,"ERR  : read error occured.\n");
+                        goto clean_up;
+                    }
+
+                    if ( num_read < 1 ) {
+                        /* check if end of file */
+                        if ( feof(fp) != 0 ) {
+                            fprintf(stderr,"ERR  : End of file\n");
+                        } else {
+                            fprintf(stderr,"ERR  : insufficient data read\n");
+                        }
+                        goto clean_up;
+                    }
+
+                    if ( endian_flag ) {
+                        rotated64 = rot8(temp64bit);
+                        fp64 = memcpy(&temp_double,(void *)&rotated64, sizeof(double));
+                    } else {
+                        fp64 = memcpy(&temp_double,(void *)&temp64bit, sizeof(double));
+                    }
+
+                    coord_j[array_index(Vr,Vj,Sr,Sj,vbox_real_count,vbox_sample_real,vbox_sample_imag)] = temp_double;
+
+
+
+                    /* check for early end of file */
+                    clearerr(fp);
+                    if ( feof(fp) != 0 ) {
+                        fprintf(stderr,"ERR  : End of file\n");
+                        goto clean_up;
+                    }
+
+                    num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, fp);
+                    file_error_status = ferror(fp);
+                    if ( file_error_status != 0 ) {
+                        fprintf(stderr,"ERR  : read error occured.\n");
+                        goto clean_up;
+                    }
+
+                    if ( num_read < 1 ) {
+                        /* we have a short read 
+                         * check if end of file */
+                        if ( feof(fp) != 0 ) {
+                            fprintf(stderr,"ERR  : End of file\n");
+                        } else {
+                            fprintf(stderr,"ERR  : insufficient data read\n");
+                        }
+                        goto clean_up;
+                    }
+
+                    if ( endian_flag ) {
+                        rotated32 = rot4(temp32bit);
+                        temp32bit = rotated32;
+                    }
+                    mandel_val[array_index(Vr,Vj,Sr,Sj,vbox_real_count,vbox_sample_real,vbox_sample_imag)] = temp32bit;
+
+                    sample_counter += 1;
+
+                }
+            }
+        }
+    }
+
+
+    printf("\n--- data values -------------------------------------------------------\n");
+
+    printf("     : r[ 0][ 0][ 0][ 0] = %-+32.26e\n",
+     *(coord_r + array_index(0,0,0,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[ 0][ 0][ 0][ 0] = %-+32.26e\n",
+     *(coord_j + array_index(0,0,0,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(0,0,0,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("     : r[ 7][ 7][63][63] = %-+32.26e\n",
+     *(coord_r + array_index(7,7,63,63,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[ 7][ 7][63][63] = %-+32.26e\n",
+     *(coord_j + array_index(7,7,63,63,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(7,7,63,63,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("     : r[ 8][ 8][ 0][ 0] = %-+32.26e\n",
+     *(coord_r + array_index(8,8,0,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[ 8][ 8][ 0][ 0] = %-+32.26e\n",
+     *(coord_j + array_index(8,8,0,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(8,8,0,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("     : r[ 8][ 8][ 1][ 0] = %-+32.26e\n",
+     *(coord_r + array_index(8,8,1,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[ 8][ 8][ 1][ 0] = %-+32.26e\n",
+     *(coord_j + array_index(8,8,1,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(8,8,1,0,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("     : r[ 8][ 8][32][32] = %-+32.26e\n",
+     *(coord_r + array_index(8,8,32,32,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[ 8][ 8][32][32] = %-+32.26e\n",
+     *(coord_j + array_index(8,8,32,32,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(8,8,32,32,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("     : r[ 3][12][44][21] = %-+32.26e\n",
+     *(coord_r + array_index(3,12,44,21,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[ 3][12][44][21] = %-+32.26e\n",
+     *(coord_j + array_index(3,12,44,21,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(3,12,44,21,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("     : r[15][15][63][63] = %-+32.26e\n",
+     *(coord_r + array_index(15,15,63,63,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     : j[15][15][63][63] = %-+32.26e\n",
+     *(coord_j + array_index(15,15,63,63,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+    printf("     :       mand_height = %9i\n",   
+     *(mandel_val + array_index(15,15,63,63,vbox_real_count,vbox_sample_real,vbox_sample_imag)));
+
+
+    printf("------------------------------------------------------------------------\n");
+
+
+clean_up:
+    if ( sample_counter != num_elements ) {
+        fprintf(stderr,"ERR  : wrong number of elements read\n");
+        fprintf(stderr,"     : expected sample number = %i\n", num_elements);
+        fprintf(stderr,"     : samples read from file = %i\n", sample_counter);
+        if ( feof(fp) != 0 ) {
+            fprintf(stderr,"     : End of file\n");
+        } else {
+            fprintf(stderr,"     : File contains more data.\n");
+            file_position = ftell(fp);
+            fprintf(stderr,"     : At byte position %lu\n", file_position);
+        }
+    }
+
+    clearerr(fp);
+
+    /* clean up memory and exit cleanly */
+    free(mandel_val);
+    mandel_val = NULL;
+
+    free(coord_r);
+    coord_r = NULL;
+
+    free(coord_j);
+    coord_r = NULL;
+
 bail_out:
     fclose(fp);
     fprintf (stderr,"INFO : file %s closed.\n",fid);
@@ -373,6 +811,25 @@ bail_out:
     filename = NULL;
 
     return EXIT_SUCCESS;
+
+}
+
+static int array_index(int Vr, int Vj,
+                       int Sr, int Sj,
+                       int vbox_real_count, 
+                       int vbox_sample_real,
+                       int vbox_sample_imag )
+{
+
+    int result =  Vr * vbox_sample_real + Sr
+
+                + Vj * vbox_real_count
+                     * vbox_sample_real
+                     * vbox_sample_imag
+
+                + Sj * vbox_real_count * vbox_sample_real;
+
+    return result;
 
 }
 

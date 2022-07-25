@@ -63,6 +63,10 @@ the following format :
                8 byte double       magnify
                8 byte double       real_translate
                8 byte double       imag_translate
+               4 byte uint32_t     VBOX_REAL_COUNT
+               4 byte uint32_t     VBOX_IMAG_COUNT 
+               4 byte uint32_t     VBOX_SAMPLE_REAL
+               4 byte uint32_t     VBOX_SAMPLE_IMAG
 
 Consider a sample dataset described with the input parameters :
 
@@ -88,6 +92,11 @@ zero value. All other values may be given some colour value in any way
 that you please. Endless variations exist. The data dump files do not
 report colour in any way whatsoever.
 
+The values for VBOX_REAL_COUNT and VBOX_IMAG_COUNT give us information
+about the structure of the data that has been dumped. We also need to
+know the number of samples inside each vbox compute region and that is
+provided via the VBOX_SAMPLE_REAL and VBOX_SAMPLE_IMAG values.
+
 The complex plane point described above is treated as a translation of
 the square sample set matrix away from the origin at ( 0, 0 ).
 
@@ -102,12 +111,17 @@ Therefore the header data for the above parameters will be :
   8 byte double   magnify         0x41b0000000000000h = 268435456
   8 byte double   real_translate  0x3fd995850d500000h = 0.399750960...
   8 byte double   imag_translate  0x3fca45b0ded00000h = 0.205251797...
+  4 byte uint32_t VBOX_REAL_COUNT         0x00000010h =        16
+  4 byte uint32_t VBOX_IMAG_COUNT         0x00000010h =        16
+  4 byte uint32_t VBOX_SAMPLE_REAL        0x00000040h =        64
+  4 byte uint32_t VBOX_SAMPLE_IMAG        0x00000040h =        64
 
 A big endian machine would represent the data exactly as we see above
 whereas a little endian machine would output :
 
          00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
          00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+         10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
 
 Given that little endian machines are vastly more popular than the big
 endian variations the code always outputs in little endian format. This
@@ -270,9 +284,9 @@ An entire horizontal row of these vbox regions will therefore be :
 Therefore for any vbox record ( Vr, Vj ) we have a file seek offset
 thus : 
 
-    vbox_offset = 32 + Vj * VBOX_ROW_BYTES + Vr * VBOX_BYTES
+    vbox_offset = 48 + Vj * VBOX_ROW_BYTES + Vr * VBOX_BYTES
 
-The initial 32 bytes is the size of the header data section.
+The initial 48 bytes is the size of the header data section.
 
 Then for any given sample within any given vbox we shall need a 
 similar computation as the offset beyond vbox_offset. In the same
