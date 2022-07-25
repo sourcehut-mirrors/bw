@@ -3,13 +3,13 @@ phobos$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.0206192108879998
                  system name = FreeBSD
                    node name = phobos
                      release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #9 main-n256192-6d25ea6d964: Mon Jun 20 04:53:59 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     version = FreeBSD 14.0-CURRENT #10 main-n256759-da55f86c614: Mon Jul 18 00:06:19 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
                      machine = amd64
                    page size = 4096
-               system memory = 16865554432
-                             = 16470268 kB
-                             = 16084 MB
-                 avail pages = 4117567
+               system memory = 16863674368
+                             = 16468432 kB
+                             = 16082 MB
+                 avail pages = 4117108
                 avail memory = 0
          clock ticks per sec = 128
              threads support = 200112
@@ -20,7 +20,7 @@ phobos$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.0206192108879998
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    0 hour   42 mins   24 secs
+           system uptime    7 days    9 hours   29 mins   50 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =            266 nsec
+INFO : baseline tdelta =            229 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -48,7 +48,7 @@ pthread_limit = 4
      : connection number 3
      : screen number 0
      : default depth is 24
-     : display seems to be 1920 wide and 1080 high.
+     : display seems to be 5760 wide and 1080 high.
      : offset x=20 y=20
      : eff_width =  1024    eff_height =  1024
 
@@ -67,7 +67,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +1.02061921088800700019305623e+00
      : bailout = 32768             
      : magnify = 2.748779069440e+11
-[mand] =   121538081323 nsec   1.215381e+02 sec
+[mand] =    76290427630 nsec   7.629043e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -94,11 +94,11 @@ raw data values -------------------------------------------------------
      :       mand_height =      2065
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1385 , 890  ]
+raw  [ 1383 , 890  ]
 INFO : dumper_flag = 1
-click at 1384 888 
-raw  [ 1385 , 890  ]
-INFO : file /var/tmp/dclarke/20220629000104 dump begins.
+click at 1382 888 
+raw  [ 1383 , 890  ]
+INFO : file /var/tmp/dclarke/20220725120901 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -109,18 +109,30 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = -1.57887752805699992098009687e-02
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +1.02061921088799989476569863e+00
-INFO : file /var/tmp/dclarke/20220629000104 closed.
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220725120901 closed.
 INFO : dumper_flag = 0
-click at 1384 888 
-raw  [ 1007 , 920  ]
+click at 1382 888 
+raw  [ 1016 , 926  ]
 right click
-click at 1006 918 
-raw  [ 1007 , 920  ]
+click at 1015 924 
+raw  [ 1016 , 926  ]
 right click
 
 
 
-phobos$ mdigest -a sha256 /var/tmp/dclarke/20220629000104
-0185154e797afdf219199d2922ed6d20bf9877a0f46a3ab6a19ba996985bfbb1  /var/tmp/dclarke/20220629000104
-phobos$ 
+phobos$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725120901
+     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 50 42
+    10:  e3 50 e5 c5 ee 2a 90 bf be ee 46 cf 74 54 f0 3f
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+phobos$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220725120901
+1dd9d0d9bc7664d4e31ec64bbe6d4de43020a4daee897d9b995887266f030198  /var/tmp/dclarke/20220725120901
 

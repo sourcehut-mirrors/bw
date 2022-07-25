@@ -20,7 +20,7 @@ phobos$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    7 days    9 hours   23 mins   46 secs
+           system uptime    7 days    9 hours   34 mins   20 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =            250 nsec
+INFO : baseline tdelta =            304 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -67,7 +67,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =   119513609721 nsec   1.195136e+02 sec
+[mand] =    47059993522 nsec   4.705999e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -76,7 +76,7 @@ raw data values -------------------------------------------------------
      :       mand_height =      3199
      : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
      : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
-     :       mand_height =     10878
+     :       mand_height =     10859
      : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
      : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
      :       mand_height =      6052
@@ -85,20 +85,20 @@ raw data values -------------------------------------------------------
      :       mand_height =      5990
      : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
      : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
-     :       mand_height =      5289
+     :       mand_height =      5311
      : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
      : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
      :       mand_height =      3467
      : r[15][15][63][63] = +3.99750967793806921690702438e-01
      : j[15][15][63][63] = +2.05251804924046155065298080e-01
-     :       mand_height =     16877
+     :       mand_height =     17101
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1384 , 891  ]
+raw  [ 1385 , 889  ]
 INFO : dumper_flag = 1
-click at 1383 889 
-raw  [ 1384 , 891  ]
-INFO : file /var/tmp/dclarke/20220725120345 dump begins.
+click at 1384 887 
+raw  [ 1385 , 889  ]
+INFO : file /var/tmp/dclarke/20220725121314 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -117,23 +117,20 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20220725120345 closed.
+INFO : file /var/tmp/dclarke/20220725121314 closed.
 INFO : dumper_flag = 0
-click at 1383 889 
-raw  [ 988  , 923  ]
+click at 1384 887 
+raw  [ 1008 , 923  ]
 right click
-click at 987 921 
-raw  [ 988  , 923  ]
+click at 1007 921 
+raw  [ 1008 , 923  ]
 right click
 
-
-
-phobos$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725120345
+phobos$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725121314
      0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
     10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
     20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
     30: 
-phobos$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220725120345
-5cf86cd71f5e76575cfff7c35b78ed0637100947121d13b924e33f0925e682cf  /var/tmp/dclarke/20220725120345
-phobos$ 
+phobos$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220725121314
+c49776428f9dd58189746af8b38fde12878e89c34e2300f5206a937bf3152b95  /var/tmp/dclarke/20220725121314
 
