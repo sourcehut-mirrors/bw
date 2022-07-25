@@ -1,4 +1,4 @@
-enceladus$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+enceladus$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
 -------------------------------------------------------------------
                  system name = Linux
                    node name = enceladus
@@ -9,7 +9,7 @@ enceladus$ ./xmand 32768 268435456 0.399750960350502282381 0.2052517974807415157
                system memory = 8367702016
                              = 8171584 kB
                              = 7980 MB
-                 avail pages = 119767
+                 avail pages = 118970
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200809
@@ -20,7 +20,7 @@ enceladus$ ./xmand 32768 268435456 0.399750960350502282381 0.2052517974807415157
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day   11 hours   15 mins    9 secs
+           system uptime    0 day   13 hours    9 mins    8 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =             30 nsec
+INFO : baseline tdelta =            180 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -40,8 +40,8 @@ imag : Perfectly safe to ignore FE_INEXACT
 
     mand_bail = 32768
 pthread_limit = 4
-    translate = ( +3.99750960350502282381057739e-01 , +2.05251797480741515755653381e-01 )
-      magnify = +2.68435456000000000000000000e+08
+    translate = ( -1.57887752805699992098009687e-02 , +1.02061921088799989476569863e+00 )
+      magnify = +2.74877906944000000000000000e+11
 
 
  X11 : default width=1044 height=1044
@@ -53,62 +53,62 @@ pthread_limit = 4
      : eff_width =  1024    eff_height =  1024
 
 --------------------------------------------
-pixel_real_w = +1.45519152283668518066406250e-11
-pixel_imag_h = +1.45519152283668518066406250e-11
+pixel_real_w = +1.42108547152020037174224854e-14
+pixel_imag_h = +1.42108547152020037174224854e-14
 raw  [ 523  , 524  ]
 DBUG : sample space [ 512   , 512    ]
      : vbox  [ 008 , 008 ]
      : win_r = +9.76562500000000000000000000e-04
      : win_j = +9.76562500000000000000000000e-04
      : after translation
-     : r_trn   = +3.99750960350502282381057739e-01
-     : j_trn   = +2.05251797480741515755653381e-01
-     : x_prime = +3.99750960357778239995241165e-01
-     : y_prime = +2.05251797488017473369836807e-01
+     : r_trn   = -1.57887752805699992098009687e-02
+     : j_trn   = +1.02061921088799989476569863e+00
+     : x_prime = -1.57887752805628937824433677e-02
+     : y_prime = +1.02061921088800700019305623e+00
      : bailout = 32768             
-     : magnify = 2.684354560000e+08
-[mand] =   135194867258 nsec   1.351949e+02 sec
+     : magnify = 2.748779069440e+11
+[mand] =    29937045220 nsec   2.993705e+01 sec
 
 
 raw data values -------------------------------------------------------
-     : r[ 0][ 0][ 0][ 0] = +3.99750952907197643071413040e-01
-     : j[ 0][ 0][ 0][ 0] = +2.05251790037436876446008682e-01
-     :       mand_height =      3199
-     : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
-     : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
-     :       mand_height =     10878
-     : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
-     : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
-     :       mand_height =      6052
-     : r[ 8][ 8][ 1][ 0] = +3.99750960372330155223608017e-01
-     : j[ 8][ 8][ 1][ 0] = +2.05251797488017473369836807e-01
-     :       mand_height =      5990
-     : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
-     : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
-     :       mand_height =      5289
-     : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
-     : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
-     :       mand_height =      3467
-     : r[15][15][63][63] = +3.99750967793806921690702438e-01
-     : j[15][15][63][63] = +2.05251804924046155065298080e-01
-     :       mand_height =     16877
+     : r[ 0][ 0][ 0][ 0] = -1.57887752878388513966267936e-02
+     : j[ 0][ 0][ 0][ 0] = +1.02061921088073104257887280e+00
+     :       mand_height =      1978
+     : r[ 7][ 7][63][63] = -1.57887752805771046371585697e-02
+     : j[ 7][ 7][63][63] = +1.02061921088799278933834103e+00
+     :       mand_height =      4295
+     : r[ 8][ 8][ 0][ 0] = -1.57887752805628937824433677e-02
+     : j[ 8][ 8][ 0][ 0] = +1.02061921088800700019305623e+00
+     :       mand_height =      3908
+     : r[ 8][ 8][ 1][ 0] = -1.57887752805486829277281657e-02
+     : j[ 8][ 8][ 1][ 0] = +1.02061921088800700019305623e+00
+     :       mand_height =      3934
+     : r[ 8][ 8][32][32] = -1.57887752801081464315569036e-02
+     : j[ 8][ 8][32][32] = +1.02061921088846174754394269e+00
+     :       mand_height =      3782
+     : r[ 3][12][44][21] = -1.57887752844850896838391208e-02
+     : j[ 3][12][44][21] = +1.02061921089194340694916718e+00
+     :       mand_height =      3770
+     : r[15][15][63][63] = -1.57887752733011470229751438e-02
+     : j[15][15][63][63] = +1.02061921089526874695252445e+00
+     :       mand_height =      2065
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1384 , 890  ]
+raw  [ 1385 , 890  ]
 INFO : dumper_flag = 1
-click at 1383 888 
-raw  [ 1384 , 890  ]
-INFO : file /var/tmp/dclarke/20220725095812 dump begins.
+click at 1384 888 
+raw  [ 1385 , 890  ]
+INFO : file /var/tmp/dclarke/20220725115020 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
      : mand_bail =    32768
      :  8 byte double magnify        num_written = 1
-     :        magnify = +2.68435456000000000000000000e+08
+     :        magnify = +2.74877906944000000000000000e+11
 DBUG :  8 byte double real_translate num_written = 1
-     : real_translate = +3.99750960350502282381057739e-01
+     : real_translate = -1.57887752805699992098009687e-02
      :  8 byte double imag_translate num_written = 1
-     : imag_translate = +2.05251797480741515755653381e-01
+     : imag_translate = +1.02061921088799989476569863e+00
      :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
      : VBOX_REAL_COUNT =       16
      :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
@@ -117,22 +117,22 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20220725095812 closed.
+INFO : file /var/tmp/dclarke/20220725115020 closed.
 INFO : dumper_flag = 0
-click at 1383 888 
-raw  [ 993  , 924  ]
+click at 1384 888 
+raw  [ 1002 , 926  ]
 right click
-click at 992 922 
-raw  [ 993  , 924  ]
+click at 1001 924 
+raw  [ 1002 , 926  ]
 right click
 
 
 
-enceladus$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725095812
-     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
-    10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+enceladus$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725115020
+     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 50 42
+    10:  e3 50 e5 c5 ee 2a 90 bf be ee 46 cf 74 54 f0 3f
     20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
     30: 
-enceladus$ mdigest -a sha256 /var/tmp/dclarke/20220725095812
-5cf86cd71f5e76575cfff7c35b78ed0637100947121d13b924e33f0925e682cf  /var/tmp/dclarke/20220725095812
+enceladus$ mdigest -a sha256 /var/tmp/dclarke/20220725115020
+1dd9d0d9bc7664d4e31ec64bbe6d4de43020a4daee897d9b995887266f030198  /var/tmp/dclarke/20220725115020
 
