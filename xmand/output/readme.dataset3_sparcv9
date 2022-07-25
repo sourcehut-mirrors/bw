@@ -1,0 +1,14 @@
+
+$ 
+$ ls -lapbtr /var/tmp/dclarke/20220725133418
+-rw-r--r--   1 dclarke  devl     20971568 Jul 25 13:34 /var/tmp/dclarke/20220725133418
+$ 
+$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725133418
+     0:  00 00 10 00 00 00 00 01 00 00 00 00 00 00 d0 41
+    10:  00 e0 01 32 f1 ff ff bf 00 00 00 00 00 00 00 00
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+$ mdigest -a sha256 /var/tmp/dclarke/20220725133418
+5a1df15740d147a44e58c15e2325d3f61bdcd1f41c544d2c03cc265fe55f9c0f  /var/tmp/dclarke/20220725133418
+$ 
+

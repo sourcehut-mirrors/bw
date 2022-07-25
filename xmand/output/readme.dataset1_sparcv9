@@ -1,4 +1,5 @@
-spartacus$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+
+$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
                  system name = SunOS
                    node name = spartacus
@@ -10,7 +11,7 @@ spartacus$ ./xmand 32768 268435456 0.399750960350502282381 0.2052517974807415157
                              = 67108864 kB
                              = 65536 MB
                              = 64 GB
-                 avail pages = 7617516
+                 avail pages = 7980713
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200112
@@ -21,7 +22,7 @@ spartacus$ ./xmand 32768 268435456 0.399750960350502282381 0.2052517974807415157
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    7 hours   33 mins    1 sec
+           system uptime    0 day    0 hour   19 mins   39 secs
 -------------------------------------------------------------------
 
 
@@ -57,25 +58,6 @@ pthread_limit = 4
 pixel_real_w = +1.45519152283668518066406250e-11
 pixel_imag_h = +1.45519152283668518066406250e-11
 raw  [ 523  , 524  ]
-vbox  [ 008 , 008 ]
-fp64( +9.76562500000000000000000000e-04,
-      +9.76562500000000000000000000e-04 )
-c = ( +3.99750960357778239995241165e-01,
-      +2.05251797488017473369836807e-01 )
-pixel_real_w = +1.45519152283668518066406250e-11
-pixel_imag_h = +1.45519152283668518066406250e-11
-[ t00 ] : v[8 ][8 ] rows 0  -> 15
-[ t01 ] : v[8 ][8 ] rows 16 -> 31
-[ t02 ] : v[8 ][8 ] rows 32 -> 47
-[ t03 ] : v[8 ][8 ] rows 48 -> 63
-PTHRD: join 0 done
-PTHRD: join 1 done
-PTHRD: join 2 done
-PTHRD: join 3 done
-[join] =      174672700 nsec   1.746727e-01 sec
-[plot] =     1792337500 nsec   1.792337e+00 sec
-click at 522 522 
-raw  [ 523  , 524  ]
 DBUG : sample space [ 512   , 512    ]
      : vbox  [ 008 , 008 ]
      : win_r = +9.76562500000000000000000000e-04
@@ -87,7 +69,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =   124905143500 nsec   1.249051e+02 sec
+[mand] =   124997171600 nsec   1.249972e+02 sec
 
 
 raw data values -------------------------------------------------------
@@ -114,11 +96,11 @@ raw data values -------------------------------------------------------
      :       mand_height =     16877
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1384 , 889  ]
+raw  [ 1385 , 889  ]
 INFO : dumper_flag = 1
-click at 1383 887 
-raw  [ 1384 , 889  ]
-INFO : file /var/tmp/dclarke/20220627235220 dump begins.
+click at 1384 887 
+raw  [ 1385 , 889  ]
+INFO : file /var/tmp/dclarke/20220725130828 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -129,30 +111,31 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = +3.99750960350502282381057739e-01
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +2.05251797480741515755653381e-01
-INFO : file /var/tmp/dclarke/20220627235220 closed.
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220725130828 closed.
 INFO : dumper_flag = 0
-click at 1383 887 
-raw  [ 1018 , 926  ]
+click at 1384 887 
+raw  [ 1011 , 919  ]
 right click
-click at 1017 924 
-raw  [ 1018 , 926  ]
+click at 1010 917 
+raw  [ 1011 , 919  ]
 right click
 
 
 
-spartacus$ hdump -Ax -t x1 -v /var/tmp/dclarke/20220627235220
+$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725130828
      0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
     10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
-    20:  00 00 52 05 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f
-    30:  7f 0c 00 00 00 00 4e 0d 85 95 d9 3f 00 00 cc de
-    40:  b0 45 ca 3f 7e 2a 00 00 00 00 52 0d 85 95 d9 3f
-    50:  00 00 d4 de b0 45 ca 3f a4 17 00 00 00 00 56 0d
-    60:  85 95 d9 3f 00 00 d4 de b0 45 ca 3f 66 17 00 00
-    70:  00 00 d2 0d 85 95 d9 3f 00 00 d4 df b0 45 ca 3f
-    80:  a9 14 00 00 00 00 02 09 85 95 d9 3f 00 00 7c e7
-    90:  b0 45 ca 3f 8b 0d 00 00 00 00 4e 15 85 95 d9 3f
-    a0:  00 00 cc ee b0 45 ca 3f ed 41 00 00
-    ac: 
-spartacus$ mdigest -a sha256 /var/tmp/dclarke/20220627235220
-c1e5d2ee43728de2a982e5c0c4179b368a39042a77893bfb438d58decf3d02a7  /var/tmp/dclarke/20220627235220
-spartacus$ 
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+$ mdigest -a sha256 /var/tmp/dclarke/20220725130828
+5cf86cd71f5e76575cfff7c35b78ed0637100947121d13b924e33f0925e682cf  /var/tmp/dclarke/20220725130828
+$ 
+
