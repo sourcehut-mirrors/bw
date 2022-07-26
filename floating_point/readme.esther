@@ -1,0 +1,49 @@
+
+The CentaurHauls VIA Eden Esther cpu reports 80bit x86
+extended precision for anything past 64bit and strangely
+it uses 12 bytes of memory.  Perhaps because it is a 32-bit
+machine ???
+
+C_esther$ 
+C_esther$ ./fmad
+NOTE : this machine is a little endian architecture.
+     : Be sure to adjust your brain accordingly.
+
+
+--------------- Maybe no FMA Calls ---------------
+
+        fp32  = +5.595782771706581116e-02
+ dotme_fp32  is 0x09 0x34 0x65 0x3d 
+
+        fp64  = +5.595788259857980423e-02
+ dotme_fp64  is 0xbf 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 
+
+        fp128 = +5.595788259858000004e-02
+ dotme_fp128 is 0xc0 0xd9 0xce 0x6d 0xbb 0x17 0x34 0xe5 0xfa 0x3f 0x00 0x00 
+
+
+
+-------------------- FMA Calls -------------------
+
+  fmaf fp32   = +5.595775693655014038e-02
+ dotme_fp32  is 0xf6 0x33 0x65 0x3d 
+
+  fma  fp64   = +5.595788259857976260e-02
+ dotme_fp64  is 0xb9 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 
+
+  fmal fp128  = +5.595788259858000003e-02
+ dotme_fp128 is 0xbc 0xd9 0xce 0x6d 0xbb 0x17 0x34 0xe5 0xfa 0x3f 0x00 0x00 
+
+
+--------------------------------------------------
+
+
+Correct result is +5.595788259858e-02
+or this    0x3faca682f76db9b9 from ARMv8
+or maybe   0x3faca682f76db9b9 on Fujitsu SPARC VII+
+Same thing on Intel Core i5-7300U K8-class CPU
+also fp128 0x3ffaca682f76db9db367bf4a016eb28a
+
+NOTE : IBM Power systems may report strange fp128 hex values
+C_esther$ 
+
