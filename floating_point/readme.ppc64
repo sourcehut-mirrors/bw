@@ -1,0 +1,43 @@
+
+enceladus$ ./fmad 
+NOTE : this machine is a big endian architecture.
+     : Be sure to adjust your brain accordingly.
+
+
+--------------- Maybe no FMA Calls ---------------
+
+        fp32  = +5.595773458480834961e-02
+ dotme_fp32  is 0x3d 0x65 0x33 0xf0 
+
+        fp64  = +5.595788259857981117e-02
+ dotme_fp64  is 0x3f 0xac 0xa6 0x82 0xf7 0x6d 0xb9 0xc0 
+
+        fp128 = +5.595788259858000000e-02
+ dotme_fp128 is 0x3f 0xac 0xa6 0x82 0xf7 0x6d 0xb9 0xdb 0x3c 0x3b 0x3d 0xfa 0x50 0x0b 0x76 0x00 
+
+
+
+-------------------- FMA Calls -------------------
+
+  fmaf fp32   = +5.595775693655014038e-02
+ dotme_fp32  is 0x3d 0x65 0x33 0xf6 
+
+  fma  fp64   = +5.595788259857976260e-02
+ dotme_fp64  is 0x3f 0xac 0xa6 0x82 0xf7 0x6d 0xb9 0xb9 
+
+  fmal fp128  = +5.595788259858000000e-02
+ dotme_fp128 is 0x3f 0xac 0xa6 0x82 0xf7 0x6d 0xb9 0xdb 0x3c 0x3b 0x3d 0xfa 0x50 0x0b 0x75 0xe9 
+
+
+--------------------------------------------------
+
+
+Correct result is +5.595788259858e-02
+or this    0x3faca682f76db9b9 from ARMv8
+or maybe   0x3faca682f76db9b9 on Fujitsu SPARC VII+
+Same thing on Intel Core i5-7300U K8-class CPU
+also fp128 0x3ffaca682f76db9db367bf4a016eb28a
+
+NOTE : IBM Power systems may report strange fp128 hex values
+enceladus$ 
+
