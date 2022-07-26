@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
     printf("        fp32  = %-+24.18e\n", (double)dotme_fp32);
     /* we can print out the hex bytes */
-    printf("dotme_fp32  is ");
+    printf(" dotme_fp32  is ");
     for (j=0; j<sizeof(float); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp32)[j] );
     }
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
      *
     dotme_fp64 = (double)dotme_fp32;
     printf("\n-------------- gack ------------\n");
-    printf("dotme_fp32 casted is (double)dotme_fp32\ndotme_fp64  is ");
+    printf(" dotme_fp32 casted is (double)dotme_fp32\ndotme_fp64  is ");
     for (j=0; j<sizeof(double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
     }
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
          a64[3] * b64[3];
 
     printf("        fp64  = %-+24.18e\n", dotme_fp64);
-    printf("dotme_fp64  is ");
+    printf(" dotme_fp64  is ");
     for (j=0; j<sizeof(double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
     }
@@ -234,7 +234,7 @@ int main(int argc, char **argv)
          a128[3] * b128[3];
 
     printf("        fp128 = %-+24.18Le\n", dotme_fp128);
-    printf("dotme_fp128 is ");
+    printf(" dotme_fp128 is ");
     for (j=0; j<sizeof(long double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
     }
@@ -267,29 +267,29 @@ int main(int argc, char **argv)
 
     printf("  fmaf fp32   = %-+24.18e\n", (double)dotme_fp32);
     /* we can print out the hex bytes */
-    printf("dotme_fp32  is ");
+    printf(" dotme_fp32  is ");
     for (j=0; j<sizeof(float); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp32)[j] );
     }
-    printf("\n");
+    printf("\n\n");
 
 
 
     dotme_fp64 = fma( a64[3], b64[3], fma( a64[2], b64[2], fma( a64[1], b64[1], fma( a64[0], b64[0], 0.0 ))));
 
     printf("  fma  fp64   = %-+24.18e\n", dotme_fp64);
-    printf("dotme_fp64  is ");
+    printf(" dotme_fp64  is ");
     for (j=0; j<sizeof(double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
     }
-    printf("\n");
+    printf("\n\n");
 
 
 
     dotme_fp128 = fmal( a128[3], b128[3], fmal( a128[2], b128[2], fmal( a128[1], b128[1], fmal( a128[0], b128[0], 0.0L ))));
 
     printf("  fmal fp128  = %-+24.18Le\n", dotme_fp128);
-    printf("dotme_fp128 is ");
+    printf(" dotme_fp128 is ");
     for (j=0; j<sizeof(long double); j++) {
         printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
     }
@@ -301,8 +301,9 @@ int main(int argc, char **argv)
     /* this is just reference data stuff */
     printf("\nCorrect result is +5.595788259858e-02\n");
     printf("or this    0x3faca682f76db9b9 from ARMv8\n");
-    printf("or maybe   0x3faca682f76db9c0 on Fujitsu SPARC VII+\n");
-    printf("also fp128 0x3ffaca682f76db9db367bf4a016eb280\n");
+    printf("or maybe   0x3faca682f76db9b9 on Fujitsu SPARC VII+\n");
+    printf("Same thing on Intel Core i5-7300U K8-class CPU\n");
+    printf("also fp128 0x3ffaca682f76db9db367bf4a016eb28a\n");
 
     printf ("\nNOTE : IBM Power systems may report strange fp128 hex values\n");
 
