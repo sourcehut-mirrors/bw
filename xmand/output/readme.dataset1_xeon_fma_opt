@@ -1,0 +1,140 @@
+pluto$ 
+pluto$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = pluto
+                     release = 13.1-RELEASE
+                     version = FreeBSD 13.1-RELEASE releng/13.1-n250148-fc952ac2212 GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 137291218944
+                             = 134073456 kB
+                             = 130931 MB
+                 avail pages = 33518364
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    5 hours   54 mins   48 secs
+-------------------------------------------------------------------
+
+
+--------- _XOPEN_SOURCE 600 -------
+_POSIX_CHILD_MAX   = 25
+_POSIX_NGROUPS_MAX = 8
+_POSIX_OPEN_MAX    = 20
+_POSIX_PATH_MAX    = 256
+_POSIX_TZNAME_MAX  = 6
+---------------------------------------
+INFO : baseline tdelta =             61 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( +3.99750960350502282381057739e-01 , +2.05251797480741515755653381e-01 )
+      magnify = +2.68435456000000000000000000e+08
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +1.45519152283668518066406250e-11
+pixel_imag_h = +1.45519152283668518066406250e-11
+raw  [ 523  , 524  ]
+DBUG : sample space [ 512   , 512    ]
+     : vbox  [ 008 , 008 ]
+     : win_r = +9.76562500000000000000000000e-04
+     : win_j = +9.76562500000000000000000000e-04
+     : after translation
+     : r_trn   = +3.99750960350502282381057739e-01
+     : j_trn   = +2.05251797480741515755653381e-01
+     : x_prime = +3.99750960357778239995241165e-01
+     : y_prime = +2.05251797488017473369836807e-01
+     : bailout = 32768             
+     : magnify = 2.684354560000e+08
+[mand] =    21346262501 nsec   2.134626e+01 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = +3.99750952907197643071413040e-01
+     : j[ 0][ 0][ 0][ 0] = +2.05251790037436876446008682e-01
+     :       mand_height =      3199
+     : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
+     : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
+     :       mand_height =     10859
+     : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
+     : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
+     :       mand_height =      6052
+     : r[ 8][ 8][ 1][ 0] = +3.99750960372330155223608017e-01
+     : j[ 8][ 8][ 1][ 0] = +2.05251797488017473369836807e-01
+     :       mand_height =      5990
+     : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
+     : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
+     :       mand_height =      5311
+     : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
+     : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
+     :       mand_height =      3467
+     : r[15][15][63][63] = +3.99750967793806921690702438e-01
+     : j[15][15][63][63] = +2.05251804924046155065298080e-01
+     :       mand_height =     17101
+--------------------------- full plot done -----------------------------
+click at 522 522 
+raw  [ 1384 , 891  ]
+INFO : dumper_flag = 1
+click at 1383 889 
+raw  [ 1384 , 891  ]
+INFO : file /var/tmp/dclarke/20220727124718 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    32768
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +2.68435456000000000000000000e+08
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = +3.99750960350502282381057739e-01
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +2.05251797480741515755653381e-01
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220727124718 closed.
+INFO : dumper_flag = 0
+click at 1383 889 
+raw  [ 998  , 922  ]
+right click
+click at 997 920 
+raw  [ 998  , 922  ]
+right click
+
+
+
+pluto$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220727124718
+     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
+    10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+pluto$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220727124718
+c49776428f9dd58189746af8b38fde12878e89c34e2300f5206a937bf3152b95  /var/tmp/dclarke/20220727124718
+pluto$ 
+
