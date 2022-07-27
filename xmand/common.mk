@@ -9,14 +9,15 @@ LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include
 
 OBJS=		mandel_col.o linear_inter.o mbrot.o \
-		mbrot_vbox_pthread.o \
-		fp_region.o fp_translate.o fp_vbox.o \
-		array_offset.o swap_four.o swap_eight.o \
-		../xwin/x_error_handler.o \
-		../xwin/create_gc.o \
-		../xwin/create_borderless_topwin.o \
-		../time_and_date/timediff.o \
-		../sysinfo/sysinfo.o
+			mbrot_fma.o \
+			mbrot_vbox_pthread.o \
+			fp_region.o fp_translate.o fp_vbox.o \
+			array_offset.o swap_four.o swap_eight.o \
+			../xwin/x_error_handler.o \
+			../xwin/create_gc.o \
+			../xwin/create_borderless_topwin.o \
+			../time_and_date/timediff.o \
+			../sysinfo/sysinfo.o
 
 .PHONY: all
 all: xmand

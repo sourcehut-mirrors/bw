@@ -1252,14 +1252,7 @@ int main(int argc, char*argv[])
                                 sub_pixel_imag = coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)]
                                                  - ( q - 1 ) * pixel_imag_height / 3.0;
 
-                                sub_pixel_mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
-
-                                /* TODO this has me mystified why it does not work
-                                if ((p!=1)&&(q!=1)) {
-                                    mand_height = mbrot(sub_pixel_real, sub_pixel_imag, mand_bail);
-                                } else {
-                                    mand_height = mandel_val[vbox_r][vbox_j][mand_x_pix][mand_y_pix];
-                                } */
+                                sub_pixel_mand_height = mbrot_fma(sub_pixel_real, sub_pixel_imag, mand_bail);
 
                                 if ( sub_pixel_mand_height == mand_bail ) {
                                     XSetForeground(dsp, gc2, (unsigned long)0 );
@@ -1882,7 +1875,7 @@ replot:
                                         coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = x_prime;
                                         coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = y_prime;
                                         /* the actual mandelbrot computation for (x_prime, y_prime) */
-                                        mand_height = mbrot(x_prime, y_prime, mand_bail);
+                                        mand_height = mbrot_fma(x_prime, y_prime, mand_bail);
                                         mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = mand_height;
                                     }
 
