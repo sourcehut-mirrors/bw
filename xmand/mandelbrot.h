@@ -91,6 +91,7 @@ unsigned long linear_inter( uint8_t  in_val,
 unsigned long mandle_col( uint8_t height );
 
 uint32_t mbrot( double c_r, double c_i, uint32_t bail_out );
+uint32_t mbrot_fma( double c_r, double c_i, uint32_t bail_out );
 
 int array_offset(int Vr, int Vj, int Sr, int Sj);
 
