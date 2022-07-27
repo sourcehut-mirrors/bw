@@ -1,6 +1,5 @@
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O3 -march=native \
-	-mfma -ffp-contract=on \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+CFLAGS= -std=iso9899:1999 -m64 -O3 -march=native \
+	-mfma -ffp-contract=on
 
 include common.mk

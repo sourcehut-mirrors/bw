@@ -1,26 +1,26 @@
-pluto$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+C_styx$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = pluto
-                     release = 13.0-RELEASE-p11
-                     version = FreeBSD 13.0-RELEASE-p11 #0: Tue Apr  5 18:54:35 UTC 2022     root@amd64-builder.daemonology.net:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
-                     machine = amd64
+                 system name = Linux
+                   node name = styx
+                     release = 5.10.0-14-amd64
+                     version = #1 SMP Debian 5.10.113-1 (2022-04-29)
+                     machine = x86_64
                    page size = 4096
-               system memory = 137290989568
-                             = 134073232 kB
-                             = 130930 MB
-                 avail pages = 33518308
+               system memory = 16366952448
+                             = 15983352 kB
+                             = 15608 MB
+                 avail pages = 546281
                 avail memory = 0
-         clock ticks per sec = 128
-             threads support = 200112
-               POSIX Version = 200112
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
                       endian = little endian
        sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime   80 days    6 hours   22 mins   29 secs
+           system uptime   18 days   23 hours   26 mins   15 secs
 -------------------------------------------------------------------
 
 
@@ -31,7 +31,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =             52 nsec
+INFO : baseline tdelta =             39 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -67,7 +67,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =    21437679766 nsec   2.143768e+01 sec
+[mand] =    31201723320 nsec   3.120172e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -76,7 +76,7 @@ raw data values -------------------------------------------------------
      :       mand_height =      3199
      : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
      : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
-     :       mand_height =     10859
+     :       mand_height =     11691
      : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
      : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
      :       mand_height =      6052
@@ -85,20 +85,20 @@ raw data values -------------------------------------------------------
      :       mand_height =      5990
      : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
      : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
-     :       mand_height =      5311
+     :       mand_height =      5233
      : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
      : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
      :       mand_height =      3467
      : r[15][15][63][63] = +3.99750967793806921690702438e-01
      : j[15][15][63][63] = +2.05251804924046155065298080e-01
-     :       mand_height =     17101
+     :       mand_height =     16940
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1384 , 889  ]
+raw  [ 1385 , 889  ]
 INFO : dumper_flag = 1
-click at 1383 887 
-raw  [ 1384 , 889  ]
-INFO : file /var/tmp/dclarke/20220629152328 dump begins.
+click at 1384 887 
+raw  [ 1385 , 889  ]
+INFO : file /var/tmp/dclarke/20220727132950 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -109,18 +109,31 @@ DBUG :  8 byte double real_translate num_written = 1
      : real_translate = +3.99750960350502282381057739e-01
      :  8 byte double imag_translate num_written = 1
      : imag_translate = +2.05251797480741515755653381e-01
-INFO : file /var/tmp/dclarke/20220629152328 closed.
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220727132950 closed.
 INFO : dumper_flag = 0
-click at 1383 887 
-raw  [ 991  , 923  ]
+click at 1384 887 
+raw  [ 1003 , 924  ]
 right click
-click at 990 921 
-raw  [ 991  , 923  ]
+click at 1002 922 
+raw  [ 1003 , 924  ]
 right click
 
 
 
-pluto$ mdigest -a sha256 /var/tmp/dclarke/20220629152328
-9b010ac9db3dd2be89317fcb1aa635f6e4963a6f981f4741e9e23a1062003bbf  /var/tmp/dclarke/20220629152328
-pluto$
+C_styx$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220727132950
+     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
+    10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+C_styx$ mdigest -a sha256 /var/tmp/dclarke/20220727132950
+da10c083ef0199b5cec137517276b6b04f70edaa6462056b47984774ccc956ba  /var/tmp/dclarke/20220727132950
+C_styx$ 
 
