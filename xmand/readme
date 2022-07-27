@@ -1,4 +1,11 @@
 
+27 Jul 2022 : the core loop of the mandelbrot has been rewritten
+              to use the fma calls. This may be verified on various
+              systems with : 
+
+                objdump -D -Mpower4 -j .text xmand > xmand.dis
+
+
 24 Jul 2022 : see document readme.data for the data dump format
 
 08 Jul 2022 : any attempt to use FMA on some old hardware throws SIGILL
