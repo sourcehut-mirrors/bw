@@ -1,35 +1,27 @@
 
-charon$ 
-charon$ uname -apKU
-FreeBSD charon 14.0-CURRENT FreeBSD 14.0-CURRENT #0 main-n256882-8f733dabcc3: Fri Jul 22 08:02:54 UTC 2022     root@releng1.nyi.freebsd.org:/usr/obj/usr/src/i386.i386/sys/GENERIC i386 i386 1400064 1400064
-charon$ grep 'CPU:' /var/log/messages
-Jul 27 03:47:31 charon kernel: CPU: VIA Eden Processor 1000MHz (1000.07-MHz 686-class CPU)
-Jul 27 03:56:10 charon kernel: CPU: VIA Eden Processor 1000MHz (1000.10-MHz 686-class CPU)
-Jul 27 03:59:25 charon kernel: CPU: VIA Eden Processor 1000MHz (1000.11-MHz 686-class CPU)
-charon$ 
-charon$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+rv64$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
                  system name = FreeBSD
-                   node name = charon
+                   node name = ump.daveg.ca
                      release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #0 main-n256882-8f733dabcc3: Fri Jul 22 08:02:54 UTC 2022     root@releng1.nyi.freebsd.org:/usr/obj/usr/src/i386.i386/sys/GENERIC
-                     machine = i386
+                     version = FreeBSD 14.0-CURRENT #0 main-n254937-b7d4192598fe-dirty: Thu Apr 28 15:37:01 EDT 2022     root@ump.daveg.ca:/usr/obj/usr/src/riscv.riscv64/sys/GENERIC-SOMEDEBUG
+                     machine = riscv
                    page size = 4096
-               system memory = 775340032
-                             = 757168 kB
-                             = 739 MB
-                 avail pages = 189292
+               system memory = 17148801024
+                             = 16746876 kB
+                             = 16354 MB
+                 avail pages = 4186719
                 avail memory = 0
          clock ticks per sec = 128
              threads support = 200112
                POSIX Version = 200112
                       endian = little endian
-       sizeof(unsigned long) = 4
+       sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
-               sizeof(void*) = 4
+               sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    1 hour   34 mins   14 secs
+           system uptime   86 days   10 hours   24 mins   16 secs
 -------------------------------------------------------------------
 
 
@@ -40,7 +32,7 @@ _POSIX_OPEN_MAX    = 20
 _POSIX_PATH_MAX    = 256
 _POSIX_TZNAME_MAX  = 6
 ---------------------------------------
-INFO : baseline tdelta =           1188 nsec
+INFO : baseline tdelta =              0 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -76,7 +68,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =   811081783819 nsec   8.110818e+02 sec
+[mand] =  8697484044008 nsec   8.697484e+03 sec
 
 
 raw data values -------------------------------------------------------
@@ -85,7 +77,7 @@ raw data values -------------------------------------------------------
      :       mand_height =      3199
      : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
      : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
-     :       mand_height =     10878
+     :       mand_height =     11691
      : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
      : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
      :       mand_height =      6052
@@ -94,20 +86,20 @@ raw data values -------------------------------------------------------
      :       mand_height =      5990
      : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
      : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
-     :       mand_height =      5289
+     :       mand_height =      5233
      : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
      : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
      :       mand_height =      3467
      : r[15][15][63][63] = +3.99750967793806921690702438e-01
      : j[15][15][63][63] = +2.05251804924046155065298080e-01
-     :       mand_height =     16877
+     :       mand_height =     16940
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1386 , 890  ]
+raw  [ 1385 , 890  ]
 INFO : dumper_flag = 1
-click at 1385 888 
-raw  [ 1386 , 890  ]
-INFO : file /var/tmp/dclarke/20220727054716 dump begins.
+click at 1384 888 
+raw  [ 1385 , 890  ]
+INFO : file /var/tmp/dclarke/20220727161224 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -126,22 +118,13 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20220727054716 closed.
+INFO : file /var/tmp/dclarke/20220727161224 closed.
 INFO : dumper_flag = 0
-click at 1385 888 
-raw  [ 1010 , 924  ]
+click at 1384 888 
+raw  [ 1025 , 920  ]
 right click
-click at 1009 922 
-raw  [ 1010 , 924  ]
+click at 1024 918 
+raw  [ 1025 , 920  ]
 right click
-
-charon$ od -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220727054716
-0000000    00  00  10  00  00  80  00  00  00  00  00  00  00  00  b0  41
-0000010    00  00  50  0d  85  95  d9  3f  00  00  d0  de  b0  45  ca  3f
-0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
-0000030
-charon$ openssl dgst -sha256 -r /var/tmp/dclarke/20220727054716
-5cf86cd71f5e76575cfff7c35b78ed0637100947121d13b924e33f0925e682cf */var/tmp/dclarke/20220727054716
-charon$ 
 
 
