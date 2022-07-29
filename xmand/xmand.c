@@ -164,6 +164,9 @@ int main(int argc, char*argv[])
      * that overlaps the complex coordinate space */
     int sample_r, sample_j;
 
+    /* little vbox grid that needs vbox coordinates */
+    int vbox_r, vbox_j;
+
     /* use the vbox lower left coords as reference */
     int vbox_ll_x, vbox_ll_y;
 
@@ -175,10 +178,6 @@ int main(int argc, char*argv[])
 
     /* ensure we start with clear vbox flags */
     memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
-
-    /* Also we finally have use for the little box grid that we
-     * lay out and thus we will need the box coordinates */
-    int vbox_r, vbox_j;
 
     /* eventually we need to dump out a file */
     FILE *fp;
