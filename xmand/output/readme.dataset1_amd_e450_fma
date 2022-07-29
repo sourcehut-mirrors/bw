@@ -1,0 +1,180 @@
+C_mimas$ 
+C_mimas$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = mimas
+                     release = 5.18.0-2-amd64
+                     version = #1 SMP PREEMPT_DYNAMIC Debian 5.18.5-1 (2022-06-16)
+                     machine = x86_64
+                   page size = 4096
+               system memory = 5809512448
+                             = 5673352 kB
+                             = 5540 MB
+                 avail pages = 1309399
+                avail memory = 0
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour    9 mins   16 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =            318 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 32768
+pthread_limit = 4
+    translate = ( +3.99750960350502282381057739e-01 , +2.05251797480741515755653381e-01 )
+      magnify = +2.68435456000000000000000000e+08
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +1.45519152283668518066406250e-11
+pixel_imag_h = +1.45519152283668518066406250e-11
+raw  [ 523  , 524  ]
+DBUG : sample space [ 512   , 512    ]
+     : vbox  [ 008 , 008 ]
+     : win_r = +9.76562500000000000000000000e-04
+     : win_j = +9.76562500000000000000000000e-04
+     : after translation
+     : r_trn   = +3.99750960350502282381057739e-01
+     : j_trn   = +2.05251797480741515755653381e-01
+     : x_prime = +3.99750960357778239995241165e-01
+     : y_prime = +2.05251797488017473369836807e-01
+     : bailout = 32768             
+     : magnify = 2.684354560000e+08
+[mand] =  5171381700890 nsec   5.171382e+03 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = +3.99750952907197643071413040e-01
+     : j[ 0][ 0][ 0][ 0] = +2.05251790037436876446008682e-01
+     :       mand_height =      3199
+     : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
+     : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
+     :       mand_height =     11691
+     : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
+     : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
+     :       mand_height =      6052
+     : r[ 8][ 8][ 1][ 0] = +3.99750960372330155223608017e-01
+     : j[ 8][ 8][ 1][ 0] = +2.05251797488017473369836807e-01
+     :       mand_height =      5990
+     : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
+     : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
+     :       mand_height =      5233
+     : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
+     : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
+     :       mand_height =      3467
+     : r[15][15][63][63] = +3.99750967793806921690702438e-01
+     : j[15][15][63][63] = +2.05251804924046155065298080e-01
+     :       mand_height =     16940
+--------------------------- full plot done -----------------------------
+click at 522 522 
+raw  [ 1384 , 890  ]
+INFO : dumper_flag = 1
+click at 1383 888 
+raw  [ 1384 , 890  ]
+INFO : file /var/tmp/dclarke/20220729092738 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    32768
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +2.68435456000000000000000000e+08
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = +3.99750960350502282381057739e-01
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +2.05251797480741515755653381e-01
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220729092738 closed.
+INFO : dumper_flag = 0
+click at 1383 888 
+raw  [ 1013 , 913  ]
+right click
+click at 1012 911 
+raw  [ 1013 , 913  ]
+right click
+
+
+
+C_mimas$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220729092738
+     0:  00 10 00 00 00 80 00 00 00 00 00 00 00 00 b0 41
+    10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+C_mimas$ mdigest -a sha256 /var/tmp/dclarke/20220729092738
+b445fe3d35757b27e6b23027d0b366c169457761e69696649a04d06e57d2e77f  /var/tmp/dclarke/20220729092738
+C_mimas$ 
+C_mimas$ lscpu
+Architecture:            x86_64
+  CPU op-mode(s):        32-bit, 64-bit
+  Address sizes:         36 bits physical, 48 bits virtual
+  Byte Order:            Little Endian
+CPU(s):                  2
+  On-line CPU(s) list:   0,1
+Vendor ID:               AuthenticAMD
+  Model name:            AMD E-450 APU with Radeon(tm) HD Graphics
+    CPU family:          20
+    Model:               2
+    Thread(s) per core:  1
+    Core(s) per socket:  2
+    Socket(s):           1
+    Stepping:            0
+    CPU(s) scaling MHz:  50%
+    CPU max MHz:         1650.0000
+    CPU min MHz:         825.0000
+    BogoMIPS:            3291.71
+    Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscal
+                         l nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf 
+                         pni monitor ssse3 cx16 popcnt lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch
+                          ibs skinit wdt hw_pstate vmmcall arat npt lbrv svm_lock nrip_save pausefilter
+Virtualization features: 
+  Virtualization:        AMD-V
+Caches (sum of all):     
+  L1d:                   64 KiB (2 instances)
+  L1i:                   64 KiB (2 instances)
+  L2:                    1 MiB (2 instances)
+NUMA:                    
+  NUMA node(s):          1
+  NUMA node0 CPU(s):     0,1
+Vulnerabilities:         
+  Itlb multihit:         Not affected
+  L1tf:                  Not affected
+  Mds:                   Not affected
+  Meltdown:              Not affected
+  Mmio stale data:       Not affected
+  Spec store bypass:     Vulnerable
+  Spectre v1:            Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Spectre v2:            Mitigation; Retpolines, STIBP disabled, RSB filling
+  Srbds:                 Not affected
+  Tsx async abort:       Not affected
+C_mimas$ 
+
