@@ -2,6 +2,12 @@
 /*
  * sysinfo.c use uname(2) and sysconf(3C) to determine basic system data
  *
+ *           RETURN : this code will return the value 1 ( one ) if
+ *                    the machine is little endian. Otherwise we
+ *                    shall return the value 0 ( zero ) for a big
+ *                    endian machine. If there is an error then we
+ *                    return SYSINFO_FAIL which has a value 127.
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,24 +37,25 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
+#include <fenv.h>
 #include <inttypes.h>
 #include <iso646.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#include <limits.h>
 #include <locale.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
-#include <math.h>
-#include <fenv.h>
-#include <unistd.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 
 #if defined(__FreeBSD__)
-#include <sys/types.h>
 #include <sys/sysctl.h>
+#include <sys/types.h>
 #endif
 
 /* Some platform don't have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES in sysconf().
@@ -62,6 +69,7 @@
 #   undef HAVE_PAGE_INFO
 #endif
 
+#define SYSINFO_FAIL 127
 #define ONEGB 1073741824
 
 int sysinfo(int verbose) {
@@ -92,7 +100,7 @@ int sysinfo(int verbose) {
     err_flag = sysconf(_SC_PHYS_PAGES);
     if ( err_flag < 0 ){
         perror("sysconf(_SC_PHYS_PAGES) : ");
-        return EXIT_FAILURE;
+        return SYSINFO_FAIL;
     }
     /* none of these are working on 32-bit arm */
     pages = (uint64_t)err_flag;
@@ -102,7 +110,7 @@ int sysinfo(int verbose) {
     err_flag = sysconf(_SC_PAGE_SIZE);
     if ( err_flag < 0 ){
         perror("sysconf(_SC_PAGE_SIZE) : ");
-        return EXIT_FAILURE;
+        return SYSINFO_FAIL;
     }
     pagesize = (uint64_t)err_flag;
     sysmem = pages * pagesize;
@@ -174,14 +182,14 @@ int sysinfo(int verbose) {
 
         if (err_flag < 0) {
             perror("sysctlbyname(\"hw.availpages\", ...) : ");
-            return EXIT_FAILURE;
+            return SYSINFO_FAIL;
         }
 #else
 #ifdef HAVE_PAGE_INFO
         err_flag = sysconf(_SC_AVPHYS_PAGES);
         if ( err_flag < 0 ){
             perror("sysconf(_SC_AVPHYS_PAGES) : ");
-            return EXIT_FAILURE;
+            return SYSINFO_FAIL;
         }
         pages_avail = (uint64_t)err_flag;
 #endif
@@ -195,7 +203,7 @@ int sysinfo(int verbose) {
         err_flag = sysconf(_SC_VERSION);
         if ( err_flag < 0 ){
             perror("sysconf(_SC_VERSION) : ");
-            return EXIT_FAILURE;
+            return SYSINFO_FAIL;
         }
         version = (uint64_t)err_flag;
 
@@ -203,7 +211,7 @@ int sysinfo(int verbose) {
         err_flag = sysconf(_SC_THREADS);
         if ( err_flag < 0 ){
             perror("sysconf(_SC_THREADS) : ");
-            return EXIT_FAILURE;
+            return SYSINFO_FAIL;
         }
         threads = (uint64_t)err_flag;
     }
@@ -400,6 +408,11 @@ int sysinfo(int verbose) {
 
             printf("             threads support = %" PRIu64 "\n", threads);
             printf("               POSIX Version = %" PRIu64 "\n", version);
+            printf("          _POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
+            printf("          _POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
+            printf("          _POSIX_OPEN_MAX    = %i\n", _POSIX_OPEN_MAX);
+            printf("          _POSIX_PATH_MAX    = %i\n", _POSIX_PATH_MAX);
+            printf("          _POSIX_TZNAME_MAX  = %i\n", _POSIX_TZNAME_MAX);
 
         }
 
@@ -480,12 +493,16 @@ int sysinfo(int verbose) {
         }
 #endif
 
+#ifdef FLT_EVAL_METHOD
+        printf("          FLT_EVAL_METHOD    = %i\n", FLT_EVAL_METHOD);
+#endif
+
         printf ( "----------------------------------" );
         printf ( "---------------------------------" );
     }
     printf ("\n");
 
-    return ( EXIT_SUCCESS );
+    return little_endian;
 
 }
 

@@ -87,6 +87,10 @@ int main(int argc, char*argv[])
     XColor cornflowerblue, royal_blue, very_dark_grey;
     XColor oldlace, mandlebrot;
 
+    /* the architecture endianess */
+    int endian_flag;
+    int end_check = 1;
+
     /* pre-loaded 8-bit color map */
     unsigned long lsd_trippy[256];
 
@@ -152,6 +156,24 @@ int main(int argc, char*argv[])
     double pixel_real_width, pixel_imag_height;
     double magnify, real_translate, imag_translate;
 
+
+    /* eventually we need to dump out a file */
+    FILE *fp;
+    size_t filename_len;
+    char *err_status;
+    int data_ready;
+    size_t num_written;
+    struct stat status_buffer;
+    time_t time_now;
+    char timestamp[32];
+    struct tm *ptm;
+    char *timestamp_filename;
+
+    /* we  may need to swap around bytes from a big endian machine */
+    uint64_t rotated64;
+    uint32_t rotated32;
+    uint32_t temp32bit;
+
     /* what is the default width and height on the complex plane ? */
     double default_real = DEFAULT_REAL_WIDTH;
     double default_imag = DEFAULT_IMAG_HEIGHT;
@@ -178,28 +200,6 @@ int main(int argc, char*argv[])
 
     /* ensure we start with clear vbox flags */
     memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
-
-    /* eventually we need to dump out a file */
-    FILE *fp;
-    size_t filename_len;
-    char *err_status;
-    int data_ready;
-    size_t num_written;
-    struct stat status_buffer;
-    time_t time_now;
-    char timestamp[32];
-    struct tm *ptm;
-    char *timestamp_filename;
-
-    /* we  may need to swap around bytes from a big endian machine */
-    uint64_t rotated64;
-    uint32_t rotated32;
-    uint32_t temp32bit;
-
-    /* guess the architecture endianess */
-    int end_check = 1;
-    /* strictly speaking this is not a wise way to do this */
-    uint8_t endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 16;
 
     /*
      * uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
@@ -349,27 +349,27 @@ int main(int argc, char*argv[])
         /* call srand48() with the sub-second time data */
         srand48( (long) now_time.tv_nsec );
     }
-    sysinfo(VERBOSE);
 
-    printf("\n\n--------- _XOPEN_SOURCE 600 -------\n");
-    printf("_POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
-    printf("_POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
-    printf("_POSIX_OPEN_MAX    = %i\n", _POSIX_OPEN_MAX);
-    printf("_POSIX_PATH_MAX    = %i\n", _POSIX_PATH_MAX);
-    printf("_POSIX_TZNAME_MAX  = %i\n", _POSIX_TZNAME_MAX);
-    printf("---------------------------------------\n");
+    /* dump out the system info. if we can */
+    endian_flag = sysinfo(VERBOSE);
+    /* TODO check that the value returned by sysinfo() is
+     * not SYSINFO_FAIL. Otherwise we need to determine the
+     * machine endianess ourselves. */
+    if ( endian_flag == SYSINFO_FAIL ) {
+        endian_flag = (*(uint8_t*)&end_check == 1) ? 1 : 0;
+    }
 
-#ifdef FLT_EVAL_METHOD
-    printf("FLT_EVAL_METHOD    = %i\n", FLT_EVAL_METHOD);
-#endif
-
-    /* these two calls are silly and not of much value other than
+    /* These two calls are silly and not of much value other than
      * to determine the speed of the clock_gettime() call. Which
-     * we don't care much about as it had better be a microsecond. */
+     * we don't care much about as it had better be a microsecond
+     * or thereabouts. Even a really old slow WYSE thin client
+     * based on VIA Eden cpu can return a value to the microsecond.
+     * Probably not worth very much however as external clock
+     * hardware is likely needed to get a decent precision time. */
     clock_gettime(CLOCK_REALTIME, &soln_t0 );
     clock_gettime(CLOCK_REALTIME, &soln_t1 );
     t_delta = timediff( soln_t0, soln_t1 );
-    /* this t_delta is a baseline offset value that we seem to ignore
+    /* This t_delta is a baseline offset value that we seem to ignore
      * anyways. */
     printf("INFO : baseline tdelta = %14" PRIu64 " nsec\n", t_delta);
 
@@ -1587,7 +1587,7 @@ int main(int argc, char*argv[])
                                         fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
 
                                         /* header data is done separately */
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0== 0 ) {
                                             rotated32 = swap_four(num_elements);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1597,7 +1597,7 @@ int main(int argc, char*argv[])
                                                     sizeof(uint32_t), num_written);
                                         printf("     : num_elements = %8i\n",num_elements);
 
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated32 = swap_four(mand_bail);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1608,7 +1608,7 @@ int main(int argc, char*argv[])
                                         printf("     : mand_bail = %8i\n",mand_bail);
 
                                         /* need to swap around bytes of the 8-byte floating point double */
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated64 = swap_eight(*((uint64_t *)&magnify));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
@@ -1618,7 +1618,7 @@ int main(int argc, char*argv[])
                                                 sizeof(double), num_written);
                                         printf("     :        magnify = %-+32.26e\n", magnify);
 
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated64 = swap_eight(*((uint64_t *)&real_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
@@ -1628,7 +1628,7 @@ int main(int argc, char*argv[])
                                                 sizeof(double), num_written);
                                         printf("     : real_translate = %-+32.26e\n",real_translate);
 
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated64 = swap_eight(*((uint64_t *)&imag_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
@@ -1640,7 +1640,7 @@ int main(int argc, char*argv[])
 
                                         /* append the VBOX and SAMPLE structure data */
                                         temp32bit = VBOX_REAL_COUNT;
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1651,7 +1651,7 @@ int main(int argc, char*argv[])
                                         printf("     : VBOX_REAL_COUNT = %8i\n",VBOX_REAL_COUNT);
 
                                         temp32bit = VBOX_IMAG_COUNT;
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1663,7 +1663,7 @@ int main(int argc, char*argv[])
 
 
                                         temp32bit = VBOX_SAMPLE_REAL;
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1674,7 +1674,7 @@ int main(int argc, char*argv[])
                                         printf("     : VBOX_SAMPLE_REAL = %8i\n",VBOX_SAMPLE_REAL);
 
                                         temp32bit = VBOX_SAMPLE_IMAG;
-                                        if ( endian_flag ) {
+                                        if ( endian_flag == 0) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1689,7 +1689,7 @@ int main(int argc, char*argv[])
                                             for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
                                                 for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
-                                                        if ( endian_flag ) {
+                                                        if ( endian_flag == 0) {
                                                             /* dump data from big endian machines */
                                                             rotated64 = swap_eight(*((uint64_t *)(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);

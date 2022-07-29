@@ -16,6 +16,11 @@
 #include <time.h>
 #include <X11/Xlib.h>
 
+/* The sysinfo() code has its own little error state
+ * value.  Otherwise it returns 1 for little endian
+ * machines or a value 0 for big endian machines */
+#define SYSINFO_FAIL 127
+
 /* At the moment the main plot graphics context is a 1024
  * pixel square with a 10 pixel border and then another 10 pixels
  * where nothing is plotted. Therefore 1024 + 10 + 10 = 1044.
