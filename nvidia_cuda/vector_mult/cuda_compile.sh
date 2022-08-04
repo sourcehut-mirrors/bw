@@ -1,8 +1,18 @@
 #!/bin/bash
 
-PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/cuda-11.4/bin:/opt/schily/bin
+PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+export PATH
+
+if [ -d /usr/local/cuda-11.4 ]; then
+    CUDA_HOME=/usr/local/cuda-11.4
+    export CUDA_HOME
+fi
 
 NVCC=`(command -v nvcc)` ; export NVCC
+if [ ! -x ${NVCC} ]; then
+    /usr/bin/printf "FAIL : the NVidia compiler not found\n"
+    return 1
+fi
 
 OPENSSL=`( command -v openssl )`; export OPENSSL
 

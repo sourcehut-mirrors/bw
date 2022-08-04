@@ -1,12 +1,12 @@
 #!/bin/bash
 
-PATH=/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+export PATH
+
 
 if [ -d /usr/local/cuda-11.4 ]; then
     CUDA_HOME=/usr/local/cuda-11.4
     export CUDA_HOME
-    PATH=/usr/local/cuda-11.4/bin:$PATH
-    export PATH
 fi
 
 NVCC=`(command -v nvcc)` ; export NVCC
