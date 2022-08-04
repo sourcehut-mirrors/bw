@@ -1,5 +1,4 @@
 
-CFLAGS= -std=iso9899:1999 -m64 -O3 -march=native \
-	-mfma -ffp-contract=on
+CFLAGS= -std=iso9899:1999 -m64 -O3 -march=native -mtune=native
 
 include common.mk
