@@ -24,6 +24,8 @@ void enqueue ( q_type *q, void *p ) {
     /* we need to create a new queue item and put
      * the payload into it */
     struct q_item *new_item = calloc((size_t) 1, (size_t)sizeof(struct q_item));
+    /* TODO check that the calloc actually worked */
+
     new_item->payload = p;
 
     /* we used calloc to give us clear memory but to be

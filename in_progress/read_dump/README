@@ -1,0 +1,6 @@
+
+
+Attempt to create a function that does all the heavy lifting of reading
+in little endian data into the usual data structures as defined in the
+xmand directory readme.data.
+
