@@ -62,6 +62,12 @@ int read_mbrot_data(f_item *mandelbrot)
     uint64_t rotated64;
     double *fp64, temp_double;
 
+    /* easy index vars for later */
+    int Vr, Vj, Sr, Sj;
+
+    /* we will need to know if we read the correct amount of data */
+    uint32_t sample_counter;
+
     /* did we receive something valid? */
     if ( mandelbrot == NULL ) {
         return EXIT_FAILURE;
@@ -388,6 +394,24 @@ int read_mbrot_data(f_item *mandelbrot)
     }
 
     mandelbrot->file_position = ftell(mandelbrot->fp);
+
+    /* TODO verify that the data structure described in the header
+     * contains the correct number of elements */
+
+    /* allocate memory for the data section */
+    mandelbrot->mandelbrot_data->mandel_val = calloc((size_t)mandelbrot->num_elements, sizeof(uint32_t));
+
+    if ( mandelbrot->mandelbrot_data->mandel_val == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        return ERROR_MEMORY;
+    }
+
+
     return ERROR_ALL_DATA_NOT_READ;
 
 
