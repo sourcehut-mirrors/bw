@@ -399,7 +399,17 @@ int read_mbrot_data(f_item *mandelbrot)
      * contains the correct number of elements */
 
     /* allocate memory for the data section */
+    fprintf(stderr,"DBUG : mandelbrot->mandelbrot_data->mandel_val = %p\n",
+            mandelbrot->mandelbrot_data->mandel_val );
+
     mandelbrot->mandelbrot_data->mandel_val = calloc((size_t)mandelbrot->num_elements, sizeof(uint32_t));
+
+    fprintf(stderr,"DBUG : mandelbrot->mandelbrot_data->mandel_val = %p\n",
+            mandelbrot->mandelbrot_data->mandel_val );
+
+
+    fprintf(stderr,"DBUG : temp32bit is at %p\n", &temp32bit);
+
 
     if ( mandelbrot->mandelbrot_data->mandel_val == NULL ) {
         if ( errno == ENOMEM ) {
