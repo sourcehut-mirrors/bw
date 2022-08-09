@@ -1,0 +1,14 @@
+
+CC=/opt/developerstudio12.6/bin/c99
+
+CFLAGS= -Xc -g -errfmt=error -erroff=%none \
+	-xmemalign=8s -errshort=full -xstrconst -xildoff -m64 -xnolibmil \
+	-xcode=pic32 -xregs=no%appl -xlibmieee -ftrap=%none -xarch=sparc -mc \
+	-xs -xbuiltin=%none -xdebugformat=dwarf -xunroll=1
+
+LDIR=/opt/bw/lib
+IDIR=/opt/bw/include
+RPATH=/opt/bw/lib
+
+include common.mk
+

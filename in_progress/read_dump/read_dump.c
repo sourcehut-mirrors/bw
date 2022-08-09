@@ -381,16 +381,16 @@ int read_mbrot_data(f_item *mandelbrot)
     }
     mandelbrot->vbox_sample_imag = temp32bit;
 
-    /* check for early end of file */
+    /* check for end of file */
     clearerr(mandelbrot->fp);
     if ( feof(mandelbrot->fp) != 0 ) {
         return ERROR_END_OF_FILE;
-    } else {
-        mandelbrot->file_position = ftell(mandelbrot->fp);
-        return ERROR_ALL_DATA_NOT_READ;
     }
 
-    return EXIT_SUCCESS;
+    mandelbrot->file_position = ftell(mandelbrot->fp);
+    return ERROR_ALL_DATA_NOT_READ;
+
+
 
 }
 
