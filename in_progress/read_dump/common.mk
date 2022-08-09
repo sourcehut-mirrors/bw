@@ -9,7 +9,7 @@ LIBS=		-lm
 LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include
 
-OBJS=		./read_dump.o \
+OBJS=		./read_dump.o ./file_pointer.o \
 		../../sysinfo/sysinfo.o \
 		../trimmer/strtrim.o \
 		../data_dump/rot4.o \

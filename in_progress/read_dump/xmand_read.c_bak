@@ -145,15 +145,103 @@ int main (int argc, char **argv)
      **********************************************************/
     /* better check if argv[1] even exists */
     if (argc>1) {
-        /* TODO figure out the ERROR handling and be
-         * sure to free() stuff */
-        status = file_pointer(&mandelbrot_file->fp, argv[1]);
-        printf("DBUG : status = %i\n", status);
+        len = strlen(argv[1]);
+        if (len > LOCAL_PATH_MAX) {
+            fprintf(stderr, "FAIL : filename too long.\n");
+            fprintf(stderr, "     : limit is %i chars.\n",
+                                      LOCAL_PATH_MAX);
 
+            free(mandelbrot_file->mandelbrot_data);
+            free(mandelbrot_file);
+            return EXIT_FAILURE;
+        }
+        /* ensure that the filename string has a terminating nul */
+        filename = calloc(LOCAL_PATH_MAX+1, sizeof(unsigned char));
+        if ( filename == NULL ) {
+            /* really? possible ENOMEM? */
+            if ( errno == ENOMEM ) {
+                fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+            } else {
+                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+            }
+            perror("FAIL ");
+            free(mandelbrot_file->mandelbrot_data);
+            free(mandelbrot_file);
+            return EXIT_FAILURE;
+        }
+
+        tmp = strncpy(filename, argv[1], len);
+
+        /* A trailing slash on a pathname forces resolution of
+         * the name to a directory. So strip off leading and 
+         * trailing spaces first. */
+        fid = strtrim(filename);
+
+        /* do we still have a filename ? */
+        len = strlen(fid);
+        if (len>0) {
+            /* remove trailing slashes */
+            while ((fid[len-1] == '/') && (len>0)) {
+                fid[len-1] = '\0';
+                len = strlen(fid);
+            }
+
+            /* do we still have a filename ? */
+            if (len==0) {
+                fprintf(stderr, "FAIL : filename is invalid\n");
+                free(filename);
+                filename = NULL;
+                free(mandelbrot_file->mandelbrot_data);
+                free(mandelbrot_file);
+                return EXIT_FAILURE;
+            } else {
+                errno = 0;
+                status = stat(filename, &status_buffer);
+            }
+        } else {
+            fprintf(stderr, "FAIL : filename is invalid\n");
+            free(filename);
+            filename = NULL;
+            free(mandelbrot_file->mandelbrot_data);
+            free(mandelbrot_file);
+            return EXIT_FAILURE;
+        }
     } else {
         fprintf(stderr, "FAIL : give a filename to read\n");
         free(mandelbrot_file->mandelbrot_data);
         free(mandelbrot_file);
+        return EXIT_FAILURE;
+    }
+
+    /* check that we have a valid status and if we do not
+     * then check for a pile of possible errors and bail out. */
+    if (status != 0) {
+        /* what went wrong? */
+        file_stat_err(errno);
+        free(mandelbrot_file->mandelbrot_data);
+        free(mandelbrot_file);
+        free(filename);
+        filename = NULL;
+        return EXIT_FAILURE;
+    } else {
+        /* This is just some boring information but at least
+         * we know we have a file. */
+        sprintf(st_ctime_buffer, "INFO : creation time of file = %s",
+                                       ctime(&status_buffer.st_ctime));
+        printf(st_ctime_buffer);
+    }
+
+    errno = 0;
+    mandelbrot_file->fp = fopen(filename, "rb");
+
+    if (mandelbrot_file->fp == NULL) {
+        perror("FAIL ");
+        free(mandelbrot_file->mandelbrot_data);
+        free(mandelbrot_file);
+        free(filename);
+        filename = NULL;
         return EXIT_FAILURE;
     }
 

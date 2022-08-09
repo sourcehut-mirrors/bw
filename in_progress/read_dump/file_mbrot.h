@@ -19,6 +19,13 @@
 
 #define VERBOSE 1
 
+#define ERROR_FILENAME_LENGTH   247
+#define ERROR_FILENAME_EMPTY    248
+#define ERROR_FILENAME_STAT     249
+#define ERROR_FILENAME_FOPEN    250
+#define ERROR_FILENAME          251
+
+#define ERROR_MEMORY            252
 #define ERROR_ALL_DATA_NOT_READ 253
 #define ERROR_INSUFFICIENT      254
 #define ERROR_END_OF_FILE       255
@@ -62,6 +69,7 @@ int array_index(int Vr, int Vj,
                 int vbox_sample_real,
                 int vbox_sample_imag );
 
+int file_pointer(FILE **fp, char *fidname);
 
 int read_mbrot_data(f_item *mandelbrot);
 
