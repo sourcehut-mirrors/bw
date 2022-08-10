@@ -84,6 +84,7 @@ int read_mbrot_data(f_item *mandelbrot)
     end_check = 1;
     endian_flag = (*(uint8_t*)&end_check == 1) ? 0 : 1;
 
+    /* how do we know if the file pointer is valid? */
     clearerr(mandelbrot->fp);
 
     /**************************************************************
