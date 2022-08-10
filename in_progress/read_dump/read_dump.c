@@ -399,17 +399,27 @@ int read_mbrot_data(f_item *mandelbrot)
      * contains the correct number of elements */
 
     /* allocate memory for the data section */
-    fprintf(stderr,"DBUG : mandelbrot->mandelbrot_data->mandel_val = %p\n",
-            mandelbrot->mandelbrot_data->mandel_val );
 
+    /* weird address stuff happens on Linux ppc64 *
+    fprintf(stderr,"DBUG : before calloc mandelbrot->mandelbrot_data->mandel_val = ");
+    if ( mandelbrot->mandelbrot_data->mandel_val == NULL ) {
+        fprintf(stderr,"NULL\n");
+    } else {
+        fprintf(stderr,"%p\n", mandelbrot->mandelbrot_data->mandel_val );
+    }
+    */
+
+    errno = 0;
     mandelbrot->mandelbrot_data->mandel_val = calloc((size_t)mandelbrot->num_elements, sizeof(uint32_t));
 
-    fprintf(stderr,"DBUG : mandelbrot->mandelbrot_data->mandel_val = %p\n",
-            mandelbrot->mandelbrot_data->mandel_val );
-
-
-    fprintf(stderr,"DBUG : temp32bit is at %p\n", &temp32bit);
-
+    /*
+    fprintf(stderr,"DBUG : after  calloc mandelbrot->mandelbrot_data->mandel_val = ");
+    if ( mandelbrot->mandelbrot_data->mandel_val == NULL ) {
+        fprintf(stderr,"NULL\n");
+    } else {
+        fprintf(stderr,"%p\n", mandelbrot->mandelbrot_data->mandel_val );
+    }
+    */
 
     if ( mandelbrot->mandelbrot_data->mandel_val == NULL ) {
         if ( errno == ENOMEM ) {
@@ -422,8 +432,190 @@ int read_mbrot_data(f_item *mandelbrot)
     }
 
 
-    return ERROR_ALL_DATA_NOT_READ;
 
+    errno = 0;
+    mandelbrot->mandelbrot_data->coord_r = calloc((size_t)mandelbrot->num_elements, sizeof(double));
+
+    /*
+    fprintf(stderr,"DBUG : after     calloc mandelbrot->mandelbrot_data->coord_r = ");
+    if ( mandelbrot->mandelbrot_data->coord_r == NULL ) {
+        fprintf(stderr,"NULL\n");
+    } else {
+        fprintf(stderr,"%p\n", mandelbrot->mandelbrot_data->coord_r );
+    }
+    */
+
+    if ( mandelbrot->mandelbrot_data->coord_r == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        return ERROR_MEMORY;
+    }
+
+
+    errno = 0;
+    mandelbrot->mandelbrot_data->coord_j = calloc((size_t)mandelbrot->num_elements, sizeof(double));
+
+    /*
+    fprintf(stderr,"DBUG : after     calloc mandelbrot->mandelbrot_data->coord_j = ");
+    if ( mandelbrot->mandelbrot_data->coord_j == NULL ) {
+        fprintf(stderr,"NULL\n");
+    } else {
+        fprintf(stderr,"%p\n", mandelbrot->mandelbrot_data->coord_j );
+    }
+    */
+
+    if ( mandelbrot->mandelbrot_data->coord_j == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n", __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        return ERROR_MEMORY;
+    }
+
+
+
+    sample_counter = 0;
+    clearerr(mandelbrot->fp);
+    for ( Vj = 0; Vj < mandelbrot->vbox_imag_count; Vj++ ) {
+        for ( Vr = 0; Vr < mandelbrot->vbox_real_count; Vr++ ) {
+            for ( Sj = 0; Sj < mandelbrot->vbox_sample_imag; Sj++ ) {
+                for ( Sr = 0; Sr < mandelbrot->vbox_sample_real; Sr++ ) {
+                    /* Each sample consists of
+                     *
+                     *  8 byte double    coord_r
+                     *  8 byte double    coord_j
+                     *  4 byte uint32_t  mandel_val
+                     *
+                     */
+
+                    /***************************************
+                     *        coord_r 64-bit double        *
+                     ***************************************/
+                    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, mandelbrot->fp);
+                    mandelbrot->file_error_status = ferror(mandelbrot->fp);
+                    if ( mandelbrot->file_error_status != 0 ) {
+                        return EXIT_FAILURE;
+                    }
+
+                    if ( num_read < 1 ) {
+                        /* short read and check eof */
+                        if ( feof(mandelbrot->fp) != 0 ) {
+                            return ERROR_END_OF_FILE;
+                        } else {
+                            return ERROR_INSUFFICIENT;
+                        }
+                    }
+
+                    if ( endian_flag ) {
+                        /* swap byte order */
+                        rotated64 = rot8(temp64bit);
+                        fp64 = memcpy(&temp_double,(void *)&rotated64, sizeof(double));
+                    } else {
+                        fp64 = memcpy(&temp_double,(void *)&temp64bit, sizeof(double));
+                    }
+                    mandelbrot->mandelbrot_data->coord_r[array_index(Vr,Vj,Sr,Sj,mandelbrot->vbox_real_count,mandelbrot->vbox_sample_real,mandelbrot->vbox_sample_imag)] = temp_double;
+
+                    /* check for early end of file */
+                    clearerr(mandelbrot->fp);
+                    if ( feof(mandelbrot->fp) != 0 ) {
+                        return ERROR_END_OF_FILE;
+                    }
+
+
+                    /***************************************
+                     *        coord_r 64-bit double        *
+                     ***************************************/
+                    num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, mandelbrot->fp);
+                    mandelbrot->file_error_status = ferror(mandelbrot->fp);
+                    if ( mandelbrot->file_error_status != 0 ) {
+                        return EXIT_FAILURE;
+                    }
+
+                    if ( num_read < 1 ) {
+                        /* short read and check eof */
+                        if ( feof(mandelbrot->fp) != 0 ) {
+                            return ERROR_END_OF_FILE;
+                        } else {
+                            return ERROR_INSUFFICIENT;
+                        }
+                    }
+
+                    if ( endian_flag ) {
+                        /* swap byte order */
+                        rotated64 = rot8(temp64bit);
+                        fp64 = memcpy(&temp_double,(void *)&rotated64, sizeof(double));
+                    } else {
+                        fp64 = memcpy(&temp_double,(void *)&temp64bit, sizeof(double));
+                    }
+                    mandelbrot->mandelbrot_data->coord_j[array_index(Vr,Vj,Sr,Sj,mandelbrot->vbox_real_count,mandelbrot->vbox_sample_real,mandelbrot->vbox_sample_imag)] = temp_double;
+
+                    /* check for early end of file */
+                    clearerr(mandelbrot->fp);
+                    if ( feof(mandelbrot->fp) != 0 ) {
+                        return ERROR_END_OF_FILE;
+                    }
+
+
+                    /***************************************
+                     * mandel_val 32-bit uint32_t integer  *
+                     ***************************************/
+                    num_read = fread((void *)&temp32bit, sizeof(uint32_t), 1, mandelbrot->fp);
+                    mandelbrot->file_error_status = ferror(mandelbrot->fp);
+                    if ( mandelbrot->file_error_status != 0 ) {
+                        return EXIT_FAILURE;
+                    }
+
+                    if ( num_read < 1 ) {
+                        /* we have a short read
+                         * check if end of file */
+                        if ( feof(mandelbrot->fp) != 0 ) {
+                            return ERROR_END_OF_FILE;
+                        } else {
+                            return ERROR_INSUFFICIENT;
+                        }
+                    }
+
+                    if ( endian_flag ) {
+                        /* we are on a big endian machine so we need
+                         * to swap around the byte order of the data
+                         * read from the little endian data file. */
+                        rotated32 = rot4(temp32bit);
+                        temp32bit = rotated32;
+                    }
+                    mandelbrot->mandelbrot_data->mandel_val[array_index(Vr,Vj,Sr,Sj,mandelbrot->vbox_real_count,mandelbrot->vbox_sample_real,mandelbrot->vbox_sample_imag)] = temp32bit;
+
+                    sample_counter += 1;
+
+                    /* check for early end of file */
+                    clearerr(mandelbrot->fp);
+
+                    if ( ( sample_counter < mandelbrot->num_elements ) && ( feof(mandelbrot->fp) != 0 ) ) {
+                        return ERROR_INSUFFICIENT;
+                    }
+
+                    mandelbrot->file_position = ftell(mandelbrot->fp);
+                    clearerr(mandelbrot->fp);
+
+                }
+            }
+        }
+    }
+
+    fprintf(stderr,"DBUG :        number of records = ");
+    if ( sizeof(long) == 8 ) {
+        fprintf(stderr,"%" PRIu64 "\n", sample_counter);
+    } else {
+        fprintf(stderr,"%i\n", sample_counter);
+    }
+
+
+    return EXIT_SUCCESS;
 
 
 }

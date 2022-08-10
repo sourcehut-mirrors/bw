@@ -148,7 +148,7 @@ int main (int argc, char **argv)
         /* TODO figure out the ERROR handling and be
          * sure to free() stuff */
         status = file_pointer(&mandelbrot_file->fp, argv[1]);
-        printf("DBUG : status = %i\n", status);
+        printf("DBUG :    file_pointer() status = %i\n", status);
 
     } else {
         fprintf(stderr, "FAIL : give a filename to read\n");
@@ -161,7 +161,107 @@ int main (int argc, char **argv)
     errno = 0;
     status = read_mbrot_data(mandelbrot_file);
 
-    printf("DBUG : status = %i\n", status);
+    printf("DBUG : read_mbrot_data() status = %i\n", status);
+
+    /**********************************************************/
+    /* print out something */
+
+    printf("\n    mand_bail = %i\n", mandelbrot_file->mand_bail);
+    printf("    translate = ( %-+28.20e , %-+28.20e )\n",
+                                      mandelbrot_file->real_translate,
+                                      mandelbrot_file->imag_translate);
+
+    printf("      magnify = %-+20.12e\n\n", mandelbrot_file->magnify );
+
+
+
+    printf("     : r[ 0][ 0][ 0][ 0] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(0,0,0,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[ 0][ 0][ 0][ 0] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(0,0,0,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(0,0,0,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+
+    printf("     : r[ 7][ 7][63][63] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(7,7,63,63,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[ 7][ 7][63][63] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(7,7,63,63,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(7,7,63,63,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+
+    printf("     : r[ 8][ 8][ 0][ 0] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(8,8,0,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[ 8][ 8][ 0][ 0] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(8,8,0,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(8,8,0,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     : r[ 8][ 8][ 1][ 0] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(8,8,1,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[ 8][ 8][ 1][ 0] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(8,8,1,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(8,8,1,0,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     : r[ 8][ 8][32][32] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(8,8,32,32,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[ 8][ 8][32][32] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(8,8,32,32,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(8,8,32,32,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+
+    printf("     : r[ 3][12][44][21] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(3,12,44,21,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[ 3][12][44][21] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(3,12,44,21,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(3,12,44,21,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+
+    printf("     : r[15][15][63][63] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_r[array_index(15,15,63,63,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+    printf("     : j[15][15][63][63] = %-+32.26e\n",
+            mandelbrot_file->mandelbrot_data->coord_j[array_index(15,15,63,63,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+    printf("     :       mand_height = %9i\n",
+            mandelbrot_file->mandelbrot_data->mandel_val[array_index(15,15,63,63,mandelbrot_file->vbox_real_count,mandelbrot_file->vbox_sample_real,mandelbrot_file->vbox_sample_imag)]);
+
+
+
+
+    /************************************
+     *    do free damn it ! 
+     */
+
 
     return EXIT_SUCCESS;
 
