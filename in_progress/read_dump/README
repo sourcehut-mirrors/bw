@@ -34,3 +34,10 @@ s$ grep -E '\ \:\ r|\ \:\ j|mand_height\ \=\ ' ../../xmand/output/readme.dataset
      :       mand_height =     16940
 s$ 
 
+
+Also there may be a weird pointer issue that seems to vanish just like
+a dead cat in a box.
+
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose  ...
+
+
