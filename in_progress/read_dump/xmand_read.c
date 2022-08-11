@@ -90,6 +90,25 @@ int main (int argc, char **argv)
     /* we will need to know if we read the correct amount of data */
     uint32_t sample_counter;
 
+    setlocale (LC_ALL, "C");
+
+    status = setenv("TZ", "GMT0", 1);
+    if ( status < 0 ) {
+        fprintf (stderr,"FAIL : can not set timezone TZ = GMT0\n");
+        return EXIT_FAILURE;
+    }
+
+    /* This is just one of those things that I want. */
+    tmpdir = getenv("TMPDIR");
+    if ( tmpdir == NULL ) {
+        fprintf(stderr,"FAIL : env var TMPDIR not set\n");
+        return EXIT_FAILURE;
+    }
+
+    if (argc == 0) {
+        fprintf(stderr, "FAIL : provide a filename\n");
+        return EXIT_FAILURE;
+    }
 
     mandelbrot_file = calloc((size_t) 1, (size_t)sizeof(struct f_item));
     if ( mandelbrot_file == NULL ) {
@@ -120,41 +139,65 @@ int main (int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    setlocale (LC_ALL, "C");
-
-    status = setenv("TZ", "GMT0", 1);
-    if ( status < 0 ) {
-        fprintf (stderr,"FAIL : can not set timezone TZ = GMT0\n");
-        free(mandelbrot_file->mandelbrot_data);
-        free(mandelbrot_file);
-        return EXIT_FAILURE;
-    }
-
-    tmpdir = getenv("TMPDIR");
-    if ( tmpdir == NULL ) {
-        printf("env var TMPDIR not set\n");
-        free(mandelbrot_file->mandelbrot_data);
-        free(mandelbrot_file);
-        return EXIT_FAILURE;
-    }
-
     sysinfo(VERBOSE);
 
     /**********************************************************
      *           Now deal with the filename provided          *
      **********************************************************/
-    /* better check if argv[1] even exists */
-    if (argc>1) {
-        /* TODO figure out the ERROR handling and be
-         * sure to free() stuff */
-        status = file_pointer(&mandelbrot_file->fp, argv[1]);
-        printf("DBUG :    file_pointer() status = %i\n", status);
-
-    } else {
-        fprintf(stderr, "FAIL : give a filename to read\n");
-        free(mandelbrot_file->mandelbrot_data);
-        free(mandelbrot_file);
+    if (argc == 0) {
+        fprintf(stderr, "FAIL : provide a filename\n");
         return EXIT_FAILURE;
+    }
+
+    errno = 0;
+    status = file_pointer(&mandelbrot_file->fp, argv[1]);
+    if ( status != 0 ) {
+        /* Possible error status values :
+         *
+         *     ERROR_FILENAME;
+         *     ERROR_FILENAME_EMPTY;
+         *     ERROR_FILENAME_FOPEN;
+         *     ERROR_FILENAME_LENGTH;
+         *     ERROR_FILENAME_STAT;
+         *     ERROR_MEMORY;
+         */
+
+        switch(status) {
+            case ERROR_FILENAME :
+                fprintf(stderr,"ERR  : ERROR_FILENAME\n");
+                fprintf(stderr,"     : Please check your filename.\n");
+                break;
+            case ERROR_FILENAME_EMPTY :
+                fprintf(stderr,"ERR  : ERROR_FILENAME_EMPTY\n");
+                fprintf(stderr,"     : What were you thinking?\n");
+                break;
+            case ERROR_FILENAME_FOPEN :
+                fprintf(stderr,"ERR  : ERROR_FILENAME_FOPEN\n");
+                fprintf(stderr,"     : Unable to open that filename.\n");
+                break;
+            case ERROR_FILENAME_LENGTH :
+                fprintf(stderr,"ERR  : ERROR_FILENAME_LENGTH\n");
+                fprintf(stderr,"     : Filename length is wrong?\n");
+                break;
+            case ERROR_FILENAME_STAT :
+                fprintf(stderr,"ERR  : ERROR_FILENAME_STAT\n");
+                break;
+            case ERROR_MEMORY :
+                fprintf(stderr,"ERR  : ERROR_MEMORY\n");
+                fprintf(stderr,"     : Please download more memory.\n");
+                break;
+            default :
+                fprintf(stderr,"ERR  : Something wrong?\n");
+                fprintf(stderr,"     : You figure it out. I do not know.\n");
+        }
+
+        free(mandelbrot_file->mandelbrot_data);
+        mandelbrot_file->mandelbrot_data = NULL;
+        free(mandelbrot_file);
+        mandelbrot_file = NULL;
+
+        return EXIT_FAILURE;
+
     }
 
     /* we may not need to set errno at all but .. whatever */

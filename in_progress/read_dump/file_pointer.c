@@ -98,7 +98,6 @@ int file_pointer(FILE **fp, char *fidname)
 
         /* do we still have a filename ? */
         if (len==0) {
-            fprintf(stderr, "FAIL : filename is invalid\n");
             free(filename);
             filename = NULL;
             return ERROR_FILENAME;

@@ -9,12 +9,12 @@ LIBS=		-lm
 LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include
 
-OBJS=		./read_dump.o ./file_pointer.o \
+OBJS=		./read_mbrot_data.o ./file_pointer.o \
 		./array_index.o \
-		../../sysinfo/sysinfo.o \
 		../trimmer/strtrim.o \
 		../data_dump/rot4.o \
 		../data_dump/rot8.o \
+		../../sysinfo/sysinfo.o \
 		../../stat_test/file_stat_err.o
 
 .PHONY: all

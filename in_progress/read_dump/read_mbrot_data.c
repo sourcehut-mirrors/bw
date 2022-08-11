@@ -1,7 +1,7 @@
 
 /*
- * read_dump.c  Try to read in all the data from an xmand file as
- *              described in xmand/readme.data
+ * read_mbrot_data.c  Try to read in all the data from an xmand file as
+ *                    described in xmand/readme.data
  *
  * Copyright (C) Dennis Clarke 2022
  *
