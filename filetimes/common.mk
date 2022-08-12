@@ -1,14 +1,26 @@
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE
+CC?=	/usr/bin/cc
 
-SRCS = filetimes.c ../sysinfo/sysinfo.c
-OBJS = filetimes.o ../sysinfo/sysinfo.o
+CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+			-D_XOPEN_SOURCE=600
+
+LIBS=		-lrt
+
+LDIR?=		/usr/local/lib
+IDIR?=		/usr/local/include
+
+OBJS=		../sysinfo/sysinfo.o \
+		../stat_test/file_stat_err.o
+
+.PHONY: all
+all: filetimes
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
 
-filetimes: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
+filetimes: filetimes.o $(OBJS)
+	$(CC) -o filetimes filetimes.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
+.PHONY: clean
 clean:
-	rm -f $(OBJS) filetimes
+	rm -f $(OBJS) filetimes.o filetimes

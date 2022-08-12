@@ -32,22 +32,27 @@
 #define _XOPEN_SOURCE 600
 
 #include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <iso646.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
 #include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
-#include <fcntl.h>
+#include <unistd.h>
 
+/* Maximum length of a single line of test in a file
+ * before we give up. */
 #define MAX_LINE 512
 
 #define VERBOSE 1
 int sysinfo(int verbose);
+
+int file_stat_err( int file_errno );
 
 int main(int argc, char **argv)
 {
@@ -65,6 +70,13 @@ int main(int argc, char **argv)
     long ftell_pos;
     struct timespec time_tv;
 
+    uint64_t candidate;
+    struct tm *time_tm;
+    time_t unix_secs_now;
+    struct tm *barf_tm;
+    time_t unix_secs;
+
+    setlocale ( LC_ALL, "C" );
     if ( argc < 2 ) {
         fprintf(stderr,"FAIL : provide a filename or pathname\n");
         errno = EINVAL;
@@ -72,7 +84,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    setlocale ( LC_ALL, "C" );
     if ( clock_gettime( CLOCK_REALTIME, &time_tv ) == -1 ) {
         perror( "clock gettime" );
         return EXIT_FAILURE;
@@ -87,35 +98,32 @@ int main(int argc, char **argv)
     status = stat(argv[1], &status_buffer);
     if ( status == 0 ) {
         fprintf (stderr,"\nINFO : current time is %s", c_time_string );
-        fprintf (stderr,"     : three UNIX times of the file are :\n");
+        fprintf (stderr,"     : three UNIX times of the pathname are :\n");
 
         /* access time */
         fprintf(stderr,"     : ctime(&buffer.st_atime) = %s",
                                ctime(&status_buffer.st_atime));
+
         /* modification time */
         fprintf(stderr,"     :              .st_mtime) = %s",
                                ctime(&status_buffer.st_mtime));
+
         /* creation time */
         fprintf(stderr,"     :              .st_ctime) = %s",
                                ctime(&status_buffer.st_ctime));
 
-    } else {
-        /* check for a pile of things that could have gone
-         * wrong */
-        switch(errno) {
-            case EFAULT :
-                fprintf ( stderr, "ERROR : EFAULT\n" );
-                break;
-            case ENOENT :
-                fprintf ( stderr, "ERROR : ENOENT\n" );
-                break;
-            case EBADF :
-                fprintf ( stderr, "ERROR : EBADF\n" );
-                break;
-            default :
-                fprintf ( stderr, "ERROR : %s\n", strerror(errno) );
+        /* Check if pathname is a directory.
+         * Note the ISO646 bitand. */
+        if ( status_buffer.st_mode bitand S_IFDIR ) {
+            errno = EINVAL;
+            perror("FAIL ");
+            fprintf(stderr,"FAIL : is pathname a directory?\n");
+            return EXIT_FAILURE;
         }
-        perror("ERROR ");
+
+    } else {
+        /* check a pile of things that could have gone wrong */
+        file_stat_err(errno);
         return EXIT_FAILURE;
     }
 
@@ -166,7 +174,7 @@ int main(int argc, char **argv)
      *     long tm_gmtoff; offset from UTC in seconds
      *
      * Those last two members are really just in BSD world. Do not
-     * expect to see them in a strict C99 Linux world.
+     * expect to see them in a strict C99 world.
      *
      * Also on the PDP-11 were C was first implemented ( early 1970s )
      * the datatype we call integer was as large as a processor 
@@ -174,29 +182,44 @@ int main(int argc, char **argv)
      * 15 bits for data and 1 bit for the sign. It may be possible to
      * trigger an error condition from gmtime() where the resultant
      * year would not fit into an integer. Very difficult to do with
-     * a 32bit signed integer.
+     * a 32bit signed integer. Even more strange with 64-bit integers
+     * and a number like 67769050553057857 would be interesting.
      */
 
     if ( argc > 2 ) {
         printf("INFO : sizeof(long long) = %i\n", sizeof(long long));
 
         errno = 0;
-        uint64_t candidate = (uint64_t)strtoll(argv[2], (char **)NULL, 10);
+        candidate = (uint64_t)strtoll(argv[2], (char **)NULL, 10);
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : bail out integer not understood\n");
             perror("     ");
             return EXIT_FAILURE;
         }
 
-        struct tm *time_tm = calloc(1,sizeof(struct tm));
-        time_t unix_secs_now = time_tv.tv_sec;
-    
-        struct tm *barf_tm = gmtime_r(&unix_secs_now, time_tm);
-    
-        time_t unix_secs_wow = candidate;
-        barf_tm = gmtime_r(&unix_secs_wow, time_tm);
+        errno = 0;
+        time_tm = calloc(1,sizeof(struct tm));
+        if ( time_tm == NULL ) {
+            if ( errno == ENOMEM ) {
+                fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+            } else {
+                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+            }
+            perror("FAIL ");
+            return EXIT_FAILURE;
+        }
+
+        unix_secs_now = time_tv.tv_sec;
+        barf_tm = gmtime_r(&unix_secs_now, time_tm);
+
+        /* The user may have provided some bizarre UNIX time
+         * in seconds. See if it causes bad things. */
+        unix_secs = candidate;
+        barf_tm = gmtime_r(&unix_secs, time_tm);
         if ( barf_tm == NULL ) {
-            fprintf(stderr,"FAIL : %" PRIu64 " fail\n", (uint64_t)unix_secs_wow);
+            fprintf(stderr,"FAIL : %" PRIu64 " fail\n", (uint64_t)unix_secs);
         } else {
             printf("INFO : time_tm->tm_year = %i\n", time_tm->tm_year);
         }
@@ -231,7 +254,6 @@ int main(int argc, char **argv)
     errno = 0;
     line = calloc(MAX_LINE,sizeof(unsigned char));
     if ( line == NULL ) {
-        /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
             fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
                     __FILE__, __LINE__ );
@@ -288,6 +310,7 @@ int main(int argc, char **argv)
             } else {
                 /* this is a read error */
                 perror("FAIL ");
+                fprintf(stderr,"     : read error at %s:%d\n", __FILE__, __LINE__ );
                 free(line);
                 return EXIT_FAILURE;
             }

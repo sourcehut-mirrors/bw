@@ -164,7 +164,7 @@ int read_mbrot_data(f_item *mandelbrot)
      * as IEEE-754 floating point double later.  Why ?
      * Because a big endian machine would interpret
      * the little endian data as a NaN or a sub-normal
-     * or perhaps just messy double value. 
+     * or perhaps just messy double value.
      **************************************************************/
     num_read = fread((void *)&temp64bit, sizeof(uint64_t), 1, mandelbrot->fp);
     mandelbrot->file_error_status = ferror(mandelbrot->fp);

@@ -52,43 +52,8 @@ int main (int argc, char **argv)
 {
 
     struct f_item *mandelbrot_file;
-
-
     int status;
     char *tmpdir;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     setlocale (LC_ALL, "C");
 
@@ -98,12 +63,14 @@ int main (int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    /* This is just one of those things that I want. */
+    /* TODO : do not enforce the need for TMPDIR */
     tmpdir = getenv("TMPDIR");
     if ( tmpdir == NULL ) {
         fprintf(stderr,"FAIL : env var TMPDIR not set\n");
         return EXIT_FAILURE;
     }
+    /* TODO : just because we now have a TMPDIR of some
+     * sort does not mean we can use it. */
 
     if (argc == 0) {
         fprintf(stderr, "FAIL : provide a filename\n");
@@ -181,6 +148,7 @@ int main (int argc, char **argv)
                 break;
             case ERROR_FILENAME_STAT :
                 fprintf(stderr,"ERR  : ERROR_FILENAME_STAT\n");
+                fprintf(stderr,"     : Please check your filename.\n");
                 break;
             case ERROR_MEMORY :
                 fprintf(stderr,"ERR  : ERROR_MEMORY\n");

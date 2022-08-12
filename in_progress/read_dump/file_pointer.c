@@ -83,7 +83,7 @@ int file_pointer(FILE **fp, char *fidname)
     tmp = strncpy(filename, fidname, len);
 
     /* A trailing slash on a pathname forces resolution of
-     * the name to a directory. So strip off leading and 
+     * the name to a directory. So strip off leading and
      * trailing spaces first. */
     fid = strtrim(filename);
 
@@ -105,6 +105,7 @@ int file_pointer(FILE **fp, char *fidname)
             errno = 0;
             status = stat(filename, &status_buffer);
         }
+
     } else {
         fprintf(stderr, "FAIL : filename is invalid\n");
         free(filename);
@@ -119,6 +120,16 @@ int file_pointer(FILE **fp, char *fidname)
         file_stat_err(errno);
         free(filename);
         filename = NULL;
+
+        return ERROR_FILENAME_STAT;
+
+    }
+
+    /* Check if pathname is a directory. */
+    if ( status_buffer.st_mode & S_IFDIR ) {
+        errno = EINVAL;
+        perror("FAIL ");
+        fprintf(stderr,"FAIL : is pathname a directory?\n");
         return ERROR_FILENAME_STAT;
     }
 
