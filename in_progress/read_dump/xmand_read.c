@@ -204,7 +204,37 @@ int main (int argc, char **argv)
     errno = 0;
     status = read_mbrot_data(mandelbrot_file);
 
-    printf("DBUG : read_mbrot_data() status = %i\n", status);
+    if ( status != 0 ) {
+        /* possible error values 
+         * return ERROR_END_OF_FILE;
+         * return ERROR_INSUFFICIENT;
+         * return ERROR_MEMORY;
+         */
+        switch(status) {
+            case ERROR_END_OF_FILE :
+                fprintf(stderr,"ERR  : ERROR_END_OF_FILE\n");
+                goto bail_out;
+
+            case ERROR_INSUFFICIENT :
+                fprintf(stderr,"ERR  : ERROR_INSUFFICIENT\n");
+                goto bail_out;
+
+            case ERROR_MEMORY :
+                fprintf(stderr,"ERR  : ERROR_MEMORY\n");
+                /* this could be a nasty situation so for now
+                 * just give up.
+                 *
+                 * TODO : make this a clean exit */
+                return EXIT_FAILURE;
+
+            default :
+                fprintf(stderr,"ERR  : Something wrong?\n");
+                fprintf(stderr,"     : You figure it out. I do not know.\n");
+                return EXIT_FAILURE;
+        }
+
+    }
+
 
     /**********************************************************/
     /* print out something */
@@ -300,13 +330,25 @@ int main (int argc, char **argv)
 
 
 
+    /* free memory and bail out */
 
-    /************************************
-     *    do free damn it ! 
-     */
+bail_out:
+    free(mandelbrot_file->mandelbrot_data->mandel_val);
+    mandelbrot_file->mandelbrot_data->mandel_val = NULL;
+    free(mandelbrot_file->mandelbrot_data->coord_r);
+    mandelbrot_file->mandelbrot_data->coord_r = NULL;
+    free(mandelbrot_file->mandelbrot_data->coord_j);
+    mandelbrot_file->mandelbrot_data->coord_j = NULL;
+    free(mandelbrot_file->mandelbrot_data);
+    mandelbrot_file->mandelbrot_data = NULL;
+    free(mandelbrot_file);
+    mandelbrot_file = NULL;
 
-
-    return EXIT_SUCCESS;
+    if ( status == 0 ) {
+        return EXIT_SUCCESS;
+    } else {
+        return EXIT_FAILURE;
+    }
 
 }
 

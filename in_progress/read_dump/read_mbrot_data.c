@@ -87,6 +87,10 @@ int read_mbrot_data(f_item *mandelbrot)
     /* how do we know if the file pointer is valid? */
     clearerr(mandelbrot->fp);
 
+
+
+
+
     /**************************************************************
      *              number of items in each array                 *
      **************************************************************/
