@@ -1,4 +1,5 @@
 
+s$ 
 s$ ./xmand 16777216 1073741824 -1.99998588117705367039889097 0.0 4
 -------------------------------------------------------------------
                  system name = SunOS
@@ -11,28 +12,24 @@ s$ ./xmand 16777216 1073741824 -1.99998588117705367039889097 0.0 4
                              = 67108864 kB
                              = 65536 MB
                              = 64 GB
-                 avail pages = 7959984
+                 avail pages = 7968472
                 avail memory = 0
          clock ticks per sec = 100
              threads support = 200112
                POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
                       endian = big endian
        sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    1 day   22 hours   24 mins    1 sec
+           system uptime    1 day   18 hours   15 mins    6 secs
 -------------------------------------------------------------------
-
-
---------- _XOPEN_SOURCE 600 -------
-_POSIX_CHILD_MAX   = 25
-_POSIX_NGROUPS_MAX = 8
-_POSIX_OPEN_MAX    = 20
-_POSIX_PATH_MAX    = 256
-_POSIX_TZNAME_MAX  = 6
----------------------------------------
 INFO : baseline tdelta =            100 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
@@ -67,7 +64,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +1.81898940354585647583007812e-12
      : bailout = 16777216          
      : magnify = 1.073741824000e+09
-[mand] =    42550240900 nsec   4.255024e+01 sec
+[mand] =    42521775300 nsec   4.252178e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -94,11 +91,11 @@ raw data values -------------------------------------------------------
      :       mand_height =        21
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1386 , 890  ]
+raw  [ 1383 , 892  ]
 INFO : dumper_flag = 1
-click at 1385 888 
-raw  [ 1386 , 890  ]
-INFO : file /var/tmp/dclarke/20220727111539 dump begins.
+click at 1382 890 
+raw  [ 1383 , 892  ]
+INFO : file /var/tmp/dclarke/20220812045355 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -117,28 +114,25 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20220727111539 closed.
+INFO : file /var/tmp/dclarke/20220812045355 closed.
 INFO : dumper_flag = 0
-click at 1385 888 
-raw  [ 513  , 532  ]
-vbox  [ 007 , 007 ]
-fp64( -1.85546875000000000000000000e-02,
-      -1.46484375000000000000000000e-02 )
-c = ( -1.99998588121161446906626225e+00,
-      -2.72848410531878471374511719e-11 )
-pixel_real_w = +3.63797880709171295166015625e-12
-pixel_imag_h = +3.63797880709171295166015625e-12
-[join] =            300 nsec   3.000000e-07 sec
-[plot] =    31126324400 nsec   3.112632e+01 sec
-click at 512 530 
+click at 1382 890 
+raw  [ 1000 , 917  ]
+right click
+click at 999 915 
+raw  [ 1000 , 917  ]
+right click
+
+
+
 s$ 
-s$ 
-s$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220727111539
+s$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220812045355
      0:  00 00 10 00 00 00 00 01 00 00 00 00 00 00 d0 41
     10:  00 e0 01 32 f1 ff ff bf 00 00 00 00 00 00 00 00
     20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
     30: 
-s$ mdigest -a sha256 /var/tmp/dclarke/20220727111539
-5a1df15740d147a44e58c15e2325d3f61bdcd1f41c544d2c03cc265fe55f9c0f  /var/tmp/dclarke/20220727111539
+s$ 
+s$ mdigest -a sha256 /var/tmp/dclarke/20220812045355
+5a1df15740d147a44e58c15e2325d3f61bdcd1f41c544d2c03cc265fe55f9c0f  /var/tmp/dclarke/20220812045355
 s$ 
 

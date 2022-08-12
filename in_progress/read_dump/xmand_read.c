@@ -189,6 +189,7 @@ int main (int argc, char **argv)
             default :
                 fprintf(stderr,"ERR  : Something wrong?\n");
                 fprintf(stderr,"     : You figure it out. I do not know.\n");
+                fprintf(stderr,"     : error code is %i\n",status);
         }
 
         free(mandelbrot_file->mandelbrot_data);
@@ -229,7 +230,9 @@ int main (int argc, char **argv)
 
             default :
                 fprintf(stderr,"ERR  : Something wrong?\n");
+                fprintf(stderr,"     : read_mbrot_data() bork bork bork.\n");
                 fprintf(stderr,"     : You figure it out. I do not know.\n");
+                fprintf(stderr,"     : error code is %i\n",status);
                 return EXIT_FAILURE;
         }
 
