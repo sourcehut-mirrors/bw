@@ -53,42 +53,42 @@ int main (int argc, char **argv)
 
     struct f_item *mandelbrot_file;
 
-    struct stat status_buffer;
+
     int status;
-    char *tmpdir, *tmp;
-    size_t num_read, len;
-    long file_position;
-    struct tm *ptm;
+    char *tmpdir;
 
-    int end_check = 1;
-    uint8_t endian_flag;
 
-    time_t time_now;
-    char st_ctime_buffer[128];
-    char *filename, *fid;
-    char timestamp[32];
 
-    uint32_t temp32bit;
-    uint64_t temp64bit;
-    uint64_t rotated64;
-    double *fp64, temp_double;
-    uint32_t rotated32;
 
-    /* the actual data we are trying to read */
-    uint32_t num_elements, mandel_bail_out;
-    double magnify, c_r, c_j;
-    uint32_t vbox_real_count, vbox_imag_count; 
-    uint32_t vbox_sample_real, vbox_sample_imag;
 
-    /* these are the actual data arrays */
-    uint32_t *mandel_val;
-    double *coord_r, *coord_j;
 
-    /* easy index vars for later */
-    int Vr, Vj, Sr, Sj;
 
-    /* we will need to know if we read the correct amount of data */
-    uint32_t sample_counter;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     setlocale (LC_ALL, "C");
 

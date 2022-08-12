@@ -63,13 +63,15 @@ char *strtrim( char *str );
 int file_stat_err( int file_errno );
 int sysinfo(int verbose);
 
-int array_index(int Vr, int Vj,
-                int Sr, int Sj,
-                int vbox_real_count,
-                int vbox_sample_real,
-                int vbox_sample_imag );
+int array_index(uint32_t Vr, uint32_t Vj,
+                uint32_t Sr, uint32_t Sj,
+                uint32_t vbox_real_count,
+                uint32_t vbox_sample_real,
+                uint32_t vbox_sample_imag );
 
 int file_pointer(FILE **fp, char *fidname);
 
 int read_mbrot_data(f_item *mandelbrot);
+
+int file_stat_err( int file_errno );
 

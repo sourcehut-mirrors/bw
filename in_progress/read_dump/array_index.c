@@ -35,13 +35,25 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
-int array_index(int Vr, int Vj,
-                int Sr, int Sj,
-                int vbox_real_count,  
-                int vbox_sample_real, 
-                int vbox_sample_imag )
+#include <stdint.h>
+
+int array_index(uint32_t Vr, uint32_t Vj,
+                uint32_t Sr, uint32_t Sj,
+                uint32_t vbox_real_count,  
+                uint32_t vbox_sample_real, 
+                uint32_t vbox_sample_imag )
 {
 
+    int part1 = (int)Vr * (int)vbox_sample_real;
+
+    int part2 = (int)Vj * (int)vbox_real_count
+                        * (int)vbox_sample_real
+                        * (int)vbox_sample_imag;
+
+    int part3 = (int)Sj * (int)vbox_real_count
+                        * (int)vbox_sample_real;
+
+    /*
     int result =  Vr * vbox_sample_real + Sr
 
                 + Vj * vbox_real_count
@@ -49,6 +61,9 @@ int array_index(int Vr, int Vj,
                      * vbox_sample_imag
 
                 + Sj * vbox_real_count * vbox_sample_real;
+    */
+
+    int result = part1 + (int)Sr + part2 + part3;
 
     return result;
 

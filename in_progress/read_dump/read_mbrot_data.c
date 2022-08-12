@@ -63,7 +63,7 @@ int read_mbrot_data(f_item *mandelbrot)
     double *fp64, temp_double;
 
     /* easy index vars for later */
-    int Vr, Vj, Sr, Sj;
+    uint32_t Vr, Vj, Sr, Sj;
 
     /* we will need to know if we read the correct amount of data */
     uint32_t sample_counter;
@@ -524,7 +524,12 @@ int read_mbrot_data(f_item *mandelbrot)
                     } else {
                         fp64 = memcpy(&temp_double,(void *)&temp64bit, sizeof(double));
                     }
-                    mandelbrot->mandelbrot_data->coord_r[array_index(Vr,Vj,Sr,Sj,mandelbrot->vbox_real_count,mandelbrot->vbox_sample_real,mandelbrot->vbox_sample_imag)] = temp_double;
+
+                    mandelbrot->mandelbrot_data->coord_r[array_index(Vr,Vj,Sr,Sj,
+                                                           mandelbrot->vbox_real_count,
+                                                           mandelbrot->vbox_sample_real,
+                                                           mandelbrot->vbox_sample_imag)] = temp_double;
+
 
                     /* check for early end of file */
                     clearerr(mandelbrot->fp);
