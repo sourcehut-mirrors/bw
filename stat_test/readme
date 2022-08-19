@@ -54,3 +54,21 @@ status_buffer = {
     st_fstype  = "zfs"
 }
 
+
+One may check the contents of the status_buffer with a debugger : 
+
+(gdb) print status_buffer
+$1 = {st_dev = 250081246977, st_ino = 3, st_nlink = 1, st_mode = 33188, st_padding0 = 0, st_uid = 0, st_gid = 0, st_padding1 = 0, 
+  st_rdev = 18446741884654456848, st_atim = {tv_sec = 1660918311, tv_nsec = 349848000}, st_mtim = {tv_sec = 1660918303, 
+    tv_nsec = 853200000}, st_ctim = {tv_sec = 1660919905, tv_nsec = 712237000}, st_birthtim = {tv_sec = -1, tv_nsec = 0}, 
+  st_size = 436, st_blocks = 9, st_blksize = 4096, st_flags = 0, st_gen = 0, st_spare = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+
+(gdb) print status_buffer
+$1 = {st_dev = 13371507109473436662, st_ino = 16645, st_nlink = 1, st_mode = 33188, st_padding0 = 0, st_uid = 0, st_gid = 0, 
+  st_padding1 = 0, st_rdev = 18446744073709551615, st_atim = {tv_sec = 1660918311, tv_nsec = 349848000}, st_mtim = {
+    tv_sec = 1660918303, tv_nsec = 853200000}, st_ctim = {tv_sec = 1660918303, tv_nsec = 853200000}, st_birthtim = {
+    tv_sec = 1652344329, tv_nsec = 0}, st_size = 436, st_blocks = 9, st_blksize = 4096, st_flags = 2048, st_gen = 0, st_spare = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+
+Note : see st_flags and man chflags for all manner of cool stuff
+

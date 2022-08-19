@@ -1,21 +1,8 @@
 
 CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
-	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
-	-fno-fast-math -fno-builtin
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+	-Weverything -Wno-reserved-identifier -Wno-reserved-id-macro \
+	-fno-fast-math -fno-builtin -fsanitize=address
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=600
-
-SRCS = check_file_stat.c ../sysinfo/sysinfo.c
-OBJS = check_file_stat.o ../sysinfo/sysinfo.o
-
-.c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
-
-check_file_stat: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
-
-clean:
-	rm -f $(OBJS) check_file_stat
+include common.mk
