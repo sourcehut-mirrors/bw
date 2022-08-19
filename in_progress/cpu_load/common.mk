@@ -5,9 +5,9 @@ CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 LIBS=		-lpthread -lrt
 
 OBJS=		main.o fib_sleep.o dispatch.o \
-		../sysinfo/sysinfo.o \
-		../time_and_date/timediff.o \
-		../pthread/fib.o
+		../../sysinfo/sysinfo.o \
+		../../time_and_date/timediff.o \
+		../../pthread/fib.o
 
 .PHONY: all
 all: main
