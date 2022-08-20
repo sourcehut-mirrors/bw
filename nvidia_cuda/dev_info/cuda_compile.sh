@@ -9,6 +9,7 @@ if [ -d /usr/local/cuda-11.4 ]; then
     export CUDA_HOME
 fi
 
+
 NVCC=`(command -v nvcc)` ; export NVCC
 if [ ! -x ${NVCC} ]; then
     /usr/bin/printf "FAIL : the NVidia compiler not found\n"
@@ -17,7 +18,7 @@ fi
 
 rm -f dev_info dev_info.o > /dev/null 2>&1
 
-${NVCC} -ccbin g++ -I../include -m64 \
+${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
 -gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_50,code=sm_50 \
@@ -28,7 +29,7 @@ ${NVCC} -ccbin g++ -I../include -m64 \
 -gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
 
-${NVCC} -ccbin g++ -m64 \
+${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_35,code=sm_35 \
 -gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_50,code=sm_50 \
