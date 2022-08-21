@@ -7,6 +7,85 @@ see https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
 Using gmp and mpfr with dynamic variable resize as needed : 
 
+The slowest machine I have running FreeBSD : 
+
+esther$ 
+esther$ /usr/bin/time -p ./pr_mpfr_quiet 121980835787376020043317051 16 
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = esther
+                     release = 13.1-RELEASE-p1
+                     version = FreeBSD 13.1-RELEASE-p1 GENERIC
+                     machine = i386
+                   page size = 4096
+               system memory = 976736256
+                             = 953844 kB
+                             = 931 MB
+                 avail pages = 238461
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 4
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 4
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour   47 mins    2 secs
+-------------------------------------------------------------------
+
+We shall use 16 bits of precision.
+INFO : chars_formatted = 35
+INFO : buf = '121981087435764370692374528'
+WARN : incorrect data on input.
+     : this is most likely caused by insufficient bits
+     : of precision to represent the data correctly.
+INFO : Input variable re-initialized with 32 bits of precision.
+INFO : Input variable re-initialized with 64 bits of precision.
+INFO : Input variable re-initialized with 96 bits of precision.
+INFO : perfect match on data input.
+
+We shall find a factor of 121980835787376020043317051.000000
+------------------------------------------------------
+Pollard Rho shall proceed with 96 bits of precision.
+------------------------------------------------------
+loop      1    count =            3 
+loop      2    count =            5 
+loop      3      try again with 128 bits of precision.
+loop      3      try again with 160 bits of precision.
+loop      3      try again with 192 bits of precision.
+loop      3    count =            9 
+loop      4    count =           17 
+loop      5    count =           33 
+loop      6    count =           65 
+loop      7    count =          129 
+loop      8    count =          257 
+loop      9    count =          513 
+loop     10    count =         1025 
+loop     11    count =         2049 
+loop     12    count =         4097 
+loop     13    count =         8193 
+loop     14    count =        16385 
+loop     15    count =        32769 
+loop     16    count =        65537 
+loop     17    count =        47154 
+DONE : used 192 bits of precision.
+     : factor of 121980835787376020043317051.000000 is 4115226301.000000
+real 149.78
+user 148.34
+sys 0.61
+esther$ echo ' 29641343358865751 4115226301 * pq' | dc
+121980835787376020043317051
+esther$ 
+
+---------------------------------------------------------------------
+
 phobos$ /usr/bin/time -p ./pr_mpfr_quiet 340282366920938463463374607431768211457 16
 -------------------------------------------------------------------
                  system name = FreeBSD
