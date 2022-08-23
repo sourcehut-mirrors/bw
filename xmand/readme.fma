@@ -52,7 +52,57 @@ not employ FMA.
     770e:   66 90                   xchg   ax,ax
 
 
-similar results are seen with Oracle Solaris 11.3 running on Fujitsu SPARC-VII+
+Baseline older AMD64 hardware has no support for FMA opcodes and thus
+we will see calls to "fma" in the assembly : 
+
+000000000000a719 <fp_region>:
+    a719:       55                      push   rbp
+    a71a:       48 89 e5                mov    rbp,rsp
+    a71d:       48 83 ec 20             sub    rsp,0x20
+    a721:       89 7d fc                mov    DWORD PTR [rbp-0x4],edi
+    a724:       89 75 f8                mov    DWORD PTR [rbp-0x8],esi
+    a727:       89 55 f4                mov    DWORD PTR [rbp-0xc],edx
+    a72a:       89 4d f0                mov    DWORD PTR [rbp-0x10],ecx
+    a72d:       4c 89 45 e8             mov    QWORD PTR [rbp-0x18],r8
+    a731:       f2 0f 2a 45 fc          cvtsi2sd xmm0,DWORD PTR [rbp-0x4]
+    a736:       f2 0f 2a 4d f4          cvtsi2sd xmm1,DWORD PTR [rbp-0xc]
+    a73b:       f2 0f 5e c1             divsd  xmm0,xmm1
+    a73f:       66 0f 12 15 89 27 00    movlpd xmm2,QWORD PTR [rip+0x2789]        # ced0 <_fini+0x1820>
+    a746:       00 
+    a747:       66 0f 12 0d 89 27 00    movlpd xmm1,QWORD PTR [rip+0x2789]        # ced8 <_fini+0x1828>
+    a74e:       00 
+    a74f:       e8 0c 74 ff ff          call   1b60 <fma@plt>
+    a754:       f2 0f 10 d0             movsd  xmm2,xmm0
+    a758:       f2 0f 2a 4d f4          cvtsi2sd xmm1,DWORD PTR [rbp-0xc]
+    a75d:       66 0f 12 05 7b 27 00    movlpd xmm0,QWORD PTR [rip+0x277b]        # cee0 <_fini+0x1830>
+    a764:       00 
+    a765:       f2 0f 5e c1             divsd  xmm0,xmm1
+    a769:       f2 0f 58 c2             addsd  xmm0,xmm2
+    a76d:       48 8b 45 e8             mov    rax,QWORD PTR [rbp-0x18]
+    a771:       f2 0f 11 00             movsd  QWORD PTR [rax],xmm0
+    a775:       f2 0f 2a 45 f8          cvtsi2sd xmm0,DWORD PTR [rbp-0x8]
+    a77a:       f2 0f 2a 4d f0          cvtsi2sd xmm1,DWORD PTR [rbp-0x10]
+    a77f:       f2 0f 5e c1             divsd  xmm0,xmm1
+    a783:       66 0f 12 15 45 27 00    movlpd xmm2,QWORD PTR [rip+0x2745]        # ced0 <_fini+0x1820>
+    a78a:       00 
+    a78b:       66 0f 12 0d 45 27 00    movlpd xmm1,QWORD PTR [rip+0x2745]        # ced8 <_fini+0x1828>
+    a792:       00 
+    a793:       e8 c8 73 ff ff          call   1b60 <fma@plt>
+    a798:       f2 0f 10 d0             movsd  xmm2,xmm0
+    a79c:       f2 0f 2a 4d f0          cvtsi2sd xmm1,DWORD PTR [rbp-0x10]
+    a7a1:       66 0f 12 05 37 27 00    movlpd xmm0,QWORD PTR [rip+0x2737]        # cee0 <_fini+0x1830>
+    a7a8:       00 
+    a7a9:       f2 0f 5e c1             divsd  xmm0,xmm1
+    a7ad:       f2 0f 58 c2             addsd  xmm0,xmm2
+    a7b1:       48 8b 45 e8             mov    rax,QWORD PTR [rbp-0x18]
+    a7b5:       f2 0f 11 40 08          movsd  QWORD PTR [rax+0x8],xmm0
+    a7ba:       90                      nop
+    a7bb:       c9                      leave  
+    a7bc:       c3                      ret    
+
+
+
+Similar results are seen with Oracle Solaris 11.3 running on Fujitsu SPARC-VII+
 hardware with the Oracle Studio 12.6 compiler tools : 
 
 !

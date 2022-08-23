@@ -2,9 +2,9 @@
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
-LDIR=/usr/local/lib
-IDIR=/usr/local/include
-LIBS=-lgmp -lmpfr
+LDIR?=	/usr/local/lib
+IDIR?=	/usr/local/include
+LIBS?=	-lgmp -lmpfr
 
 SRCS = pr_mpfr_quiet.c ../sysinfo/sysinfo.c
 OBJS = pr_mpfr_quiet.o ../sysinfo/sysinfo.o

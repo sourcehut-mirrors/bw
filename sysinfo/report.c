@@ -27,16 +27,19 @@
 #include <fenv.h>
 
 #define VERBOSE 1
+#define SYSINFO_FAIL 127
 
 int sysinfo(int verbose);
 
 int main(int argc, char **argv)
 {
 
+    int little_endian;
+
     setlocale( LC_ALL, "C" );
-    int err_flag = sysinfo( VERBOSE );
-    if ( err_flag == EXIT_FAILURE ) {
-        fprintf(stderr,"FAIL : sysinfo returns EXIT_FAILURE\n");
+    little_endian = sysinfo( VERBOSE );
+    if ( little_endian == SYSINFO_FAIL ) {
+        fprintf(stderr,"FAIL : sysinfo returns SYSINFO_FAIL\n");
         return EXIT_FAILURE;
     }
 

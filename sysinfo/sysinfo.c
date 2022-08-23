@@ -58,7 +58,9 @@
 #include <sys/types.h>
 #endif
 
-/* Some platform don't have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES in sysconf().
+/* 23 Aug 2022 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
+ *
+ * Some platform don't have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES in sysconf().
  * Let's assume we do, then disable it for certain compilers/platforms.
  */
 #define HAVE_PAGE_INFO
@@ -102,7 +104,7 @@ int sysinfo(int verbose) {
         perror("sysconf(_SC_PHYS_PAGES) : ");
         return SYSINFO_FAIL;
     }
-    /* none of these are working on 32-bit arm */
+    /* what about 32-bit armv7l ? */
     pages = (uint64_t)err_flag;
 #endif
 
@@ -117,82 +119,18 @@ int sysinfo(int verbose) {
 
     errno = 0;
     if ( verbose ) {
+
 #if defined(__FreeBSD__)
+
         len = sizeof(pages_avail);
 
         err_flag = sysctlbyname("hw.availpages", &pages_avail, &len, NULL, 0);
-
-        /* We may get ENOMEM due to a few concerns.
-         *
-         *  int sysctlbyname( const char *name,
-         *                          void *oldp,
-         *                     size_t *oldlenp,
-         *                    const void *newp,
-         *                       size_t newlen);
-         *
-         * The information is copied into the buffer specified by oldp.
-         * The size of the buffer is given by the location specified by
-         * oldlenp before the call, and that location gives the amount
-         * of data copied after a successful call and after a call that
-         * returns with the error code ENOMEM.  If the amount of data
-         * available is greater than the size of the buffer supplied,
-         * the call supplies as much data as fits in the buffer provided
-         * and returns with the error code ENOMEM.  If the old value is
-         * not desired, oldp and oldlenp should be set to NULL.
-         *
-         *    The following errors may be reported:
-         *
-         *        [EFAULT] The buffer name, oldp, newp, or length
-         *                 pointer oldlenp contains an invalid address.
-         *
-         *        [EINVAL] The name array is less than two or greater than
-         *                 CTL_MAXNAME.
-         *
-         *        [EINVAL] A non-null newp is given and its specified
-         *                 length in newlen is too large or too small.
-         *
-         *        [ENOMEM] The length pointed to by oldlenp is too short
-         *                 to hold the requested value.
-         *
-         *        [ENOMEM] The smaller of either the length pointed to
-         *                 by oldlenp or the estimated size of the
-         *                 returned data exceeds the system limit on
-         *                 locked memory.
-         *
-         *        [ENOMEM] Locking the buffer oldp, or a portion of the
-         *                 buffer if the estimated size of the data to
-         *                 be returned is smaller, would cause the
-         *                 process to exceed its per-process locked
-         *                 memory limit.
-         *
-         *        [ENOTDIR] The name array specifies an intermediate
-         *                  rather than terminal name.
-         *
-         *        [EISDIR] The name array specifies a terminal name, but
-         *                 the actual name is not terminal.
-         *
-         *        [ENOENT] The name array specifies a value that is
-         *                 unknown.
-         *
-         *        [EPERM]  An attempt is made to set a read-only value.
-         *
-         *        [EPERM]  A process without appropriate privilege
-         *                 attempts to set a value.
-         */
 
         if (err_flag < 0) {
             perror("sysctlbyname(\"hw.availpages\", ...) : ");
             return SYSINFO_FAIL;
         }
-#else
-#ifdef HAVE_PAGE_INFO
-        err_flag = sysconf(_SC_AVPHYS_PAGES);
-        if ( err_flag < 0 ){
-            perror("sysconf(_SC_AVPHYS_PAGES) : ");
-            return SYSINFO_FAIL;
-        }
-        pages_avail = (uint64_t)err_flag;
-#endif
+
 #endif
 
 #ifndef HAVE_PAGE_INFO
@@ -216,149 +154,7 @@ int sysinfo(int verbose) {
         threads = (uint64_t)err_flag;
     }
 
-    /*
-     * some values of interest : 
-     *
-     * NAME                                unistd.h symbolic constant
-     * ----------------------------------------------------------------
-     * _SC_MAPPED_FILES                    _POSIX_MAPPED_FILES 
-     *                                     Supports Memory Mapped Files
-     *
-     * _SC_MAXPID                          no unistd.h value
-     *                                     Max pid value
-     *
-     * _SC_MEMLOCK                         _POSIX_MEMLOCK
-     *                                     Supports Process Memory Locking
-     *
-     * _SC_MEMLOCK_RANGE                   _POSIX_MEMLOCK_RANGE
-     *                                     Supports Range Memory Locking
-     *
-     * _SC_MEMORY_PROTECTION               _POSIX_MEMORY_PROTECTION
-     *                                     Supports Memory Protection
-     *
-     * _SC_MESSAGE_PASSING                 _POSIX_MESSAGE_PASSING
-     *                                     Supports Message Passing
-     *
-     * _SC_MONOTONIC_CLOCK                 _POSIX_MONOTONIC_CLOCK
-     *                                     Supports Monotonic Clock option
-     *
-     * _SC_NPROCESSORS_CONF                no unistd.h value
-     *                                     Number of processors configured
-     *
-     * _SC_NPROCESSORS_MAX                 no unistd.h value
-     *                                     Max number of processors supported
-     *
-     * _SC_NPROCESSORS_ONLN                no unistd.h value
-     *                                     Number of processors online
-     *
-     * _SC_PHYS_PAGES                      no unistd.h value
-     *                                     Total number of pages of
-     *                                     physical memory
-     *
-     * _SC_REALTIME_SIGNALS                _POSIX_REALTIME_SIGNALS
-     *                                     Supports Realtime Signals
-     *
-     * _SC_SHELL                           _POSIX_SHELL
-     *                                     Supports POSIX shell
-     *
-     * _SC_SPIN_LOCKS                      _POSIX_SPIN_LOCKS
-     *                                     Supports Spin Locks
-     *
-     * _SC_STACK_PROT                      no unistd.h value
-     *                                     Default stack protection
-     *
-     * _SC_THREAD_ATTR_STACKADDR           _POSIX_THREAD_ATTR_STACKADDR
-     *                                     Supports Thread Stack Address
-     *
-     * _SC_THREAD_ATTR_STACKSIZE           _POSIX_THREAD_ATTR_STACKSIZE
-     *                                     Supports Thread Stack Size
-     *
-     * _SC_THREAD_DESTRUCTOR_ITERATIONS    PTHREAD_DESTRUCTOR_ITERATIONS
-     *                                     Number attempts made to
-     *                                     destroy thread data on thread
-     *                                     exit
-     *
-     * _SC_THREAD_PRIO_INHERIT             _POSIX_THREAD_PRIO_INHERIT
-     *                                     Supports Priority Inheritance
-     *
-     * _SC_THREAD_PRIO_                    _POSIX_THREAD_PRIO_
-     *                                     Supports Priority
-     *
-     * _SC_THREAD_PRIORITY_SCHEDULING      _POSIX_THREAD_PRIORITY_SCHEDULING
-     *                                     Supports Thread Execution
-     *                                     Scheduling
-     *
-     * _SC_THREAD_SAFE_FUNCTIONS           _POSIX_THREAD_SAFE_FUNCTIONS
-     *                                     Supports Thread-Safe Functions
-     *
-     * _SC_THREAD_STACK_MIN                PTHREAD_STACK_MIN
-     *                                     Min byte size of thread stack
-     *                                     storage
-     *
-     * _SC_THREAD_THREADS_MAX              PTHREAD_THREADS_MAX
-     *                                     Max number of threads per
-     *                                     process
-     *
-     * _SC_THREADS                         _POSIX_THREADS
-     *                                     Supports Threads
-     * 
-     * _SC_VERSION                         _POSIX_VERSION
-     *                                     POSIX.1 version supported
-     * 
-     * _SC_XOPEN_REALTIME                  _XOPEN_REALTIME
-     *                                     Supports X/Open POSIX
-     *                                     Realtime Feature Group
-     * 
-     * _SC_XOPEN_UNIX                      _XOPEN_UNIX
-     *                                     Supports X/Open CAE
-     *                                     Specification,
-     *                                     August 1994, System
-     *                                     Interfaces and Headers,
-     *                                     Issue 4, Version 2
-     * 
-     * _SC_XOPEN_VERSION                   _XOPEN_VERSION
-     *                                     Integer value indicates
-     *                                     version of X/Open Portability
-     *                                     Guide to which implementation
-     *                                     conforms
-     *
-     * _SC_XOPEN_XCU_VERSION               _XOPEN_XCU_VERSION
-     *                                     Integer value indicates
-     *                                     version of XCU specification
-     *                                     to which implementation
-     *                                     conforms
-     * 
-     * If name is an invalid value, sysconf() returns -1 and sets errno
-     * to indicate the error. If the variable corresponding to name is
-     * associated with functionality that is not supported by the
-     * system, sysconf() returns -1 without changing the value of errno.
-     *
-     * Calling sysconf() with the following returns -1 without set-
-     * ting errno, because no maximum limit can be determined. The
-     * system supports at least the minimum values and can support
-     * higher values depending upon system resources.
-     *
-     *   Variable                            Minimum supported value
-     *   _SC_AIO_MAX                        _POSIX_AIO_MAX
-     *   _SC_ATEXIT_MAX                     32
-     *   _SC_MQ_OPEN_MAX                    32
-     *   _SC_THREAD_THREADS_MAX             _POSIX_THREAD_THREADS_MAX
-     *   _SC_THREAD_KEYS_MAX                _POSIX_THREAD_KEYS_MAX
-     *   _SC_THREAD_DESTRUCTOR_ITERATIONS   _POSIX_THREAD_DESTRUCTOR_ITERATIONS
-     *
-     * A call to setrlimit() can cause the value of OPEN_MAX to change.
-     *
-     * Multiplying sysconf(_SC_PHYS_PAGES) or sysconf(_SC_AVPHYS_PAGES)
-     * by sysconf(_SC_PAGESIZE) to determine memory amount in bytes can
-     * exceed the maximum values representable in a 32-bit signed or
-     * unsigned integer.
-     *
-     * The value of CLK_TCK can be variable and it should not be
-     * assumed that CLK_TCK is a compile-time constant.
-     */
-
-    /* can we guess the architecture endianess? */
-    /* strictly speaking this is not a wise way to do this */
+    /* guess the architecture endianess */
     little_endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
 
     setlocale( LC_MESSAGES, "C" );
@@ -401,10 +197,15 @@ int sysinfo(int verbose) {
 
         if ( verbose ) {
 #ifdef HAVE_PAGE_INFO
-            printf("                 avail pages = %" PRIu64 "\n", pages_avail);
-            printf("                avail memory = %" PRIu64 "\n", avail_memory);
-            printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
+            if ( avail_memory > 0 ) {
+                printf("                 avail pages = %" PRIu64 "\n", pages_avail);
+                printf("                avail memory = %" PRIu64 "\n", avail_memory);
+            } else {
+                printf("                 avail pages = unknown\n");
+                printf("                avail memory = unknown\n");
+            }
 #endif
+            printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
 
             printf("             threads support = %" PRIu64 "\n", threads);
             printf("               POSIX Version = %" PRIu64 "\n", version);

@@ -1,0 +1,18 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+	-fPIC -Wl,-rpath=/usr/pkg/lib \
+	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
+
+IDIR=/usr/pkg/include -I/usr/X11R7/include
+LDIR=/usr/pkg/lib -L/usr/X11R7/lib
+LIBS=-lX11 -lrt -lm -lpthread
+
+include common.mk
+
