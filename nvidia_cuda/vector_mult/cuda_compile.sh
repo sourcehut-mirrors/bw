@@ -3,6 +3,7 @@
 PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
 export PATH
 
+
 if [ -d /usr/local/cuda-11.4 ]; then
     CUDA_HOME=/usr/local/cuda-11.4
     export CUDA_HOME
@@ -14,11 +15,15 @@ if [ ! -x ${NVCC} ]; then
     return 1
 fi
 
-OPENSSL=`( command -v openssl )`; export OPENSSL
+rm -f vaddf vaddf.o > /dev/null 2>&1
 
-rm -f vmult.o vmult > /dev/null 2>&1
+# nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true
+# --prec-sqrt=true -fmad=false -c -o vaddf.o vaddf.cu 
 
-${NVCC} -ccbin g++ -I../include -m64 \
+
+/usr/bin/printf "\n\n------- attempt to compile vaddf.cu\n"
+
+${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
 -gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_50,code=sm_50 \
@@ -27,9 +32,19 @@ ${NVCC} -ccbin g++ -I../include -m64 \
 -gencode arch=compute_61,code=sm_61 \
 -gencode arch=compute_70,code=sm_70 \
 -gencode arch=compute_75,code=sm_75 \
--Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -c -o vmultd.o vmultd.cu
+-Wno-deprecated-gpu-targets \
+--ftz=false --prec-div=true --prec-sqrt=true \
+-c -o vmultd.o vmultd.cu
 
-${NVCC} -ccbin g++ -m64 \
+if [ ! -f vmultd.o ]; then
+    /usr/bin/printf "\nFAIL ---- compile failed\n"
+    exit 42
+fi
+
+# nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=
+# true -fmad=false -o vaddf vaddf.o -lgomp 
+
+${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_35,code=sm_35 \
 -gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_50,code=sm_50 \
@@ -38,17 +53,25 @@ ${NVCC} -ccbin g++ -m64 \
 -gencode arch=compute_61,code=sm_61 \
 -gencode arch=compute_70,code=sm_70 \
 -gencode arch=compute_75,code=sm_75 \
--Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -fmad=false -o vmultd vmultd.o -lgomp
+-Wno-deprecated-gpu-targets \
+--ftz=false --prec-div=true --prec-sqrt=true \
+-o vmultd vmultd.o -lgomp
 
-/usr/bin/printf "\n------- code will run in five seconds .. or stop me!\n\n"
+if [ -f vmultd ]; then
 
-ls -lapb vmult*
+    /usr/bin/printf "\n------- code will run in five seconds .. or stop me!\n\n"
 
-${OPENSSL} dgst -sha512 -r vmultd.cu | cut -c1-128
-${OPENSSL} dgst -sha512 -r ../include/dat.h | cut -c1-128
-sleep 5 
+    ls -lapb vmultd*
 
-NVPROF=`( command -v nvprof )`; export NVPROF
+    sleep 5 
 
-${NVPROF} ./vmultd
+    NVPROF=`( command -v nvprof )`; export NVPROF
+
+    ${NVPROF} ./vmultd
+
+else
+    /usr/bin/printf "\n------- NO Binary Produced\n\n"
+fi
+
+rm -f vmultd vmultd.o > /dev/null 2>&1 
 

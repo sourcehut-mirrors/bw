@@ -1,26 +1,27 @@
 
+Recent CUDA 11.4 will not work with GCC releases past 10.0 so
+we need this crap : 
 
-$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_30,code=sm_30 -c -o index_hack.o index_hack.cu
-$ nvcc -ccbin g++ -m64 -gencode arch=compute_30,code=sm_30 -o index_hack index_hack.o -lgomp 
 
+C_oberon$ nvcc --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2021 NVIDIA Corporation
+Built on Mon_Oct_11_21:27:02_PDT_2021
+Cuda compilation tools, release 11.4, V11.4.152
+Build cuda_11.4.r11.4/compiler.30521435_0
+
+C_oberon$ nvcc -ccbin g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -c -o index_hack.o index_hack.cu
+C_oberon$ nvcc -ccbin g++-10 -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o index_hack index_hack.o -lgomp
+
+
+
+
+----------------------------------- other foo
 
 for multi-stream concurrency  
 
 see https://developer.nvidia.com/blog/gpu-pro-tip-cuda-7-streams-simplify-concurrency/
 
-deimos$ 
-deimos$ cat /etc/debian_version 
-11.1
-deimos$ uname -a 
-Linux deimos 5.10.0-9-amd64 #1 SMP Debian 5.10.70-1 (2021-09-30) x86_64 GNU/Linux
-deimos$ 
-deimos$ nvcc --version 
-nvcc: NVIDIA (R) Cuda compiler driver
-Copyright (c) 2005-2021 NVIDIA Corporation
-Built on Sun_Feb_14_21:12:58_PST_2021
-Cuda compilation tools, release 11.2, V11.2.152
-Build cuda_11.2.r11.2/compiler.29618528_0
-deimos$ 
 deimos$ nvcc --default-stream per-thread -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -c -o index_hack.o index_hack.cu
 deimos$ nvcc --default-stream per-thread -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o index_hack index_hack.o -lgomp 
-deimos$ 
+ 

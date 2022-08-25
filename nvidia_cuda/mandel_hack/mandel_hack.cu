@@ -31,6 +31,14 @@
 /* #define NUM_ELEMENTS 1073741824   big GV100 only as this needs 20G */
 /* #define NUM_ELEMENTS 16777216 */
 
+/*
+#include "/usr/local/cuda-11.4/targets/x86_64-linux/include/builtin_types.h"
+#include "/usr/local/cuda-11.4/targets/x86_64-linux/include/device_types.h"
+*/
+/*
+#include "/usr/local/cuda-11.4/targets/x86_64-linux/include/host_defines.h"
+*/
+
 
 /* lets try what fits in 4G of GPU mem */
 #define NUM_ELEMENTS 1048576
@@ -57,23 +65,36 @@ gpu_mbrot( const double *c_r, const double *c_i,
 {
 
     int i = blockDim.x * blockIdx.x + threadIdx.x;
+    uint32_t height = 0;
+    double zr = 0.0;
+    double zi = 0.0;
+    double tmp_r, tmp_i;
+    double mag = 0.0;
+    double temp0, temp1;
 
     if ( i < num_elements ) {
 
-        /* point c belongs to the Mandelbrot set if and only if
-         * the magnitude of the f(c) <= 2.0 */
-        uint32_t height = 0;
-        double zr = 0.0;
-        double zi = 0.0;
-        double tmp_r, tmp_i;
-        double mag = 0.0;
-
         while ( ( height < BAIL_OUT ) && ( mag < 4.0 ) ) {
+            /* previous to the grand FMA intrinsics experiment 
             tmp_r = ( zr * zr ) - ( zi * zi );
             tmp_i = ( zr * zi ) + ( zr * zi );
             zr = tmp_r + c_r[i];
             zi = tmp_i + c_i[i];
             mag = zr * zr + zi * zi;
+            */
+
+            temp0 = -1.0 * zi * zi;
+            tmp_r = __fma_rn( zr, zr, temp0);
+            
+            temp1 = zr * zi;
+            tmp_i = __fma_rn( zr, zi, temp1);
+
+            zr = tmp_r + c_r[i];
+            zi = tmp_i + c_i[i];
+ 
+            temp0 = zi * zi;
+            mag = __fma_rn( zr, zr, temp0);
+
             height += 1;
         }
 
@@ -188,7 +209,13 @@ int main(int argc, char *argv[])
     center_i = IMAG_COORD;
 
     clock_gettime( CLOCK_REALTIME, &t0 );
-    /* TODO get rid of the drand stuff */
+
+    /**********************************************
+     * check for a filename in argv[1] and then
+     * just read in the coordinate data as well
+     * as the expected mandelbrot result.
+     **********************************************/
+
     for (int i = 0; i < num_elements; ++i) {
 
         host_r[i] = center_r - offset_width
