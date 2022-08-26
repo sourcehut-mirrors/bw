@@ -1,0 +1,77 @@
+
+With fma calls for CPU checking we get horrific performance loss
+on the host : 
+
+
+------- attempt to compile mandel_hack.cu
+
+------- code will run in five seconds .. or stop me!
+
+-rwxr-xr-x 1 dclarke devl 826224 Aug 26 11:09 mandel_hack
+-rw-r--r-- 1 dclarke devl  20904 Aug 26 00:38 mandel_hack.cu
+-rw-r--r-- 1 dclarke devl  66032 Aug 26 11:09 mandel_hack.o
+==1438== NVPROF is profiling process 1438, command: ./mandel_hack
+-------------------------------------------------------------
+        system name = Linux
+          node name = oberon
+            release = 5.19.2-genunix
+            version = #1 SMP Sat Aug 20 19:46:19 GMT 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16723369984
+                    = 16331416 kB
+                    = 15948 MB
+-------------------------------------------------------------
+DBUG : at 153 in mandel_hack.cu
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : firing off 1048576 cuda core code chunks
+     : mem size of double data array is 8388608 bytes
+     : mem size of uint32_t height array is 4194304 bytes
+
+-----------------------------------------------------------
+     : random data load 50063027 nsecs
+     : cudaMalloc device_r 140961515 nsecs
+     : cudaMalloc device_i 87244 nsecs
+     : cudaMalloc device_mval 93132 nsecs
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 900127nsecs
+DBUG : at 323 in mandel_hack.cu
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 885692 nsecs
+INFO : CUDA kernel launch with 1024 blocks of 1024 threads
+DBUG : at 366 in mandel_hack.cu
+INFO : done.
+     : gpu_mbrot time delta 34483 nsecs
+DBUG : at 393 in mandel_hack.cu
+INFO : Copy result from device to host done.
+     : copy device result done 1547964 nsecs
+DBUG : at 428 in mandel_hack.cu
+     : Total error count = 0
+     : data check done 3550061904437 nsecs
+INFO : host memory free and we are done
+==1438== Profiling application: ./mandel_hack
+==1438== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   99.07%  294.62ms         1  294.62ms  294.62ms  294.62ms  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    0.55%  1.6408ms         2  820.42us  810.29us  830.55us  [CUDA memcpy HtoD]
+                    0.38%  1.1282ms         1  1.1282ms  1.1282ms  1.1282ms  [CUDA memcpy DtoH]
+      API calls:   66.20%  294.68ms         1  294.68ms  294.68ms  294.68ms  cudaDeviceSynchronize
+                   31.70%  141.13ms         3  47.044ms  86.407us  140.95ms  cudaMalloc
+                    0.74%  3.3134ms         3  1.1045ms  881.20us  1.5410ms  cudaMemcpy
+                    0.39%  1.7576ms         1  1.7576ms  1.7576ms  1.7576ms  cudaDeviceReset
+                    0.34%  1.5341ms         3  511.38us  133.23us  704.61us  cudaFree
+                    0.25%  1.0952ms         1  1.0952ms  1.0952ms  1.0952ms  cuDeviceTotalMem
+                    0.14%  613.99us         1  613.99us  613.99us  613.99us  cuDeviceGetPCIBusId
+                    0.11%  495.39us         1  495.39us  495.39us  495.39us  cudaGetDeviceProperties
+                    0.10%  447.69us       101  4.4320us     479ns  182.83us  cuDeviceGetAttribute
+                    0.01%  48.520us         1  48.520us  48.520us  48.520us  cuDeviceGetName
+                    0.01%  27.402us         1  27.402us  27.402us  27.402us  cudaLaunchKernel
+                    0.00%  7.4420us         3  2.4800us     926ns  3.4260us  cuDeviceGetCount
+                    0.00%  3.7240us         2  1.8620us  1.1140us  2.6100us  cuDeviceGet
+                    0.00%  2.2010us         1  2.2010us  2.2010us  2.2010us  cudaGetDeviceCount
+                    0.00%     915ns         1     915ns     915ns     915ns  cuDeviceGetUuid
+                    0.00%     271ns         1     271ns     271ns     271ns  cudaGetLastError
+
+

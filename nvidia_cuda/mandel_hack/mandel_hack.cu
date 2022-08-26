@@ -31,15 +31,6 @@
 /* #define NUM_ELEMENTS 1073741824   big GV100 only as this needs 20G */
 /* #define NUM_ELEMENTS 16777216 */
 
-/*
-#include "/usr/local/cuda-11.4/targets/x86_64-linux/include/builtin_types.h"
-#include "/usr/local/cuda-11.4/targets/x86_64-linux/include/device_types.h"
-*/
-/*
-#include "/usr/local/cuda-11.4/targets/x86_64-linux/include/host_defines.h"
-*/
-
-
 /* lets try what fits in 4G of GPU mem */
 #define NUM_ELEMENTS 1048576
 #define THREADS_PER_BLOCK 1024
@@ -264,8 +255,8 @@ int main(int argc, char *argv[])
     printf("     : cudaMalloc device_i %" PRIu64 " nsecs\n",
                                                           tdelta_nsec);
 
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     /*
+    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceSynchronize()\n");
@@ -288,8 +279,8 @@ int main(int argc, char *argv[])
                                                           tdelta_nsec);
 
 
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     /*
+    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceSynchronize()\n");
@@ -466,19 +457,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    /*** CPU test stage ***/
-
-
     /***************************************************************
-     *
-     *    This will always fail if we can not enable the fused
-     *    multiply add feature for the CPU based computations.
-     *
+     * Verify the data with CPU and fma() calls
      ***************************************************************/
-
-
-    /* this won't work without the fused multiple add feature *******
-
     clock_gettime( CLOCK_REALTIME, &t0 );
     int error_count = 0;
     uint32_t delta_error_sum = 0;
@@ -512,8 +493,6 @@ int main(int argc, char *argv[])
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : data check done %" PRIu64 " nsecs\n", tdelta_nsec);
-
-    *******************************************************************/
 
     /* Free host memory */
     free(host_r);
@@ -609,7 +588,6 @@ int sysinfo(void) {
 
 uint32_t cpu_mbrot( double c_r, double c_i, uint32_t bail_out )
 {
-
     /* point c belongs to the Mandelbrot set if and only if
      * the magnitude of the f(c) <= 2.0 */
     uint32_t height = 0;
@@ -618,25 +596,32 @@ uint32_t cpu_mbrot( double c_r, double c_i, uint32_t bail_out )
     double tmp_r, tmp_i;
     double mag = 0.0;
 
+    double temp0, temp1;
+
     while ( ( height < bail_out ) && ( mag < 4.0 ) ) {
-        tmp_r = ( zr * zr ) - ( zi * zi );
-        tmp_i = ( zr * zi ) + ( zr * zi );
+
+        /*     tmp_r = ( zr * zr ) - ( zi * zi );     */
+        temp0 = -1.0 * zi * zi;
+        tmp_r = fma( zr, zr, temp0);
+
+        /*     tmp_i = ( zr * zi ) + ( zr * zi );     */
+        temp1 = zr * zi;
+        tmp_i = fma( zr, zi, temp1);
+
+
         zr = tmp_r + c_r;
         zi = tmp_i + c_i;
 
-        /* mag = sqrt( zr * zr + zi * zi ); 
-         *
-         * lets speed this up a little and lose the sqrt
-         *
-         * mag = zr * zr + zi * zi;
-         */
+        /* mag = zr * zr + zi * zi; */
+        temp0 = zi * zi;
+        mag = fma ( zr, zr, temp0);
 
         mag = zr * zr + zi * zi;
 
         height += 1;
     }
 
-    return ( height );
+    return height;
 
 }
 

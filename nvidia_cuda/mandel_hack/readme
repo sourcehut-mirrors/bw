@@ -78,8 +78,8 @@ on their wrong results. :)
   Try -ffp-contract=on with gcc ?
 
 
-C_nix$ nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -c -o mandel_hack.o mandel_hack.cu 
-C_nix$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -o mandel_hack mandel_hack.o -lgomp
+C_nix$ nvcc -ccbin g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -c -o mandel_hack.o mandel_hack.cu 
+C_nix$ nvcc -ccbin g++-10 -m64 -gencode arch=compute_35,code=sm_35 -o mandel_hack mandel_hack.o -lgomp
 
 
 Te see the GPU and CPU disagreements from a log file : 
