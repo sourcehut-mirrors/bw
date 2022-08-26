@@ -30,7 +30,7 @@ ${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_70,code=sm_70 \
 -gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets \
---ftz=false --prec-div=true --prec-sqrt=true \
+--ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
 -c -o mandel_hack.o mandel_hack.cu
 
 if [ ! -f mandel_hack.o ]; then
@@ -48,7 +48,7 @@ ${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_70,code=sm_70 \
 -gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets \
---ftz=false --prec-div=true --prec-sqrt=true \
+--ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
 -o mandel_hack mandel_hack.o -lgomp
 
 if [ -f mandel_hack ]; then
