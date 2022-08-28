@@ -108,13 +108,16 @@ pointers shall be to queue items we shall call q_item types :
         /* Is this queue live or dead?
          *
          * Here I am thinking that someday and someway
-         * we need to have consumers or workers out there
-         * that check if there is jobs in the queue as
+         * we need to have consumers ( workers ) out there
+         * that check if there are jobs in the queue as
          * well as a way to signal that we are shutting
          * down the whole queue. The other neat feature we
          * get from a POSIX thread condition variable is 
          * that we can signal to waiting workers that a
-         * job has arrive in the queue.
+         * job has arrived in the queue. This is a good
+         * way for the workers to begin a feeding frenzy
+         * as they go hunting in the queue for something
+         * to do.
          */
         pthread_cond_t alive;
 
@@ -122,10 +125,11 @@ pointers shall be to queue items we shall call q_item types :
 
 
 The above thing is actually the job queue. However we need a thing to
-put in the queue. A task. A job.  A thing that somehow contains the data
+put in the queue. A task. A job.  A thing that somehow contains data
 we need that describes a job to do.  This must be a data type that we
 can point to in the queue "head" and "tail" pointers. Thus it is a data
-type called the "q_item" which clearly is an item in the queue.
+type called the "q_item" which clearly is an item in the queue. Seems
+simple enough.
 
 
     typedef struct q_item {
@@ -141,7 +145,10 @@ type called the "q_item" which clearly is an item in the queue.
 
         void *payload;
 
-        /* Is there a next item in the list ? */
+        /* Also the queue is an ordered list of stuff.
+         * Is there a next item in the list? If this
+         * pointer is NULL then we know there is nothing
+         * left in the queue except this item. */
 
         struct q_item *next;
 
@@ -149,13 +156,18 @@ type called the "q_item" which clearly is an item in the queue.
 
 
 We need some way for the queue thing to exist in memory somewhere. Since
-everything in the C programming language boils down to accessing and 
+everything in the C programming language boils down to accessing and
 manipulating stuff in memory somehow then we need a way for the queue to
 exist in memory. Any variable we use will either be in some automatic
 memory location which resides in a thing called a "memory stack" or it
 may be a memory location that we have to ask for seperately and that is
 called a big "memory heap".  Just know that we have to have the queue in
-memory to do anything with it. [1]
+memory to do anything with it. [1] Also, most computer processors have
+little memory regions inside of them called "registers" and even special
+things called "flag register" or "status register". Those are also
+memory regions but they do not have an address that we can easily see.
+They just have names like A or perhaps %fp32 or even r0. Do not get
+caught up in that detail at this time.
 
 
 I think it is best to have a way to setup the queue in memory as well as
@@ -176,9 +188,10 @@ general terms with "pseudocode" :
 
         be sure the magic mutex thing exists and is setup somehow
 
-        return the shiney new queue to whomever
+        return the shiney new queue to whomever asked for it
 
     }
+
 
 
 This new function will have to return an object which has a data type
@@ -193,7 +206,7 @@ called the "q_type":
          * need one number element of a "struct q_type" thing.
          */
 
-        struct q_type *q = calloc( (size_t) 1, (size_t) sizeof(struct q_type));
+        struct q_type *q = calloc( 1, sizeof(struct q_type));
 
         /* Make sure "head" and "tail" exist and 
          * since the queue is empty we want them both to 
@@ -206,12 +219,12 @@ called the "q_type":
          q->head = NULL;
          q->tail = NULL;
 
-        /* we know that the length of this queue is zero and
+        /* We know that the length of this queue is zero and
          * again we already asked for clean memory that is all
          * zeros but lets do this for clarity. */
         q->length = 0;
 
-        /* be sure the mutex thing exists and is setup as an
+        /* Be sure the mutex thing exists and is setup as an
          * initialized POSIX thread mutual exclusion lock
          * based on the macro PTHREAD_MUTEX_INITIALIZER
          *
@@ -226,6 +239,25 @@ called the "q_type":
          *     no error checks are performed.
          */
         q->q_mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+
+
+        /* There are various flavours to a mutual exclusion lock. We
+         * need to initialize the mutex and also set a "flavour" that
+         * will allow for some error checking :
+         * 
+         *     PTHREAD_MUTEX_ERRORCHECK : This type of mutex provides
+         *     error checking.  A thread attempting to relock this
+         *     mutex without first unlocking it will return with an
+         *     error.  A thread attempting to unlock a mutex that
+         *     another thread has locked will return with an error.
+         *     A thread attempting to unlock an unlocked mutex will
+         *     return with an error.
+         */
+
+        /* Generally we want to check the error status of these calls
+         * and in the actual code implementation, we certainly will. */
+        pthread_mutexattr_init(q->mutex_attr);
+        pthread_mutexattr_settype( q->mutex_attr, PTHREAD_MUTEX_ERRORCHECK);
 
         /* setup the alive thread condition */
         q->alive = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
@@ -250,11 +282,12 @@ things and then new stuff may be put in after. The First stuff In is
 also the First stuff Out.  This is FIFO queue type order.
 
 
-We need a function that somehow puts a thing into the queue : 
+We need a function that somehow puts a thing into the queue. This is
+generally called "enqueue". Later when we need to pull a job out of
+the queue we shall call that "dequeue".
 
 
-    magic_stuff_it_in_queue ( gimme a queue,
-                              gimme job information payload ) {
+    enqueue_a_job_thing ( queue, job information payload ) {
 
         first we need to protect the queue from other processes or
            other code wrangling with it.  Use the mutex lock.
@@ -274,7 +307,8 @@ We need a function that somehow puts a thing into the queue :
                   queue list at the "tail".
 
         we can now remove the protection from the queue as we have
-           finished wrangling the contents inside it
+           finished wrangling the contents inside it. Again this is
+           why we have a mutex lock.
    
         return back the number of items in the queue
 
@@ -282,7 +316,9 @@ We need a function that somehow puts a thing into the queue :
 
 
 Lets try to write that in the C programming language where we say that
-we are putting something onto the head of the queue :
+we are putting something onto the head of the queue. The actual code
+will set errno to zero before some calls and check error status after
+a call is made. That is a bit verbose but certainly very safe to do.
 
 
     int enqueue ( q_type *q, void *p ) {
@@ -404,6 +440,14 @@ we are putting something onto the head of the queue :
          *
          *    This is if any threads are blocked.
          *
+         *    The pthread_cond_signal() function has no effect if
+         *    there are no threads currently blocked.
+         *
+         *    Another possibility is to use pthread_cond_broadcast()
+         *    which unblocks all threads currently blocked on this
+         *    condition variable q->alive. Worth while to see what
+         *    that does.
+         *
          */
         pthread_cond_signal( &( q->alive ) );
 
@@ -417,12 +461,13 @@ eats up the jobs in the job queue. A consumer does what you think. It
 goes looking for something to "eat" and if it finds something it then
 "eats" the job up.  As far as the queue is concerned the problem is out
 of its hands.  We can get to consumer eating stuff later but for now
-be able to get something from the queue.
+be able to get something from the queue.  This is called a dequeue.
 
 
-    get_job_thing ( some queue ) {
+    dequeue_a_job ( some queue ) {
 
-        protect the queue from all other threads accessing it 
+        protect the queue from all other threads accessing it with
+            a mutex lock
 
         check if the queue is empty ?
             we want to get a job out of the queue but there is 
@@ -438,93 +483,108 @@ be able to get something from the queue.
           means that the first job that went into the queue is also
           the first job we take out.
 
-        remove the protection
+        remove the protection we did with a mutex lock
 
         return the task payload thing
 
     }
 
 
+
 Great. Now lets translate that into some sort of valid C code where
 the objective is to remove a job from the head of the queue :
 
 
-    void *dequeue( q_type *q ) {
+void *dequeue( q_type *q ) {
 
-        void *return_payload = NULL;
+    void *return_payload = NULL;
 
-        /* We only care about the first job in the queue and
-         * we want the payload from that first job. Looking
-         * at this diagram we see queue->head->payload is what
-         * we want. 
+    /* We only care about the first item in the queue and
+     * we want the payload from that first item. Looking
+     * at this diagram we see queue->head->payload is what
+     * we want.
+     *
+     *   +--------- queue -----------+
+     *   |                           |
+     *   |   head -->  some_item_N   |
+     *   |                           |
+     *   |   tail -->  some_item_X   |
+     *   |                           |
+     *   |   length =   3            |
+     *   |                           |
+     *   +---------------------------+
+     *
+     *   However the some_item_N looks like :
+     *
+     *   +----- some_item_N ---------+
+     *   |                           |
+     *   |    payload = a_pointer_x  |
+     *   |                           |
+     *   |    next ---> some_item_P  |
+     *   |                           |
+     *   +---------------------------+
+     *
+     * Once we get queue->head->payload then the item that
+     * was called "some_item_N" no longer needs to exist.
+     * The queue head must now point to whatever some_item_N
+     * was pointing to as "next". That could even be NULL.
+     */
+
+    /* protect the queue from all other threads accessing it */
+    pthread_mutex_lock ( q->mutex );
+
+    /**********************************************************
+     * check if the queue is empty and wait until it is alive *
+     **********************************************************/
+    while (    ( (q->length) == 0 )
+            && ( (q->head) == NULL )
+            && ( (q->tail) == NULL ) ) {
+
+        /* WARNING : this is blocking.
          *
-         *   +--------- queue -----------+
-         *   |                           |
-         *   |   head -->  some_item_N   |
-         *   |                           |
-         *   |   tail -->  some_item_X   |
-         *   |                           |
-         *   |   length =   3            |
-         *   |                           |
-         *   +---------------------------+
-         *
-         *   However the some_item_N looks like :
-         *
-         *   +----- some_item_N ---------+
-         *   |                           |
-         *   |    payload = a_pointer_x  |
-         *   |                           |
-         *   |    next ---> some_item_P  |
-         *   |                           |
-         *   +---------------------------+
-         *
-         * Once we get queue->head->payload then the job that
-         * was called "some_item_N" no longer needs to exist.
-         * The queue head must now point to whatever some_item_N
-         * was pointing to as "next". That could even be NULL.
-         */
+         * queue is empty so we await for it to get a task 
+         * which really means we await a signal sent by the
+         * enqueue code. Recall that pthread_cond_signal()
+         * unblocks at least one thread. */
+        pthread_cond_wait( &( q->alive ), q->mutex );
 
-        /* protect the queue from all other threads accessing it */
-        pthread_mutex_lock ( &( q->q_mutex ) );
-
-        /* check if the queue is empty and wait until it is alive */
-        while ( ( (q->length) == 0 )
-                && ( (q->head) == NULL )
-                && ( (q->tail) == NULL ) ) {
-        
-            /* queue is empty so we await for it to get a task */
-            pthread_cond_wait( &( q->alive ), &( q->q_mutex ) );
-
-        }
-
-        /* we now know for certain that the queue has something
-         * at the head.  So get the payload that is pointed to. */
-        return_payload = q->head->payload;
-
-        /* redirect the head of the queue to point to whatever
-         * was the next item, HOWEVER we need to save the 
-         * current pointer data to free() the memory later */
-        q_item *tmp=q->head;
-        q->head = tmp->next;
-        q->length -= 1;
-
-        /* did we just empty the queue of the only item? */
-        if ( ( q->length == 0 ) && ( q->head == NULL ) ) {
-            q->tail = NULL;
-        }
-
-        /* unlock the mutex */
-        pthread_mutex_unlock ( &( q->q_mutex ) );
-
-        /* free up the memory that was being used by the item
-         * we just took the payload from */
-        free(tmp);
-        tmp = NULL;
-
-
-        return ( return_payload );
-         
     }
+
+    /* we now know for certain that the queue has something
+     * at the head.  So get the payload at the head of the
+     * list. */
+    return_payload = q->head->payload;
+
+    /* redirect the head of the queue to point to whatever
+     * was the next item, HOWEVER we need to save the
+     * current pointer data to free() the memory later */
+    q_item *tmp=q->head;
+    q->head = tmp->next;
+    q->length -= 1;
+
+    /* did we just empty the queue of the only item? */
+    if ( ( q->length == 0 ) && ( q->head == NULL ) ) {
+        /* Since the queue is now empty we need both
+         * the head and tail to point to nothing. They
+         * are both NULL. */
+        q->tail = NULL;
+    }
+
+    /* unlock the mutex */
+    pthread_mutex_unlock ( q->mutex );
+
+    /* free up the memory that was being used by the item
+     * we just took the payload from.
+     *
+     * UPDATE from awesome strager who advises to keep the
+     * free outside of the critical code section.
+     */
+    free(tmp);
+    tmp = NULL;
+
+    return ( return_payload );
+
+}
 
 
 Footnote : 

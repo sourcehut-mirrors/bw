@@ -1,4 +1,24 @@
 
+/*
+ * dequeue.c  get a job item from the queue as described in readme
+ * Copyright (C) Dennis Clarke 2019
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -15,6 +35,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "q.h"
+
 
 void *dequeue( q_type *q ) {
 
@@ -63,13 +84,17 @@ void *dequeue( q_type *q ) {
 
         /* WARNING : this is blocking.
          *
-         * queue is empty so we await for it to get a task */
+         * queue is empty so we await for it to get a task 
+         * which really means we await a signal sent by the
+         * enqueue code. Recall that pthread_cond_signal()
+         * unblocks at least one thread. */
         pthread_cond_wait( &( q->alive ), q->mutex );
 
     }
 
     /* we now know for certain that the queue has something
-     * at the head.  So get the payload that is pointed to. */
+     * at the head.  So get the payload at the head of the
+     * list. */
     return_payload = q->head->payload;
 
     /* redirect the head of the queue to point to whatever
@@ -81,6 +106,9 @@ void *dequeue( q_type *q ) {
 
     /* did we just empty the queue of the only item? */
     if ( ( q->length == 0 ) && ( q->head == NULL ) ) {
+        /* Since the queue is now empty we need both
+         * the head and tail to point to nothing. They
+         * are both NULL. */
         q->tail = NULL;
     }
 

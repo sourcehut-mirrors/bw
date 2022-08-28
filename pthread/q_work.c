@@ -1,4 +1,26 @@
 
+/*
+ * q_work.c   create a job queue as described in the readme and also
+ *            toss in some testing baloney work to do
+ * Copyright (C) Dennis Clarke 2019
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -78,7 +100,7 @@ int main(int argc, char **argv) {
             perror("     ");
             return EXIT_FAILURE;
         }
-        if ( ( candidate_int < 1 ) || ( candidate_int > 256 ) ){
+        if ( ( candidate_int < 1 ) || ( candidate_int > 512 ) ){
             fprintf(stderr,"WARN : num_pthreads is unreasonable\n");
             fprintf(stderr,"     : we shall assume 4 pthreads and proceed.\n");
             num_pthreads = 4;
@@ -101,6 +123,12 @@ int main(int argc, char **argv) {
             req_element_num = 1048576;
         } else {
             req_element_num = (size_t)candidate_int;
+            if ( req_element_num > 1073741824 ) {
+                fprintf(stderr,"WARN : array_cnt is unreasonable\n");
+                fprintf(stderr,"     : the maximum is 2^30 = 1073741824\n");
+                fprintf(stderr,"     : we shall assume 16777216 elements and proceed.\n");
+                req_element_num = 16777216;
+            }
             fprintf(stderr,"INFO : req_element_num is %i\n", req_element_num );
         }
     }
@@ -120,13 +148,14 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    /* create our custom queue for holding task information */
+    /* create our custom queue for holding task information
+     * TODO check that we actually did get a valid my_q pointer */
     q_type *my_q = q_create();
 
     thread_parm_t *make_work;
     /* make plenty of work where the queue has more work elements
      * than consumer threads.
-     *
+     *           * * *   N O T E   * * *
      * So here we use twice as many make_work things as there are
      * threads and then we add on three more just for testing fun
      */
@@ -155,9 +184,11 @@ int main(int argc, char **argv) {
         make_work->work_num = (uint32_t)j;
 
         /* Create a random fibonacci number to compute from 32 upwards
-         * to 41 as the max. Please see comment in fibber.c and do not
-         * mess with this too much. */
-        make_work->fibber = (uint8_t)( drand48() * 10 ) + (uint8_t)32;
+         * to 47 as the max. Please see comment in fibber.c and do not
+         * mess with this too much. Note that drand48() will never 
+         * return a value of one and thus the integer limit in this
+         * addition is 15 + 32 = 47. */
+        make_work->fibber = (uint8_t)( drand48() * 16 ) + (uint8_t)32;
 
         /* number of the uint64_t elements in the thread big_array */
         make_work->array_cnt = req_element_num;
@@ -191,7 +222,7 @@ int main(int argc, char **argv) {
      *        [EINVAL]  Invalid value for attr.
      *
      *        [ENOTSUP] Invalid or unsupported value
-     *                  for contentionscope.
+     *                  for contention scope.
      *
      * per Steve Wills :
      *     any time you see the word "unspecified" in
@@ -219,7 +250,7 @@ int main(int argc, char **argv) {
         errno = 0;
         pthread_err = pthread_attr_setscope(attr, PTHREAD_SCOPE_SYSTEM);
         if ((pthread_err == EINVAL)||(pthread_err == ENOTSUP)){
-            /* just give up */
+            /* bork bork bork and just give up */
             fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
             perror("FAIL : can not set pthread contention scope at all");
             return EXIT_FAILURE;
