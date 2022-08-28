@@ -111,7 +111,7 @@ int main (int argc, char **argv)
     /**********************************************************
      *           Now deal with the filename provided          *
      **********************************************************/
-    if (argc == 0) {
+    if (argc == 1) {
         fprintf(stderr, "FAIL : provide a filename\n");
         return EXIT_FAILURE;
     }

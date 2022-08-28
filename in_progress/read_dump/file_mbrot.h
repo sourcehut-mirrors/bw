@@ -48,6 +48,7 @@ typedef struct f_item {
     uint32_t     vbox_imag_count;
     uint32_t     vbox_sample_real;
     uint32_t     vbox_sample_imag;
+    int          pthread_limit;
 
     FILE         *fp;
     int          file_error_status;

@@ -53,12 +53,13 @@
 
 /* essential mandelbrot data */
 #include "file_mbrot.h"
+#include "mbrot_work.h"
 
 #define VERBOSE 1
 int sysinfo(int verbose);
-uint64_t system_memory(void);
 
 int parse_double(const char *str, double **dbl );
+int parse_pthread_limit(const char *str, int *pthread_limit);
 
 int main(int argc, char **argv)
 {
@@ -67,10 +68,11 @@ int main(int argc, char **argv)
      * the nanosec 32-bit number as a seed for srand48() */
     struct timespec now_time;
 
-    int j, k, p, candidate_int;
+    int j, k, p, candidate_int, pthread_limit, status;
     double *test_dbl;
 
     struct f_item *mandelbrot_file;
+    char *tmpdir;
 
     setlocale( LC_ALL, "C" );
 
@@ -85,18 +87,21 @@ int main(int argc, char **argv)
     }
     sysinfo(VERBOSE);
 
-    errno = 0;
-    mandel_data = calloc((size_t)1, sizeof(m_type));
-    if ( mandel_data == NULL ) {
-        /* possible ENOMEM? */
-        if ( errno == ENOMEM ) {
-            fprintf(stderr,"FAIL : calloc ENOMEM\n");
-        } else {
-            fprintf(stderr,"FAIL : calloc\n");
-        }
-        perror("FAIL ");
-        /* this is horrible and here we bail out */
+    /* TODO : do not enforce the need for TMPDIR */
+    tmpdir = getenv("TMPDIR");
+    if ( tmpdir == NULL ) {
+        fprintf(stderr,"FAIL : env var TMPDIR not set\n");
         return EXIT_FAILURE;
+    }
+    /* TODO : just because we now have a TMPDIR of some
+     * sort does not mean we can use it. */
+
+    if (argc == 1) {
+        fprintf(stderr,"FAIL : insufficient arguments provided\n");
+        fprintf(stderr,"     : provide a filename\n");
+        fprintf(stderr,"     :    * * *  or  * * *\n");
+        fprintf(stderr,"     : provide mandelbrot data\n");
+        goto usage;
     }
 
     errno = 0;
@@ -114,8 +119,9 @@ int main(int argc, char **argv)
     }
 
     errno = 0;
-    if ( ( argc < 6 ) && ( argc > 1 ) ) {
+    if ( ( argc < 6 ) && ( argc > 3 ) ) {
         fprintf(stderr,"FAIL : insufficient arguments provided\n");
+usage:
         fprintf(stderr,"     : usage %s mand_bail integer\n",argv[0]);
         fprintf(stderr,"     :        magnify integer\n");
         fprintf(stderr,"     :        real imaginary double values\n");
@@ -126,7 +132,145 @@ int main(int argc, char **argv)
         fprintf(stderr," 8192 125 -1.75 -0.0234 16\n");
         fprintf(stderr,"     : quitting.\n");
         return EXIT_FAILURE;
-    } else if ( argc == 6 ) {
+    }
+   
+    mandelbrot_file = calloc((size_t) 1, (size_t)sizeof(struct f_item));
+    if ( mandelbrot_file == NULL ) {
+        /* possible ENOMEM */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        return EXIT_FAILURE;
+    }
+
+    mandelbrot_file->mandelbrot_data = calloc((size_t) 1, (size_t)sizeof(struct m_data));
+    if ( mandelbrot_file->mandelbrot_data == NULL ) {
+        /* possible ENOMEM */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        free(mandelbrot_file);
+        return EXIT_FAILURE;
+    }
+   
+   
+    if ( argc == 3 ) {
+        /* process the arguments as a filename and pthread_limit. */
+        status = parse_pthread_limit(argv[3], &pthread_limit);
+        if ( status < 0 ) {
+                /* as a rock bottom minimum we run single threaded */
+                mandelbrot_file->pthread_limit = 1;
+            }
+        mandelbrot_file->pthread_limit = pthread_limit;
+
+        /* extract mandelbrot data from the header */
+         errno = 0;
+         status = file_pointer(&mandelbrot_file->fp, argv[1]);
+         if ( status != 0 ) {
+            /* Possible error status values :
+             *
+             *     ERROR_FILENAME;
+             *     ERROR_FILENAME_EMPTY;
+             *     ERROR_FILENAME_FOPEN;
+             *     ERROR_FILENAME_LENGTH;
+             *     ERROR_FILENAME_STAT;
+             *     ERROR_MEMORY;
+             */
+    
+            switch(status) {
+                case ERROR_FILENAME :
+                    fprintf(stderr,"ERR  : ERROR_FILENAME\n");
+                    fprintf(stderr,"     : Please check your filename.\n");
+                    break;
+                case ERROR_FILENAME_EMPTY :
+                    fprintf(stderr,"ERR  : ERROR_FILENAME_EMPTY\n");
+                    fprintf(stderr,"     : What were you thinking?\n");
+                    break;
+                case ERROR_FILENAME_FOPEN :
+                    fprintf(stderr,"ERR  : ERROR_FILENAME_FOPEN\n");
+                    fprintf(stderr,"     : Unable to open that filename.\n");
+                    break;
+                case ERROR_FILENAME_LENGTH :
+                    fprintf(stderr,"ERR  : ERROR_FILENAME_LENGTH\n");
+                    fprintf(stderr,"     : Filename length is wrong?\n");
+                    break;
+                case ERROR_FILENAME_STAT :
+                    fprintf(stderr,"ERR  : ERROR_FILENAME_STAT\n");
+                    fprintf(stderr,"     : Please check your filename.\n");
+                    break;
+                case ERROR_MEMORY :
+                    fprintf(stderr,"ERR  : ERROR_MEMORY\n");
+                    fprintf(stderr,"     : Please download more memory.\n");
+                    break;
+                default :
+                    fprintf(stderr,"ERR  : Something wrong?\n");
+                    fprintf(stderr,"     : You figure it out. I do not know.\n");
+                    fprintf(stderr,"     : error code is %i\n",status);
+            }
+    
+            free(mandelbrot_file->mandelbrot_data);
+            mandelbrot_file->mandelbrot_data = NULL;
+            free(mandelbrot_file);
+            mandelbrot_file = NULL;
+    
+            return EXIT_FAILURE;
+    
+        }
+
+
+        /* we may not need to set errno at all but .. whatever */
+        errno = 0;
+        status = read_mbrot_data(mandelbrot_file);
+    
+        if ( status != 0 ) {
+            /* possible error values
+             * return ERROR_END_OF_FILE;
+             * return ERROR_INSUFFICIENT;
+             * return ERROR_MEMORY;
+             */
+            switch(status) {
+                case ERROR_END_OF_FILE :
+                    fprintf(stderr,"ERR  : ERROR_END_OF_FILE\n");
+                    goto bail_out;
+    
+                case ERROR_INSUFFICIENT :
+                    fprintf(stderr,"ERR  : ERROR_INSUFFICIENT\n");
+                    goto bail_out;
+    
+                case ERROR_MEMORY :
+                    fprintf(stderr,"ERR  : ERROR_MEMORY\n");
+                    /* this could be a nasty situation so for now
+                     * just give up.
+                     *
+                     * TODO : make this a clean exit */
+                    return EXIT_FAILURE;
+    
+                default :
+                    fprintf(stderr,"ERR  : Something wrong?\n");
+                    fprintf(stderr,"     : read_mbrot_data() bork bork bork.\n");
+                    fprintf(stderr,"     : You figure it out. I do not know.\n");
+                    fprintf(stderr,"     : error code is %i\n",status);
+                    return EXIT_FAILURE;
+            }
+    
+        }
+
+        printf("INFO : data read from file %s\n", argv[1]);
+
+    }
+
+    /* the only other possibility here is that we have CLI data */
+    if ( argc == 6 ) {
         /* parse mand_bail */
         candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
@@ -138,9 +282,9 @@ int main(int argc, char **argv)
         if ( ( candidate_int < 256 ) || ( candidate_int > 1048576 ) ){
             fprintf(stderr,"WARN : mandlebrot bail out is unreasonable\n");
             fprintf(stderr,"     : we shall assume 4096 and proceed.\n");
-            mandel_data->mand_bail = (uint32_t)4096;
+            mandelbrot_file->mand_bail = (uint32_t)4096;
         } else {
-            mandel_data->mand_bail = (uint32_t)candidate_int;
+            mandelbrot_file->mand_bail = (uint32_t)candidate_int;
         }
 
         /* parse magnify which internally is a double value */
@@ -154,9 +298,9 @@ int main(int argc, char **argv)
         if ( ( candidate_int < 1 ) || ( candidate_int > ( 1<<30 ) ) ){
             fprintf(stderr,"WARN : magnify_integer is unreasonable\n");
             fprintf(stderr,"     : we shall assume 1 and proceed.\n");
-            mandel_data->magnify = 1.0;
+            mandelbrot_file->magnify = 1.0;
         } else {
-            mandel_data->magnify = (double)candidate_int;
+            mandelbrot_file->magnify = (double)candidate_int;
         }
 
         /* attempt to parse the double floating point coordinates */
@@ -167,9 +311,9 @@ int main(int argc, char **argv)
             fprintf(stderr,"WARN : double coordinate is out of range\n");
             fprintf(stderr,"     : value seen = %-+18.12e\n", *test_dbl );
             fprintf(stderr,"     : we shall assume zero.\n");
-            mandel_data->real_translate = 0.0;
+            mandelbrot_file->real_translate = 0.0;
         } else {
-            mandel_data->real_translate = *test_dbl;
+            mandelbrot_file->real_translate = *test_dbl;
         }
 
         if ( parse_double(argv[4], &test_dbl ) == EXIT_FAILURE ) {
@@ -179,76 +323,54 @@ int main(int argc, char **argv)
             fprintf(stderr,"WARN : double coordinate is out of range\n");
             fprintf(stderr,"     : value seen = %-+18.12e\n", *test_dbl );
             fprintf(stderr,"     : we shall assume zero.\n");
-            mandel_data->imag_translate = 0.0;
+            mandelbrot_file->imag_translate = 0.0;
         } else {
-            mandel_data->imag_translate = *test_dbl;
+            mandelbrot_file->imag_translate = *test_dbl;
         }
 
-        /* TODO : how do we know the number of processors available? */
-        /* At this time we just accept any reasonable power of two as
-         * the pthread count */
-        candidate_int = (int)strtol(argv[5], (char **)NULL, 10);
-        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
-            fprintf(stderr,"FAIL : pthread_limit not understood\n");
-            perror("     ");
-            return ( EXIT_FAILURE );
-        }
-        if ( ( candidate_int < 1 ) || ( candidate_int > 64 ) ){
-            fprintf(stderr,"WARN : pthread_limit is unreasonable\n");
-            fprintf(stderr,"     : we shall assume 1 and proceed.\n");
-            mandel_data->pthread_limit = 1;
-        } else {
-            if ( candidate_int > 1 ) {
-                /* TODO why? snazzy little bit shifting and counting */
-                k = 0; /* number of '1' bits in candidate_int */
-                j = candidate_int;
-                p = 0; /* bit position being tested */
-                while (j) {
-                    if ( j & 1 ) { /* test the LSB position */
-                        k += 1;    /* count the '1' bit */
-                    }
-                    j = j >> 1;    /* shift left */
-                    p += 1;        /* keep track of the bit position */
-                }
-                if ( k > 1 ) {
-                    fprintf(stderr,"WARN : pthread_limit is not a perfect\n");
-                    fprintf(stderr,"     : power of two. We shall assume\n");
-                    mandel_data->pthread_limit = 1 << ( p - 1 );
-                    fprintf(stderr,"     : %i POSIX thread(s).\n", mandel_data->pthread_limit);
-                } else {
-                    mandel_data->pthread_limit = (uint32_t)candidate_int;
-                }
-
-            } else {
-                mandel_data->pthread_limit = 1;
+        status = parse_pthread_limit(argv[5], &pthread_limit);
+        if ( status < 0 ) {
+                /* as a rock bottom minimum we run single threaded */
+                mandelbrot_file->pthread_limit = 1;
             }
-        }
+        mandelbrot_file->pthread_limit = pthread_limit;
 
-    } else {
-        fprintf(stderr,"WARN : No arguments received thus we have\n");
-        fprintf(stderr,"     : some hard coded default values.\n");
-        mandel_data->mand_bail = 8192;
-        mandel_data->magnify = 1.0;
-        mandel_data->real_translate = 0.0;
-        mandel_data->imag_translate = 0.0;
-        mandel_data->pthread_limit = 1;
-    }
 
-    printf("INFO : mandelbrot bail out = %i\n", mandel_data->mand_bail);
-    printf("     : magnify = %-+18.12e\n", mandel_data->magnify);
+    } 
+
+    status = 0;
+
+    printf("INFO : mandelbrot bail out = %i\n", mandelbrot_file->mand_bail);
+    printf("     : magnify = %-+20.12e\n", mandelbrot_file->magnify);
     printf("     : coordinates = ");
-    printf("( %-+18.14e", mandel_data->real_translate);
-    printf(", %-+18.14e )\n", mandel_data->imag_translate);
-    printf("     : pthread_limit = %i\n", mandel_data->pthread_limit);
+    printf("( %-+28.20e", mandelbrot_file->real_translate);
+    printf(", %-+28.20e )\n", mandelbrot_file->imag_translate);
+    printf("     : pthread_limit = %i\n", mandelbrot_file->pthread_limit);
 
 
     /* TODO perhaps now we create a work queue and the required
      * mutex locks etc etc etc .... */
 
-    free (mandel_data);
+
+bail_out:
+    free(mandelbrot_file->mandelbrot_data->mandel_val);
+    mandelbrot_file->mandelbrot_data->mandel_val = NULL;
+    free(mandelbrot_file->mandelbrot_data->coord_r);
+    mandelbrot_file->mandelbrot_data->coord_r = NULL;
+    free(mandelbrot_file->mandelbrot_data->coord_j);
+    mandelbrot_file->mandelbrot_data->coord_j = NULL;
+    free(mandelbrot_file->mandelbrot_data);
+    mandelbrot_file->mandelbrot_data = NULL;
+    free(mandelbrot_file);
+    mandelbrot_file = NULL;
     free (test_dbl);
 
-    return EXIT_SUCCESS;
+    if ( status == 0 ) {
+        return EXIT_SUCCESS;
+    } else {
+        return EXIT_FAILURE;
+    }
+
 
 }
 

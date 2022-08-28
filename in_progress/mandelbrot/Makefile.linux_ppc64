@@ -1,0 +1,13 @@
+
+CC=gcc
+
+CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -m64 -mcpu=970 \
+	-mno-altivec -mno-isel -mno-vsx -mno-crypto -mno-htm \
+	-mno-quad-memory-atomic -mfull-toc -mno-multiple -mupdate \
+	-mno-avoid-indexed-addresses -mno-dlmzb -mno-bit-align \
+	-mno-strict-align -mbig -mregnames -mno-recip \
+	-fno-unsafe-math-optimizations -Wall
+
+IDIR = ../read_dump -I../../pthread
+include common.mk
