@@ -52,7 +52,7 @@
 #include "q.h"
 
 /* essential mandelbrot data */
-#include "m.h"
+#include "file_mbrot.h"
 
 #define VERBOSE 1
 int sysinfo(int verbose);
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     int j, k, p, candidate_int;
     double *test_dbl;
 
-    m_type *mandel_data;
+    struct f_item *mandelbrot_file;
 
     setlocale( LC_ALL, "C" );
 
