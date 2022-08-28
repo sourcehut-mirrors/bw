@@ -22,6 +22,6 @@ for multi-stream concurrency
 
 see https://developer.nvidia.com/blog/gpu-pro-tip-cuda-7-streams-simplify-concurrency/
 
-deimos$ nvcc --default-stream per-thread -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -c -o index_hack.o index_hack.cu
-deimos$ nvcc --default-stream per-thread -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o index_hack index_hack.o -lgomp 
+$ nvcc --default-stream per-thread -ccbin g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -c -o index_hack.o index_hack.cu
+$ nvcc --default-stream per-thread -ccbin g++-10 -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o index_hack index_hack.o -lgomp 
  

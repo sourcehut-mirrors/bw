@@ -1,23 +1,19 @@
 
-dev$ 
-dev$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o t1 t1.cu 
-dev$ 
-dev$ nvprof ./t1
-==6513== NVPROF is profiling process 6513, command: ./t1
-==6513== Profiling application: ./t1
-==6513== Profiling result:
+oberon$ nvcc -ccbin g++-10 -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o t1 t1.cu
+oberon$ nvprof ./t1 
+==3145== NVPROF is profiling process 3145, command: ./t1
+==3145== Profiling application: ./t1
+==3145== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:  100.00%  204.42ms         8  25.552ms  23.519ms  26.783ms  kernel(float*, int)
-      API calls:   57.43%  1.21374s         8  151.72ms  144.22ms  162.82ms  cudaMalloc
-                   41.02%  866.99ms         8  108.37ms  30.335ms  183.95ms  cudaStreamSynchronize
-                    1.45%  30.722ms         8  3.8403ms  10.855us  10.642ms  cudaLaunchKernel
-                    0.05%  1.0580ms         1  1.0580ms  1.0580ms  1.0580ms  cuDeviceTotalMem
-                    0.02%  444.28us       101  4.3980us     439ns  182.81us  cuDeviceGetAttribute
-                    0.02%  343.48us         1  343.48us  343.48us  343.48us  cudaDeviceReset
-                    0.00%  46.377us         1  46.377us  46.377us  46.377us  cuDeviceGetName
-                    0.00%  6.0150us         1  6.0150us  6.0150us  6.0150us  cuDeviceGetPCIBusId
-                    0.00%  4.8190us         3  1.6060us     868ns  2.8750us  cuDeviceGetCount
-                    0.00%  2.6170us         2  1.3080us     624ns  1.9930us  cuDeviceGet
-                    0.00%     959ns         1     959ns     959ns     959ns  cuDeviceGetUuid
-dev$ 
-
+ GPU activities:  100.00%  214.26ms         8  26.782ms  26.782ms  26.783ms  kernel(float*, int)
+      API calls:   51.68%  902.85ms         8  112.86ms  30.017ms  192.04ms  cudaStreamSynchronize
+                   48.25%  842.97ms         8  105.37ms  93.811ms  115.98ms  cudaMalloc
+                    0.02%  427.49us         1  427.49us  427.49us  427.49us  cudaDeviceReset
+                    0.02%  308.81us         1  308.81us  308.81us  308.81us  cuDeviceTotalMem
+                    0.01%  218.57us         8  27.320us  7.5020us  118.50us  cudaLaunchKernel
+                    0.01%  146.35us       101  1.4490us     137ns  63.199us  cuDeviceGetAttribute
+                    0.00%  19.900us         1  19.900us  19.900us  19.900us  cuDeviceGetName
+                    0.00%  8.6660us         1  8.6660us  8.6660us  8.6660us  cuDeviceGetPCIBusId
+                    0.00%  2.0940us         3     698ns     222ns  1.1210us  cuDeviceGetCount
+                    0.00%  1.5430us         2     771ns     289ns  1.2540us  cuDeviceGet
+                    0.00%     277ns         1     277ns     277ns     277ns  cuDeviceGetUuid

@@ -15,13 +15,59 @@ if [ ! -x ${NVCC} ]; then
     return 1
 fi
 
-rm -f vaddf vaddf.o > /dev/null 2>&1
+rm -f vmultd.o vmultd vmultf.o vmultf > /dev/null 2>&1
 
-# nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true
-# --prec-sqrt=true -fmad=false -c -o vaddf.o vaddf.cu 
+/usr/bin/printf "\n\n------- attempt to compile vmultf.cu\n"
+
+${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
+-gencode arch=compute_35,code=sm_35 \
+-gencode arch=compute_37,code=sm_37 \
+-gencode arch=compute_50,code=sm_50 \
+-gencode arch=compute_52,code=sm_52 \
+-gencode arch=compute_60,code=sm_60 \
+-gencode arch=compute_61,code=sm_61 \
+-gencode arch=compute_70,code=sm_70 \
+-gencode arch=compute_75,code=sm_75 \
+-Wno-deprecated-gpu-targets \
+--ftz=false --prec-div=true --prec-sqrt=true \
+-c -o vmultf.o vmultf.cu
+
+if [ ! -f vmultf.o ]; then
+    /usr/bin/printf "\nFAIL ---- compile failed\n"
+    exit 42
+fi
 
 
-/usr/bin/printf "\n\n------- attempt to compile vaddf.cu\n"
+${NVCC} -ccbin /usr/bin/g++-10 -m64 \
+-gencode arch=compute_35,code=sm_35 \
+-gencode arch=compute_37,code=sm_37 \
+-gencode arch=compute_50,code=sm_50 \
+-gencode arch=compute_52,code=sm_52 \
+-gencode arch=compute_60,code=sm_60 \
+-gencode arch=compute_61,code=sm_61 \
+-gencode arch=compute_70,code=sm_70 \
+-gencode arch=compute_75,code=sm_75 \
+-Wno-deprecated-gpu-targets \
+--ftz=false --prec-div=true --prec-sqrt=true \
+-o vmultf vmultf.o -lgomp
+
+if [ -f vmultf ]; then
+
+    /usr/bin/printf "\n------- code will run in five seconds .. or stop me!\n\n"
+
+    ls -lapb vmultf*
+
+    sleep 5 
+
+    NVPROF=`( command -v nvprof )`; export NVPROF
+
+    ${NVPROF} ./vmultf
+
+else
+    /usr/bin/printf "\n------- NO Binary Produced\n\n"
+fi
+
+/usr/bin/printf "\n\n------- attempt to compile vmultd.cu\n"
 
 ${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
@@ -41,8 +87,6 @@ if [ ! -f vmultd.o ]; then
     exit 42
 fi
 
-# nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=
-# true -fmad=false -o vaddf vaddf.o -lgomp 
 
 ${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_35,code=sm_35 \
@@ -73,5 +117,6 @@ else
     /usr/bin/printf "\n------- NO Binary Produced\n\n"
 fi
 
-rm -f vmultd vmultd.o > /dev/null 2>&1 
+rm -f vmultd.o vmultd vmultf.o vmultf > /dev/null 2>&1
+
 

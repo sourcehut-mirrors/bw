@@ -29,7 +29,7 @@ uint64_t timediff( struct timespec st, struct timespec en );
  * CUDA Kernel Device code
  */
 __global__ void
-vector_mult(const double *A, const double *B, double *C, int num_elements)
+vector_mult(const float *A, const float *B, float *C, int num_elements)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
     cudaError_t err = cudaSuccess;
     int num_elements = NUM_ELEMENTS;
-    size_t size = num_elements * sizeof(double);
+    size_t size = num_elements * sizeof(float);
 
     /* do we even have a NVidia Quadro GPU ? */
     int num_gpus = 0;
@@ -84,13 +84,14 @@ int main(int argc, char *argv[])
         printf("     :    %d: %s\n", i, dprop.name);
     }
 
-    printf("INFO : Vector multiply of %d double FP64 elements\n", num_elements);
+    printf("INFO : Vector multiply of %d float FP32 elements\n", num_elements);
     printf("     : Memory size of each array is %ld bytes\n", size );
 
-    /* NVidia CUDA nvcc will barf if you do not cast */
-    double *h_A = (double *)malloc(size);
-    double *h_B = (double *)malloc(size);
-    double *h_C = (double *)malloc(size);
+    /* generally not a wise idea to cast a void pointer
+     * however CUDA is weird and nvcc will  */
+    float *h_A = (float *)malloc(size);
+    float *h_B = (float *)malloc(size);
+    float *h_C = (float *)malloc(size);
 
     if (h_A == NULL || h_B == NULL || h_C == NULL) {
         fprintf(stderr, "FAIL : memory allocate\n");
@@ -100,8 +101,8 @@ int main(int argc, char *argv[])
     /* fill the arrays A and B with random data */
     clock_gettime( CLOCK_REALTIME, &t0 );
     for (int i = 0; i < num_elements; ++i) {
-        h_A[i] = drand48();
-        h_B[i] = drand48();
+        h_A[i] = (float)drand48();
+        h_B[i] = (float)drand48();
     }
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
     /* Allocate the device input memory */
-    double *d_A = NULL;
+    float *d_A = NULL;
     if (cudaMalloc((void **)&d_A, size) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector A\n");
@@ -123,7 +124,7 @@ int main(int argc, char *argv[])
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
-    double *d_B = NULL;
+    float *d_B = NULL;
     if (cudaMalloc((void **)&d_B, size) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector B\n");
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
 
-    double *d_C = NULL;
+    float *d_C = NULL;
     if (cudaMalloc((void **)&d_C, size) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector C\n");
@@ -242,7 +243,7 @@ int main(int argc, char *argv[])
     int correct_flag = 1;
     for (int j = 0; j < num_elements; ++j)
     {
-        if ( fabs(h_A[j] * h_B[j] - h_C[j]) > EPSILON ) {
+        if ( fabsf(h_A[j] * h_B[j] - h_C[j]) > EPSILON ) {
             fprintf(stderr, "FAIL : Result verification failed at element %d!\n", j);
             correct_flag = 0;
         }
