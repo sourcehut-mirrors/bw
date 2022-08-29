@@ -49,7 +49,7 @@ int parse_pthread_limit(const char *str, int *pthread_limit)
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
         fprintf(stderr,"FAIL : pthread_limit not understood\n");
         perror("     ");
-        return -1;;
+        return -1;
     }
 
     if ( ( candidate_int < 1 ) || ( candidate_int > 512 ) ) {

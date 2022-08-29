@@ -24,10 +24,10 @@ OBJS=		../read_dump/read_mbrot_data.o \
 all: mandelbrot
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -D_REENTRANT -I$(IDIR)
 
 mandelbrot: mandelbrot.o $(OBJS)
-	$(CC) -o mandelbrot mandelbrot.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o mandelbrot mandelbrot.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -D_REENTRANT -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:

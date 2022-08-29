@@ -68,7 +68,7 @@ int main(int argc, char **argv)
      * the nanosec 32-bit number as a seed for srand48() */
     struct timespec now_time;
 
-    int candidate_int, pthread_limit, status;
+    int candidate_int, pthread_limit, status, file_data_flag;
     double *test_dbl;
 
     struct f_item *mandelbrot_file;
@@ -96,12 +96,21 @@ int main(int argc, char **argv)
     /* TODO : just because we now have a TMPDIR of some
      * sort does not mean we can use it. */
 
-    if (argc == 1) {
+    if ((argc != 3) && (argc != 6)) {
         fprintf(stderr,"FAIL : insufficient arguments provided\n");
         fprintf(stderr,"     : provide a filename\n");
         fprintf(stderr,"     :    * * *  or  * * *\n");
         fprintf(stderr,"     : provide mandelbrot data\n");
-        goto usage;
+        fprintf(stderr,"     : usage %s mand_bail integer\n",argv[0]);
+        fprintf(stderr,"     :        magnify integer\n");
+        fprintf(stderr,"     :        real imaginary double values\n");
+        fprintf(stderr,"     :        pthread integer\n");
+        fprintf(stderr,"     :\n");
+            /* 8192 125 -1.75 -0.0234 16 is reasonable data */
+        fprintf(stderr,"     : example %s",argv[0]);
+        fprintf(stderr," 8192 125 -1.75 -0.0234 16\n");
+        fprintf(stderr,"     : quitting.\n");
+        return EXIT_FAILURE;
     }
 
     errno = 0;
@@ -119,21 +128,6 @@ int main(int argc, char **argv)
     }
 
     errno = 0;
-    if ( ( argc < 6 ) && ( argc > 3 ) ) {
-        fprintf(stderr,"FAIL : insufficient arguments provided\n");
-usage:
-        fprintf(stderr,"     : usage %s mand_bail integer\n",argv[0]);
-        fprintf(stderr,"     :        magnify integer\n");
-        fprintf(stderr,"     :        real imaginary double values\n");
-        fprintf(stderr,"     :        pthread integer\n");
-        fprintf(stderr,"     :\n");
-            /* 8192 125 -1.75 -0.0234 16 is reasonable data */
-        fprintf(stderr,"     : example %s",argv[0]);
-        fprintf(stderr," 8192 125 -1.75 -0.0234 16\n");
-        fprintf(stderr,"     : quitting.\n");
-        return EXIT_FAILURE;
-    }
-   
     mandelbrot_file = calloc((size_t) 1, (size_t)sizeof(struct f_item));
     if ( mandelbrot_file == NULL ) {
         /* possible ENOMEM */
@@ -145,6 +139,10 @@ usage:
                         __FILE__, __LINE__ );
         }
         perror("FAIL ");
+
+        free(test_dbl);
+        test_dbl = NULL;
+
         return EXIT_FAILURE;
     }
 
@@ -159,14 +157,23 @@ usage:
                         __FILE__, __LINE__ );
         }
         perror("FAIL ");
+
+        free(test_dbl);
+        test_dbl = NULL;
+
         free(mandelbrot_file);
+        mandelbrot_file = NULL;
+
         return EXIT_FAILURE;
     }
    
    
+    /* at the moment we do not have any data read from a file */
+    file_data_flag = 0;
+
     if ( argc == 3 ) {
         /* process the arguments as a filename and pthread_limit. */
-        status = parse_pthread_limit(argv[3], &pthread_limit);
+        status = parse_pthread_limit(argv[2], &pthread_limit);
         if ( status < 0 ) {
                 /* as a rock bottom minimum we run single threaded */
                 mandelbrot_file->pthread_limit = 1;
@@ -218,8 +225,15 @@ usage:
                     fprintf(stderr,"     : error code is %i\n",status);
             }
     
+            free(test_dbl);
+            test_dbl = NULL;
+
+            free(mandelbrot_file);
+            mandelbrot_file = NULL;
+
             free(mandelbrot_file->mandelbrot_data);
             mandelbrot_file->mandelbrot_data = NULL;
+
             free(mandelbrot_file);
             mandelbrot_file = NULL;
     
@@ -266,11 +280,12 @@ usage:
         }
 
         printf("INFO : data read from file %s\n", argv[1]);
+        /* well now we definately have all data loaded from a file */
+        file_data_flag = 1;
 
-    }
+    } else {
+        /* the only other possibility here is that we have CLI data */
 
-    /* the only other possibility here is that we have CLI data */
-    if ( argc == 6 ) {
         /* parse mand_bail */
         candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
@@ -346,6 +361,12 @@ usage:
     printf("( %-+28.20e", mandelbrot_file->real_translate);
     printf(", %-+28.20e )\n", mandelbrot_file->imag_translate);
     printf("     : pthread_limit = %i\n", mandelbrot_file->pthread_limit);
+
+    if ( file_data_flag ) {
+        printf("     : vbox structure is %i X %i grid with %i X %i samples each\n",
+            mandelbrot_file->vbox_real_count, mandelbrot_file->vbox_imag_count,
+            mandelbrot_file->vbox_sample_real, mandelbrot_file->vbox_sample_imag);
+    }
 
 
     /* TODO perhaps now we create a work queue and the required

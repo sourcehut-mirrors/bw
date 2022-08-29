@@ -617,16 +617,14 @@ int read_mbrot_data(f_item *mandelbrot)
         }
     }
 
-    fprintf(stderr,"DBUG :        number of records = ");
+    fprintf(stderr,"INFO : number of records = ");
     if ( sizeof(long) == 8 ) {
         fprintf(stderr,"%" PRIu64 "\n", sample_counter);
     } else {
         fprintf(stderr,"%i\n", sample_counter);
     }
 
-
     return EXIT_SUCCESS;
-
 
 }
 
