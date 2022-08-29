@@ -68,7 +68,7 @@ int main(int argc, char **argv)
      * the nanosec 32-bit number as a seed for srand48() */
     struct timespec now_time;
 
-    int j, k, p, candidate_int, pthread_limit, status;
+    int candidate_int, pthread_limit, status;
     double *test_dbl;
 
     struct f_item *mandelbrot_file;
