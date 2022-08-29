@@ -120,16 +120,16 @@ typedef struct {
 /* IEEE754-2008 64bit coordinates */
 typedef struct {
     double r, j;
-} fp64;
+} fp64_cplex;
 
 void fp_region(int real, int imag,
                int real_range, int imag_range,
-               fp64 *locate);
+               fp64_cplex *locate);
 
 void fp_translate(double r, double j, double magnify,
-                  double t_r, double t_j, fp64 *cplex);
+                  double t_r, double t_j, fp64_cplex *cplex);
 
 void fp_vbox(int Vr, int Vj, int Sr, int Sj,
              int real_range, int imag_range,
-             fp64 *cplex);
+             fp64_cplex *cplex);
 

@@ -44,7 +44,7 @@
 
 void fp_region(int real, int imag,
                int real_range, int imag_range,
-               fp64 *locate)
+               fp64_cplex *locate)
 {
 
     /* We assume that the real and imag integers are inside

@@ -58,7 +58,7 @@ void *mbrot_vbox_pthread(void *recv_parm)
     int mand_y_pix_start, mand_y_pix_stop;
 
     /* required for some fp routines */
-    fp64 cplex;
+    fp64_cplex cplex;
 
     /* throw away buffer */
     char buff[256];

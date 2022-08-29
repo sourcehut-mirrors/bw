@@ -297,8 +297,8 @@ int main(int argc, char*argv[])
      * They have the domain  -1.0 < win_r < +1.0 and
      * also the same for win_j. */
     double win_r, win_j;
-    /* general purpose fp64 coordinates to toss around */
-    fp64 coord;
+    /* general purpose fp64 complex coordinates to toss around */
+    fp64_cplex coord;
 
     /* small general purpose char buffer */
     char *buf = calloc((size_t)128,sizeof(unsigned char));

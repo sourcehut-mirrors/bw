@@ -45,7 +45,7 @@
 
 void fp_vbox(int Vr, int Vj, int Sr, int Sj,
              int real_range, int imag_range,
-             fp64 *cplex)
+             fp64_cplex *cplex)
 {
 
     /* try to reduce the number of floating point operations */

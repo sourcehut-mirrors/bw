@@ -44,7 +44,7 @@
 #include "mandelbrot.h"
 
 void fp_translate(double r, double j, double magnify,
-                  double t_r, double t_j, fp64 *cplex)
+                  double t_r, double t_j, fp64_cplex *cplex)
 {
 
     /* given some normalized coordinates ( r, j ) within our plot
