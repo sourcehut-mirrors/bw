@@ -1,0 +1,138 @@
+s$ ./xmand 16777216 1073741824 -1.99998588117705367039889097 0.0 4
+-------------------------------------------------------------------
+                 system name = SunOS
+                   node name = spartacus
+                     release = 5.11
+                     version = 11.3
+                     machine = sun4u
+                   page size = 8192
+               system memory = 68719476736
+                             = 67108864 kB
+                             = 65536 MB
+                             = 64 GB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    1 day   20 hours   12 mins    7 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =            100 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 16777216
+pthread_limit = 4
+    translate = ( -1.99998588117705367039889097e+00 , +0.00000000000000000000000000e+00 )
+      magnify = +1.07374182400000000000000000e+09
+
+
+ X11 : default width=1044 height=1044
+     : connection number 4
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +3.63797880709171295166015625e-12
+pixel_imag_h = +3.63797880709171295166015625e-12
+raw  [ 487  , 560  ]
+vbox  [ 007 , 007 ]
+fp64( -6.93359375000000000000000000e-02,
+      -6.93359375000000000000000000e-02 )
+c = ( -1.99998588130620191805064678e+00,
+      -1.29148247651755809783935547e-10 )
+pixel_real_w = +3.63797880709171295166015625e-12
+pixel_imag_h = +3.63797880709171295166015625e-12
+[ t00 ] : v[7 ][7 ] rows 0  -> 15
+[ t01 ] : v[7 ][7 ] rows 16 -> 31
+[ t02 ] : v[7 ][7 ] rows 32 -> 47
+[ t03 ] : v[7 ][7 ] rows 48 -> 63
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =     3208208100 nsec   3.208208e+00 sec
+[plot] =    31383599300 nsec   3.138360e+01 sec
+click at 486 558 
+.
+. and then 254 more little clicks later
+.
+click at 56 937 
+raw  [ 109  , 998  ]
+vbox  [ 001 , 000 ]
+fp64( -8.07617187500000000000000000e-01,
+      -9.24804687500000000000000000e-01 )
+c = ( -1.99998588268135790713131428e+00,
+      -1.72258296515792608261108398e-09 )
+pixel_real_w = +3.63797880709171295166015625e-12
+pixel_imag_h = +3.63797880709171295166015625e-12
+[ t00 ] : v[1 ][0 ] rows 0  -> 15
+[ t01 ] : v[1 ][0 ] rows 16 -> 31
+[ t02 ] : v[1 ][0 ] rows 32 -> 47
+[ t03 ] : v[1 ][0 ] rows 48 -> 63
+PTHRD: join 0 done
+PTHRD: join 1 done
+PTHRD: join 2 done
+PTHRD: join 3 done
+[join] =         425500 nsec   4.255000e-04 sec
+[plot] =       11529500 nsec   1.152950e-02 sec
+click at 108 996 
+raw  [ 1387 , 890  ]
+INFO : dumper_flag = 1
+click at 1386 888 
+raw  [ 1387 , 890  ]
+INFO : file /var/tmp/dclarke/20220829153626 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail = 16777216
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.07374182400000000000000000e+09
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.99998588117705367039889097e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +0.00000000000000000000000000e+00
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20220829153626 closed.
+INFO : dumper_flag = 0
+click at 1386 888 
+raw  [ 1014 , 864  ]
+right click
+click at 1013 862 
+raw  [ 1014 , 864  ]
+right click
+
+
+
+s$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220829153626
+     0:  00 00 10 00 00 00 00 01 00 00 00 00 00 00 d0 41
+    10:  00 e0 01 32 f1 ff ff bf 00 00 00 00 00 00 00 00
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30: 
+s$ 
+s$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220829153626
+5a1df15740d147a44e58c15e2325d3f61bdcd1f41c544d2c03cc265fe55f9c0f  /var/tmp/dclarke/20220829153626
+s$ 
+

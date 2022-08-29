@@ -5,8 +5,13 @@ CFLAGS= -Xc -xmemalign=8s -m64 -xcode=pic32 \
 	-xregs=no%appl -xlibmieee -mc -xs -xO3 -fast \
 	-fma=fused
 
+LIBS=-lX11 -lrt -lm -lpthread
 LDIR=/opt/bw/lib
 IDIR=/opt/bw/include
 RPATH=/opt/bw/lib
+
+# custom built libX11 stuff
+LD_OPTIONS=-R/opt/bw/lib -L/opt/bw/lib
+LD_RUN_PATH=/opt/bw/lib
 
 include common.mk

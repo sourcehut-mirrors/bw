@@ -6,9 +6,14 @@ CFLAGS= -Xc -g -errfmt=error -erroff=%none \
 	-xcode=pic32 -xregs=no%appl -xlibmieee -ftrap=%none -xarch=sparc -mc \
 	-xs -xbuiltin=%none -xdebugformat=dwarf -xunroll=1
 
+LIBS=-lX11 -lrt -lm -lpthread
 LDIR=/opt/bw/lib
 IDIR=/opt/bw/include
 RPATH=/opt/bw/lib
+
+# custom built libX11 stuff
+LD_OPTIONS=-R/opt/bw/lib -L/opt/bw/lib
+LD_RUN_PATH=/opt/bw/lib
 
 include common.mk
 
