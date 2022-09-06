@@ -1,0 +1,144 @@
+
+
+oberon$ ./cuda_compile.sh 
+
+
+------- attempt to compile vmultf.cu
+
+------- code will run in five seconds .. or stop me!
+
+-rwxr-xr-x 1 dclarke devl 822016 Sep  2 22:09 vmultf
+-rw-r--r-- 1 dclarke devl  13584 Aug 28 05:41 vmultf.cu
+-rw-r--r-- 1 dclarke devl  61384 Sep  2 22:09 vmultf.o
+==6633== NVPROF is profiling process 6633, command: ./vmultf
+-------------------------------------------------------------
+        system name = Linux
+          node name = oberon
+            release = 5.19.2-genunix
+            version = #1 SMP Sat Aug 20 19:46:19 GMT 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16723369984
+                    = 16331416 kB
+                    = 15948 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : Vector multiply of 500000000 float FP32 elements
+     : Memory size of each array is 2000000000 bytes
+     : random data loaded 6302231801 nsecs   6.302232 secs
+     : cudaMalloc(A)   88992943 nsecs  0.08899294 secs
+     : cudaMalloc(B)    2364169 nsecs  0.002364169 secs
+     : cudaMalloc(C)    2369255 nsecs  0.002369255 secs
+TOTAL: cudaMalloc      93726367 nsecs  0.09372637 secs
+INFO : Copy of vector A from host to device done.
+     : cudaMemcpy() 194848313 nsecs  0.1948483 secs
+INFO : Copy of vector B from host to device done.
+     : cudaMemcpy() 198336266 nsecs  0.1983363 secs
+INFO : CUDA kernel launch with 488282 blocks of 1024 threads
+     : vector_mult  27.33328 msecs
+INFO : Copy result A from device to host done.
+     : cudaMemcpy  354511819 nsecs  0.3545118 secs
+TOTAL: cudaMemcpy  747696398 nsecs  0.7476964 secs
+INFO : A * B correct within error epsilon =  1.000000000e-12
+     : epsilon 1664346140 nsecs   1.664346 secs
+TOTAL: cudaFree    320321289 nsecs  0.3203213 secs
+INFO : host memory free and we are done
+TOTAL TIME 10847238782 nsecs   10.84724 secs
+==6633== Profiling application: ./vmultf
+==6633== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   50.77%  393.05ms         2  196.53ms  194.80ms  198.25ms  [CUDA memcpy HtoD]
+                   45.70%  353.80ms         1  353.80ms  353.80ms  353.80ms  [CUDA memcpy DtoH]
+                    3.53%  27.323ms         1  27.323ms  27.323ms  27.323ms  vector_mult(float const *, float const *, float*, int)
+      API calls:   62.83%  747.69ms         3  249.23ms  194.84ms  354.51ms  cudaMemcpy
+                   26.92%  320.32ms         3  106.77ms  1.9544ms  159.30ms  cudaFree
+                    7.87%  93.685ms         3  31.228ms  2.3516ms  88.970ms  cudaMalloc
+                    2.30%  27.344ms         1  27.344ms  27.344ms  27.344ms  cudaEventSynchronize
+                    0.05%  538.31us         1  538.31us  538.31us  538.31us  cuDeviceTotalMem
+                    0.02%  232.25us       101  2.2990us     238ns  98.137us  cuDeviceGetAttribute
+                    0.01%  105.24us         1  105.24us  105.24us  105.24us  cudaGetDeviceProperties
+                    0.00%  26.625us         1  26.625us  26.625us  26.625us  cudaLaunchKernel
+                    0.00%  26.304us         1  26.304us  26.304us  26.304us  cuDeviceGetName
+                    0.00%  11.649us         2  5.8240us     738ns  10.911us  cudaEventCreate
+                    0.00%  10.410us         2  5.2050us  2.4960us  7.9140us  cudaEventRecord
+                    0.00%  9.4510us         1  9.4510us  9.4510us  9.4510us  cuDeviceGetPCIBusId
+                    0.00%  2.5090us         3     836ns     417ns  1.6230us  cuDeviceGetCount
+                    0.00%  2.3100us         2  1.1550us     291ns  2.0190us  cuDeviceGet
+                    0.00%  2.0480us         1  2.0480us  2.0480us  2.0480us  cudaEventElapsedTime
+                    0.00%     616ns         1     616ns     616ns     616ns  cudaGetDeviceCount
+                    0.00%     494ns         1     494ns     494ns     494ns  cuDeviceGetUuid
+                    0.00%     315ns         1     315ns     315ns     315ns  cudaGetLastError
+
+
+------- attempt to compile vmultd.cu
+
+------- code will run in five seconds .. or stop me!
+
+-rwxr-xr-x 1 dclarke devl 822016 Sep  2 22:09 vmultd
+-rw-r--r-- 1 dclarke devl  13536 Aug 28 05:43 vmultd.cu
+-rw-r--r-- 1 dclarke devl  61408 Sep  2 22:09 vmultd.o
+==6757== NVPROF is profiling process 6757, command: ./vmultd
+-------------------------------------------------------------
+        system name = Linux
+          node name = oberon
+            release = 5.19.2-genunix
+            version = #1 SMP Sat Aug 20 19:46:19 GMT 2022
+            machine = x86_64
+          page size = 4096
+       avail memory = 16723369984
+                    = 16331416 kB
+                    = 15948 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K6000
+INFO : Vector multiply of 500000000 double FP64 elements
+     : Memory size of each array is 4000000000 bytes
+     : random data loaded 6502545906 nsecs   6.502546 secs
+     : cudaMalloc(A)   91587796 nsecs  0.09158779 secs
+     : cudaMalloc(B)    4475914 nsecs  0.004475914 secs
+     : cudaMalloc(C)    4700163 nsecs  0.004700163 secs
+TOTAL: cudaMalloc     100763873 nsecs  0.1007639 secs
+INFO : Copy of vector A from host to device done.
+     : cudaMemcpy() 390474945 nsecs  0.3904749 secs
+INFO : Copy of vector B from host to device done.
+     : cudaMemcpy() 387117710 nsecs  0.3871177 secs
+INFO : CUDA kernel launch with 488282 blocks of 1024 threads
+     : vector_mult  48.34557 msecs
+INFO : Copy result A from device to host done.
+     : cudaMemcpy  726895202 nsecs  0.7268952 secs
+TOTAL: cudaMemcpy 1504487857 nsecs   1.504488 secs
+INFO : A * B correct within error epsilon =  1.000000000e-12
+     : epsilon 1998494155 nsecs   1.998494 secs
+TOTAL: cudaFree    640731513 nsecs  0.6407315 secs
+INFO : host memory free and we are done
+TOTAL TIME 12124451986 nsecs   12.12445 secs
+==6757== Profiling application: ./vmultd
+==6757== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   50.09%  777.45ms         2  388.73ms  387.04ms  390.41ms  [CUDA memcpy HtoD]
+                   46.80%  726.46ms         1  726.46ms  726.46ms  726.46ms  [CUDA memcpy DtoH]
+                    3.11%  48.333ms         1  48.333ms  48.333ms  48.333ms  vector_mult(double const *, double const *, double*, int)
+      API calls:   65.52%  1.50448s         3  501.49ms  387.12ms  726.89ms  cudaMemcpy
+                   27.90%  640.72ms         3  213.57ms  3.6859ms  318.52ms  cudaFree
+                    4.39%  100.72ms         3  33.574ms  4.4631ms  91.565ms  cudaMalloc
+                    2.11%  48.353ms         1  48.353ms  48.353ms  48.353ms  cudaEventSynchronize
+                    0.05%  1.0630ms         1  1.0630ms  1.0630ms  1.0630ms  cuDeviceTotalMem
+                    0.02%  445.82us       101  4.4140us     477ns  185.94us  cuDeviceGetAttribute
+                    0.02%  388.18us         1  388.18us  388.18us  388.18us  cudaGetDeviceProperties
+                    0.00%  48.133us         1  48.133us  48.133us  48.133us  cuDeviceGetName
+                    0.00%  27.823us         1  27.823us  27.823us  27.823us  cudaLaunchKernel
+                    0.00%  12.253us         2  6.1260us     844ns  11.409us  cudaEventCreate
+                    0.00%  10.340us         2  5.1700us  2.3050us  8.0350us  cudaEventRecord
+                    0.00%  6.2330us         1  6.2330us  6.2330us  6.2330us  cuDeviceGetPCIBusId
+                    0.00%  4.7780us         3  1.5920us     734ns  3.1080us  cuDeviceGetCount
+                    0.00%  3.4630us         2  1.7310us     635ns  2.8280us  cuDeviceGet
+                    0.00%  2.3290us         1  2.3290us  2.3290us  2.3290us  cudaGetDeviceCount
+                    0.00%  1.6850us         1  1.6850us  1.6850us  1.6850us  cudaEventElapsedTime
+                    0.00%     902ns         1     902ns     902ns     902ns  cuDeviceGetUuid
+                    0.00%     329ns         1     329ns     329ns     329ns  cudaGetLastError
+oberon$ 
+
+

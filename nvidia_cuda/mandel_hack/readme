@@ -1,4 +1,14 @@
 
+
+Special NOTE regarding the damn NVidia drivers : 
+
+16:25 < marsen> This includes the K6000: "NVIDIA RTX Enterprise Driver
+Branch Release 470 is the last NVIDIA professional driver to provide
+support for the Quadro desktop GPU products based on the Kepler
+architecture." ... "Official support will end on January 31, 2023;"
+
+--------- so we are screwed and need a Pascal or higher GV100 ------
+
 Expect that there will be errors as the NVidia hardware makes
 no promise of a correct result due to the fact that the CUDA
 compiler and the intermediate language used does not comply

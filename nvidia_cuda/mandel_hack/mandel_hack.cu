@@ -11,18 +11,19 @@
  * and then use the system clock to init the drand prng pool.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <errno.h>
 #include <inttypes.h>
-#include <string.h>
+#include <limits.h>
 #include <locale.h>
 #include <math.h>
-#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
+
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include <cuda_profiler_api.h>
@@ -31,7 +32,6 @@
 /* #define NUM_ELEMENTS 1073741824   big GV100 only as this needs 20G */
 /* #define NUM_ELEMENTS 16777216 */
 
-/* lets try what fits in 4G of GPU mem */
 #define NUM_ELEMENTS 1048576
 #define THREADS_PER_BLOCK 1024
 
@@ -42,10 +42,41 @@
 #define IMAG_COORD 0.205251797480741515756
 #define IMG_PIX_W 1024
 
+/* TODO read in the established data files */
+#define VBOX_REAL_COUNT 16
+#define VBOX_IMAG_COUNT 16
+#define VBOX_SAMPLE_REAL 64
+#define VBOX_SAMPLE_IMAG 64
+
+#define DEFAULT_REAL_WIDTH 4.0
+#define DEFAULT_IMAG_HEIGHT 4.0
+
+/* IEEE754-2008 64bit coordinates */
+typedef struct {
+    double r, j;
+} fp64_cplex;
+
 int sysinfo(void);
 uint64_t system_memory();
 uint64_t timediff( struct timespec st, struct timespec en );
 uint32_t cpu_mbrot( double c_r, double c_i, uint32_t bail_out );
+
+void fp_vbox(int Vr, int Vj, int Sr, int Sj,
+             int real_range, int imag_range,
+             fp64_cplex *cplex);
+
+void fp_translate(double r, double j, double magnify,
+                  double t_r, double t_j, fp64_cplex *cplex);
+
+/* two diff flavours of the same thing */
+int array_offset(int Vr, int Vj, int Sr, int Sj);
+
+int array_index(uint32_t Vr, uint32_t Vj,
+                uint32_t Sr, uint32_t Sj,
+                uint32_t vbox_real_count,
+                uint32_t vbox_sample_real,
+                uint32_t vbox_sample_imag );
+
 
 /**
  * CUDA Kernel Device code
@@ -106,12 +137,29 @@ int main(int argc, char *argv[])
      * int variable that never changes anyways */
     int num_elements = NUM_ELEMENTS;
 
-    size_t size_coord = num_elements * sizeof(double);
-    size_t size_height = num_elements * sizeof(uint32_t);
+    /* we need to generate the coordinates */
+    int sample_counter = 0;
+    int vbox_r, vbox_j, sample_r, sample_j;
 
-    double *host_r, *host_i, *device_r, *device_i;
-    double center_r, center_i;
-    uint32_t *host_mval, *device_mval, check_val;
+    /* this is a square arry of samples */
+    int eff_width = IMG_PIX_W;
+    int eff_height = eff_width; 
+
+    /* the actual complex coordinate data element */
+    fp64_cplex coord_cplex;
+
+    size_t size_coord, size_height;
+
+    double *host_r, *host_j, *device_r, *device_j;
+    double centre_r, centre_j;
+    double magnify = 1.0 * MAGNIFY;
+    int mand_bail = BAIL_OUT;
+
+    uint32_t *host_mval, *device_mval;
+
+    /* if we do a CPU based check we need this var 
+    uint32_t check_val;
+    */
 
     /* do we even have a NVidia Quadro GPU ? */
     int num_gpus = 0;
@@ -149,8 +197,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* we may as well do a cudaDeviceReset ( void ) */
+    /* we may as well do a cudaDeviceReset ( void ) 
     fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
+    */
     err = cudaDeviceReset();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
@@ -173,8 +222,11 @@ int main(int argc, char *argv[])
      * plane is just ( -2, -2 ) to ( 2, 2 ).  Thus the width and
      * height of the entire region of interest is 4 units.
      */
-    double view_width = 4.0 / ( 1.0 * MAGNIFY );
+    double view_width = 4.0 / magnify;
     double offset_width = view_width / 2.0;
+
+    size_coord = num_elements * sizeof(double);
+    size_height = num_elements * sizeof(uint32_t);
 
     printf("INFO : firing off %i cuda core code chunks\n",
                                                          num_elements);
@@ -186,47 +238,65 @@ int main(int argc, char *argv[])
                                                          size_height );
 
     host_r = (double *)malloc(size_coord);
-    host_i = (double *)malloc(size_coord);
+    host_j = (double *)malloc(size_coord);
     host_mval = (uint32_t *)calloc(num_elements,sizeof(uint32_t));
 
     if ( ( host_r == NULL )
-            || ( host_i == NULL )
+            || ( host_j == NULL )
             || ( host_mval == NULL ) ) {
         fprintf(stderr, "FAIL : memory allocate\n");
         exit(EXIT_FAILURE);
     }
 
-    center_r = REAL_COORD;
-    center_i = IMAG_COORD;
+    centre_r = REAL_COORD;
+    centre_j = IMAG_COORD;
 
     clock_gettime( CLOCK_REALTIME, &t0 );
 
     /**********************************************
+     * TODO : read the data files
      * check for a filename in argv[1] and then
      * just read in the coordinate data as well
      * as the expected mandelbrot result.
      **********************************************/
 
+    /* we can always resort to the drand48 stuff 
     for (int i = 0; i < num_elements; ++i) {
 
-        host_r[i] = center_r - offset_width
+        host_r[i] = centre_r - offset_width
                           + ((int)( drand48() * IMG_PIX_W ))
                               * view_width/((double)IMG_PIX_W);
 
-        host_i[i] = center_i - offset_width
+        host_j[i] = centre_j - offset_width
                           + ((int)( drand48() * IMG_PIX_W ))
                               * view_width/((double)IMG_PIX_W);
-
-        /*
-        printf("%-4i : ( %-+20.14e , %-+20.14e )\n", i, host_r[i], host_i[i]);
-        */
-
     }
+    */
+
+    sample_counter = 0;
+    for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
+        for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
+            for ( sample_j = 0; sample_j < VBOX_SAMPLE_IMAG; sample_j++ ) {
+                for ( sample_r = 0; sample_r < VBOX_SAMPLE_REAL; sample_r++ ) {
+
+                    fp_vbox(vbox_r, vbox_j, sample_r, sample_j, eff_width, eff_height, &coord_cplex);
+                    fp_translate(coord_cplex.r, coord_cplex.j, magnify, centre_r, centre_j, &coord_cplex);
+
+                    host_r[array_offset(vbox_r, vbox_j, sample_r, sample_j)] = coord_cplex.r;
+                    host_j[array_offset(vbox_r, vbox_j, sample_r, sample_j)] = coord_cplex.j;
+
+                    sample_counter += 1;
+
+                }
+            }
+        }
+    }
+
     printf("\n-----------------------------------------------------------\n");
 
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
-    printf("     : random data load %" PRIu64 " nsecs\n", tdelta_nsec);
+    printf("     : %i coord loaded %" PRIu64 " nsecs\n", sample_counter, tdelta_nsec);
 
     clock_gettime( CLOCK_REALTIME, &t0 );
     device_r = NULL;
@@ -243,8 +313,8 @@ int main(int argc, char *argv[])
 
 
     clock_gettime( CLOCK_REALTIME, &t0 );
-    device_i = NULL;
-    if (cudaMalloc((void **)&device_i, size_coord) != cudaSuccess) {
+    device_j = NULL;
+    if (cudaMalloc((void **)&device_j, size_coord) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA fail allocate imaginary array\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
@@ -252,7 +322,7 @@ int main(int argc, char *argv[])
     }
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
-    printf("     : cudaMalloc device_i %" PRIu64 " nsecs\n",
+    printf("     : cudaMalloc device_j %" PRIu64 " nsecs\n",
                                                           tdelta_nsec);
 
     /*
@@ -320,8 +390,8 @@ int main(int argc, char *argv[])
     tdelta_nsec = timediff( t0, t1);
     printf("     : cudaMemcpy() %" PRIu64 "nsecs\n", tdelta_nsec);
 
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     /*
+    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceSynchronize()\n");
@@ -332,7 +402,7 @@ int main(int argc, char *argv[])
 
     clock_gettime( CLOCK_REALTIME, &t0 );
 
-    err = cudaMemcpy(device_i,host_i,size_coord,cudaMemcpyHostToDevice);
+    err = cudaMemcpy(device_j,host_j,size_coord,cudaMemcpyHostToDevice);
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed memcopy host to device\n");
         fprintf(stderr, "FAIL : error ");
@@ -363,8 +433,8 @@ int main(int argc, char *argv[])
     printf("INFO : CUDA kernel launch with %d blocks of %d threads\n",
                                        blocksPerGrid, threadsPerBlock);
 
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     /*
+    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceSynchronize()\n");
@@ -376,7 +446,7 @@ int main(int argc, char *argv[])
     clock_gettime( CLOCK_REALTIME, &t0 );
 
     /* the NVidia CUDA code format is a bit special */
-    gpu_mbrot<<<blocksPerGrid, threadsPerBlock>>>( device_r, device_i, device_mval, num_elements );
+    gpu_mbrot<<<blocksPerGrid, threadsPerBlock>>>( device_r, device_j, device_mval, num_elements );
 
     err = cudaGetLastError();
     if ( err != cudaSuccess ) {
@@ -390,7 +460,6 @@ int main(int argc, char *argv[])
     tdelta_nsec = timediff( t0, t1);
     printf("     : gpu_mbrot time delta %" PRIu64 " nsecs\n", tdelta_nsec);
 
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
 
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
@@ -425,8 +494,8 @@ int main(int argc, char *argv[])
     tdelta_nsec = timediff( t0, t1);
     printf("     : copy device result done %" PRIu64 " nsecs\n",
                                                           tdelta_nsec);
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     /*
+    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
     err = cudaDeviceSynchronize();
     if ( err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceSynchronize()\n");
@@ -443,7 +512,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    err = cudaFree(device_i);
+    err = cudaFree(device_j);
     if (err != cudaSuccess) {
         fprintf(stderr, "FAIL : free memory on device for imaginary\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
@@ -459,19 +528,19 @@ int main(int argc, char *argv[])
 
     /***************************************************************
      * Verify the data with CPU and fma() calls
-     ***************************************************************/
+     ***************************************************************
     clock_gettime( CLOCK_REALTIME, &t0 );
     int error_count = 0;
     uint32_t delta_error_sum = 0;
     for (int i = 0; i < num_elements; ++i)
     {
 
-        check_val = cpu_mbrot( host_r[i], host_i[i], (uint32_t)BAIL_OUT );
+        check_val = cpu_mbrot( host_r[i], host_j[i], (uint32_t)mand_bail );
 
         if ( host_mval[i] != check_val ) {
 
             printf("%-9i    :     ( %-+20.14e , %-+20.14e ) == %-6i",
-                               i, host_r[i], host_i[i], host_mval[i] );
+                               i, host_r[i], host_j[i], host_mval[i] );
             printf("    ERROR %-6i    DELTA = ", check_val);
 
             if ( host_mval[i] < check_val ){
@@ -493,10 +562,60 @@ int main(int argc, char *argv[])
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : data check done %" PRIu64 " nsecs\n", tdelta_nsec);
+    */
+
+
+
+
+
+
+    /**********************************************************/
+    /* print out something */
+
+    printf("\n     : mand_bail = %i\n", mand_bail );
+    printf("     : translate = ( %-+28.20e , %-+28.20e )\n", centre_r, centre_j );
+    printf("     :   magnify = %-+20.12e\n\n", magnify );
+
+
+    printf("     : r[ 0][ 0][ 0][ 0] = %-+32.26e\n", host_r[array_offset(0,0,0,0)]);
+    printf("     : j[ 0][ 0][ 0][ 0] = %-+32.26e\n", host_j[array_offset(0,0,0,0)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(0,0,0,0)]);
+
+
+    printf("     : r[ 7][ 7][63][63] = %-+32.26e\n", host_r[array_offset(7,7,63,63)]);
+    printf("     : j[ 7][ 7][63][63] = %-+32.26e\n", host_j[array_offset(7,7,63,63)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(7,7,63,63)]);
+
+
+    printf("     : r[ 8][ 8][ 0][ 0] = %-+32.26e\n", host_r[array_offset(8,8,0,0)]);
+    printf("     : j[ 8][ 8][ 0][ 0] = %-+32.26e\n", host_j[array_offset(8,8,0,0)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(8,8,0,0)]);
+
+
+    printf("     : r[ 8][ 8][ 1][ 0] = %-+32.26e\n", host_r[array_offset(8,8,1,0)]);
+    printf("     : j[ 8][ 8][ 1][ 0] = %-+32.26e\n", host_j[array_offset(8,8,1,0)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(8,8,1,0)]);
+
+
+    printf("     : r[ 8][ 8][32][32] = %-+32.26e\n", host_r[array_offset(8,8,32,32)]);
+    printf("     : j[ 8][ 8][32][32] = %-+32.26e\n", host_j[array_offset(8,8,32,32)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(8,8,32,32)]);
+
+
+    printf("     : r[ 3][12][44][21] = %-+32.26e\n", host_r[array_offset(3,12,44,21)]);
+    printf("     : j[ 3][12][44][21] = %-+32.26e\n", host_j[array_offset(3,12,44,21)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(3,12,44,21)]);
+
+
+    printf("     : r[15][15][63][63] = %-+32.26e\n", host_r[array_offset(15,15,63,63)]);
+    printf("     : j[15][15][63][63] = %-+32.26e\n", host_j[array_offset(15,15,63,63)]);
+    printf("     :       mand_height = %9i\n",       host_mval[array_offset(15,15,63,63)]);
+
+
 
     /* Free host memory */
     free(host_r);
-    free(host_i);
+    free(host_j);
     free(host_mval);
 
     printf("INFO : host memory free and we are done\n");
@@ -622,6 +741,76 @@ uint32_t cpu_mbrot( double c_r, double c_i, uint32_t bail_out )
     }
 
     return height;
+
+}
+
+void fp_vbox(int Vr, int Vj, int Sr, int Sj,
+             int real_range, int imag_range,
+             fp64_cplex *cplex)
+{
+
+    /* try to reduce the number of floating point operations */
+    int numerator = 2 * Vr * VBOX_SAMPLE_REAL + 2 * Sr - real_range + 1;
+    cplex->r = numerator / ( 1.0 * real_range );
+
+    numerator = 2 * Vj * VBOX_SAMPLE_IMAG + 2 * Sj - imag_range + 1;
+    cplex->j = numerator / ( 1.0 * imag_range );
+
+}
+
+void fp_translate(double r, double j, double magnify,
+                  double t_r, double t_j, fp64_cplex *cplex)
+{
+
+    /* given some normalized coordinates ( r, j ) within our plot
+     * region we may easily translate to the centre ( t_r, t_j )
+     * with a given magnification. */
+    cplex->r = t_r + r * DEFAULT_REAL_WIDTH / ( 2.0 * magnify );
+    cplex->j = t_j + j * DEFAULT_IMAG_HEIGHT / ( 2.0 * magnify );
+
+}
+
+int array_offset(int Vr, int Vj, int Sr, int Sj) {
+
+    return   Vr * VBOX_SAMPLE_REAL + Sr
+
+           + Vj * VBOX_REAL_COUNT
+                * VBOX_SAMPLE_REAL
+                * VBOX_SAMPLE_IMAG
+
+           + Sj * VBOX_REAL_COUNT * VBOX_SAMPLE_REAL;
+
+}
+
+int array_index(uint32_t Vr, uint32_t Vj,
+                uint32_t Sr, uint32_t Sj,
+                uint32_t vbox_real_count,
+                uint32_t vbox_sample_real,
+                uint32_t vbox_sample_imag )
+{
+
+    int part1 = (int)Vr * (int)vbox_sample_real;
+
+    int part2 = (int)Vj * (int)vbox_real_count
+                        * (int)vbox_sample_real
+                        * (int)vbox_sample_imag;
+
+    int part3 = (int)Sj * (int)vbox_real_count
+                        * (int)vbox_sample_real;
+
+    /*
+    int result =  Vr * vbox_sample_real + Sr
+
+                + Vj * vbox_real_count
+                     * vbox_sample_real
+                     * vbox_sample_imag
+
+                + Sj * vbox_real_count * vbox_sample_real;
+    */
+
+    int result = part1 + (int)Sr + part2 + part3;
+
+    return result;
 
 }
 
