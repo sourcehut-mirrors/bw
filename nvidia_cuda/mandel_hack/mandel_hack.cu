@@ -21,6 +21,7 @@
 #include <string.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -161,11 +162,26 @@ int main(int argc, char *argv[])
     uint32_t check_val;
     */
 
+    /* dump out the data in the usual way as defined in the 
+     * xmand readme.data file
+     */
+    time_t time_now;
+    struct tm *ptm;
+    struct stat status_buffer;
+    size_t num_written;
+    uint32_t temp32bit;
+    FILE *fp;
+
     /* do we even have a NVidia Quadro GPU ? */
     int num_gpus = 0;
 
     setlocale( LC_ALL, "C" );
+    int status = setenv("TZ", "GMT0", 1);
     sysinfo();
+
+    time(&time_now);
+    ptm = gmtime(&time_now);
+
 
     /* Get the CLOCK_REALTIME time in a timespec struct */
     if ( clock_gettime( CLOCK_REALTIME, &t0 ) == -1 ) {
@@ -279,11 +295,14 @@ int main(int argc, char *argv[])
             for ( sample_j = 0; sample_j < VBOX_SAMPLE_IMAG; sample_j++ ) {
                 for ( sample_r = 0; sample_r < VBOX_SAMPLE_REAL; sample_r++ ) {
 
-                    fp_vbox(vbox_r, vbox_j, sample_r, sample_j, eff_width, eff_height, &coord_cplex);
-                    fp_translate(coord_cplex.r, coord_cplex.j, magnify, centre_r, centre_j, &coord_cplex);
+                    fp_vbox(vbox_r, vbox_j, sample_r, sample_j,
+                            eff_width, eff_height, &coord_cplex);
 
-                    host_r[array_offset(vbox_r, vbox_j, sample_r, sample_j)] = coord_cplex.r;
-                    host_j[array_offset(vbox_r, vbox_j, sample_r, sample_j)] = coord_cplex.j;
+                    fp_translate(coord_cplex.r, coord_cplex.j,
+                            magnify, centre_r, centre_j, &coord_cplex);
+
+                    host_r[array_offset(vbox_r, vbox_j, sample_r, sample_j)]=coord_cplex.r;
+                    host_j[array_offset(vbox_r, vbox_j, sample_r, sample_j)]=coord_cplex.j;
 
                     sample_counter += 1;
 
@@ -572,6 +591,7 @@ int main(int argc, char *argv[])
     /**********************************************************/
     /* print out something */
 
+
     printf("\n     : mand_bail = %i\n", mand_bail );
     printf("     : translate = ( %-+28.20e , %-+28.20e )\n", centre_r, centre_j );
     printf("     :   magnify = %-+20.12e\n\n", magnify );
@@ -610,6 +630,106 @@ int main(int argc, char *argv[])
     printf("     : r[15][15][63][63] = %-+32.26e\n", host_r[array_offset(15,15,63,63)]);
     printf("     : j[15][15][63][63] = %-+32.26e\n", host_j[array_offset(15,15,63,63)]);
     printf("     :       mand_height = %9i\n",       host_mval[array_offset(15,15,63,63)]);
+
+
+    char timestamp[32];
+    char *timestamp_filename;
+    timestamp_filename = (char *)calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+
+    char *err_status;
+    char *tmpdir = getenv("TMPDIR");
+    size_t filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
+    err_status = strcat(timestamp_filename, tmpdir);
+    err_status = strcat(timestamp_filename, "/");
+    err_status = strcat(timestamp_filename, timestamp);
+    status = stat(timestamp_filename, &status_buffer);
+
+    if ( status == 0 ) {
+        fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
+    } else {
+        errno = 0;
+        fp = fopen(timestamp_filename, "wb");
+        if ( fp == NULL ) {
+            perror("FAIL fopen of filename");
+        } else {
+            /* finally we know we have a file */
+            fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
+
+            /* header data is done separately */
+            num_written = fwrite(&num_elements, sizeof(uint32_t), 1, fp);
+            printf("     : %2lu byte uint32_t num_elements num_written = %lu\n",
+                        sizeof(uint32_t), num_written);
+            printf("     : num_elements = %8i\n",num_elements);
+
+            num_written = fwrite(&mand_bail, sizeof(uint32_t), 1, fp);
+            printf("     : %2lu byte uint32_t mand_bail    num_written = %lu\n",
+                    sizeof(uint32_t), num_written);
+            printf("     : mand_bail = %8i\n",mand_bail);
+
+            num_written = fwrite(&magnify, sizeof(double), 1, fp);
+            printf("     : %2lu byte double magnify        num_written = %lu\n",
+                    sizeof(double), num_written);
+            printf("     :        magnify = %-+32.26e\n", magnify);
+
+            num_written = fwrite(&centre_r, sizeof(double), 1, fp);
+            printf("DBUG : %2lu byte double centre_r num_written = %lu\n",
+                    sizeof(double), num_written);
+            printf("     : centre_r = %-+32.26e\n",centre_r);
+
+            num_written = fwrite(&centre_j, sizeof(double), 1, fp);
+            printf("     : %2lu byte double centre_j num_written = %lu\n",
+                    sizeof(double), num_written);
+            printf("     : centre_j = %-+32.26e\n",centre_j);
+
+            /* append the VBOX and SAMPLE structure data */
+            temp32bit = VBOX_REAL_COUNT;
+            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+            printf("     : %2lu byte uint32_t VBOX_REAL_COUNT num_written = %lu\n",
+                    sizeof(uint32_t), num_written);
+            printf("     : VBOX_REAL_COUNT = %8i\n",VBOX_REAL_COUNT);
+
+            temp32bit = VBOX_IMAG_COUNT;
+            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+            printf("     : %2lu byte uint32_t VBOX_REAL_COUNT num_written = %lu\n",
+                    sizeof(uint32_t), num_written);
+            printf("     : VBOX_IMAG_COUNT = %8i\n",VBOX_IMAG_COUNT);
+
+
+            temp32bit = VBOX_SAMPLE_REAL;
+            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+            printf("     : %2lu byte uint32_t VBOX_SAMPLE_REAL num_written = %lu\n",
+                    sizeof(uint32_t), num_written);
+            printf("     : VBOX_SAMPLE_REAL = %8i\n",VBOX_SAMPLE_REAL);
+
+            temp32bit = VBOX_SAMPLE_IMAG;
+            num_written = fwrite(&temp32bit, sizeof(uint32_t), 1, fp);
+            printf("     : %2lu byte uint32_t VBOX_SAMPLE_IMAG num_written = %lu\n",
+                    sizeof(uint32_t), num_written);
+            printf("     : VBOX_SAMPLE_IMAG = %8i\n",VBOX_SAMPLE_IMAG);
+
+            sample_counter = 0;
+            for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
+                for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
+                    for ( sample_j = 0; sample_j < VBOX_SAMPLE_IMAG; sample_j++ ) {
+                        for ( sample_r = 0; sample_r < VBOX_SAMPLE_REAL; sample_r++ ) {
+
+                            num_written = fwrite(&host_r[array_offset(vbox_r,vbox_j,sample_r,sample_j)], sizeof(double), 1, fp);
+                            num_written = fwrite(&host_j[array_offset(vbox_r,vbox_j,sample_r,sample_j)], sizeof(double), 1, fp);
+                            num_written = fwrite(&host_mval[array_offset(vbox_r,vbox_j,sample_r,sample_j)], sizeof(uint32_t), 1, fp);
+
+                            sample_counter += 1;
+
+                        }
+                    }
+                }
+            }
+            fclose(fp);
+            fprintf (stderr,"INFO : file %s closed.\n",timestamp_filename);
+        }
+    }
+    free(timestamp_filename);
+
+    fprintf (stderr,"INFO : dumped %i records\n", sample_counter);
 
 
 
