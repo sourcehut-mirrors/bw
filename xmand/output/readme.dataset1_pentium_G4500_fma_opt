@@ -1,37 +1,33 @@
-phobos$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
+C_oberon$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 2
 -------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = phobos
-                     release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #10 main-n256759-da55f86c614: Mon Jul 18 00:06:19 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
-                     machine = amd64
+                 system name = Linux
+                   node name = oberon
+                     release = 5.19.2-genunix
+                     version = #1 SMP Sat Aug 20 19:46:19 GMT 2022
+                     machine = x86_64
                    page size = 4096
-               system memory = 16863674368
-                             = 16468432 kB
-                             = 16082 MB
-                 avail pages = 4117108
-                avail memory = 0
-         clock ticks per sec = 128
-             threads support = 200112
-               POSIX Version = 200112
+               system memory = 16723369984
+                             = 16331416 kB
+                             = 15948 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
                       endian = little endian
        sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    7 days    9 hours   34 mins   20 secs
+           system uptime    0 day    0 hour   50 mins    0 sec
 -------------------------------------------------------------------
-
-
---------- _XOPEN_SOURCE 600 -------
-_POSIX_CHILD_MAX   = 25
-_POSIX_NGROUPS_MAX = 8
-_POSIX_OPEN_MAX    = 20
-_POSIX_PATH_MAX    = 256
-_POSIX_TZNAME_MAX  = 6
----------------------------------------
-INFO : baseline tdelta =            304 nsec
+INFO : baseline tdelta =            115 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -39,7 +35,7 @@ INFO : FP Exception raised is FE_INEXACT
 imag : Perfectly safe to ignore FE_INEXACT
 
     mand_bail = 32768
-pthread_limit = 4
+pthread_limit = 2
     translate = ( +3.99750960350502282381057739e-01 , +2.05251797480741515755653381e-01 )
       magnify = +2.68435456000000000000000000e+08
 
@@ -67,7 +63,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = +2.05251797488017473369836807e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =    47059993522 nsec   4.705999e+01 sec
+[mand] =  3495509515472 nsec   3.495510e+03 sec
 
 
 raw data values -------------------------------------------------------
@@ -76,7 +72,7 @@ raw data values -------------------------------------------------------
      :       mand_height =      3199
      : r[ 7][ 7][63][63] = +3.99750960343226324766874313e-01
      : j[ 7][ 7][63][63] = +2.05251797473465558141469955e-01
-     :       mand_height =     10859
+     :       mand_height =     11691
      : r[ 8][ 8][ 0][ 0] = +3.99750960357778239995241165e-01
      : j[ 8][ 8][ 0][ 0] = +2.05251797488017473369836807e-01
      :       mand_height =      6052
@@ -85,20 +81,20 @@ raw data values -------------------------------------------------------
      :       mand_height =      5990
      : r[ 8][ 8][32][32] = +3.99750960823439527302980423e-01
      : j[ 8][ 8][32][32] = +2.05251797953678760677576065e-01
-     :       mand_height =      5311
+     :       mand_height =      5233
      : r[ 3][12][44][21] = +3.99750956341449636965990067e-01
      : j[ 3][12][44][21] = +2.05251801518897991627454758e-01
      :       mand_height =      3467
      : r[15][15][63][63] = +3.99750967793806921690702438e-01
      : j[15][15][63][63] = +2.05251804924046155065298080e-01
-     :       mand_height =     17101
+     :       mand_height =     16940
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1385 , 889  ]
+raw  [ 1383 , 889  ]
 INFO : dumper_flag = 1
-click at 1384 887 
-raw  [ 1385 , 889  ]
-INFO : file /var/tmp/dclarke/20220725121314 dump begins.
+click at 1382 887 
+raw  [ 1383 , 889  ]
+INFO : file /var/tmp/dclarke/20220906040827 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -117,20 +113,21 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20220725121314 closed.
+INFO : file /var/tmp/dclarke/20220906040827 closed.
 INFO : dumper_flag = 0
-click at 1384 887 
-raw  [ 1008 , 923  ]
+click at 1382 887 
+raw  [ 976  , 923  ]
 right click
-click at 1007 921 
-raw  [ 1008 , 923  ]
+click at 975 921 
+raw  [ 976  , 923  ]
 right click
 
-phobos$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220725121314
+
+
+C_oberon$ hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220906040827
      0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
     10:  00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
     20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
     30: 
-phobos$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220725121314
-c49776428f9dd58189746af8b38fde12878e89c34e2300f5206a937bf3152b95  /var/tmp/dclarke/20220725121314
-
+C_oberon$ mdigest -a sha256 /var/tmp/dclarke/20220906040827
+da10c083ef0199b5cec137517276b6b04f70edaa6462056b47984774ccc956ba  /var/tmp/dclarke/20220906040827

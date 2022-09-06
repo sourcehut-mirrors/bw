@@ -36,16 +36,21 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
-#include <X11/Xlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <limits.h>
+#include <locale.h>
+#include <math.h>
 #include <pthread.h>
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <sched.h>
+#include <sys/stat.h>
 #include <time.h>
-#include <math.h>
-#include <limits.h>
+#include <unistd.h>
+#include <X11/Xlib.h>
 
 /* for a good read about fused multiply add operations please
  * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845
@@ -57,17 +62,6 @@
 #pragma STDC FP_CONTRACT ON
 
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-
-#include <locale.h>
-#include <unistd.h>
-#include <math.h>
-#include <errno.h>
-
-#include <pthread.h>
-
-#include <fcntl.h>
-#include <sys/stat.h>
 
 #include "mandelbrot.h"
 
