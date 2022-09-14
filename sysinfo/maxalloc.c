@@ -46,16 +46,17 @@
 #include <math.h>
 #include <fenv.h>
 
-int sysinfo(void);
-uint64_t system_memory(void);
-int64_t timediff( struct timespec st, struct timespec en );
+#define SYSINFO_FAIL 127
+#define VERBOSE 1
+int sysinfo(int verbose);
+uint64_t timediff( struct timespec st, struct timespec en );
 
 int main( int argc, char *argv[] ) {
 
     size_t max = 0;
     size_t num_bytes, mem_alloc_size, mem_delta_size;
     int bytes_formatted;
-    char* buffer;
+    char *buffer;
     struct timespec start_time, end_time, tn;
     char time_buffer[32] = "";
     int64_t t0_s, t0_ns, t1_s, t1_ns, t_tmp_s, t_tmp_ns;
@@ -67,7 +68,7 @@ int main( int argc, char *argv[] ) {
     int64_t this_delta, t_delta_sanity, total_ns = 0;
 
     setlocale( LC_ALL, "C" );
-    sysinfo();
+    sysinfo(VERBOSE);
 
     if ( clock_gettime( CLOCK_REALTIME, &start_time ) > -1 ) {
         bytes_formatted = sprintf ( time_buffer,
@@ -79,7 +80,7 @@ int main( int argc, char *argv[] ) {
             printf ( "START %s\n", time_buffer );
         } else {
             fprintf(stderr,"FAIL : you seem to not have clock_gettime().\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
     }
     t0_s = (int64_t)start_time.tv_sec;
@@ -90,11 +91,12 @@ int main( int argc, char *argv[] ) {
         mem_alloc_size = (size_t)strtol(argv[2], (char **)NULL, 10);
         mem_delta_size = (size_t)strtol(argv[3], (char **)NULL, 10);
 
-        /* ensure we are getting 32 data points */
+        /* TODO ensure we are getting 32 data points 
         if ( ( max / mem_delta_size ) < 32 ) {
             fprintf(stderr, "FAIL : lets allocate some reasonable amount!\n");
-            return ( EXIT_FAILURE );
+            return EXIT_FAILURE;
         }
+        */
 
         printf ( " NOTE : will try to allocate %lu bytes of memory.\n", max );
         printf ( "      : we will use an init allocation of %lu bytes.\n", mem_alloc_size );
@@ -104,7 +106,7 @@ int main( int argc, char *argv[] ) {
 
         fprintf (stderr, "FAIL : enter memsize total and allocation\n" );
         fprintf (stderr, "     : init size and allocation delta.\n" );
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
 
     }
 
@@ -212,7 +214,7 @@ int main( int argc, char *argv[] ) {
     printf ("DELTA %" PRId64 "\n", t_delta_sanity );
     printf ("TOTAL %" PRId64 "\n", total_ns );
 
-    return ( EXIT_SUCCESS );
+    return EXIT_SUCCESS;
 
 }
 

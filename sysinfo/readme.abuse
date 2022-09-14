@@ -1,0 +1,319 @@
+
+titan$ ./maxalloc 547608330240 4294967296 4294967296
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = titan
+                     release = 13.1-RELEASE-p1
+                     version = FreeBSD 13.1-RELEASE-p1 GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 549600534528
+                             = 536719272 kB
+                             = 524139 MB
+                 avail pages = 134179818
+                avail memory = 0
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    0 hour   54 mins   35 secs
+-------------------------------------------------------------------
+START 1663116359.852874289
+ NOTE : will try to allocate 547608330240 bytes of memory.
+      : we will use an init allocation of 4294967296 bytes.
+      : with a delta memory allocation of 4294967296 bytes.
+      : Allocated   8192 MB    1663116364.871733461    5018859172
+      : Allocated  12288 MB    1663116374.977923782    10106190321
+      : Allocated  16384 MB    1663116389.972534947    14994611165
+      : Allocated  20480 MB    1663116410.43851466     20071316519
+      : Allocated  24576 MB    1663116435.418913305    25375061839
+      : Allocated  28672 MB    1663116459.961043884    24542130579
+      : Allocated  32768 MB    1663116486.630008435    26668964551
+      : Allocated  36864 MB    1663116517.59265585     30429257150
+      : Allocated  40960 MB    1663116550.992564680    33933299095
+      : Allocated  45056 MB    1663116589.337431295    38344866615
+      : Allocated  49152 MB    1663116643.732063499    54394632204
+      : Allocated  53248 MB    1663116688.830449532    45098386033
+      : Allocated  57344 MB    1663116752.998074457    64167624925
+      : Allocated  61440 MB    1663116805.470466737    52472392280
+      : Allocated  65536 MB    1663116879.443646030    73973179293
+      : Allocated  69632 MB    1663116940.214947893    60771301863
+      : Allocated  73728 MB    1663117001.815445404    61600497511
+      : Allocated  77824 MB    1663117067.5572939      65190127535
+      : Allocated  81920 MB    1663117135.606416131    68600843192
+      : Allocated  86016 MB    1663117207.744244965    72137828834
+      : Allocated  90112 MB    1663117283.411638897    75667393932
+      : Allocated  94208 MB    1663117362.926821269    79515182372
+      : Allocated  98304 MB    1663117445.974207563    83047386294
+      : Allocated 102400 MB    1663117532.542874922    86568667359
+      : Allocated 106496 MB    1663117622.649368497    90106493575
+      : Allocated 110592 MB    1663117716.579608361    93930239864
+      : Allocated 114688 MB    1663117814.53805025     97474196664
+      : Allocated 118784 MB    1663117915.52770241     100998965216
+      : Allocated 122880 MB    1663118019.588966345    104536196104
+      : Allocated 126976 MB    1663118127.892761859    108303795514
+      : Allocated 131072 MB    1663118241.26577473     113133815614
+      : Allocated 135168 MB    1663118365.973680633    124947103160
+      : Allocated 139264 MB    1663118544.641665233    178667984600
+      : Allocated 143360 MB    1663118677.388634442    132746969209
+      : Allocated 147456 MB    1663118811.193919392    133805284950
+      : Allocated 151552 MB    1663118948.606585285    137412665893
+      : Allocated 155648 MB    1663119089.625573039    141018987754
+      : Allocated 159744 MB    1663119234.285611910    144660038871
+      : Allocated 163840 MB    1663119382.641525401    148355913491
+      : Allocated 167936 MB    1663119534.739517207    152097991806
+      : Allocated 172032 MB    1663119749.19060744     214279543537
+      : Allocated 176128 MB    1663119916.191771887    167172711143
+      : Allocated 180224 MB    1663120083.123009206    166931237319
+      : Allocated 184320 MB    1663120251.423859629    168300850423
+      : Allocated 188416 MB    1663120422.748935719    171325076090
+      : Allocated 192512 MB    1663120600.889836892    178140901173
+      : Allocated 196608 MB    1663120778.764078958    177874242066
+      : Allocated 200704 MB    1663120962.947832273    184183753315
+      : Allocated 204800 MB    1663121148.361402917    185413570644
+      : Allocated 208896 MB    1663121338.273326503    189911923586
+      : Allocated 212992 MB    1663121531.26242574     192752916071
+      : Allocated 217088 MB    1663121726.536325230    195510082656
+      : Allocated 221184 MB    1663121925.958347498    199422022268
+      : Allocated 225280 MB    1663122129.296802779    203338455281
+      : Allocated 229376 MB    1663122336.537340086    207240537307
+      : Allocated 233472 MB    1663122547.687470789    211150130703
+      : Allocated 237568 MB    1663122763.584453315    215896982526
+      : Allocated 241664 MB    1663122983.422018544    219837565229
+      : Allocated 245760 MB    1663123208.917396186    225495377642
+      : Allocated 249856 MB    1663123435.813800980    226896404794
+      : Allocated 253952 MB    1663123666.509802823    230696001843
+      : Allocated 258048 MB    1663123901.171545527    234661742704
+      : Allocated 262144 MB    1663124139.724128906    238552583379
+      : Allocated 266240 MB    1663124382.223296009    242499167103
+      : Allocated 270336 MB    1663124627.379468536    245156172527
+      : Allocated 274432 MB    1663124880.92068186     252712599650
+      : Allocated 278528 MB    1663125134.943718639    254851650453
+      : Allocated 282624 MB    1663125393.486167781    258542449142
+      : Allocated 286720 MB    1663125656.672544038    263186376257
+      : Allocated 290816 MB    1663125923.687157455    267014613417
+      : Allocated 294912 MB    1663126194.620789147    270933631692
+      : Allocated 299008 MB    1663126469.395464427    274774675280
+      : Allocated 303104 MB    1663126748.56079886     278660615459
+      : Allocated 307200 MB    1663127030.609822666    282553742780
+      : Allocated 311296 MB    1663127317.115061431    286505238765
+      : Allocated 315392 MB    1663127607.496749671    290381688240
+      : Allocated 319488 MB    1663127901.795704174    294298954503
+      : Allocated 323584 MB    1663128199.985892873    298190188699
+      : Allocated 327680 MB    1663128501.941586690    301955693817
+      : Allocated 331776 MB    1663128807.962003037    306020416347
+      : Allocated 335872 MB    1663129117.890325573    309928322536
+      : Allocated 339968 MB    1663129432.425602565    314535276992
+      : Allocated 344064 MB    1663129750.637978380    318212375815
+      : Allocated 348160 MB    1663130072.700872780    322062894400
+      : Allocated 352256 MB    1663130398.634163220    325933290440
+      : Allocated 356352 MB    1663130728.507206442    329873043222
+      : Allocated 360448 MB    1663131062.299705370    333792498928
+      : Allocated 364544 MB    1663131399.990059099    337690353729
+      : Allocated 368640 MB    1663131741.257598925    341267539826
+      : Allocated 372736 MB    1663132088.192186479    346934587554
+      : Allocated 376832 MB    1663132439.208845257    351016658778
+      : Allocated 380928 MB    1663132793.854271725    354645426468
+      : Allocated 385024 MB    1663133150.583531882    356729260157
+      : Allocated 389120 MB    1663133512.290086488    361706554606
+      : Allocated 393216 MB    1663133877.912724553    365622638065
+      : Allocated 397312 MB    1663134247.433185627    369520461074
+      : Allocated 401408 MB    1663134867.922481877    620489296250
+      : Allocated 405504 MB    1663135261.15258536     393092776659
+      : Allocated 409600 MB    1663135643.94469539     382079211003
+      : Allocated 413696 MB    1663136028.404437726    385309968187
+      : Allocated 417792 MB    1663136417.372932806    388968495080
+      : Allocated 421888 MB    1663136809.934435314    392561502508
+      : Allocated 425984 MB    1663137204.102642250    394168206936
+      : Allocated 430080 MB    1663137604.6280026      399903637776
+      : Allocated 434176 MB    1663138006.217867414    402211587388
+      : Allocated 438272 MB    1663138413.84121696     406866254282
+      : Allocated 442368 MB    1663138822.979338379    409895216683
+      : Allocated 446464 MB    1663139235.431848657    412452510278
+      : Allocated 450560 MB    1663141444.214617941    2208782769284
+      : Allocated 454656 MB    1663141975.45934130     530831316189
+      : Allocated 458752 MB    1663142402.576031862    427530097732
+      : Allocated 462848 MB    1663142833.210874064    430634842202
+      : Allocated 466944 MB    1663143578.304186533    745093312469
+      : Allocated 471040 MB    1663144326.535076158    748230889625
+      : Allocated 475136 MB    1663144789.241257694    462706181536
+      : Allocated 479232 MB    1663145236.497674921    447256417227
+      : Allocated 483328 MB    1663145683.627963918    447130288997
+      : Allocated 487424 MB    1663146135.687851225    452059887307
+      : Allocated 491520 MB    1663146598.257879592    462570028367
+      : Allocated 495616 MB    1663148698.364216701    2100106337109
+      : Allocated 499712 MB    1663152360.956586520    3662592369819
+      : Allocated 503808 MB    1663156271.582151369    3910625564849
+      : Allocated 507904 MB    1663167385.596916015    11114014764646
+
+titan$ 
+
+
+The console shows that bad things have happened : 
+
+swap_pager: out of swap space
+swp_pager_getswapspace(24): failed
+swp_pager_getswapspace(10): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(1): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(21): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(3): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(4): failed
+swp_pager_getswapspace(25): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(9): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(22): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(10): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(20): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(18): failed
+swp_pager_getswapspace(30): failed
+swp_pager_getswapspace(32): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(31): failed
+swp_pager_getswapspace(5): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(14): failed
+swp_pager_getswapspace(2): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(11): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(14): failed
+swp_pager_getswapspace(30): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(14): failed
+swp_pager_getswapspace(31): failed
+swp_pager_getswapspace(5): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(13): failed
+swp_pager_getswapspace(1): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(8): failed
+swp_pager_getswapspace(17): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(31): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(5): failed
+swp_pager_getswapspace(1): failed
+swp_pager_getswapspace(19): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(10): failed
+swp_pager_getswapspace(9): failed
+swp_pager_getswapspace(30): failed
+swp_pager_getswapspace(31): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(15): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(3): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(23): failed
+swp_pager_getswapspace(11): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(25): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(12): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(28): failed
+swp_pager_getswapspace(12): failed
+swp_pager_getswapspace(10): failed
+swp_pager_getswapspace(18): failed
+swp_pager_getswapspace(27): failed
+swp_pager_getswapspace(23): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(32): failed
+swp_pager_getswapspace(23): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(26): failed
+swp_pager_getswapspace(25): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(31): failed
+swp_pager_getswapspace(19): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(3): failed
+swp_pager_getswapspace(31): failed
+swp_pager_getswapspace(2): failed
+swp_pager_getswapspace(11): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(1): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(24): failed
+swp_pager_getswapspace(32): failed
+swp_pager_getswapspace(26): failed
+swp_pager_getswapspace(19): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(15): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(26): failed
+swp_pager_getswapspace(7): failed
+swp_pager_getswapspace(22): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(7): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(4): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(22): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(2): failed
+swp_pager_getswapspace(14): failed
+swap_pager: out of swap space
+swp_pager_getswapspace(31): failed
+.
+.
+.
+
+
+The few last reports from "top" still seems wrong : 
+
+last pid:  6663;  load averages:  1.95,  1.46,  1.39  up 0+11:37:57    11:29:21
+33 processes:  2 running, 31 sleeping
+CPU:  0.8% user,  0.0% nice,  1.6% system,  1.3% interrupt, 96.3% idle
+Mem: 382G Active, 127M Inact, 98G Laundry, 7163M Wired, 40K Buf, 11G Free
+ARC: 2705M Total, 1188M MFU, 584M MRU, 652K Anon, 27M Header, 902M Other
+     920M Compressed, 2777M Uncompressed, 3.02:1 Ratio
+Swap: 16G Total, 11G Used, 5109M Free, 68% Inuse, 345M In, 755M Out
+
+  PID USERNAME    THR PRI NICE   SIZE    RES STATE    C   TIME    WCPU COMMAND
+ 5314 dclarke       1  91    0  1841G   436G CPU20   20 573:37  54.73% maxalloc
+ 6215 root          1  20    0    14M  1064K CPU33   33   0:06   0.02% top
+ 3284 root          1  20    0    13M   576K select   0   0:03   0.01% powerd
+ 3307 ntpd          1  20    0    21M  1240K select  35   0:01   0.00% ntpd
+
+.
+. 5 secs later
+.
+
+last pid:  6663;  load averages:  2.11,  1.50,  1.41  up 0+11:38:02    11:29:26
+33 processes:  1 running, 32 sleeping
+CPU:  0.6% user,  0.0% nice,  1.4% system,  1.1% interrupt, 96.9% idle
+Mem: 382G Active, 586M Inact, 98G Laundry, 7145M Wired, 40K Buf, 11G Free
+ARC: 2705M Total, 1188M MFU, 584M MRU, 652K Anon, 27M Header, 902M Other
+     920M Compressed, 2777M Uncompressed, 3.02:1 Ratio
+Swap: 16G Total, 11G Used, 4762M Free, 70% Inuse, 409M In, 427M Out
+
+  PID USERNAME    THR PRI NICE   SIZE    RES STATE    C   TIME    WCPU COMMAND
+ 5314 dclarke       1  52    0  1841G   432G swread  31 573:39  44.77% maxalloc
+ 6215 root          1  20    0    14M  1064K CPU33   33   0:06   0.05% top
+ 3284 root          1  20    0    13M   576K select   7   0:03   0.01% powerd
+ 3307 ntpd          1  20    0    21M  1240K select  39   0:01   0.00% ntpd
+.
+.
+.
+
+
+
