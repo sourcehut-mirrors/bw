@@ -50,17 +50,17 @@ int main ( int argc, char *argv[] )
     }
 
     if ( argc > 2 ) {
-        printf ("\nINFO : You suggest a locale of %s\n", argv[2]);
         buf = setlocale ( LC_NUMERIC, argv[2] );
+        printf ("INFO : LC_NUMERIC locale is now %s\n", buf);
     } else {
         buf = setlocale ( LC_NUMERIC, "C" );
     }
 
     if ( buf == NULL ) {
         fprintf (stderr,"FAIL : setlocale fail\n");
+        fprintf (stderr,"     : \"%s\" not reasonable?\n", argv[2]);
         return EXIT_FAILURE;
     }
-    printf ("     : LC_NUMERIC locale is now %s\n", buf);
 
     errno = 0;
     feclearexcept(FE_ALL_EXCEPT);
@@ -76,10 +76,6 @@ int main ( int argc, char *argv[] )
         if ( fpe_raised & FE_OVERFLOW ) printf(" FE_OVERFLOW");
         if ( fpe_raised & FE_INVALID ) printf(" FE_INVALID");
         printf("\n");
-    }
-
-    if ( fpe_raised & FE_INEXACT ) {
-        printf("WARN : FE_INEXACT returned by strtod()\n");
     }
 
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
@@ -99,8 +95,7 @@ int main ( int argc, char *argv[] )
     num = candidate_double;
     /* slightly wide format spec to see many digits which should
      * be well past the FP64 precision */
-    printf ("INFO : seems like a decimal number\n");
-    printf ("     : %-+68.60g\n", num);
+    printf ("INFO : %-+68.60g\n", num);
 
     return EXIT_SUCCESS;
 
