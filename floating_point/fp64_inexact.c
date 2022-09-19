@@ -1,31 +1,4 @@
 
-/*
- * fp64_inexact.c A trivial test case to determine glibc bug 26137
- *
- * Bug 26137 - strtod() triggers exception FE_INEXACT on reasonable
- *             input 
- *
- * https://sourceware.org/bugzilla/show_bug.cgi?id=26137
- *
- * Bugfix in release 2.32 :
- * https://sourceware.org/pipermail/libc-announce/2020/000029.html
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
- */
-
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -57,54 +30,37 @@
 
 /* Accept ascii data on the command line and attempt to convert
  * to IEEE 754-2008 floating point FP64 data.
- * 
- * FreeBSD 12 RELEASE triggers a floating point exception 
+ *
+ * FreeBSD 12 RELEASE triggers a floating point exception
  * FE_INEXACT on some data that should be accepted perfectly.
  *
- * See FreeBSD bug report :
- * https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=247370
- *
- * Also for Linux glibc :
- * https://sourceware.org/bugzilla/show_bug.cgi?id=26137
- *
- * Note that 26137 is fixed in glibc 2.32
- * https://sourceware.org/pipermail/libc-announce/2020/000029.html
+ * Possibly also FreeBSD 14.0-CURRENT main-n258068-e4505364c08
  */
-
-uint64_t system_memory(void);
-int sysinfo(void);
 
 int main ( int argc, char *argv[] )
 {
 
+    char *buf;
     double candidate_double, num;
     int fpe_raised = 0;
 
     if ( argc < 2 ) {
         fprintf(stderr,"FAIL : provide a decimal number\n");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
 
-    char *buf = malloc((size_t)32);
-    if ( buf == NULL ) {
-        perror ("malloc!");
-        fprintf (stderr,"FAIL : malloc failed for buf\n");
-        return(EXIT_FAILURE);
-    }
-
-    if ( argc > 3 ) {
+    if ( argc > 2 ) {
         printf ("\nINFO : You suggest a locale of %s\n", argv[2]);
-        buf = setlocale ( LC_ALL, argv[2] );
+        buf = setlocale ( LC_NUMERIC, argv[2] );
     } else {
-        buf = setlocale ( LC_ALL, "POSIX" );
+        buf = setlocale ( LC_NUMERIC, "C" );
     }
 
     if ( buf == NULL ) {
         fprintf (stderr,"FAIL : setlocale fail\n");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
-
-    sysinfo();
+    printf ("     : LC_NUMERIC locale is now %s\n", buf);
 
     errno = 0;
     feclearexcept(FE_ALL_EXCEPT);
@@ -129,13 +85,13 @@ int main ( int argc, char *argv[] )
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
         fprintf(stderr,"FAIL : number not understood\n");
         perror("     ");
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
 
     if ( !isnormal(candidate_double) && ( candidate_double != 0.0 ) ) {
         fprintf(stderr,"FAIL : number is not normal\n");
         fprintf(stderr,"     : looks like %-+22.16e\n", candidate_double);
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
 
     feclearexcept(FE_ALL_EXCEPT);
@@ -143,8 +99,10 @@ int main ( int argc, char *argv[] )
     num = candidate_double;
     /* slightly wide format spec to see many digits which should
      * be well past the FP64 precision */
-    printf ("INFO : seems like a decimal number %-+36.34g\n", num);
-    return ( EXIT_SUCCESS );
+    printf ("INFO : seems like a decimal number\n");
+    printf ("     : %-+68.60g\n", num);
+
+    return EXIT_SUCCESS;
 
 }
 

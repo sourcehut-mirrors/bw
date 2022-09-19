@@ -1,7 +1,4 @@
 
-oops 
-
-hydra$ 
 hydra$ cc -v -c -o nico_fmad_x86.o nico_fmad_x86.s
 FreeBSD clang version 13.0.0 (git@github.com:llvm/llvm-project.git llvmorg-13.0.0-0-gd7b669b3a303)
 Target: x86_64-unknown-freebsd13.1
@@ -16,12 +13,7 @@ Illegal instruction (core dumped)
 hydra$ 
 
 
-In other news marsen says : 
-
-                                 Others probably already have brought it 
-                up, but might I make a suggestion regarding your code in fmad.c? How about 
-                declaring all the arrays (a, b, a64, b64, a128, b128) as "volatile"? This 
-                way the compiler should not be able to optimize anything away (eg. 
-                precompute the results of the multiplications). I did this and I got gcc to 
-                compile your code with "fma" instructions.
+How about declaring all the arrays (a, b, a64, b64, a128, b128) as
+"volatile"? This way the compiler should not be able to optimize
+anything away (eg.  precompute the results of the multiplications).
 

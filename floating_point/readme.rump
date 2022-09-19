@@ -25,7 +25,8 @@ At line 302 we have:
 
 tmp[5] would contain the value 145173518207904485374
 
-Keep in mind precedence.  You probably wanted to calculate -121 * b^4 - 2 here.
+Keep in mind precedence.
+You probably wanted to calculate -121 * b^4 - 2 here.
 
 If you did tmp[5] would contain -145173518207904485378
 
