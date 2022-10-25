@@ -2,7 +2,7 @@ CC?=		/usr/bin/cc
 CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 		-D_XOPEN_SOURCE=600 -D_REENTRANT
 
-LIBS=		-lpthread -lrt
+LIBS?=		-lpthread -lrt
 
 OBJS=	../sysinfo/sysinfo.o \
 		q_work.o enqueue.o dequeue.o q_create.o \

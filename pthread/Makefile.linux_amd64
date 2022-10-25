@@ -1,0 +1,10 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g \
+	-O0 -march=k8 -mtune=k8 -Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+   	-fno-builtin -malign-double -mpc80
+
+LIBS=	-lpthread -lrt -lm
+
+include fbsd_common.mk
