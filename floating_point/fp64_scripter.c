@@ -55,18 +55,23 @@ int main (void)
     errno = 0;
 
     /*
+     * A locale like de_DE.UTF-8 or fr_FR.UTF-8 will require
+     * that the input string has a comma for the decimal point.
+     *
      * #!/bin/sh
-LC_NUMERIC=de_DE.UTF-8
-export LC_NUMERIC
-
-/usr/bin/printf "\n----  1 ----  "; echo '64k 2 _1 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _1 ^ 1+ pq' | dc )` de_DE.UTF-8
-/usr/bin/printf "\n----  2 ----  "; echo '64k 2 _2 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _2 ^ 1+ pq' | dc )` de_DE.UTF-8
-/usr/bin/printf "\n----  3 ----  "; echo '64k 2 _3 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _3 ^ 1+ pq' | dc )` de_DE.UTF-8
-/usr/bin/printf "\n----  4 ----  "; echo '64k 2 _4 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _4 ^ 1+ pq' | dc )` de_DE.UTF-8
-callisto$ /usr/bin/printf "\n----  6 ----  "; echo '64k 2 _6 ^ pq' | dc | sed 's/0*$//'
-
-----  6 ----  .015625
-*/
+     * LC_NUMERIC=de_DE.UTF-8
+     * export LC_NUMERIC
+     * 
+     * /usr/bin/printf "\n----  1 ----  "; echo '64k 2 _1 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _1 ^ 1+ pq' | dc )` de_DE.UTF-8
+     * /usr/bin/printf "\n----  2 ----  "; echo '64k 2 _2 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _2 ^ 1+ pq' | dc )` de_DE.UTF-8
+     * /usr/bin/printf "\n----  3 ----  "; echo '64k 2 _3 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _3 ^ 1+ pq' | dc )` de_DE.UTF-8
+     * /usr/bin/printf "\n----  4 ----  "; echo '64k 2 _4 ^ 1+ pq' | dc | sed -e 's/\./,/' ; ./fp64_inexact `( echo '64k 2 _4 ^ 1+ pq' | dc )` de_DE.UTF-8
+     *
+     * Also trim off trailing zeros :
+     *
+     * callisto$ echo '64k 2 _4 ^ 1+ pq' | dc | sed -e 's/\./,/' | sed -e 's/0*$//'
+     * 1,0625
+     */
 
     printf("#!/bin/sh\nLC_NUMERIC=C\nexport LC_NUMERIC\n\n");
     for (j=0;j<55;j++){
@@ -75,6 +80,7 @@ callisto$ /usr/bin/printf "\n----  6 ----  "; echo '64k 2 _6 ^ pq' | dc | sed 's
         printf("./fp64_inexact `( echo '64k 2 _%-2i ^ 1+ pq' | dc | sed -e 's/0*$//' )`\n",j);
         printf("\n");
     }
+
 
     return EXIT_SUCCESS;
 
