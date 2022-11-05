@@ -5,6 +5,7 @@
  * 268435456    256M
  * 402653184    384M
  * 469762048    448M
+ * 520000000    should fit onto a 12G GPU card
  * 536870912    512M
  * 1073741824   1G
  *
@@ -16,7 +17,7 @@
  *          the 32-bit elements are 4 bytes each.
  */
 
-#define NUM_ELEMENTS 536870912
+#define NUM_ELEMENTS 520000000
 #define THREADS_PER_BLOCK 1024
 #define EPSILON 1e-12
 
