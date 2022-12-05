@@ -45,27 +45,37 @@ vectorAdd(const float *A, const float *B, float *C, int numElements)
 
 int main(int argc, char *argv[])
 {
-    struct timespec t0, t1;
+
+    /* at best we have mantissa of 23 bits plus an implied one bit
+     * thus epsilon will be 2^(-21) which is perfectly reasonable 
+     */
+    float epsilon = 0.0000004768371582031250;
+    struct timespec t_start, t_end, t0, t1;
     uint64_t tdelta_nsec;
 
     cudaError_t err = cudaSuccess;
     int numElements = NUM_ELEMENTS;
     size_t size = numElements * sizeof(float);
 
-    int num_gpus = 0;   // number of CUDA GPUs
+    int num_gpus = 0;
 
     setlocale( LC_ALL, "C" );
     sysinfo();
 
     /* Get the CLOCK_REALTIME time in a timespec struct */
-    if ( clock_gettime( CLOCK_REALTIME, &t0 ) == -1 ) {
+    if ( clock_gettime( CLOCK_REALTIME, &t_start ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return(EXIT_FAILURE);
+        return EXIT_FAILURE;
     } else {
         /* call srand48() with the sub-second time data */
-        srand48( (long) t0.tv_nsec );
+        srand48( (long) t_start.tv_nsec );
     }
+
+    /* ensure we also have a time t0 */
+    t0.tv_sec = t_start.tv_sec;
+    t0.tv_nsec = t_start.tv_nsec;
+
 
     /* determine the number of CUDA capable GPUs */
     cudaGetDeviceCount(&num_gpus);
@@ -78,10 +88,29 @@ int main(int argc, char *argv[])
     printf("INFO : number of host CPUs:\t%d\n", omp_get_num_procs());
     printf("INFO : number of CUDA devices:\t%d\n", num_gpus);
 
+    /* we need a device that can handle three arrays with some 
+     * minimal overhead. Say 5% just for giggles. That can be
+     * stupid large on a big NVidia Quadro */
+    uint64_t memory_fit_size = (uint64_t)(
+
+                            (double)( 3.0 * size ) * 1.05
+
+                                         );
+
+    printf("     : we need %" PRIu64 " bytes of memory on a GPU\n", memory_fit_size);
+
+    cudaDeviceProp *dprop = (cudaDeviceProp *)calloc( num_gpus, sizeof(cudaDeviceProp));
+    if ( dprop == NULL ) {
+        fprintf(stderr, "FAIL : memory allocate cudaDeviceProp *dprop\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (int i = 0; i < num_gpus; i++) {
-        cudaDeviceProp dprop;
-        cudaGetDeviceProperties(&dprop, i);
-        printf("     :    %d: %s\n", i, dprop.name);
+
+        cudaGetDeviceProperties(dprop+i, i);
+        printf("     :    %d: %s", i, (dprop+i)->name);
+        printf(" totalGlobalMem = %" PRIu64 "\n", (uint64_t)(dprop+i)->totalGlobalMem);
+
     }
 
     printf("INFO : Vector addition of %d float FP32 elements\n", numElements);
@@ -207,7 +236,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
-    printf("INFO : Copy result vector A from device to host done.\n");
+    printf("INFO : Copy result vector C from device to host done.\n");
     clock_gettime( CLOCK_REALTIME, &t0 );
     tdelta_nsec = timediff( t1, t0 );
     printf("     : cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
@@ -216,7 +245,7 @@ int main(int argc, char *argv[])
 
     /* test that result vector is correct within epsilon error */
     for (int i = 0; i < numElements; ++i) {
-        if ( fabs(h_A[i] + h_B[i] - h_C[i]) > 1.0e-9 ) {
+        if ( fabs(h_A[i] + h_B[i] - h_C[i]) > epsilon ) {
             fprintf(stderr, "FAIL : Result verification failed at element %d!\n", i);
             /* this is terrible lazy code where I don't even bother to 
                clean up memory. */
@@ -224,7 +253,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("INFO : A + B correct within error epsilon = %16.9e\n", 1.0e-9);
+    printf("INFO : A + B correct within error 2^(-21) epsilon\n");
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : epsilon %" PRIu64 " nsecs  %9.7g secs\n",
@@ -257,9 +286,16 @@ int main(int argc, char *argv[])
     free(h_A);
     free(h_B);
     free(h_C);
+    free(dprop);
 
     printf("INFO : host memory free and we are done\n");
     cudaProfilerStop();
+
+    clock_gettime( CLOCK_REALTIME, &t_end );
+    tdelta_nsec = timediff( t_start, t_end);
+    printf("DONE : total time %" PRIu64 " nsecs  %9.7g secs\n",
+            tdelta_nsec, (float)tdelta_nsec/1.0e9);
+
     return EXIT_SUCCESS;
 
 }

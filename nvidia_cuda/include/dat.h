@@ -12,12 +12,11 @@
  * minimal low level entry point at 16M is 
  *            16777216   elements
  *
- * NOTE :   Pay attention to the fact that the 
- *          64-bit elements are 8 bytes each and
- *          the 32-bit elements are 4 bytes each.
  */
 
-#define NUM_ELEMENTS 520000000
+#define NUM_ELEMENTS 165773312
 #define THREADS_PER_BLOCK 1024
+
+/* we may need to redefine this in some code */
 #define EPSILON 1e-12
 
