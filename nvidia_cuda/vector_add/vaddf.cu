@@ -100,17 +100,57 @@ int main(int argc, char *argv[])
     printf("     : we need %" PRIu64 " bytes of memory on a GPU\n", memory_fit_size);
 
     cudaDeviceProp *dprop = (cudaDeviceProp *)calloc( num_gpus, sizeof(cudaDeviceProp));
-    if ( dprop == NULL ) {
-        fprintf(stderr, "FAIL : memory allocate cudaDeviceProp *dprop\n");
+    uint64_t *gpu_memory = (uint64_t *)calloc( num_gpus, sizeof(uint64_t));
+    int *gpu_unit_number = (int *)calloc( num_gpus, sizeof(int));
+    if ( ( dprop == NULL ) || ( gpu_memory == NULL ) || ( gpu_unit_number == NULL ) ) {
+        fprintf(stderr, "FAIL : memory allocate at %d in %s\n", __LINE__, __FILE__);
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < num_gpus; i++) {
+    uint64_t gpu_max_memory = 0;
+    int gpu_unit_max_number = -1;
 
-        cudaGetDeviceProperties(dprop+i, i);
-        printf("     :    %d: %s", i, (dprop+i)->name);
-        printf(" totalGlobalMem = %" PRIu64 "\n", (uint64_t)(dprop+i)->totalGlobalMem);
+    /* why is the NVidia Device properties name 256 bytes ? */
+    char gpu_unit_name[256] = "";
 
+    for (int j = 0; j < num_gpus; j++) {
+
+        cudaGetDeviceProperties(dprop+j, j);
+        printf("     :    %d: %s", j, (dprop+j)->name);
+
+        *(gpu_memory+j) = (uint64_t)(dprop+j)->totalGlobalMem;
+        *(gpu_unit_number+j) = j;
+
+        printf(" totalGlobalMem = %" PRIu64 "\n", *(gpu_memory+j));
+
+        if ( *(gpu_memory+j) > gpu_max_memory ) {
+            gpu_max_memory = *(gpu_memory+j);
+            gpu_unit_max_number = j;
+            gpu_unit_name[0] = '\0';
+            strncpy(gpu_unit_name,(dprop+j)->name,strlen((dprop+j)->name));
+        }
+
+    }
+
+
+    printf("     : max memory unit is %i: %s with %" PRIu64 " bytes\n",
+                          gpu_unit_max_number, gpu_unit_name, gpu_max_memory);
+
+    /* possible return values are : 
+       Returns:
+    cudaSuccess, cudaErrorInvalidDevice, cudaErrorSetOnActiveProcess */
+    if (cudaSetDevice(gpu_unit_max_number) != cudaSuccess) {
+        err = cudaGetLastError();
+        fprintf(stderr, "FAIL : CUDA failed to select %s\n", gpu_unit_name);
+        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
+        exit(EXIT_FAILURE);
+    }
+
+    /* we may as well do a cudaDeviceReset ( void ) */
+    if ( cudaDeviceReset() != cudaSuccess) {
+        fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
+        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
+        exit(EXIT_FAILURE);
     }
 
     printf("INFO : Vector addition of %d float FP32 elements\n", numElements);
@@ -287,6 +327,8 @@ int main(int argc, char *argv[])
     free(h_B);
     free(h_C);
     free(dprop);
+    free(gpu_memory);
+    free(gpu_unit_number);
 
     printf("INFO : host memory free and we are done\n");
     cudaProfilerStop();

@@ -1,29 +1,43 @@
 #!/bin/bash
 
-PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+PATH=/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
 export PATH
-
 
 if [ -d /usr/local/cuda-11.4 ]; then
     CUDA_HOME=/usr/local/cuda-11.4
     export CUDA_HOME
+    PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+    export PATH
 fi
 
 NVCC=`(command -v nvcc)` ; export NVCC
 if [ ! -x ${NVCC} ]; then
     /usr/bin/printf "FAIL : the NVidia compiler not found\n"
-    return 1
+    exit 42
+fi
+
+NVPROF=`( command -v nvprof )`; export NVPROF
+if [ ! -x ${NVPROF} ]; then
+    /usr/bin/printf "FAIL : We need the NVidia profiler nvprof\n"
+    exit 42
 fi
 
 rm -f vaddf vaddf.o > /dev/null 2>&1
 
-# nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true
+# Beware of the FMA disable options
+# nvcc -ccbin g++ -I../include -m64 -gencode arch=compute_35,code=sm_35
+# -Wno-deprecated-gpu-targets --ftz=false --prec-div=true
 # --prec-sqrt=true -fmad=false -c -o vaddf.o vaddf.cu 
 
+CXX=`(command -v g++-10 )`; export CXX
+if [ ! -x ${CXX} ]; then
+    /usr/bin/printf "FAIL : You need GCC ver 10.x for this\n"
+    exit 42
+fi
 
 /usr/bin/printf "\n\n------- attempt to compile vaddf.cu\n"
 
-${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
+${NVCC} -ccbin ${CXX}  -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
 -gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_50,code=sm_50 \
@@ -41,10 +55,7 @@ if [ ! -f vaddf.o ]; then
     exit 42
 fi
 
-# nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=
-# true -fmad=false -o vaddf vaddf.o -lgomp 
-
-${NVCC} -ccbin /usr/bin/g++-10 -m64 \
+${NVCC} -ccbin ${CXX}  -m64 \
 -gencode arch=compute_35,code=sm_35 \
 -gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_50,code=sm_50 \
@@ -65,14 +76,13 @@ if [ -f vaddf ]; then
 
     sleep 5 
 
-    NVPROF=`( command -v nvprof )`; export NVPROF
-
     ${NVPROF} ./vaddf
 
 else
     /usr/bin/printf "\n------- NO Binary Produced\n\n"
 fi
 
+exit 42
 
 /usr/bin/printf "\n\n------- attempt to compile vaddd.cu\n"
 

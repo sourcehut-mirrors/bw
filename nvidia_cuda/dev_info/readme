@@ -1,14 +1,16 @@
 
 
-For most Keplar devices 
+In the event of multiple GPU cards installed be sure to check the
+bullshit NVidia "compute" level crap number which determines the
+version of the internal PTX code base to build into the output
+binary blob.
 
-$ nvcc --version 
-nvcc: NVIDIA (R) Cuda compiler driver
-Copyright (c) 2005-2021 NVIDIA Corporation
-Built on Sun_Feb_14_21:12:58_PST_2021
-Cuda compilation tools, release 11.2, V11.2.152
-Build cuda_11.2.r11.2/compiler.29618528_0
-$ 
-$ nvcc -ccbin g++ -I ../include/ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
-$ nvcc -ccbin g++ -m64 -gencode arch=compute_35,code=sm_35 -Wno-deprecated-gpu-targets -o dev_info dev_info.o
+see https://developer.nvidia.com/cuda-gpus
+
+Where I need 3.5 and 5.0 and also 6.0
+
+C_titan$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
+C_titan$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets -o dev_info dev_info.o 
+C_titan$ 
+
 
