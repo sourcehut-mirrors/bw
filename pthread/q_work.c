@@ -184,11 +184,11 @@ int main(int argc, char **argv) {
         make_work->work_num = (uint32_t)j;
 
         /* Create a random fibonacci number to compute from 32 upwards
-         * to 47 as the max. Please see comment in fibber.c and do not
+         * to 49 as the max. Please see comment in fibber.c and do not
          * mess with this too much. Note that drand48() will never 
          * return a value of one and thus the integer limit in this
-         * addition is 15 + 32 = 47. */
-        make_work->fibber = (uint8_t)( drand48() * 16 ) + (uint8_t)32;
+         * addition is 15 + 34 = 49. */
+        make_work->fibber = (uint8_t)( drand48() * 16 ) + (uint8_t)34;
 
         /* number of the uint64_t elements in the thread big_array */
         make_work->array_cnt = req_element_num;
