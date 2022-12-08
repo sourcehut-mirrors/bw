@@ -82,7 +82,6 @@ else
     /usr/bin/printf "\n------- NO Binary Produced\n\n"
 fi
 
-exit 42
 
 /usr/bin/printf "\n\n------- attempt to compile vaddd.cu\n"
 
@@ -127,8 +126,6 @@ if [ -f vaddd ]; then
     ls -lapb vaddd*
 
     sleep 5 
-
-    NVPROF=`( command -v nvprof )`; export NVPROF
 
     ${NVPROF} ./vaddd
 
