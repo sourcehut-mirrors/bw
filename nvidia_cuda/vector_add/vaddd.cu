@@ -366,10 +366,11 @@ int main(int argc, char *argv[])
        *   THE CUDA Event timer stuff does not work at all. At   *
        *   least not for me. I have no idea why.                 *
        ***********************************************************
+       */
 
-    cuda_err = cudaEventRecord(cuda_start);
+    cuda_err = cudaEventRecord(cuda_start, 0);
     if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventRecord(cuda_start)\n");
+        fprintf(stderr, "FAIL : failed to cudaEventRecord(cuda_start, 0)\n");
         fprintf(stderr, "     : error %s\n", cudaGetErrorString(cuda_err));
         fprintf(stderr, "     : at %d in %s\n", __LINE__, __FILE__);
         free(h_A);
@@ -377,7 +378,7 @@ int main(int argc, char *argv[])
         free(h_C);
         return EXIT_FAILURE;
     }
-    */
+
 
     /*******************************************************
      * Special NOTE : this is asynchronous where control   *
@@ -385,7 +386,7 @@ int main(int argc, char *argv[])
      *                There is no waiting for the kernel   *
      *                code to complete.                    *
      *******************************************************/
-    vectorAdd<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, numElements);
+    vectorAdd<<<blocksPerGrid, threadsPerBlock, 0>>>(d_A, d_B, d_C, numElements);
 
     /* a call to cudaError_t cudaDeviceSynchronize ( void )  will ensure
        that all previous tasks in the GPU are completed. */
@@ -403,10 +404,9 @@ int main(int argc, char *argv[])
 
 
 
-    /* this also suck ass 
-    cuda_err = cudaEventRecord(cuda_stop);
+    cuda_err = cudaEventRecord(cuda_stop, 0);
     if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventRecord(cuda_stop)\n");
+        fprintf(stderr, "FAIL : failed to cudaEventRecord(cuda_stop, 0)\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
         fprintf(stderr, "     : at %d in %s\n", __LINE__, __FILE__);
         free(h_A);
@@ -414,9 +414,15 @@ int main(int argc, char *argv[])
         free(h_C);
         return EXIT_FAILURE;
     }
-    */
 
-    /* none of this works
+
+    cuda_err = cudaEventSynchronize(cuda_stop);
+    if (cuda_err != cudaSuccess) {
+        fprintf(stderr, "FAIL : failed to cudaEventSynchronize\n");
+        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
+        fprintf(stderr, "     : at %d in %s\n", __LINE__, __FILE__);
+        return EXIT_FAILURE;
+    }
 
     cuda_err = cudaEventElapsedTime(&cuda_milliseconds, cuda_start, cuda_stop);
     if (cuda_err != cudaSuccess) {
@@ -430,7 +436,7 @@ int main(int argc, char *argv[])
     }
     printf("     : cudaEventElapsedTime claims %9.7g secs\n",
                                cuda_milliseconds * 1000.0);
-    */
+
 
     /* Copy the device result vector in device memory to the host
      * result vector in host memory */
