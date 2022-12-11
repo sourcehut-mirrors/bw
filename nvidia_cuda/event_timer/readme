@@ -1,4 +1,8 @@
 
+SPECIAL Note !
+
+        do NOT reset the CUDA device after you start
+             uisng it!  this includes the Event API
 
 $ uname -a 
 Linux titan 5.10.0-19-amd64 #1 SMP Debian 5.10.149-2 (2022-10-21) x86_64 GNU/Linux
@@ -27,86 +31,4 @@ $ nvcc -ccbin /usr/bin/g++-10 -m64 \
 > --ftz=false --prec-div=true --prec-sqrt=true \
 > -o event_timer event_timer.o -lgomp
 $ 
-$ ./event_timer 
-INFO : number of CUDA devices:  3
-     : we need 26424115 bytes of memory on a GPU
-     :    0: Quadro GP100 totalGlobalMem = 17069309952
-     :    1: Quadro K6000 totalGlobalMem = 12799639552
-     :    2: Quadro K620 totalGlobalMem = 2091122688
-     : min memory unit is 2: Quadro K620 with 2091122688 bytes
-     : max memory unit is 0: Quadro GP100 with 17069309952 bytes
-     : selected Quadro K620
-INFO : we shall add 1048576 double FP64 elements
-INFO : Copy of vector A from host to device done.
-INFO : Copy of vector B from host to device done.
-INFO : CUDA kernel launch with 1024 blocks of 1024 threads
-FAIL : failed to cudaEventRecord(cuda_start, 0)
-     : error invalid resource handle
-     : at 313 in event_timer.cu
-$ 
-
-
-
-If we set the CUDA device before initialize the timers we
-get a SIGSEGV : 
-
-$ 
-$ nvcc -ccbin /usr/bin/g++-10 -g -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -c -o event_timer.o event_timer.cu
-$ nvcc -ccbin /usr/bin/g++-10 -g -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -o event_timer event_timer.o -lgomp
-$ 
-$ 
-$ TERM=dumb /usr/bin/gdb -q ./event_timer
-Reading symbols from ./event_timer...
-(gdb) run 
-Starting program: /home/dclarke/pgm/bw/nvidia_cuda/event_timer/event_timer 
-[Thread debugging using libthread_db enabled]
-Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
-[New Thread 0x7fffdffff000 (LWP 121025)]
-INFO : number of CUDA devices:  3
-     : we need 26424115 bytes of memory on a GPU
-     :    0: Quadro GP100 totalGlobalMem = 17069309952
-     :    1: Quadro K6000 totalGlobalMem = 12799639552
-     :    2: Quadro K620 totalGlobalMem = 2091122688
-     : min memory unit is 2: Quadro K620 with 2091122688 bytes
-     : max memory unit is 0: Quadro GP100 with 17069309952 bytes
-     : selected Quadro K620
-[New Thread 0x7fffdf7fe000 (LWP 121026)]
-[New Thread 0x7fffdeffd000 (LWP 121027)]
-[Thread 0x7fffdeffd000 (LWP 121027) exited]
-[Thread 0x7fffdf7fe000 (LWP 121026) exited]
-INFO : we shall add 1048576 double FP64 elements
-[New Thread 0x7fffdf7fe000 (LWP 121028)]
-[New Thread 0x7fffdeffd000 (LWP 121029)]
-INFO : Copy of vector A from host to device done.
-INFO : Copy of vector B from host to device done.
-INFO : CUDA kernel launch with 1024 blocks of 1024 threads
-
-Thread 1 "event_timer" received signal SIGSEGV, Segmentation fault.
-0x00007ffff6853cb2 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
-(gdb) where
-#0  0x00007ffff6853cb2 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
-#1  0x00007ffff67f3173 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
-#2  0x00007ffff688a5f3 in ?? () from /lib/x86_64-linux-gnu/libcuda.so.1
-#3  0x0000555555560eb8 in __cudart721 ()
-#4  0x00005555555adc4b in cudaEventRecord ()
-#5  0x000055555555cc61 in main (argc=1, argv=0x7fffffffe9a8) at event_timer.cu:304
-(gdb) list
-18      {
-19          int k = blockDim.x * blockIdx.x + threadIdx.x;
-20
-21          if (k < numElements)
-22          {
-23              C[k] = A[k] + B[k];
-24          }
-25      }
-26
-27      int main(int argc, char *argv[])
-(gdb) quit
-A debugging session is active.
-
-        Inferior 1 [process 121020] will be killed.
-
-Quit anyway? (y or n) y
-$
-
 

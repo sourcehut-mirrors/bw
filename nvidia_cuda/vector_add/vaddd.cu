@@ -81,21 +81,7 @@ int main(int argc, char *argv[])
     t0.tv_sec = t_start.tv_sec;
     t0.tv_nsec = t_start.tv_nsec;
 
-    /* initialize the cuda event timers */
     float cuda_milliseconds = 0.0;
-    cuda_err = cudaEventCreate(&cuda_start);
-    if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
-        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-        return EXIT_FAILURE;
-    }
-
-    cuda_err = cudaEventCreate(&cuda_stop);
-    if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
-        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-        return EXIT_FAILURE;
-    }
 
     /* determine the number of CUDA capable GPUs */
     cudaGetDeviceCount(&num_gpus);
@@ -232,6 +218,22 @@ int main(int argc, char *argv[])
     cuda_err = cudaDeviceReset();
     if ( cuda_err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
+        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
+        return EXIT_FAILURE;
+    }
+
+
+    /* initialize the cuda event timers after we select the device */
+    cuda_err = cudaEventCreate(&cuda_start);
+    if (cuda_err != cudaSuccess) {
+        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
+        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
+        return EXIT_FAILURE;
+    }
+
+    cuda_err = cudaEventCreate(&cuda_stop);
+    if (cuda_err != cudaSuccess) {
+        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
         return EXIT_FAILURE;
     }
@@ -435,7 +437,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("     : cudaEventElapsedTime claims %9.7g secs\n",
-                               cuda_milliseconds * 1000.0);
+                               cuda_milliseconds / 1000.0);
 
 
     /* Copy the device result vector in device memory to the host
