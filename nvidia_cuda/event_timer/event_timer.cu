@@ -6,14 +6,9 @@
 #include <string.h>
 #include <locale.h>
 #include <errno.h>
-#include <sys/resource.h>
-#include <sys/utsname.h>
 #include <unistd.h>
-#include <time.h>
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
-#include <cuda_profiler_api.h>
-#include <omp.h>
 
 #define THREADS_PER_BLOCK 1024
 
@@ -444,8 +439,6 @@ int main(int argc, char *argv[])
     free(dprop);
     free(gpu_memory);
     free(gpu_unit_number);
-
-    cudaProfilerStop();
 
     return exit_status;
 
