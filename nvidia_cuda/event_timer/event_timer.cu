@@ -53,21 +53,7 @@ int main(int argc, char *argv[])
      * for testing purposes */
     srand48( 123456789 );
 
-    /* initialize the cuda event timers */
     float cuda_milliseconds = 0.0;
-    cuda_err = cudaEventCreate(&cuda_start);
-    if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
-        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-        return EXIT_FAILURE;
-    }
-
-    cuda_err = cudaEventCreate(&cuda_stop);
-    if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
-        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-        return EXIT_FAILURE;
-    }
 
     /* determine the number of CUDA capable GPUs */
     cudaGetDeviceCount(&num_gpus);
@@ -173,26 +159,31 @@ int main(int argc, char *argv[])
                           gpu_max_memory);
 
     /* For giggles we shall select the min unit */
-    cuda_err = cudaSetDevice(gpu_unit_min_number);
+    int device_id = gpu_unit_min_number;
+
+    cuda_err = cudaSetDevice(device_id);
     if (cuda_err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed to select %s\n",
-                                        (dprop+gpu_unit_min_number)->name);
+                                        (dprop+device_id)->name);
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
         return EXIT_FAILURE;
     } else {
-        printf("     : selected %s\n", (dprop+gpu_unit_min_number)->name);
+        printf("     : selected %s\n", (dprop+device_id)->name);
     }
 
-    /* this would be the unit with the most memory *
-
-    if (cudaSetDevice(gpu_unit_max_number) != cudaSuccess) {
-        cuda_err = cudaGetLastError();
-        fprintf(stderr, "FAIL : CUDA failed to select %s\n",
-                                        (dprop+gpu_unit_max_number)->name);
+    cuda_err = cudaEventCreate(&cuda_start);
+    if (cuda_err != cudaSuccess) {
+        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
-    */
+
+    cuda_err = cudaEventCreate(&cuda_stop);
+    if (cuda_err != cudaSuccess) {
+        fprintf(stderr, "FAIL : failed to cudaEventCreate()\n");
+        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
+        return EXIT_FAILURE;
+    }
 
     cuda_err = cudaDeviceReset();
     if (cuda_err != cudaSuccess) {
@@ -303,7 +294,7 @@ int main(int argc, char *argv[])
 
     cuda_err = cudaEventRecord(cuda_start, 0);
     if (cuda_err != cudaSuccess) {
-        fprintf(stderr, "FAIL : failed to cudaEventRecord(cuda_start, 0)\n");
+        fprintf(stderr, "FAIL : failed to cudaEventRecord\n");
         fprintf(stderr, "     : error %s\n", cudaGetErrorString(cuda_err));
         fprintf(stderr, "     : at %d in %s\n", __LINE__, __FILE__);
         free(h_A);
