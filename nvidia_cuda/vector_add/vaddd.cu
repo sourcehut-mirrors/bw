@@ -386,15 +386,6 @@ int main(int argc, char *argv[])
                     blocksPerGrid, threadsPerBlock);
 
 
-    /* this sucks -- always throws an error cudaErrorInvalidResourceHandle
-
-
-       ***********************************************************
-       *   THE CUDA Event timer stuff does not work at all. At   *
-       *   least not for me. I have no idea why.                 *
-       ***********************************************************
-       */
-
     cuda_err = cudaEventRecord(cuda_start, 0);
     if (cuda_err != cudaSuccess) {
         fprintf(stderr, "FAIL : failed to cudaEventRecord(cuda_start, 0)\n");

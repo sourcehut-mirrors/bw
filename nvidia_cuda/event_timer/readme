@@ -2,7 +2,7 @@
 SPECIAL Note !
 
         do NOT reset the CUDA device after you start
-             uisng it!  this includes the Event API
+             using it!  this includes the Event API
 
 $ uname -a 
 Linux titan 5.10.0-19-amd64 #1 SMP Debian 5.10.149-2 (2022-10-21) x86_64 GNU/Linux
@@ -15,20 +15,9 @@ Cuda compilation tools, release 11.2, V11.2.152
 Build cuda_11.2.r11.2/compiler.29618528_0
 $ 
 
-$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 \
-> -gencode arch=compute_35,code=sm_35 \
-> -gencode arch=compute_50,code=sm_50 \
-> -gencode arch=compute_60,code=sm_60 \
-> -Wno-deprecated-gpu-targets -\
-> -ftz=false --prec-div=true --prec-sqrt=true \
-> -c -o event_timer.o event_timer.cu
 
-$ nvcc -ccbin /usr/bin/g++-10 -m64 \
-> -gencode arch=compute_35,code=sm_35 \
-> -gencode arch=compute_50,code=sm_50 \
-> -gencode arch=compute_60,code=sm_60 \
-> -Wno-deprecated-gpu-targets \
-> --ftz=false --prec-div=true --prec-sqrt=true \
-> -o event_timer event_timer.o -lgomp
-$ 
+titan$ nvcc -ccbin /usr/bin/g++-10 -g -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -c -o event_timer.o event_timer.cu
+titan$ nvcc -ccbin /usr/bin/g++-10 -g -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -o event_timer event_timer.o -lgomp
+titan$ 
+
 
