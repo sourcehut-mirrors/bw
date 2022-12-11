@@ -1,0 +1,48 @@
+
+
+$ uname -a 
+Linux titan 5.10.0-19-amd64 #1 SMP Debian 5.10.149-2 (2022-10-21) x86_64 GNU/Linux
+
+$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2021 NVIDIA Corporation
+Built on Sun_Feb_14_21:12:58_PST_2021
+Cuda compilation tools, release 11.2, V11.2.152
+Build cuda_11.2.r11.2/compiler.29618528_0
+$ 
+
+$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_50,code=sm_50 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets -\
+> -ftz=false --prec-div=true --prec-sqrt=true \
+> -c -o event_timer.o event_timer.cu
+
+$ nvcc -ccbin /usr/bin/g++-10 -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_50,code=sm_50 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> --ftz=false --prec-div=true --prec-sqrt=true \
+> -o event_timer event_timer.o -lgomp
+$ 
+$ ./event_timer 
+INFO : number of CUDA devices:  3
+     : we need 26424115 bytes of memory on a GPU
+     :    0: Quadro GP100 totalGlobalMem = 17069309952
+     :    1: Quadro K6000 totalGlobalMem = 12799639552
+     :    2: Quadro K620 totalGlobalMem = 2091122688
+     : min memory unit is 2: Quadro K620 with 2091122688 bytes
+     : max memory unit is 0: Quadro GP100 with 17069309952 bytes
+     : selected Quadro K620
+INFO : we shall add 1048576 double FP64 elements
+INFO : Copy of vector A from host to device done.
+INFO : Copy of vector B from host to device done.
+INFO : CUDA kernel launch with 1024 blocks of 1024 threads
+FAIL : failed to cudaEventRecord(cuda_start, 0)
+     : error invalid resource handle
+     : at 313 in event_timer.cu
+$ 
+
+
