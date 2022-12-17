@@ -19,6 +19,13 @@
 double cplex_theta( cplex_type *op1 )
 {
 
+    /* we need to check for zero here as that may
+     * cause confusion */
+    if ( ( fabs(op1->i) == 0.0 ) && ( fabs(op1->r) == 0.0 ) ) {
+        /* we define the theta as zero */
+        return 0.0;
+    }
+
     return atan2( op1->i, op1->r );
 
 }

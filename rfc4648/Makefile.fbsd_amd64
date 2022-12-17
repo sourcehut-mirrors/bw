@@ -1,0 +1,24 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+
+SRCS = test_base64.c base64.c
+OBJS = test_base64.o base64.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+test_base64: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) test_base64

@@ -21,6 +21,8 @@
 
 #include "v.h"
 
+static int endian( void );
+
 int main (int argc, char **argv)
 {
 
@@ -36,7 +38,7 @@ int main (int argc, char **argv)
     vec_type plane_u, plane_v, plane_u_norm, plane_v_norm;
     vec_type lp_intercept_param;
 
-    int real_root_count;
+    int j, k, real_root_count;
 
     op1.i = 1.0; op1.r = 0.0;
     op2.i = 1.0; op2.r = 0.0;
@@ -134,6 +136,67 @@ int main (int argc, char **argv)
     printf("root : 1 = ( %16.12e, %16.12e )\n", opr2[0].r, opr2[0].i);
     printf("root : 2 = ( %16.12e, %16.12e )\n\n", opr2[1].r, opr2[1].i);
 
+
+    printf("---------------- square root of zero ------------------\n\n");
+    /* 20221216 did anyone think to test square root or cube 
+     * roots of zero? Perhaps even negative zero. Huh?
+     *
+     * From an earlier test we saw a negative zero : 
+     *
+     * dbug : op1 = ( -1, 0 )
+     *      : op2 = ( 0, 0 )
+     *      : opr = op1 * op2 = ( -0, 0 )
+     *      :     should be just zero.
+     *
+     * We do not know if we can trust this result on every implementation.
+     * FreeBSD 13.1 on AMD64 will give us the negative zero but what about
+     * every other system on the planet?
+     *
+     * The only safe way to create a negative zero is to mess with the 
+     * sign bit of a floating point zero.
+     *
+     * Modifying the sign bit of the in memory representation must also
+     * be system architecture endian aware. Lovely.
+     */
+
+    /* square root of zero ( 0, 0 ) */
+    printf("dbug : square root test of zero\n");
+    op1.r = 0.0;
+    op1.i = 0.0;
+    printf("dbug : op1 = ( %g, %g )\n", op1.r, op1.i);
+    printf("     :     theta = %16.12e\n", cplex_theta(&op1) );
+    printf("     :     magnitude is %g\n", cplex_mag(&op1));
+    cplex_sqrt(opr2, &op1);
+    printf("root : 1 = ( %16.12e, %16.12e )\n", opr2[0].r, opr2[0].i);
+    printf("root : 2 = ( %16.12e, %16.12e )\n\n", opr2[1].r, opr2[1].i);
+
+    printf("---------------- square root of negative zero ---------\n\n");
+
+    op1.r = -0.0;
+    op1.i = 0.0;
+
+    printf("\ndbug : op1.r is at address %p\n", &op1.r);
+    if ( endian() ) {
+        for ( k=0; k < sizeof(double); k++ ) {
+            printf("%02x ", ((uint8_t*)&op1.r)[k] );
+        }
+        printf("\n" );
+    } else {
+        for ( k = sizeof(double) - 1 ; k>(-1); k-- ){
+            printf("%02x ", ((uint8_t*)&op1.r)[k] );
+        }
+    }
+    printf("\n" );
+
+    printf("dbug : op1 = ( %g, %g )\n", op1.r, op1.i);
+    printf("     :     theta = %16.12e\n", cplex_theta(&op1) );
+    printf("     :     magnitude is %g\n", cplex_mag(&op1));
+    cplex_sqrt(opr2, &op1);
+    printf("root : 1 = ( %16.12e, %16.12e )\n", opr2[0].r, opr2[0].i);
+    printf("root : 2 = ( %16.12e, %16.12e )\n\n", opr2[1].r, opr2[1].i);
+
+
+    printf("\n-----------------------------------------------\n\n");
 
 
     /* do a trivial cube root of 27 first 
@@ -1472,5 +1535,17 @@ int main (int argc, char **argv)
 
     return ( EXIT_SUCCESS );
 
+}
+
+static int endian( void )
+{
+    /* consistent width upper case hex address from
+     * an n-bit value in v such that we return a
+     * string like 0xFEEDBEEFBADCAFFE
+     *                    ffffffff7ffff2d0         */
+    int eflag = 1; /* in mem 0x00000001 big endian */
+    eflag = (*(uint8_t*)&eflag == 1) ? 0 : 1;
+    /* fprintf ( stderr, "DBG : eflag = %i\n", eflag ); */
+    return ( eflag );
 }
 

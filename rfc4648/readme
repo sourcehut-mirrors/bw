@@ -1,0 +1,55 @@
+
+All pretty much taken directly from RFC-4648
+
+$ ./test_base64 
+input string was ""
+output string is ""
+decode length is 0
+decode string is ""
+
+input string was "f"
+output string is "Zg=="
+decode length is 1
+decode string is "f"
+
+input string was "fo"
+output string is "Zm8="
+decode length is 2
+decode string is "fo"
+
+input string was "foo"
+output string is "Zm9v"
+decode length is 3
+decode string is "foo"
+
+input string was "foob"
+output string is "Zm9vYg=="
+decode length is 4
+decode string is "foob"
+
+input string was "fooba"
+output string is "Zm9vYmE="
+decode length is 5
+decode string is "fooba"
+
+input string was "foobar"
+output string is "Zm9vYmFy"
+decode length is 6
+decode string is "foobar"
+
+input string was "Hello World."
+output string is "SGVsbG8gV29ybGQu"
+decode length is 12
+decode string is "Hello World."
+
+input string was "Now is the time for all good men to come to the aid of the party"
+output string is "Tm93IGlzIHRoZSB0aW1lIGZvciBhbGwgZ29vZCBtZW4gdG8gY29tZSB0byB0aGUgYWlkIG9mIHRoZSBwYXJ0eQ=="
+decode length is 64
+decode string is "Now is the time for all good men to come to the aid of the party"
+
+input string was "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+output string is "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2ljaW5nIGVsaXQsIHNlZCBkbyBlaXVzbW9kIHRlbXBvciBpbmNpZGlkdW50IHV0IGxhYm9yZSBldCBkb2xvcmUgbWFnbmEgYWxpcXVhLiBVdCBlbmltIGFkIG1pbmltIHZlbmlhbSwgcXVpcyBub3N0cnVkIGV4ZXJjaXRhdGlvbiB1bGxhbWNvIGxhYm9yaXMgbmlzaSB1dCBhbGlxdWlwIGV4IGVhIGNvbW1vZG8gY29uc2VxdWF0LiBEdWlzIGF1dGUgaXJ1cmUgZG9sb3IgaW4gcmVwcmVoZW5kZXJpdCBpbiB2b2x1cHRhdGUgdmVsaXQgZXNzZSBjaWxsdW0gZG9sb3JlIGV1IGZ1Z2lhdCBudWxsYSBwYXJpYXR1ci4gRXhjZXB0ZXVyIHNpbnQgb2NjYWVjYXQgY3VwaWRhdGF0IG5vbiBwcm9pZGVudCwgc3VudCBpbiBjdWxwYSBxdWkgb2ZmaWNpYSBkZXNlcnVudCBtb2xsaXQgYW5pbSBpZCBlc3QgbGFib3J1bS4="
+decode length is 446
+decode string is "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+

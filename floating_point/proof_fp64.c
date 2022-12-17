@@ -3,6 +3,9 @@
  *               value bytes in the mantissa section of the standard
  *               IEEE754-2008 data types.
  *
+ *               Also, just for fun, check if this machine can handle
+ *               the IEEE754-2008 data type for FP128. 
+ *
  * Copyright (C) Dennis Clarke 2022
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,17 +37,34 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
+#include <locale.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <sys/utsname.h>
+
+static int endian( void );
 
 int main(int argc, char *argv[])
 {
+
     int j;
+    struct utsname uname_data;
 
     /* At best we have mantissa of 52 bits plus an implied one bit
      * thus epsilon will be 2^(-50) may work
      */
-    double epsilon = 0.000000000000000888178419700125232338905334472656250;
+    double epsilon = pow( 2.0, -50.0 );
+    int fp64_length = (int)sizeof(double);
+    int big_endian = endian();
+
+    /* a long double will be a disaster on most architectures 
+     * so good luck with 2^(-110) */
+    long double fp128 = powl(2.0L, -110.0L);
+    int fp128_length = (int)sizeof(long double);
 
     /* note hex representation of any valid integer power of two
      * will always have zero for the data section or mantissa
@@ -55,25 +75,144 @@ int main(int argc, char *argv[])
      *   eleven bits for the exponent.
      */
 
+
+    /* tricky stuff about uname() :
+     *
+     *    These ENVIRONMENT variables override some uname struct members
+     *
+     *         env name     overrides
+     *         --------------------------
+     *         UNAME_s      sysname
+     *         UNAME_r      release
+     *         UNAME_v      version
+     *         UNAME_m      machine
+     *
+     */
+    char *env_var[] = {"UNAME_s","UNAME_r","UNAME_v","UNAME_m"};
+    char env_var_to_check[] = "\0\0\0\0\0\0\0\0";
+
+    setlocale( LC_MESSAGES, "C" );
+
+    /* scan for and nuke those annoying env vars */
+    errno = 0;
+    for ( j=0; j<4 ; j++ ) {
+        strncpy(env_var_to_check,env_var[j],7);
+        if (getenv(env_var_to_check) != NULL) {
+            fprintf(stderr, "WARN : env var \"%s\" caught.\n",
+                                         env_var_to_check);
+
+            /* The setenv(), putenv(), and unsetenv() functions return
+             * the value 0 if successful; otherwise the value -1 is
+             * returned and the global variable errno is set to indicate
+             * the error. */
+
+            if (unsetenv(env_var_to_check) < 0) {
+                fprintf(stderr, "FAIL : could not clear env \"%s\"\n",
+                                          env_var_to_check);
+                perror("FAIL : ");
+                return EXIT_FAILURE;
+            } else {
+                fprintf(stderr, "     : cleared env var \"%s\"\n",
+                                          env_var_to_check);
+            }
+        }
+    }
+
+
+    if ( uname( &uname_data ) < 0 ) {
+        fprintf(stderr,
+                 "WARNING : Could not attain system uname data.\n" );
+        perror ("uname" );
+    } else {
+        printf("-------------------------------" );
+        printf("------------------------------\n" );
+        printf("        system name = %s\n", uname_data.sysname );
+        printf("          node name = %s\n", uname_data.nodename );
+        printf("            release = %s\n", uname_data.release );
+        printf("            version = %s\n", uname_data.version );
+        printf("            machine = %s  is a ", uname_data.machine );
+
+        if ( big_endian ){
+            printf ("big");
+        } else {
+            printf ("little");
+        }
+        printf(" endian architecture.\n");
+
+        printf ( "-------------------------------" );
+        printf ( "------------------------------" );
+    }
+    printf ("\n");
+
+
     printf("To demonstrate we shall use 2^(-50).\n");
     printf("epsilon is at address %p\n\n", &epsilon);
-    for ( j=0; j<sizeof(double); j++ ) {
-        printf("%02x ", ((unsigned char *)&epsilon)[j] );
+
+    printf("IEEE-754 2008 FP64 data : ");
+    if ( big_endian ) {
+        for ( j=0; j < fp64_length; j++ ) {
+            printf("%02x ", ((uint8_t*)&epsilon)[j] );
+        }
+        printf("\n" );
+    } else {
+        for ( j = fp64_length - 1 ; j>(-1); j-- ){
+            printf("%02x ", ((uint8_t*)&epsilon)[j] );
+        }
     }
     printf("\n" );
-    printf("Correct precise decimal is = %+-42.38e\n", epsilon);
+
+    printf("decimal value is = %+-42.38e\n", epsilon);
 
     /* Because Charilaos says what about 2^(-1) ? */
-    epsilon = 0.5;
+    epsilon = pow(2.0, -1.0);
     printf("\n\nΧαρίλαος says \"What about 2^(-1) ?\"\n");
     printf("epsilon is at address %p\n\n", &epsilon);
-    for ( j=0; j<sizeof(double); j++ ) {
-        printf("%02x ", ((unsigned char *)&epsilon)[j] );
+
+    printf("IEEE-754 2008 FP64 data : ");
+    if ( big_endian ) {
+        for ( j=0; j < fp64_length; j++ ) {
+            printf("%02x ", ((uint8_t*)&epsilon)[j] );
+        }
+        printf("\n" );
+    } else {
+        for ( j = fp64_length - 1 ; j>(-1); j-- ){
+            printf("%02x ", ((uint8_t*)&epsilon)[j] );
+        }
     }
     printf("\n" );
-    printf("Decimal value is = %+-12.8e\n", epsilon);
+
+    printf("decimal value is = %+-12.8e\n", epsilon);
+
+
+    printf ("\n\nshits and giggles\n\n");
+    printf("IEEE-754 2008 FP128 data : ");
+    if ( big_endian ) {
+        for ( j=0; j < fp128_length; j++ ) {
+            printf("%02x ", ((uint8_t*)&fp128)[j] );
+        }
+        printf("\n" );
+    } else {
+        for ( j = fp128_length - 1 ; j>(-1); j-- ){
+            printf("%02x ", ((uint8_t*)&fp128)[j] );
+        }
+    }
+    printf("\n" );
+
+    printf("decimal value is = %+-88.80Le\n", fp128);
 
     return EXIT_SUCCESS;
 
+}
+
+static int endian( void )
+{
+    /* consistent width upper case hex address from
+     * an n-bit value in v such that we return a
+     * string like 0xFEEDBEEFBADCAFFE
+     *                    ffffffff7ffff2d0         */
+    int eflag = 1; /* in mem 0x00000001 big endian */
+    eflag = (*(uint8_t*)&eflag == 1) ? 0 : 1;
+    /* fprintf ( stderr, "DBG : eflag = %i\n", eflag ); */
+    return ( eflag );
 }
 
