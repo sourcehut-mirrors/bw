@@ -184,8 +184,8 @@ int main(int argc, char *argv[])
     printf("decimal value is = %+-12.8e\n", epsilon);
 
 
-    printf ("\n\nshits and giggles\n\n");
-    printf("IEEE-754 2008 FP128 data : ");
+    printf ("\n\nFP128 datatype is likely not supported\n\n");
+    printf("IEEE-754 2008 FP128 data :\n    ");
     if ( big_endian ) {
         for ( j=0; j < fp128_length; j++ ) {
             printf("%02x ", ((uint8_t*)&fp128)[j] );
@@ -198,7 +198,9 @@ int main(int argc, char *argv[])
     }
     printf("\n" );
 
-    printf("decimal value is = %+-88.80Le\n", fp128);
+    printf("%+-86.78Le\n", fp128);
+    printf("+7.7037197775489434122239117703397092741524");
+    printf("065928615527809500e-34\n");
 
     return EXIT_SUCCESS;
 
