@@ -35,10 +35,8 @@
 
 #include <errno.h>
 #include <locale.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <sys/utsname.h>
 
@@ -64,39 +62,24 @@ int main(int argc, char *argv[])
      *
      */
     char *env_var[] = {"UNAME_s","UNAME_r","UNAME_v","UNAME_m"};
-    char env_var_to_check[16] = "\0";
+    char *env_var_to_clear[] = {"UNAME_s=","UNAME_r=","UNAME_v=","UNAME_m="};
 
     setlocale( LC_MESSAGES, "C" );
 
     /* scan for and nuke those annoying env vars */
     errno = 0;
     for ( j=0; j<4 ; j++ ) {
-        strncpy(env_var_to_check,env_var[j],7);
-        env_var_to_check[7]='\0';
-        if (getenv(env_var_to_check) != NULL) {
-            fprintf(stderr, "WARN : env var \"%s\" caught.\n",
-                                         env_var_to_check);
-
-            /* The setenv(), putenv(), and unsetenv() functions return
-             * the value 0 if successful; otherwise the value -1 is
-             * returned and the global variable errno is set to indicate
-             * the error. */
-
-            env_var_to_check[7]='=';
-            env_var_to_check[8]='\0';
-            if (putenv(env_var_to_check) < 0) {
-                fprintf(stderr, "FAIL : could not clear env \"%s\"\n",
-                                          env_var_to_check);
+        if (getenv(env_var[j]) != NULL) {
+            fprintf(stderr, "WARN : env var \"%s\" caught.\n", env_var[j]);
+            if (putenv(env_var_to_clear[j]) < 0) {
+                fprintf(stderr, "FAIL : could not clear env \"%s\"\n", env_var[j]);
                 perror("FAIL : ");
                 return EXIT_FAILURE;
             } else {
-                fprintf(stderr, "     : cleared env var \"%s\"\n",
-                                          env_var_to_check);
+                fprintf(stderr, "     : cleared env var \"%s\"\n", env_var[j]);
             }
-            env_var_to_check[0] = '\0';
         }
     }
-
 
     if ( uname( &uname_data ) < 0 ) {
         fprintf(stderr,
@@ -134,7 +117,7 @@ static int endian( void )
      * string like 0xFEEDBEEFBADCAFFE
      *                    ffffffff7ffff2d0         */
     int eflag = 1; /* in mem 0x00000001 big endian */
-    eflag = (*(uint8_t*)&eflag == 1) ? 0 : 1;
+    eflag = (*(unsigned char*)&eflag == 1) ? 0 : 1;
     /* fprintf ( stderr, "DBG : eflag = %i\n", eflag ); */
     return ( eflag );
 }
