@@ -1,6 +1,9 @@
 /*
- * uname_override.c  Demonstrate that FreeBSD seems to allow env var
- *                   values to override the uname(2) struct return
+ * uname_putenv.c   Demonstrate that FreeBSD seems to allow env var
+ *                  values to override the uname(3) struct members.
+ *                  We may change the env var contents with putenv
+ *                  however putenv does not seem to work on the
+ *                  second call.
  *
  * Copyright (C) Dennis Clarke 2022
  *
@@ -40,16 +43,14 @@
 #include <string.h>
 #include <sys/utsname.h>
 
-static int endian( void );
-
 int main(int argc, char *argv[])
 {
 
     int j;
-
     struct utsname uname_data;
+    char *env_var_value = NULL;
 
-    /* tricky stuff about uname() :
+    /* tricky stuff about UNAME(3) :
      *
      *    These ENVIRONMENT variables override some uname struct members
      *
@@ -62,17 +63,29 @@ int main(int argc, char *argv[])
      *
      */
     char *env_var[] = {"UNAME_s","UNAME_r","UNAME_v","UNAME_m"};
+
+    /* These are likely not needed however the sources 
+     * for putenv seem to check for the '=' character
+     * as well as the degenerate case where the submitted
+     * string is merely the '=' char. So these make it
+     * trivial to putenv an empty string. */
     char *env_var_to_clear[] = {"UNAME_s=","UNAME_r=","UNAME_v=","UNAME_m="};
 
     setlocale( LC_MESSAGES, "C" );
 
-    /* scan for and nuke those annoying env vars */
+    /* check for and then unset those env vars */
     errno = 0;
     for ( j=0; j<4 ; j++ ) {
-        if (getenv(env_var[j]) != NULL) {
-            fprintf(stderr, "WARN : env var \"%s\" caught.\n", env_var[j]);
+        env_var_value = getenv(env_var[j]);
+        if ( env_var_value != NULL) {
+
+            fprintf(stderr, "INFO : env var \"%s\" set to \"%s\"\n",
+                    env_var[j], env_var_value);
+
             if (putenv(env_var_to_clear[j]) < 0) {
-                fprintf(stderr, "FAIL : could not clear env \"%s\"\n", env_var[j]);
+                fprintf(stderr, "FAIL : could not clear env \"%s\"\n",
+                        env_var[j]);
+
                 perror("FAIL : ");
                 return EXIT_FAILURE;
             } else {
@@ -92,15 +105,7 @@ int main(int argc, char *argv[])
         printf("          node name = %s\n", uname_data.nodename );
         printf("            release = %s\n", uname_data.release );
         printf("            version = %s\n", uname_data.version );
-        printf("            machine = %s  is a ", uname_data.machine );
-
-        if ( endian() ){
-            printf ("big");
-        } else {
-            printf ("little");
-        }
-        printf(" endian architecture.\n");
-
+        printf("            machine = %s\n", uname_data.machine );
         printf ( "-------------------------------" );
         printf ( "------------------------------" );
     }
@@ -108,17 +113,5 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 
-}
-
-static int endian( void )
-{
-    /* consistent width upper case hex address from
-     * an n-bit value in v such that we return a
-     * string like 0xFEEDBEEFBADCAFFE
-     *                    ffffffff7ffff2d0         */
-    int eflag = 1; /* in mem 0x00000001 big endian */
-    eflag = (*(unsigned char*)&eflag == 1) ? 0 : 1;
-    /* fprintf ( stderr, "DBG : eflag = %i\n", eflag ); */
-    return ( eflag );
 }
 
