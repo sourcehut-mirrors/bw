@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
     /* a long double will be a disaster on most architectures 
      * so good luck with 2^(-110) */
-    long double fp128 = powl(2.0L, -110.0L);
+    long double fp128 = 0.000000000000000000000000000000000770371977754894341222391177033970927415240659286155278095L;
     int fp128_length = (int)sizeof(long double);
 
     /* note hex representation of any valid integer power of two
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
      *
      */
     char *env_var[] = {"UNAME_s","UNAME_r","UNAME_v","UNAME_m"};
-    char env_var_to_check[] = "\0\0\0\0\0\0\0\0";
+    char env_var_to_check[16] = "\0";
 
     setlocale( LC_MESSAGES, "C" );
 
@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
     errno = 0;
     for ( j=0; j<4 ; j++ ) {
         strncpy(env_var_to_check,env_var[j],7);
+        env_var_to_check[7]='\0';
         if (getenv(env_var_to_check) != NULL) {
             fprintf(stderr, "WARN : env var \"%s\" caught.\n",
                                          env_var_to_check);
@@ -106,7 +107,9 @@ int main(int argc, char *argv[])
              * returned and the global variable errno is set to indicate
              * the error. */
 
-            if (unsetenv(env_var_to_check) < 0) {
+            env_var_to_check[7]='=';
+            env_var_to_check[8]='\0';
+            if (putenv(env_var_to_check) < 0) {
                 fprintf(stderr, "FAIL : could not clear env \"%s\"\n",
                                           env_var_to_check);
                 perror("FAIL : ");
@@ -115,6 +118,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "     : cleared env var \"%s\"\n",
                                           env_var_to_check);
             }
+            env_var_to_check[0] = '\0';
         }
     }
 
@@ -184,8 +188,7 @@ int main(int argc, char *argv[])
     printf("decimal value is = %+-12.8e\n", epsilon);
 
 
-    printf ("\n\nFP128 datatype is likely not supported\n\n");
-    printf("IEEE-754 2008 FP128 data :\n    ");
+    printf("\nIEEE-754 2008 FP128 data :\n    ");
     if ( big_endian ) {
         for ( j=0; j < fp128_length; j++ ) {
             printf("%02x ", ((uint8_t*)&fp128)[j] );
@@ -198,7 +201,13 @@ int main(int argc, char *argv[])
     }
     printf("\n" );
 
+    printf("\nThe correct FP128 data is :\n");
+    printf("    3f 91 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n");
+
+    printf("\nDecimal value may be : \n");
     printf("%+-86.78Le\n", fp128);
+
+    printf("\nThe correct decimal value is :\n");
     printf("+7.7037197775489434122239117703397092741524");
     printf("065928615527809500e-34\n");
 
