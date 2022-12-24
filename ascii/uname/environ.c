@@ -1,5 +1,6 @@
 /*
- * environ.c    Walk the char **environ
+ * environ.c    Walk the char **environ contents and perhaps try to
+ *              wreck some havok and loose the dogs of war
  *
  * Copyright (C) Dennis Clarke 2022
  *
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
     struct utsname uname_data;
     char *env_var_value = NULL;
 
-    char *env_var[] = {"UNAME_s","UNAME_r","UNAME_v","UNAME_m"};
+    char *uname_override[] = {"UNAME_s","UNAME_r","UNAME_v","UNAME_m"};
 
     setlocale( LC_MESSAGES, "C" );
 
@@ -65,12 +66,17 @@ int main(int argc, char *argv[])
 
     while ( env_var_value != NULL ) {
         j = j + 1;
-        printf ("[%-3i]: length %-3i = \"%s\"\n     : ",
-                j, strlen(env_var_value), env_var_value);
+        printf ("[%-3i]: %p    len %-3i = \"%s\"",
+                j, env_var_value, strlen(env_var_value),
+                env_var_value);
 
-        for ( k = 0; k < strlen(env_var_value); k++ ) {
+        /* we may even get the terminating NUL byte with
+         * the used of less than or equal to strlen */
+        for ( k = 0; k <= strlen(env_var_value); k++ ) {
+            if ( k%16 == 0 ) {
+                printf ("\n     : ");
+            }
             printf("%02x ", ((uint8_t*)env_var_value)[k] );
-            if ( ( k > 15 ) && ( k%16 == 0 ) ) printf ("\n     : ");
         }
         printf("\n\n");
 
