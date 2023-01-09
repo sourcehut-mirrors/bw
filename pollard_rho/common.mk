@@ -2,6 +2,7 @@
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
+CC?=/usr/bin/cc
 LDIR?=	/usr/local/lib
 IDIR?=	/usr/local/include
 LIBS?=	-lgmp -lmpfr

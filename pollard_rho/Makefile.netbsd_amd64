@@ -1,16 +1,23 @@
 
-CC=/usr/bin/cc
+# Be sure to check for the existence of some other compiler
+# which may exist in /opt somewhere. also, the libs for gmp
+# and mpfr likely exist there also. Good luck.
+# Dennis Clarke  9 Jan 2023
+
+CC=/opt/bw/gcc12/bin/gcc
 
 CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
+	-pedantic -pedantic-errors \
 	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
 	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
 	-fno-fast-math -malign-double \
 	-m128bit-long-double -mlong-double-80 \
 	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
-	-fPIC -Wl,-rpath=/usr/pkg/lib -Wl,-pie
+	-fPIC
 
-IDIR=/usr/pkg/include
-LDIR=/usr/pkg/lib
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
+
 LIBS=-lgmp -lmpfr -lm
 
 include common.mk
