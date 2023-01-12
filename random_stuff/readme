@@ -1,4 +1,12 @@
 titan$ fetch http://www.fourmilab.ch/random/random.zip
 random.zip                                              74 kB  330 kBps    00s
 
+Easy to compile : 
+
+$CC $CFLAGS $CPPFLAGS -c -o iso8859.o iso8859.c
+$CC $CFLAGS $CPPFLAGS -c -o randtest.o randtest.c
+$CC $CFLAGS $CPPFLAGS -c -o chisq.o chisq.c      
+$CC $CFLAGS $CPPFLAGS -c -o ent.o ent.c          
+$CC $CFLAGS $CPPFLAGS -o ent ent.o chisq.o randtest.o iso8859.o -lm
+
 

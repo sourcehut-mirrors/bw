@@ -130,6 +130,7 @@ int main (int argc, char *argv[])
 
         if (bit_prec>1023){
             bit_prec = 1024;
+            /* this is somewhat silly but worth a test phase */
             printf("\nWARNING : limit precision to 1024 bits.\n");
         }
 
@@ -137,7 +138,7 @@ int main (int argc, char *argv[])
         bit_prec = PREC;
     }
     delta_bit_prec = bit_prec / 2;
-    printf("\nWe shall use %i bits of precision.\n", bit_prec);
+    printf("\nWe shall use %li bits of precision.\n", bit_prec);
     mpfr_set_default_prec((mpfr_prec_t)bit_prec);
     mpfr_init2 (input_m, (mpfr_prec_t) bit_prec);
     mpfr_init2 (four_m, (mpfr_prec_t) bit_prec);
