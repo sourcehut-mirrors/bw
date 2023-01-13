@@ -483,7 +483,7 @@ size_t gmp_mpfr_ver(int *mpfr_flags)
     }
 
     ret_val = sizeof(mpfr_prec_t);
-    printf("            : sizeof(mpfr_prec_t) = %i\n", ret_val);
+    printf("            : sizeof(mpfr_prec_t) = %zu\n", ret_val);
 
     printf("MPFR thresholds file used at compile time : %s\n\n",
                                       mpfr_buildopt_tune_case ());
