@@ -1,0 +1,153 @@
+
+    None of this will deal with non-ascii trivial chars
+very well. If you need to deal with UTF-8 or similar then
+you have a whole other stack of problems.
+
+    Also the strtrim should not ever malloc or mess with memory
+pointers that were passed to it. Bad undefined nose demon type
+behavior will happen.
+
+Regardless we don't seem to lose any memory anywhere : 
+
+hydra$ uname -apKU
+FreeBSD hydra 13.1-RELEASE-p3 FreeBSD 13.1-RELEASE-p3 GENERIC amd64 amd64 1301000 1301000
+
+hydra$ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./test
+==73874== Memcheck, a memory error detector
+==73874== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==73874== Using Valgrind-3.21.0.GIT-unknown and LibVEX; rerun with -h for copyright info
+==73874== Command: ./test
+==73874== 
+--73874-- Valgrind options:
+--73874--    --leak-check=full
+--73874--    --show-leak-kinds=all
+--73874--    --track-origins=yes
+--73874--    --verbose
+--73874-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx
+--73874-- Page sizes: currently 4096, max supported 4096
+--73874-- Valgrind library directory: /usr/local/libexec/valgrind
+--73874-- Reading syms from /usr/home/dclarke/pgm/bw/in_progress/trimmer/test
+--73874-- Set osrel for current process with value 1301000
+--73874-- Reading syms from /libexec/ld-elf.so.1
+--73874--    object doesn't have a symbol table
+--73874-- Reading syms from /usr/local/libexec/valgrind/memcheck-amd64-freebsd
+--73874-- ELF section outside all mapped regions
+--73874-- Scheduler: using generic scheduler lock implementation.
+--73874-- Reading suppressions file: /usr/local/libexec/valgrind/default.supp
+==73874== embedded gdbserver: reading from /var/tmp/dclarke/vgdb-pipe-from-vgdb-to-73874-by-dclarke-on-???
+==73874== embedded gdbserver: writing to   /var/tmp/dclarke/vgdb-pipe-to-vgdb-from-73874-by-dclarke-on-???
+==73874== embedded gdbserver: shared mem   /var/tmp/dclarke/vgdb-pipe-shared-mem-vgdb-73874-by-dclarke-on-???
+==73874== 
+==73874== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==73874== don't want to do, unless you know exactly what you're doing,
+==73874== or are doing some strange experiment):
+==73874==   /usr/local/libexec/valgrind/../../bin/vgdb --pid=73874 ...command...
+==73874== 
+==73874== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==73874==   /path/to/gdb ./test
+==73874== and then give GDB the following command
+==73874==   target remote | /usr/local/libexec/valgrind/../../bin/vgdb --pid=73874
+==73874== --pid is optional if only one valgrind process is running
+==73874== 
+--73874-- Reading syms from /usr/local/libexec/valgrind/vgpreload_core-amd64-freebsd.so
+--73874--    object doesn't have a symbol table
+--73874-- Reading syms from /usr/local/libexec/valgrind/vgpreload_memcheck-amd64-freebsd.so
+--73874--    object doesn't have a symbol table
+--73874-- Reading syms from /lib/libc.so.7
+--73874--    object doesn't have a symbol table
+--73874-- REDIR: 0x49b1690 (libc.so.7:memcpy) redirected to 0x4852d20 (memcpy)
+--73874-- REDIR: 0x49b1b70 (libc.so.7:memset) redirected to 0x4854830 (memset)
+--73874-- REDIR: 0x4a233b0 (libc.so.7:strncmp) redirected to 0x4852660 (strncmp)
+--73874-- REDIR: 0x4a22d70 (libc.so.7:strcpy) redirected to 0x48519a0 (strcpy)
+--73874-- REDIR: 0x4a22950 (libc.so.7:index) redirected to 0x48510c0 (index)
+--73874-- REDIR: 0x49b1e30 (libc.so.7:strlen) redirected to 0x4851940 (strlen)
+--73874-- REDIR: 0x49b1db0 (libc.so.7:strcmp) redirected to 0x4852bd0 (strcmp)
+--73874-- REDIR: 0x49d0a40 (libc.so.7:malloc) redirected to 0x484cb40 (malloc)
+--73874-- REDIR: 0x4a21c30 (libc.so.7:memchr) redirected to 0x4852cc0 (memchr)
+----------------------------------------------------
+TEST: strtrim()
+
+input : "one string"
+output: "one string"
+
+input : "    two strings"
+output: "two strings"
+
+input : "three strings  "
+output: "three strings"
+
+input : " four "
+output: "four"
+
+input : " fifth string  "
+output: "fifth string"
+
+input : "sixth   string "
+output: "sixth   string"
+
+input : "  this   -     thing "
+output: "this   -     thing"
+
+input : "and more       "
+output: "and more"
+
+input : "       a long  string   that    says nothing  much"
+output: "a long  string   that    says nothing  much"
+
+input : "       another empty thing of such and such    "
+output: "another empty thing of such and such"
+
+input : "
+
+thus quoth the raven
+         and a rose in tatters on the gardens path
+"
+output: "thus quoth the raven
+         and a rose in tatters on the gardens path"
+
+input : "issued         a compile and gave
+         utterance to wrath      
+         
+"
+output: "issued         a compile and gave
+         utterance to wrath"
+
+input : "a"
+output: "a"
+
+input : "/var/tmp/some/valid/pathname"
+output: "/var/tmp/some/valid/pathname"
+
+input : "//var///tmp/some/strange/////messy//pathname///  "
+output: "//var///tmp/some/strange/////messy//pathname///"
+
+input : "/a/pathname/that/may/be/a/directory/"
+output: "/a/pathname/that/may/be/a/directory/"
+
+input : ""
+output: ""
+
+input : NULL
+output: NULL pointer
+
+==73874== 
+==73874== HEAP SUMMARY:
+==73874==     in use at exit: 4,096 bytes in 1 blocks
+==73874==   total heap usage: 1 allocs, 0 frees, 4,096 bytes allocated
+==73874== 
+==73874== Searching for pointers to 1 not-freed blocks
+==73874== Checked 10,857,216 bytes
+==73874== 
+==73874== LEAK SUMMARY:
+==73874==    definitely lost: 0 bytes in 0 blocks
+==73874==    indirectly lost: 0 bytes in 0 blocks
+==73874==      possibly lost: 0 bytes in 0 blocks
+==73874==    still reachable: 0 bytes in 0 blocks
+==73874==         suppressed: 4,096 bytes in 1 blocks
+==73874== 
+==73874== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+--73874-- 
+--73874-- used_suppression:      1 MEMCHECK-LIBC-REACHABLE-1 /usr/local/libexec/valgrind/default.supp:582 suppressed: 4,096 bytes in 1 blocks
+==73874== 
+==73874== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+hydra$ 

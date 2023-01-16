@@ -20,7 +20,7 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
 
 #include <ctype.h>
 #include <stdio.h>
@@ -29,6 +29,8 @@
 #include <locale.h>
 
 #include "strtrim.h"
+
+#define NUMBER_OF_TESTS 19
 
 int main(int argc, char *argv[]) {
 
@@ -47,6 +49,10 @@ int main(int argc, char *argv[]) {
         "\t\n\t\nthus quoth the raven\n\t and a rose in tatters on the gardens path\n",
         "issued         a compile and gave\n\t utterance to wrath \t \n \t \n",
         "a",
+        "/var/tmp/some/valid/pathname",
+        "//var///tmp/some/strange/////messy//pathname///  ",
+        "/a/pathname/that/may/be/a/directory/",
+        "   /a/pathname/ with / internal spaces // in // the//name/////    ",
         "",
         "     ",
         NULL
@@ -55,18 +61,21 @@ int main(int argc, char *argv[]) {
     char *result = NULL;
     int j;
 
-    /* we are not checking the return from setlocale() */
-    setlocale(LC_ALL,"C");
+    if ( setlocale(LC_ALL,"C") == NULL ) {
+        fprintf(stderr,"FAIL : the setlocale() returns NULL\n");
+        return EXIT_FAILURE;
+    }
 
-    printf( "----------------------------------------------------\n" );
-    printf( "TEST: strtrim()\n\n" );
-    for( j = 0; ( j<15 ) ; ++j ) {
+    printf("----------------------------------------------------\n");
+    printf("TEST: strtrim()\n");
+    printf("----------------------------------------------------\n");
+    for (j = 0;  j<(NUMBER_OF_TESTS-1); ++j) {
         /* NOTE we never pass in a pointer to a string literal
          * and we use the buffer safely */
-        strcpy( buffer, some_string[j] );
+        strcpy(buffer, some_string[j]);
         printf("input : \"%s\"\n", buffer);
 
-        result = strtrim( buffer );
+        result = strtrim(buffer);
         if ( result != NULL ) {
             printf("output: \"%s\"\n\n", result);
         } else {
@@ -75,11 +84,37 @@ int main(int argc, char *argv[]) {
     }
 
     /* the final NULL is a bugger */
-    result = strtrim( some_string[15] );
+    result = strtrim(some_string[NUMBER_OF_TESTS]);
     if ( result == NULL ) {
-        printf( "input : NULL\noutput: NULL pointer\n\n");
+        printf("input : NULL\noutput: NULL pointer\n\n");
     } else {
         /* magic ? n0se demons ? */
+        printf("input : NULL\noutput: \"%s\"\n\n", result);
+        /* should be impossible */
+        free(result);
+        result = NULL;
+    }
+
+    printf( "\n\n----------------------------------------------------\n" );
+    printf( "TEST: pathname_trim()\n" );
+    printf( "----------------------------------------------------\n" );
+    for (j = 0;  j<(NUMBER_OF_TESTS-1); ++j) {
+        strcpy(buffer, some_string[j]);
+        printf("input : \"%s\"\n", buffer);
+
+        result = pathname_trim(buffer);
+        if ( result != NULL ) {
+            printf("output: \"%s\"\n\n", result);
+        } else {
+            printf("output: NULL pointer\n\n");
+        }
+    }
+
+    result = pathname_trim(some_string[NUMBER_OF_TESTS]);
+    if ( result == NULL ) {
+        printf("input : NULL\noutput: NULL pointer\n\n");
+    } else {
+        /* n0se demons ? */
         printf( "input : NULL\noutput: \"%s\"\n\n", result );
         /* should be impossible */
         free(result);

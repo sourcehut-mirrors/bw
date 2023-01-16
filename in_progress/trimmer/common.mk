@@ -1,8 +1,8 @@
 
 CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=500
+	-D_XOPEN_SOURCE=600
 
-SRCS = test.c strtrim.c
+SRCS = test.c strtrim.c pathname_trim.c
 
 OBJS = ${SRCS:.c=.o}
 
