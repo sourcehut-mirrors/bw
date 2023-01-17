@@ -49,7 +49,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "strtrim.h"
+#include "read_f.h"
 
 char *pathname_trim( char *str ) {
 
@@ -70,7 +70,7 @@ char *pathname_trim( char *str ) {
     /* Are we given NULL ? */
     if ( str == NULL ) {
         /* the calloc() ensures we get a NUL string */
-        str = calloc(8,sizeof(unsigned char));
+        str = calloc(8,sizeof(char));
         if ( str == NULL ) {
             /* major problem ENOMEM or worse?
              * If you can not get 8 bytes on the heap then
@@ -148,12 +148,12 @@ char *pathname_trim( char *str ) {
 
     if ( ( frontp != str ) || ( strlen(frontp) > 3 ) ) {
         while ( *frontp ) {
-            if ( (*(unsigned char*)frontp != 0x2f ) )
+            if ( (*(char*)frontp != 0x2f ) )
                 *temp++ = *frontp++;
             else {
                 *temp++ = *frontp++;
                 /* skip over repeated forward slash chars */
-                while (*(unsigned char*)frontp == 0x2f) frontp++;
+                while (*(char*)frontp == 0x2f) frontp++;
             }
         }
         /* terminate the string here */
