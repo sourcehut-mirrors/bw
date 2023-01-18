@@ -2,8 +2,8 @@
 CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
-SRCS = filepath_ptr.c pathname_trim.c read_factors.c readline.c \
-	../../stat_test/file_stat_err.c
+SRCS = filepath_ptr.c pathname_trim.c read_factors.c \
+	get_factor_line.c ../../stat_test/file_stat_err.c
 
 OBJS = ${SRCS:.c=.o}
 

@@ -240,10 +240,10 @@ int main (int argc, char **argv)
     line_count = 0;
     max_line_length = 0;
     /* read the first line which should exist */
-    status = readline(factors_file->fp,factor_line);
-    /* clearly this is the maximum line this far given
+    status = get_factor_line(factors_file->fp,factor_line);
+    /* clearly this is the maximum line thus far given
      * we have nothing else */
-    if ((status!=ERROR_END_OF_FILE) || (status!=LINE_OVERRUN) ) {
+    if ((status!=ERROR_END_OF_FILE) && (status!=LINE_OVERRUN) ) {
         max_line_length = (int)factor_line->buffer_length;
         strncpy(max_line,factor_line->buffer,(size_t)max_line_length);
         line_count = line_count + 1;
@@ -259,8 +259,8 @@ int main (int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    while ( (status!=ERROR_END_OF_FILE) || (status!=LINE_OVERRUN) ) {
-        status = readline(factors_file->fp,factor_line);
+    while ( (status!=ERROR_END_OF_FILE) && (status!=LINE_OVERRUN) ) {
+        status = get_factor_line(factors_file->fp,factor_line);
         line_count = line_count + 1;
         if ( (int)factor_line->buffer_length > max_line_length ) {
             max_line_length = (int)factor_line->buffer_length;

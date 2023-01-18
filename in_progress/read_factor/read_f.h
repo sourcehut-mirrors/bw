@@ -47,6 +47,6 @@ typedef struct line_item {
 
 int file_stat_err( int file_errno );
 int filepath_ptr(FILE **fp, char *fidname);
-int readline(FILE *fp, line_item *line);
+int get_factor_line(FILE *fp, line_item *line);
 char *pathname_trim( char *str );
 
