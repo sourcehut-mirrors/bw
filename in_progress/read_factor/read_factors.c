@@ -49,6 +49,16 @@
 
 #include "read_f.h"
 
+#define PULSE_QUANTUM 10000
+
+
+void print_spinner(int step) {
+    char *spinner = "-\\|/";
+    
+	printf("%c\x8", spinner[step%4]);
+	fflush(stdout);
+}
+
 int main (int argc, char **argv)
 {
     struct f_item *factors_file;
@@ -58,6 +68,12 @@ int main (int argc, char **argv)
     char *filename;
     char *clean_filename;
     char *max_line;
+
+    /*  2a *      2d -    2f /    5c \     7c |  */
+    char pulse[16] = {0x2f,0x08,0x2d,0x08,0x5c,0x08,0x7c,0x08,
+                      0x2f,0x08,0x2d,0x08,0x7c,0x08,0x2a,0x08};
+    int pulse_count = 0;
+    char pulse_char[2] = {'f','\0'};
 
     setlocale (LC_ALL, "C");
 
@@ -265,6 +281,7 @@ int main (int argc, char **argv)
         if ( (int)factor_line->buffer_length > max_line_length ) {
             max_line_length = (int)factor_line->buffer_length;
             strncpy(max_line,factor_line->buffer,(size_t)max_line_length);
+
             printf ("%-8i : %-3i    \"%s\"\n",line_count,max_line_length,max_line);
         }
 
@@ -272,6 +289,18 @@ int main (int argc, char **argv)
         clearerr(factors_file->fp);
         if ( feof(factors_file->fp) != 0 ) {
             goto done;
+        }
+
+        /* this does not quite work 
+        if ( line_count%PULSE_QUANTUM == 0 ) {
+            pulse_count+=1;
+            pulse_char[0]=pulse[pulse_count%16];
+            printf("%s",pulse_char);
+        }
+        */
+
+        if ( line_count%PULSE_QUANTUM == 0 ) {
+            print_spinner(line_count);
         }
 
     }
