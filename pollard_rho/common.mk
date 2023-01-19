@@ -7,14 +7,14 @@ LDIR?=	/usr/local/lib
 IDIR?=	/usr/local/include
 LIBS?=	-lgmp -lmpfr
 
-SRCS = pr_mpfr_quiet.c ../sysinfo/sysinfo.c
-OBJS = pr_mpfr_quiet.o ../sysinfo/sysinfo.o
+SRCS = pr_mpfr_quiet.c gmp_mpfr_ver.c ../sysinfo/sysinfo.c
+OBJS = pr_mpfr_quiet.o gmp_mpfr_ver.o ../sysinfo/sysinfo.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
 
 pr_mpfr_quiet: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 clean:
 	rm -f $(OBJS) pr_mpfr_quiet

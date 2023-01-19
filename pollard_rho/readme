@@ -10,19 +10,19 @@ Using gmp and mpfr with dynamic variable resize as needed :
 The slowest machine I have running FreeBSD : 
 
 esther$ 
-esther$ /usr/bin/time -p ./pr_mpfr_quiet 121980835787376020043317051 16 
+esther$ /usr/bin/time -p /usr/bin/nice -n +18 ./pr_mpfr_quiet 303807867125760417809727278648
 -------------------------------------------------------------------
                  system name = FreeBSD
                    node name = esther
-                     release = 13.1-RELEASE-p1
-                     version = FreeBSD 13.1-RELEASE-p1 GENERIC
+                     release = 13.1-RELEASE-p3
+                     version = FreeBSD 13.1-RELEASE-p3 GENERIC
                      machine = i386
                    page size = 4096
                system memory = 976736256
                              = 953844 kB
                              = 931 MB
-                 avail pages = 238461
-                avail memory = 0
+                 avail pages = unknown
+                avail memory = unknown
          clock ticks per sec = 128
              threads support = 200112
                POSIX Version = 200112
@@ -37,136 +37,94 @@ esther$ /usr/bin/time -p ./pr_mpfr_quiet 121980835787376020043317051 16
                  sizeof(int) = 4
                sizeof(void*) = 4
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    0 hour   47 mins    2 secs
+           system uptime    1 day    9 hours   53 mins    9 secs
 -------------------------------------------------------------------
+GMP  library version : 6.2.1
+MPFR library: 4.2.0       
+MPFR header : 4.2.0 (based on 4.2.0)
+            : compiled as thread safe using TLS
+            : sizeof(mpfr_prec_t) = 4
+MPFR thresholds file used at compile time : src/x86/mparam.h
 
-We shall use 16 bits of precision.
-INFO : chars_formatted = 35
-INFO : buf = '121981087435764370692374528'
+INFO : gmp_mpfr_ver() returns mpfr_flags = 01
+
+INFO : will assume debug is requested.
+
+We shall use 32 bits of precision.
+INFO : chars_formatted = 33
+INFO : buf = '30380786716049848810599023116288'
 WARN : incorrect data on input.
      : this is most likely caused by insufficient bits
      : of precision to represent the data correctly.
-INFO : Input variable re-initialized with 32 bits of precision.
 INFO : Input variable re-initialized with 64 bits of precision.
+INFO : we shall attempt to read input again.
+INFO : chars_formatted = 33
+INFO : buf = '30380786712576041781441855488000'
+WARN : incorrect data on input.
+     : this is most likely caused by insufficient bits
+     : of precision to represent the data correctly.
 INFO : Input variable re-initialized with 96 bits of precision.
+INFO : we shall attempt to read input again.
+INFO : chars_formatted = 33
+INFO : buf = '30380786712576041780972727864832'
+WARN : incorrect data on input.
+     : this is most likely caused by insufficient bits
+     : of precision to represent the data correctly.
+INFO : Input variable re-initialized with 128 bits of precision.
+INFO : we shall attempt to read input again.
+INFO : chars_formatted = 33
+INFO : buf = '30380786712576041780972727864881'
 INFO : perfect match on data input.
 
-We shall find a factor of 121980835787376020043317051.000000
+We shall find a factor of 30380786712576041780972727864881
 ------------------------------------------------------
-Pollard Rho shall proceed with 96 bits of precision.
+Pollard Rho shall proceed with 128 bits of precision.
 ------------------------------------------------------
-loop      1    count =            3 
-loop      2    count =            5 
-loop      3      try again with 128 bits of precision.
-loop      3      try again with 160 bits of precision.
-loop      3      try again with 192 bits of precision.
-loop      3    count =            9 
-loop      4    count =           17 
-loop      5    count =           33 
-loop      6    count =           65 
-loop      7    count =          129 
-loop      8    count =          257 
-loop      9    count =          513 
-loop     10    count =         1025 
-loop     11    count =         2049 
-loop     12    count =         4097 
-loop     13    count =         8193 
-loop     14    count =        16385 
-loop     15    count =        32769 
-loop     16    count =        65537 
-loop     17    count =        47154 
-DONE : used 192 bits of precision.
-     : factor of 121980835787376020043317051.000000 is 4115226301.000000
-real 149.78
-user 148.34
-sys 0.61
-esther$ echo ' 29641343358865751 4115226301 * pq' | dc
-121980835787376020043317051
+loop      1    count =            3   x =                         26   factor = 1
+loop      2    count =            5   x =    44127887745906175987802   factor = 1
+WARN : mpfr_inexflag_flag is set.
+WARN : mpfr_mul() raised a flag
+loop      3    All variables are re-initialized with 160 bits of precision.
+WARN : mpfr_inexflag_flag is set.
+WARN : mpfr_mul() raised a flag
+loop      3    All variables are re-initialized with 192 bits of precision.
+WARN : mpfr_inexflag_flag is set.
+WARN : mpfr_mul() raised a flag
+loop      3    All variables are re-initialized with 224 bits of precision.
+loop      3    count =            9   x = 2678718604761484750077196506825   factor = 1
+loop      4    count =           17   x = 2448299134782797304415778903639   factor = 1
+loop      5    count =           33   x = 11863363086642634833201671076207   factor = 1
+loop      6    count =           65   x = 4529903634169058931335024706029   factor = 1
+loop      7    count =          129   x = 27167518352105905253923695820461   factor = 1
+loop      8    count =          257   x = 19507623152356960243724127274360   factor = 1
+loop      9    count =          513   x = 1677500296524431514335617094312   factor = 1
+loop     10    count =         1025   x = 18905240947752568520419084095984   factor = 1
+loop     11    count =         2049   x = 14681525993739624388525062801605   factor = 1
+loop     12    count =         4097   x = 5216257127211454868707163777776   factor = 1
+loop     13    count =         8193   x = 23866368064653821799396392864402   factor = 1
+loop     14    count =        16385   x = 22086146532858893058745616814903   factor = 1
+loop     15    count =        32769   x = 14536749671547150106815360692817   factor = 1
+loop     16    count =        65537   x = 2883276604288490703157535635480   factor = 1
+loop     17    count =       131073   x = 5823063189951789255057250352081   factor = 1
+loop     18    count =       262145   x = 21165338930466762641119177937332   factor = 1
+loop     19    count =       524289   x = 13031910199565938892547782872002   factor = 1
+loop     20    count =      1048577   x = 6761946173042522347381785593575   factor = 1
+loop     21    count =      2097153   x = 6350134855276257277036542367829   factor = 1
+loop     22    count =      4194305   x = 30163487698627585414363605899559   factor = 1
+loop     23    count =      8388609   x = 2811864691606228821529474299278   factor = 1
+loop     24    count =     16777217   x = 28223535352292944010441511784693   factor = 1
+loop     25    count =     31461941   x = 20164649214358358738060905469967   factor = 5944066965503999
+DONE : used 224 bits of precision.
+     : factor of 30380786712576041780972727864881 is 5944066965503999
+real 97159.01
+user 95885.14
+sys 283.15
 esther$ 
 
 ---------------------------------------------------------------------
+some reasonable test case numbers : 
 
-phobos$ /usr/bin/time -p ./pr_mpfr_quiet 340282366920938463463374607431768211457 16
--------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = phobos
-                     release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #7 main-n255054-67fc95025cc: Tue Apr 26 06:58:45 UTC 2022     root@phobos:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
-                     machine = amd64
-                   page size = 4096
-               system memory = 16867762176
-                             = 16472424 kB
-                             = 16086 MB
-                 avail pages = 4118106
-                avail memory = 0
-         clock ticks per sec = 128
-             threads support = 200112
-               POSIX Version = 200112
-                      endian = little endian
-       sizeof(unsigned long) = 8
-  sizeof(unsigned long long) = 8
-                 sizeof(int) = 4
-               sizeof(void*) = 8
-           fp rounding mode is FE_TONEAREST
-           system uptime    8 days    2 hours   35 mins   11 secs
--------------------------------------------------------------------
-
-We shall use 16 bits of precision.
-INFO : chars_formatted = 47
-INFO : buf = '340282366920938463463374607431768211456'
-WARN : incorrect data on input.
-     : this is most likely caused by insufficient bits
-     : of precision to represent the data correctly.
-INFO : Input variable re-initialized with 32 bits of precision.
-INFO : Input variable re-initialized with 64 bits of precision.
-INFO : Input variable re-initialized with 96 bits of precision.
-INFO : Input variable re-initialized with 128 bits of precision.
-INFO : Input variable re-initialized with 160 bits of precision.
-INFO : perfect match on data input.
-
-We shall find a factor of 340282366920938463463374607431768211457.000000
-------------------------------------------------------
-Pollard Rho shall proceed with 160 bits of precision.
-------------------------------------------------------
-loop      1    count =            3 
-loop      2    count =            5 
-loop      3      try again with 192 bits of precision.
-loop      3      try again with 224 bits of precision.
-loop      3      try again with 256 bits of precision.
-loop      3    count =            9 
-loop      4    count =           17 
-loop      5    count =           33 
-loop      6    count =           65 
-loop      7    count =          129 
-loop      8    count =          257 
-loop      9    count =          513 
-loop     10    count =         1025 
-loop     11    count =         2049 
-loop     12    count =         4097 
-loop     13    count =         8193 
-loop     14    count =        16385 
-loop     15    count =        32769 
-loop     16    count =        65537 
-loop     17    count =       131073 
-loop     18    count =       262145 
-loop     19    count =       524289 
-loop     20    count =      1048577 
-loop     21    count =      2097153 
-loop     22    count =      4194305 
-loop     23    count =      8388609 
-loop     24    count =     16777217 
-loop     25    count =     33554433 
-loop     26    count =     67108865 
-loop     27    count =    134217729 
-loop     28    count =    268435457 
-loop     29    count =     50639661 
-DONE : used 256 bits of precision.
-     : factor of 340282366920938463463374607431768211457.000000 is 59649589127497217.000000
-real 78019.65
-user 77967.49
-sys 0.18
-phobos$ 
-
+340282366920938463463374607431768211457
 --------------------------------------------------------------------
 
 Pollard Rho algorithm implementation with 64-bit data types has
@@ -191,48 +149,8 @@ Also we can use a prime pair :
 nix$ echo '98765432697749 98765432697751 * pq' | dc 
 9754610695973784842855062499
  
-fbsd$ uname -a 
-FreeBSD vesta 13.0-CURRENT FreeBSD 13.0-CURRENT r345741 GENERIC  amd64
-fbsd$ /usr/bin/time -p ./pr_quiet 1152921423002469787
-loop    1    count =         3    x =                     26    factor =          1
-loop    2    count =         5    x =     970078746923582756    factor =          1
-loop    3    count =         9    x =     988533639612436080    factor =          1
-loop    4    count =        17    x =     567231184840781308    factor =          1
-loop    5    count =        33    x =    1133462817720239055    factor =          1
-loop    6    count =        65    x =      44002097199053742    factor =          1
-loop    7    count =       129    x =     333495756174020631    factor =          1
-loop    8    count =       257    x =     358679668650207688    factor =          1
-loop    9    count =       513    x =     228102474313563072    factor =          1
-loop   10    count =      1025    x =     455492478346626520    factor =          1
-loop   11    count =      2049    x =     586937076482182844    factor =          1
-loop   12    count =      4097    x =     698637346747441971    factor =          1
-loop   13    count =      8193    x =     847629378199353859    factor =          1
-loop   14    count =     16385    x =     256505182314725625    factor =          1
-loop   15    count =     32769    x =     707693792251635493    factor =          1
-loop   16    count =     65537    x =     815429361870967092    factor =          1
-loop   17    count =    131073    x =     548304865194895878    factor =          1
-loop   18    count =    262145    x =     658065450799704587    factor =          1
-loop   19    count =    524289    x =     640743294668978805    factor =          1
-loop   20    count =   1048577    x =      96945903316186521    factor =          1
-loop   21    count =   2097153    x =     395137840875096862    factor =          1
-loop   22    count =   4194305    x =     216572295558764613    factor =          1
-loop   23    count =   8388609    x =     860389337707649447    factor =          1
-loop   24    count =  16777217    x =     781327449588635288    factor =          1
-loop   25    count =  33554433    x =      83445797587906536    factor =          1
-loop   26    count =  38997205    x =     270539940637044753    factor = 1073741783
-A factor of 1152921423002469787 is 1073741783
-real 32.81
-user 32.80
-sys 0.00
-fbsd$ 
-
-Expect wildly different computation times.
-
-Here is some silly test data. 
-
 nix$ factor 18446744073709551601131234567890124193
 18446744073709551601131234567890124193: 1402572603950103863 13152077847348135911
-nix$ 
 
 nix$ echo '4115226300411521 12345678901234529 * pq' | dc
 50805262510795942336027634608609
@@ -250,69 +168,12 @@ nix$ factor 18446744073709551601
 18446744073709551601: 53 348051774975651917
 
 
-nix$ echo '99k 1238926361552897 93461639715357977769163558199606896584051237541638188580280321 * pq' | dc
-115792089237316195423570985008687907853269984665640564039457584007913\
-129639937
+115792089237316195423570985008687907853269984665640564039457584007913129639937
+= 1238926361552897 * 93461639715357977769163558199606896584051237541638188580280321
 
 
 nix$ factor 99999640000243
 99999640000243: 9999973 9999991
-nix$ 
-
-
-Even using 64 bit uint64_t will result in bizarre behavior :
-
-
-nix$ ./pr_quiet 99999640000243
-loop        1    count =                3    x =               26    factor =                1
-loop        2    count =                5    x =   33386160561893    factor =                1
-loop        3    count =                9    x =   90162208914831    factor =                1
-loop        4    count =               17    x =   13832264826550    factor =                1
-loop        5    count =               33    x =   98412878383785    factor =                1
-loop        6    count =               65    x =   13421133872418    factor =                1
-loop        7    count =              129    x =   89030110771447    factor =                1
-loop        8    count =              257    x =   22651453009420    factor =                1
-loop        9    count =              513    x =   99473588100330    factor =                1
-loop       10    count =             1025    x =   41446993208988    factor =                1
-loop       11    count =             2049    x =   17055329457103    factor =                1
-loop       12    count =             4097    x =   40081088618021    factor =                1
-loop       13    count =             8193    x =   71413784494039    factor =                1
-loop       14    count =            16385    x =   93637128298150    factor =                1
-loop       15    count =            32769    x =   68400894321607    factor =                1
-loop       16    count =            65537    x =   20256177278943    factor =                1
-loop       17    count =           131073    x =   31616586020018    factor =                1
-loop       18    count =           262145    x =   58053421126852    factor =                1
-loop       19    count =           524289    x =   55989786788325    factor =                1
-loop       20    count =          1048577    x =   96776461526928    factor =                1
-loop       21    count =          1897219    x =   84622464077196    factor =          9999973
-A factor of 99999640000243 is 9999973
-nix$ 
-
-
-nix$ 
-nix$ ./pr_mpfr_quiet 99999640000243 113
-
-We shall find a factor of 99999640000243.000000
-
-We shall use 113 bits of precision.
-All variables are initialized with 113 bits of precision.
-
-------------------------------------------------------
-loop        1    count =                3    x = 26.000000    factor = 1.000000
-loop        2    count =                5    x = 6766704834564.000000    factor = 1.000000
-loop        3    count =                9    x = 42924368496139.000000    factor = 1.000000
-loop        4    count =               17    x = 32681874092650.000000    factor = 1.000000
-loop        5    count =               33    x = 12339409137228.000000    factor = 1.000000
-loop        6    count =               65    x = 59773708058208.000000    factor = 1.000000
-loop        7    count =              129    x = 98684835615096.000000    factor = 1.000000
-loop        8    count =              257    x = 33839476195984.000000    factor = 1.000000
-loop        9    count =              513    x = 63749171357131.000000    factor = 1.000000
-loop       10    count =             1025    x = 37182763958325.000000    factor = 1.000000
-loop       11    count =             2049    x = 3017044558454.000000    factor = 1.000000
-loop       12    count =              825    x = 97075120600963.000000    factor = 9999973.000000
-A factor of 99999640000243.000000 is 9999973.000000
-nix$ 
-
 
 
  Fermat 8 : 
@@ -322,230 +183,10 @@ $ echo ' 1238926361552897.000000   934616397153579777691635581996068965840512375
 129639937.000000
 $ 
 
-
-
-Even on a reasonable Intel i7 we can expect to see some thrashing :
-
-dclarke@titan:~/pgm/lastmiles/pollard_rho$ uname -a 
-Linux titan 4.19.0-5-amd64 #1 SMP Debian 4.19.37-5+deb10u1 (2019-07-19) x86_64 GNU/Linux
-
-
-processor       : 0
-vendor_id       : GenuineIntel
-cpu family      : 6
-model           : 60
-model name      : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
-stepping        : 3
-microcode       : 0x22
-cpu MHz         : 1197.852
-cache size      : 6144 KB
-physical id     : 0
-siblings        : 8
-
-
-dclarke@titan:~/pgm/lastmiles/pollard_rho$ /usr/bin/time -p ./pr_mpfr_quiet 11579208923731619542357098500868790785326998466564056403                            9457584007913129639937 128 1                                                                                                                                    
-INFO : will assume debug is requested.                                                                                                                          
-
-We shall use 128 bits of precision.                                                                                                                             
-INFO : chars_formatted = 86                                                                                                                                     
-INFO : buf = '115792089237316195423570985008687907853269984665640564039457584007913129639936'                                                                   
-WARN : incorrect data on input.                                                                                                                                 
-     : this is most likely caused by insufficient bits                                                                                                          
-     : of precision to represent the data correctly.                                                                                                            
-INFO : Input variable re-initialized with 192 bits of precision.                                                                                                
-INFO : we shall attempt to read input again.                                                                                                                    
-INFO : chars_formatted = 86                                                                                                                                     
-INFO : buf = '115792089237316195423570985008687907853269984665640564039457584007913129639936'                                                                   
-WARN : incorrect data on input.                                                                                                                                 
-     : this is most likely caused by insufficient bits                                                                                                          
-     : of precision to represent the data correctly.                                                                                                            
-INFO : Input variable re-initialized with 256 bits of precision.                                                                                                
-INFO : we shall attempt to read input again.                                                                                                                    
-INFO : chars_formatted = 86                                                                                                                                     
-INFO : buf = '115792089237316195423570985008687907853269984665640564039457584007913129639936'                                                                   
-WARN : incorrect data on input.                                                                                                                                 
-     : this is most likely caused by insufficient bits                                                                                                          
-     : of precision to represent the data correctly.                                                                                                            
-INFO : Input variable re-initialized with 320 bits of precision.                                                                                                
-INFO : we shall attempt to read input again.                                                                                                                    
-INFO : chars_formatted = 86                                                                                                                                     
-INFO : buf = '115792089237316195423570985008687907853269984665640564039457584007913129639937'                                                                   
-INFO : perfect match on data input.                                                                                                                             
-
-We shall find a factor of 115792089237316195423570985008687907853269984665640564039457584007913129639937.000000                                                 
-------------------------------------------------------                                                                                                          
-Pollard Rho shall proceed with 320 bits of precision.                                                                                                           
-------------------------------------------------------                                                                                                          
-loop      1    count =            3   x =                  26.000000   factor = 1.000000                                                                        
-loop      2    count =            5   x = 44127887745906175987802.000000   factor = 1.000000                                                                    
-WARN : mpfr_inexflag_flag is set.                                                                                                                               
-WARN : mpfr_mul() raised a flag                                                                                                                                 
-loop      3    All variables are re-initialized with 384 bits of precision.                                                                                     
-WARN : mpfr_inexflag_flag is set.                                                                                                                               
-WARN : mpfr_mul() raised a flag                                                                                                                                 
-loop      3    All variables are re-initialized with 448 bits of precision.                                                                                     
-WARN : mpfr_inexflag_flag is set.                                                                                                                               
-WARN : mpfr_mul() raised a flag                                                                                                                                 
-loop      3    All variables are re-initialized with 512 bits of precision.                                                                                     
-loop      3    count =            9   x = 37528029320563145318125764069449894367780122691185286599275206329589461906406.000000   factor = 1.000000
-loop      4    count =           17   x = 31536098040124079392726384860997665682624559670713323770852557009763985513269.000000   factor = 1.000000
-loop      5    count =           33   x = 101781224077448587010321076904326055853688434737794212307073924863651306901171.000000   factor = 1.000000
-loop      6    count =           65   x = 19535504584212471558516237317931715737210721913563868868302748378109852809370.000000   factor = 1.000000
-loop      7    count =          129   x = 29658425761885146011127791280618461287798875470471572352310876336712487860905.000000   factor = 1.000000
-loop      8    count =          257   x = 30187176826945436535357705693561976681225495341414173259228056551946428175766.000000   factor = 1.000000
-loop      9    count =          513   x = 32840572557298846531804590991045465903946138452837043479583439945573555615440.000000   factor = 1.000000
-loop     10    count =         1025   x = 56109920745726513814576147880952879283646068379622770938709855868106724646457.000000   factor = 1.000000
-loop     11    count =         2049   x = 7478249072517372789125115522527766110597521076100678436613877059191655742396.000000   factor = 1.000000
-loop     12    count =         4097   x = 40095525686442894297335809187239970545506254645046373675795391624453648742644.000000   factor = 1.000000
-loop     13    count =         8193   x = 111359191417609624287522639983836719785594767307858209957846835838452065572425.000000   factor = 1.000000
-loop     14    count =        16385   x = 109800597914356820227888174792217455425055493391577794941886590615663443255054.000000   factor = 1.000000
-loop     15    count =        32769   x = 96414658810345146372561987692517769890214451579420879002092098853812765493869.000000   factor = 1.000000
-loop     16    count =        65537   x = 73702437796377589363075600062837306092382958111145785719023054607568503562385.000000   factor = 1.000000
-loop     17    count =       131073   x = 9422715892770192556959165916105155944914011996654652929596109782947489963631.000000   factor = 1.000000
-loop     18    count =       262145   x = 97979435536756989655850082527754963029812322444266676215051178025212311841835.000000   factor = 1.000000
-loop     19    count =       524289   x = 112711134657426891057534956938859645199813401264969681794580604884166334121705.000000   factor = 1.000000
-loop     20    count =      1048577   x = 92951640163484195131798783186046757440264598761075411523972078926926650280687.000000   factor = 1.000000
-loop     21    count =      2097153   x = 87571506315620551897688071333389160733536619216746593863194605647552655394812.000000   factor = 1.000000
-loop     22    count =      4194305   x = 58889529646241049459359024512056318140499538756996116170685385153979818843165.000000   factor = 1.000000
-loop     23    count =      8388609   x = 108427065557124350379992873337422864982692394677381519882218933341441801981639.000000   factor = 1.000000
-loop     24    count =      7408325   x = 94604917468964190987848928898606392533836481003656797666946538615067645225233.000000   factor = 1238926361552897.000000
-DONE : used 512 bits of precision.
-     : factor of 115792089237316195423570985008687907853269984665640564039457584007913129639937.000000 is 1238926361552897.000000
-real 961.94
-user 961.93
-sys 0.00
-dclarke@titan:~/pgm/lastmiles/pollard_rho$ 
-
-
-
 A very very old HP Pentium Pro based machine will work also but be 
 very very slow. A few days will be needed for the following C32
 number. 
 
-mars$ uname -a 
-Linux mars 5.8.0-genunix #1 SMP Thu Aug 6 20:28:04 UTC 2020 i686 GNU/Linux
-mars$ 
-mars$ cat /proc/version 
-Linux version 5.8.0-genunix (root@mars) (gcc (Debian 9.3.0-15) 9.3.0, GNU ld (GNU Binutils for Debian) 2.35) #1 SMP Thu Aug 6 20:28:04 UTC 2020
-mars$ 
-mars$ head /proc/meminfo 
-MemTotal:         765264 kB
-MemFree:           63088 kB
-MemAvailable:     592064 kB
-Buffers:           61156 kB
-Cached:           557700 kB
-SwapCached:          188 kB
-Active:           304404 kB
-Inactive:         331184 kB
-Active(anon):       1376 kB
-Inactive(anon):    15660 kB
-mars$ 
-mars$ head /proc/cpuinfo 
-processor       : 0
-vendor_id       : GenuineIntel
-cpu family      : 6
-model           : 5
-model name      : Pentium II (Deschutes)
-stepping        : 2
-microcode       : 0x2a
-cpu MHz         : 398.996
-cache size      : 512 KB
-physical id     : 0
-mars$ 
-mars$ 
-
-mars$ 
-mars$ factor 31441399840647321179
-31441399840647321179: 5463458053 5754853343
-mars$ 
 mars$ echo ' 5111111111111119  5944066965503999 * pq' | dc 
 30380786712576041780972727864881
-mars$ 
-mars$ ./pr_mpfr_quiet 30380786712576041780972727864881 32
-
-We shall use 32 bits of precision.
-INFO : chars_formatted = 40
-INFO : buf = '30380786716049848810599023116288'
-WARN : incorrect data on input.
-     : this is most likely caused by insufficient bits
-     : of precision to represent the data correctly.
-INFO : Input variable re-initialized with 64 bits of precision.
-INFO : Input variable re-initialized with 96 bits of precision.
-INFO : Input variable re-initialized with 128 bits of precision.
-INFO : perfect match on data input.
-
-We shall find a factor of 30380786712576041780972727864881.000000
-------------------------------------------------------
-Pollard Rho shall proceed with 128 bits of precision.
-------------------------------------------------------
-loop      1    count =            3 
-loop      2    count =            5 
-loop      3      try again with 160 bits of precision.
-loop      3      try again with 192 bits of precision.
-loop      3      try again with 224 bits of precision.
-loop      3    count =            9 
-loop      4    count =           17 
-loop      5    count =           33 
-loop      6    count =           65 
-loop      7    count =          129 
-loop      8    count =          257 
-loop      9    count =          513 
-loop     10    count =         1025 
-loop     11    count =         2049 
-loop     12    count =         4097 
-loop     13    count =         8193 
-loop     14    count =        16385 
-loop     15    count =        32769 
-loop     16    count =        65537 
-loop     17    count =       131073 
-loop     18    count =       262145 
-loop     19    count =       524289 
-loop     20    count =      1048577 
-loop     21    count =      2097153 
-loop     22    count =      4194305 
-loop     23    count =      8388609 
-loop     24    count =     16777217 
-loop     25    count =     31461941 
-DONE : used 224 bits of precision.
-     : factor of 30380786712576041780972727864881.000000 is 5944066965503999.000000
-mars$ 
-
-
-However small problems may be quite quick : 
-
-mars$ echo ' 131111 131113 * pq' | dc
-17190356543
-mars$ 
-mars$ /usr/bin/time -p /usr/bin/nice -n +15 ./pr_mpfr_quiet 17190356543 16
-
-We shall use 16 bits of precision.
-INFO : chars_formatted = 19
-INFO : buf = '17190354944'
-WARN : incorrect data on input.
-     : this is most likely caused by insufficient bits
-     : of precision to represent the data correctly.
-INFO : Input variable re-initialized with 32 bits of precision.
-INFO : Input variable re-initialized with 64 bits of precision.
-INFO : perfect match on data input.
-
-We shall find a factor of     17190356543.000000
-------------------------------------------------------
-Pollard Rho shall proceed with 64 bits of precision.
-------------------------------------------------------
-loop      1    count =            3 
-loop      2    count =            5 
-loop      3      try again with 96 bits of precision.
-loop      3    count =            9 
-loop      4    count =           17 
-loop      5    count =           33 
-loop      6    count =           65 
-loop      7    count =          129 
-loop      8    count =            7 
-DONE : used 96 bits of precision.
-     : factor of 17190356543.000000 is 131111.000000
-real 0.16
-user 0.13
-sys 0.01
-mars$ 
-
 

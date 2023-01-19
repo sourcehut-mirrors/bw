@@ -51,6 +51,7 @@
 #define PREC 113 /* lowest reasonable precision */
 
 int mpfr_check_flags(int status, int debug_flag);
+size_t gmp_mpfr_ver(int *mpfr_flags);
 
 #define VERBOSE 1
 int sysinfo(int verbose);
@@ -87,8 +88,15 @@ int main (int argc, char *argv[])
     int width, chars_formatted;
     int input_attempt_loop = 0;
 
+    int mpfr_flags = 0;
+    size_t mpfr_precision_size = 0;
+
     setlocale( LC_ALL, "C" );
     sysinfo(VERBOSE);
+
+    mpfr_precision_size = gmp_mpfr_ver(&mpfr_flags);
+
+    printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n\n", mpfr_flags);
 
     mpfr_t number_m, x_m, x_fixed_m, size_m;
     mpfr_t factor_m, gcd_test_m, one_m, four_m, input_m;
