@@ -7,8 +7,11 @@ LDIR?=	/usr/local/lib
 IDIR?=	/usr/local/include
 LIBS?=	-lgmp -lmpfr
 
-SRCS = pr_mpfr_quiet.c gmp_mpfr_ver.c ../sysinfo/sysinfo.c
-OBJS = pr_mpfr_quiet.o gmp_mpfr_ver.o ../sysinfo/sysinfo.o
+SRCS = pr_mpfr_quiet.c gmp_mpfr_ver.c ../sysinfo/sysinfo.c \
+	../time_and_date/timediff.c
+
+OBJS = pr_mpfr_quiet.o gmp_mpfr_ver.o ../sysinfo/sysinfo.o \
+	../time_and_date/timediff.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)

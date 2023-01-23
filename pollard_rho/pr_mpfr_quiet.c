@@ -1,6 +1,7 @@
 
 /*
- * pr_mpfr_quiet.c Pollard Rho Algorithm with arbitrary precision
+ * pr_mpfr_quiet.c Pollard Rho Algorithm with arbitrary precision.
+ *                 Less verbose output here unless you ask for it.
  * Copyright (C) Dennis Clarke 2019
  *
  * This program is free software: you can redistribute it and/or modify
@@ -44,6 +45,7 @@
 #include <locale.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
+#include <time.h>
 #include <math.h>
 #include <gmp.h>
 #include <mpfr.h>
@@ -52,6 +54,10 @@
 
 int mpfr_check_flags(int status, int debug_flag);
 size_t gmp_mpfr_ver(int *mpfr_flags);
+
+uint64_t timediff( struct timespec start_time,
+                   struct timespec end_time );
+
 
 #define VERBOSE 1
 int sysinfo(int verbose);
@@ -74,8 +80,10 @@ int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in)
     return EXIT_SUCCESS;
 }
 
-int main (int argc, char *argv[]) 
+int main (int argc, char *argv[])
 {
+    struct timespec t0, t1;
+    uint64_t t_delta;
     uint64_t count, number, loop = 1;
     uint64_t x_fixed = 2, size = 2, x = 2, factor = 1;
 
@@ -91,8 +99,11 @@ int main (int argc, char *argv[])
     int mpfr_flags = 0;
     size_t mpfr_precision_size = 0;
 
-    setlocale( LC_ALL, "C" );
+    setlocale(LC_ALL, "C");
     sysinfo(VERBOSE);
+
+    int prime_check_reps, prime_check_test;
+    mpz_t prime_check_input;
 
     mpfr_precision_size = gmp_mpfr_ver(&mpfr_flags);
 
@@ -144,7 +155,7 @@ int main (int argc, char *argv[])
         if ( ( (errno == ERANGE)
                &&
                ( (bit_prec == LONG_MAX)
-                 || 
+                 ||
                  (bit_prec == LONG_MIN)
                ) )
              || (errno != 0 && bit_prec == 0)) {
@@ -170,12 +181,20 @@ int main (int argc, char *argv[])
     } else {
         bit_prec = PREC;
     }
+
     delta_bit_prec = bit_prec / 2;
     printf("\nWe shall use %i bits of precision.\n", bit_prec);
     mpfr_set_default_prec((mpfr_prec_t)bit_prec);
     mpfr_init2 (input_m, (mpfr_prec_t) bit_prec);
     mpfr_init2 (four_m, (mpfr_prec_t) bit_prec);
 
+    /* here we try to accept the input data within the bit
+     * precision specified. This may fail in that the
+     * input data can not be represented within the bit
+     * precision. In which case we expand the precision.
+     *
+     * TODO : Perhaps we do not accept silly large numbers
+     */
 input_try:
     if (argc>1){
         if (debug && (input_attempt_loop>0)) {
@@ -188,7 +207,7 @@ input_try:
             printf("     : we tried to interpret %s\n", argv[1]);
             printf("     : however we seemed to get ");
             mpfr_printf("%.Rf\n", input_m);
-            return (EXIT_FAILURE);
+            return EXIT_FAILURE;
         }
 
         /* check if the data we received is correctly represented
@@ -200,7 +219,7 @@ input_try:
         chars_formatted = mpfr_snprintf(buf,(size_t)width,"%.Rf\n", input_m);
         if (chars_formatted < 0 ){
             fprintf(stderr,"FAIL : mpfr_snprintf tossed an error.\n");
-            return (EXIT_FAILURE);
+            return EXIT_FAILURE;
         }
 
         if(debug||(input_attempt_loop<1)){
@@ -210,7 +229,7 @@ input_try:
 
         if ( strcasecmp( argv[1], buf) == 0 ){
             printf("INFO : perfect match on data input.\n");
-        }else{
+        } else {
             if(debug||(input_attempt_loop<1)){
                 fprintf(stderr,"WARN : incorrect data on input.\n");
                 fprintf(stderr,"     : this is most likely caused by ");
@@ -218,7 +237,7 @@ input_try:
                 fprintf(stderr,"represent the data correctly.\n");
             }
             bit_prec = bit_prec + delta_bit_prec;
-            /* check here is bit_prec is a multiple of 32 and 
+            /* check here is bit_prec is a multiple of 32 and
              * just add upwards similar to dc calc with 113 bits
              *   echo '113 32 + 113 32 % - pq' | dc */
             if ( bit_prec%32 != 0 ) bit_prec = bit_prec + 32 - bit_prec%32;
@@ -228,29 +247,89 @@ input_try:
             actual_prec=mpfr_get_default_prec();
             printf("INFO : Input variable re-initialized with");
             printf(" %i bits of precision.\n", (int)actual_prec);
+            /* we need this buffer later for the prime check
             free(buf);
             buf = NULL;
+            */
             input_attempt_loop += 1;
             goto input_try;
         }
 
         if (mpfr_number_p(input_m)==0){
             printf("\nFAIL : provide a reasonable decimal number.\n");
-            return (EXIT_FAILURE);
+            return EXIT_FAILURE;
         }
 
         mpfr_set_si(four_m, (long)4, MPFR_RNDN);
         if (mpfr_cmp (input_m, four_m) < 0 ) {
             printf("\nFAIL : provide a reasonable composite integer.\n");
-            return (EXIT_FAILURE);
+            return EXIT_FAILURE;
         }
 
     }
 
-    printf("\nWe shall find a factor of ");
+    /* TODO it would be of some value to check if the number
+     * provided was a prime. We may not be able to prove that
+     * any given input is a prime but we may be able to rule
+     * out an obvious prime. */
+    mpz_init(prime_check_input);
+    if ( mpz_set_str (prime_check_input, buf, 10) < 0 ) {
+        /* well something went horribly wrong here damn it */
+        printf("\nBORK BORK BORK at %d in %s\n", __LINE__, __FILE__);
+        return EXIT_FAILURE;
+    }
+
+    /* Get the REALTIME_CLOCK time in a timespec struct */
+    if ( clock_gettime(CLOCK_REALTIME, &t0 ) == -1 ) {
+        /* We could not get the clock. Bail out. */
+        fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
+    /*
+     * Function: int mpz_probab_prime_p (const mpz_t n, int reps)
+     *
+     * Determine whether n is prime. Return 2 if n is definitely
+     * prime, return 1 if n is probably prime (without being
+     * certain), or return 0 if n is definitely non-prime.
+     */
+
+    prime_check_reps = 20;
+prime_check:
+    prime_check_test = mpz_probab_prime_p(prime_check_input, prime_check_reps);
+
+    if ( clock_gettime(CLOCK_REALTIME, &t1 ) == -1 ) {
+        /* We could not get the clock. Bail out. */
+        fprintf(stderr,"ERR  : could not attain CLOCK_REALTIME\n");
+        return EXIT_FAILURE;
+    }
+
+    t_delta = timediff(t0, t1);
+    printf("INFO : mpz_probab_prime_p() = %14" PRIu64 " nsec\n", t_delta);
+
+    if ( prime_check_test == 2 ) {
+        /* well we are done here ! this is a prime */
+        fprintf(stderr,"BORK : that number is a prime!\n");
+        fprintf(stderr,"     : you lost %" PRIu64 " nsecs of life there!\n", t_delta);
+        return EXIT_FAILURE;
+    }
+
+    if ( ( prime_check_test == 1 ) && ( prime_check_reps < 50 ) ) {
+        prime_check_reps += 10;
+        fprintf(stderr,"INFO : we just do not know about that number.\n");
+        goto prime_check;
+    }
+
+    free(buf);
+    buf = NULL;
+
+    fprintf(stderr,"INFO : we know for sure that input is composite.\n");
+    fprintf(stderr,"     : you lost %" PRIu64 " nsecs to verify.\n", t_delta);
+
+    printf("\n    : We shall find a factor of ");
     mpfr_printf("%22.Rf\n", input_m);
 
-    /* provide a width field doesn't seem to work 
+    /* provide a width field doesn't seem to work
      *   mpfr_printf("%*.Rf\n", width, input_m);
      */
 
@@ -295,7 +374,7 @@ do_square:
                     fprintf(stderr,"WARN : mpfr_mul() raised a flag\n");
                 }
                 mpfr_clear_flags();
-                /* check here is bit_prec is a multiple of 32 and 
+                /* check here is bit_prec is a multiple of 32 and
                  * just add upwards similar to dc calc with 113 bits
                  *   echo '113 32 + 113 32 % - pq' | dc */
                 bit_prec = bit_prec + delta_bit_prec;
@@ -324,7 +403,7 @@ do_square:
                            one_m, (mpfr_ptr) NULL);
                 /* transfer the data back into the new wider vars */
                 inex = mpfr_set(number_m, number_m_w, MPFR_RNDN);
-                inex = mpfr_set(x_m, x_m_w, MPFR_RNDN); 
+                inex = mpfr_set(x_m, x_m_w, MPFR_RNDN);
                 inex = mpfr_set(x_fixed_m, x_fixed_m_w, MPFR_RNDN);
                 inex = mpfr_set(size_m, size_m_w, MPFR_RNDN);
                 inex = mpfr_set(gcd_test_m, gcd_test_m_w, MPFR_RNDN);
@@ -336,8 +415,8 @@ do_square:
                             size_m_w, factor_m_w, gcd_test_m_w,
                             one_m_w, (mpfr_ptr) 0);
 
-                /* we don't need the square_test_m data anymore as it 
-                 * is not correct anyways ... thus : 
+                /* we don't need the square_test_m data anymore as it
+                 * is not correct anyways ... thus :
                  *
                  * void mpfr_set_prec (mpfr_t x, mpfr_prec_t prec)
                  *
@@ -345,7 +424,7 @@ do_square:
                  *    and set its value to NaN. The previous value stored
                  *    in x is lost.
                  *
-                 *    It is equivalent to a call to mpfr_clear(x) 
+                 *    It is equivalent to a call to mpfr_clear(x)
                  *    followed by a call to mpfr_init2(x, prec), but more
                  *    efficient  ...   see manpages for more info ...
                  */
