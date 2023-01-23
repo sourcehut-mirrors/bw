@@ -3,6 +3,15 @@
  * gcd.c  Greatest Common Divisor algorithm as a recursive
  *        procedure and a trivial procedure.
  *
+ *
+ * A decent 64-bit machine has no problem with this : 
+ *     $ ./gcd 4281477293 4288021993
+ *     gcd( 4281477293, 4288021993 ) = 65447
+ *     INFO :   trivial gdb tdelta =          66873 nsec
+ *     gcd( 4281477293, 4288021993 ) = 65447
+ *     INFO : recursive gdb tdelta =           3724 nsec
+ *     $
+ *
  * Copyright (C) Dennis Clarke 2023
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +48,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#define __STDC_FORMAT_MACROS
+/* #define __STDC_FORMAT_MACROS */
 
 /* n.b. : inttypes.h includes stdint.h */
 #include <inttypes.h>
@@ -52,7 +61,7 @@ uint64_t timediff( struct timespec start_time,
 
 int main(int argc, char *argv[])
 {
-    int64_t j, k, p, q;
+    int64_t g, j, k, p, q;
     int64_t recursive_result;
     struct timespec now_time, then_time;
     uint64_t t_delta;
@@ -90,9 +99,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    printf ("gcd( %i, %i ) = ", j, k);
-    int g = gcd_trivial(&j, &k);
-    printf ("%i\n", g);
+    printf ("gcd( %" PRIu64 ", %" PRIu64 " ) = ", j, k);
+    g = gcd_trivial(&j, &k);
+    printf ("%" PRIu64 "\n", g);
 
     if ( clock_gettime(CLOCK_REALTIME, &then_time ) == -1 ) {
         /* We could not get the clock. Bail out. */
@@ -112,7 +121,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    printf ("gcd( %i, %i ) = ", p, q);
+    printf ("gcd( %" PRIu64 ", %" PRIu64 " ) = ", p, q);
     recursive_result = gcd_recursive(p, q);
     printf ("%" PRIu64 "\n", recursive_result);
 
@@ -133,8 +142,8 @@ int main(int argc, char *argv[])
 
 /* dirt simple Greatest Common Divisor */
 int64_t gcd_trivial(int64_t *a_in, int64_t *b_in) {
-    int loop = 0;
-    int rem_m, a, b;
+
+    int64_t rem_m, a, b;
 
     a = *a_in;
     b = *b_in;
@@ -143,7 +152,6 @@ int64_t gcd_trivial(int64_t *a_in, int64_t *b_in) {
         rem_m = a % b;
         a = b;
         b = rem_m;
-        loop = loop + 1;
     }
 
     return a;
