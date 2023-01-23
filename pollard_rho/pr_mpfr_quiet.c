@@ -92,7 +92,7 @@ int main (int argc, char *argv[])
     char *endptr, *str;
 
     /* buffer to compare what we receive to what was actually input */
-    char *buf;
+    char *buf, *prime_check_string;
     int width, chars_formatted;
     int input_attempt_loop = 0;
 
@@ -227,8 +227,12 @@ input_try:
             printf("INFO : buf = \'%s\'\n", buf);
         }
 
-        if ( strcasecmp( argv[1], buf) == 0 ){
+        if (strcasecmp(argv[1], buf) == 0 ){
             printf("INFO : perfect match on data input.\n");
+            /* Now we have good data so we save it for a prime check */
+            prime_check_string = calloc(width,(size_t)sizeof(unsigned char));
+            /* TODO test if the calloc works */
+            strncpy(prime_check_string,buf,width);
         } else {
             if(debug||(input_attempt_loop<1)){
                 fprintf(stderr,"WARN : incorrect data on input.\n");
@@ -247,10 +251,8 @@ input_try:
             actual_prec=mpfr_get_default_prec();
             printf("INFO : Input variable re-initialized with");
             printf(" %i bits of precision.\n", (int)actual_prec);
-            /* we need this buffer later for the prime check
             free(buf);
             buf = NULL;
-            */
             input_attempt_loop += 1;
             goto input_try;
         }
@@ -273,11 +275,13 @@ input_try:
      * any given input is a prime but we may be able to rule
      * out an obvious prime. */
     mpz_init(prime_check_input);
-    if ( mpz_set_str (prime_check_input, buf, 10) < 0 ) {
+    if ( mpz_set_str (prime_check_input, prime_check_string, 10) < 0 ) {
         /* well something went horribly wrong here damn it */
         printf("\nBORK BORK BORK at %d in %s\n", __LINE__, __FILE__);
         return EXIT_FAILURE;
     }
+
+    printf("INFO : prime_check_string is \"%s\"\n",prime_check_string);
 
     /* Get the REALTIME_CLOCK time in a timespec struct */
     if ( clock_gettime(CLOCK_REALTIME, &t0 ) == -1 ) {
