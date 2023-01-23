@@ -71,9 +71,10 @@ int main(int argc, char *argv[])
         return ( EXIT_FAILURE );
     }
 
-    /* TODO : check if the numbers provided make sense */
+    /* We must use strtoull() on 32-bit machines because
+     * the sizeof(long) is most likely 32-bits.  */
     errno = 0;
-    j = (int64_t)strtol(argv[1], (char **)NULL, 10);
+    j = (int64_t)strtoull(argv[1], (char **)NULL, 10);
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
         fprintf(stderr,"FAIL : integer not understood\n");
         perror("     ");
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
     }
 
     errno = 0;
-    k = (int64_t)strtol(argv[2], (char **)NULL, 10);
+    k = (int64_t)strtoull(argv[2], (char **)NULL, 10);
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
         fprintf(stderr,"FAIL : integer not understood\n");
         perror("     ");
