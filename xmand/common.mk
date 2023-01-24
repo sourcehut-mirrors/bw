@@ -8,7 +8,6 @@ LIBS?=		-lX11 -lrt -lm -lpthread
 LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include
 
-LD_OPTIONS?=	-R/usr/local/lib -L/usr/local/lib
 LD_RUN_PATH?=	/usr/local/lib
 
 OBJS=		mandel_col.o linear_inter.o mbrot.o \
@@ -29,7 +28,7 @@ all: xmand
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
 
 xmand: xmand.o $(OBJS)
-	$(CC) -o xmand xmand.o $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) -R$(LD_RUN_PATH) $(LIBS)
+	$(CC) -o xmand xmand.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR),-enable-new-dtags $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:

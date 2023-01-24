@@ -1,38 +1,35 @@
-pluto$ 
-pluto$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
+
+titan$ 
+titan$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 16
 -------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = pluto
-                     release = 13.1-RELEASE
-                     version = FreeBSD 13.1-RELEASE releng/13.1-n250148-fc952ac2212 GENERIC
-                     machine = amd64
+                 system name = Linux
+                   node name = titan
+                     release = 5.10.0-20-amd64
+                     version = #1 SMP Debian 5.10.158-2 (2022-12-13)
+                     machine = x86_64
                    page size = 4096
-               system memory = 137291218944
-                             = 134073456 kB
-                             = 130931 MB
-                 avail pages = 33518364
-                avail memory = 0
-         clock ticks per sec = 128
-             threads support = 200112
-               POSIX Version = 200112
+               system memory = 540946345984
+                             = 528267916 kB
+                             = 515886 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
                       endian = little endian
        sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    5 hours   58 mins   49 secs
+           system uptime    0 day    2 hours   45 mins    9 secs
 -------------------------------------------------------------------
-
-
---------- _XOPEN_SOURCE 600 -------
-_POSIX_CHILD_MAX   = 25
-_POSIX_NGROUPS_MAX = 8
-_POSIX_OPEN_MAX    = 20
-_POSIX_PATH_MAX    = 256
-_POSIX_TZNAME_MAX  = 6
----------------------------------------
-INFO : baseline tdelta =             61 nsec
+INFO : baseline tdelta =             67 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -40,7 +37,7 @@ INFO : FP Exception raised is FE_INEXACT
 imag : Perfectly safe to ignore FE_INEXACT
 
     mand_bail = 32768
-pthread_limit = 4
+pthread_limit = 16
     translate = ( -1.57887752805699992098009687e-02 , +1.02061921088799989476569863e+00 )
       magnify = +2.74877906944000000000000000e+11
 
@@ -56,19 +53,19 @@ pthread_limit = 4
 --------------------------------------------
 pixel_real_w = +1.42108547152020037174224854e-14
 pixel_imag_h = +1.42108547152020037174224854e-14
-raw  [ 523  , 524  ]
-DBUG : sample space [ 512   , 512    ]
-     : vbox  [ 008 , 008 ]
-     : win_r = +9.76562500000000000000000000e-04
-     : win_j = +9.76562500000000000000000000e-04
+raw  [ 522  , 521  ]
+DBUG : sample space [ 511   , 515    ]
+     : vbox  [ 007 , 008 ]
+     : win_r = -9.76562500000000000000000000e-04
+     : win_j = +6.83593750000000000000000000e-03
      : after translation
      : r_trn   = -1.57887752805699992098009687e-02
      : j_trn   = +1.02061921088799989476569863e+00
-     : x_prime = -1.57887752805628937824433677e-02
-     : y_prime = +1.02061921088800700019305623e+00
+     : x_prime = -1.57887752805771046371585697e-02
+     : y_prime = +1.02061921088804963275720183e+00
      : bailout = 32768             
      : magnify = 2.748779069440e+11
-[mand] =    13657162873 nsec   1.365716e+01 sec
+[mand] =    14639321887 nsec   1.463932e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -77,16 +74,16 @@ raw data values -------------------------------------------------------
      :       mand_height =      1978
      : r[ 7][ 7][63][63] = -1.57887752805771046371585697e-02
      : j[ 7][ 7][63][63] = +1.02061921088799278933834103e+00
-     :       mand_height =      4331
+     :       mand_height =      4299
      : r[ 8][ 8][ 0][ 0] = -1.57887752805628937824433677e-02
      : j[ 8][ 8][ 0][ 0] = +1.02061921088800700019305623e+00
      :       mand_height =      3907
      : r[ 8][ 8][ 1][ 0] = -1.57887752805486829277281657e-02
      : j[ 8][ 8][ 1][ 0] = +1.02061921088800700019305623e+00
-     :       mand_height =      3937
+     :       mand_height =      3934
      : r[ 8][ 8][32][32] = -1.57887752801081464315569036e-02
      : j[ 8][ 8][32][32] = +1.02061921088846174754394269e+00
-     :       mand_height =      3785
+     :       mand_height =      3787
      : r[ 3][12][44][21] = -1.57887752844850896838391208e-02
      : j[ 3][12][44][21] = +1.02061921089194340694916718e+00
      :       mand_height =      3770
@@ -94,12 +91,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +1.02061921089526874695252445e+00
      :       mand_height =      2065
 --------------------------- full plot done -----------------------------
-click at 522 522 
-raw  [ 1385 , 892  ]
+click at 521 519 
+raw  [ 1396 , 889  ]
 INFO : dumper_flag = 1
-click at 1384 890 
-raw  [ 1385 , 892  ]
-INFO : file /var/tmp/dclarke/20220727125111 dump begins.
+click at 1395 887 
+raw  [ 1396 , 888  ]
+INFO : file /var/tmp/dclarke/20230119181316 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -118,23 +115,24 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20220727125111 closed.
+INFO : file /var/tmp/dclarke/20230119181316 closed.
 INFO : dumper_flag = 0
-click at 1384 890 
-raw  [ 1009 , 922  ]
+click at 1395 886 
+raw  [ 784  , 510  ]
 right click
-click at 1008 920 
-raw  [ 1009 , 922  ]
+click at 783 508 
+raw  [ 784  , 510  ]
 right click
 
 
 
-pluto$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20220727125111
+titan$ /opt/schily/bin/hdump -Ax -t x1 -v -N 48 /var/tmp/dclarke/20230119181316
      0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 50 42
     10:  e3 50 e5 c5 ee 2a 90 bf be ee 46 cf 74 54 f0 3f
     20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
     30: 
-pluto$ /opt/schily/bin/mdigest -a sha256 /var/tmp/dclarke/20220727125111
-d957e67635af6470aa40460ab549e0092ff4e8a0eb54f5a5a1edcdaec741f491  /var/tmp/dclarke/20220727125111
-pluto$ 
+titan$ 
+titan$ openssl dgst -sha256 -r /var/tmp/dclarke/20230119181316
+41ea986da30ff13a269adcbec16af97c3f5ca7945bebe2ec496d9d534f471aca */var/tmp/dclarke/20230119181316
+titan$ 
 
