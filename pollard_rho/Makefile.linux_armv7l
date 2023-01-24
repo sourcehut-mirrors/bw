@@ -1,5 +1,5 @@
 
-CC=/usr/bin/cc
+CC=/opt/gcc/imed/gcc12/bin/gcc
 
 CFLAGS= -I$(IDIR) -std=iso9899:1999 -fno-builtin -march=armv7-a \
 	-mtune=cortex-a17 -mfpu=vfpv4-d16 \
@@ -7,21 +7,8 @@ CFLAGS= -I$(IDIR) -std=iso9899:1999 -fno-builtin -march=armv7-a \
 	-mno-sched-prolog -mlittle-endian -O0 -g \
 	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=600
+LDIR= /opt/bw/lib
+IDIR= /opt/bw/include
+LIBS= -lm -lgmp -lmpfr
 
-LDIR=/opt/bw/lib
-IDIR=/opt/bw/include
-LIBS=-lgmp -lmpfr -lm
-
-SRCS = pr_mpfr_quiet.c ../sysinfo/sysinfo.c
-OBJS = pr_mpfr_quiet.o ../sysinfo/sysinfo.o
-
-.c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
-
-pr_mpfr_quiet: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
-
-clean:
-	rm -f $(OBJS) pr_mpfr_quiet
+include common.mk
