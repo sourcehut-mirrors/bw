@@ -74,7 +74,7 @@ int main (int argc, char *argv[]) {
     setlocale(LC_ALL, "C");
 
     /* argv[1] must provide an integer */
-    if ( argc < 1 ) {
+    if ( argc < 2 ) {
         fprintf(stderr,"please provide a decimal integer\n");
         return EXIT_FAILURE;
     }
@@ -133,7 +133,7 @@ int main (int argc, char *argv[]) {
 
      */
 
-    cli_check = gmp_snprintf(cli_verify, len, "%Zd");
+    cli_check = gmp_snprintf(cli_verify, len, "%Zd",prime_check_input);
 
     if ( cli_check != len ) {
         fprintf(stderr,"BORK BORK BORK\n");
