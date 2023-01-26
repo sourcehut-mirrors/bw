@@ -51,7 +51,11 @@
 #include <gmp.h>
 #include <mpfr.h>
 
-#define PREC 113 /* lowest reasonable precision */
+/* lowest reasonable precision */
+#define PREC 113
+
+/* largest precision accepted on input */
+#define MAX_PREC 8192
 
 int mpfr_check_flags(int status, int debug_flag);
 size_t gmp_mpfr_ver(int *mpfr_flags);
@@ -186,9 +190,9 @@ int main (int argc, char *argv[])
             fprintf(stderr," precision ignored : %s\n", endptr);
         }
 
-        if (bit_prec>1023){
-            bit_prec = 1024;
-            printf("\nWARNING : limit precision to 1024 bits.\n");
+        if (bit_prec>MAX_PREC){
+            bit_prec = MAX_PREC;
+            printf("\nWARNING : limit to %i bits.\n", MAX_PREC);
         }
 
     } else {
@@ -196,7 +200,7 @@ int main (int argc, char *argv[])
     }
 
     delta_bit_prec = bit_prec / 2;
-    printf("\nWe shall use %i bits of precision.\n", bit_prec);
+    printf("\nWe shall use %li bits of precision.\n", bit_prec);
     mpfr_set_default_prec((mpfr_prec_t)bit_prec);
     mpfr_init2 (input_m, (mpfr_prec_t) bit_prec);
     mpfr_init2 (four_m, (mpfr_prec_t) bit_prec);
