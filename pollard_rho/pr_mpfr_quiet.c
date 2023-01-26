@@ -2,6 +2,7 @@
 /*
  * pr_mpfr_quiet.c Pollard Rho Algorithm with arbitrary precision.
  *                 Less verbose output here unless you ask for it.
+ *
  * Copyright (C) Dennis Clarke 2019
  *
  * This program is free software: you can redistribute it and/or modify
@@ -62,20 +63,32 @@ uint64_t timediff( struct timespec start_time,
 #define VERBOSE 1
 int sysinfo(int verbose);
 
+/* Note that a recusrsive algorithm may be faster here.
+ * For that matter the GMP Library provides a gcd
+ * function that is very optimal.
+ *
+ * However this is dirt simple.
+ */
 int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in)
 {
-    int inex, loop = 0;
-    mpfr_t rem_m, a, b, g; /* remainder */
+    /* we will make a copy of the input data and
+     * also we will need to check the modulo
+     * remainder in rem_m */
+    mpfr_t rem_m, a, b, g;
     mpfr_inits(rem_m, a, b, g, (mpfr_ptr) NULL);
-    inex = mpfr_set(a, *a_in, MPFR_RNDN);
-    inex = mpfr_set(b, *b_in, MPFR_RNDN);
-    inex = mpfr_set(g, *g_in, MPFR_RNDN);
+    /* now copy the input data */
+    mpfr_set(a, *a_in, MPFR_RNDN);
+    mpfr_set(b, *b_in, MPFR_RNDN);
+    mpfr_set(g, *g_in, MPFR_RNDN);
+
     while ( mpfr_zero_p(b) == 0 ) {
-        inex = mpfr_fmod(rem_m, a, b, MPFR_RNDN);
-        inex = mpfr_set(a, b, MPFR_RNDN);
-        inex = mpfr_set(b, rem_m, MPFR_RNDN);
+        mpfr_fmod(rem_m, a, b, MPFR_RNDN);
+        mpfr_set(a, b, MPFR_RNDN);
+        mpfr_set(b, rem_m, MPFR_RNDN);
     }
-    inex = mpfr_set(*g_in, a, MPFR_RNDN);
+    /* whatever is left in a is what we need */
+    mpfr_set(*g_in, a, MPFR_RNDN);
+    /* clear out those copies */
     mpfr_clears (rem_m, a, b, g, (mpfr_ptr) 0);
     return EXIT_SUCCESS;
 }
@@ -290,12 +303,18 @@ input_try:
         return EXIT_FAILURE;
     }
 
-    /*
-     * Function: int mpz_probab_prime_p (const mpz_t n, int reps)
+    /* Here we take a whirl at checking if that number is
+     * a composite or a prime. There is no promise this
+     * works. See the manual for MPFR : 
      *
-     * Determine whether n is prime. Return 2 if n is definitely
-     * prime, return 1 if n is probably prime (without being
-     * certain), or return 0 if n is definitely non-prime.
+     *     int mpz_probab_prime_p (const mpz_t n, int reps)
+     *
+     *     Determine whether n is prime.
+     *     Return :  2 if n is definitely prime
+     *               1 if n is probably prime (maybe)
+     *               0 if n is definitely non-prime.
+     *
+     * Good luck.
      */
 
     prime_check_reps = 20;
@@ -312,30 +331,27 @@ prime_check:
     printf("INFO : mpz_probab_prime_p() = %14" PRIu64 " nsec\n", t_delta);
 
     if ( prime_check_test == 2 ) {
-        /* well we are done here ! this is a prime */
+        /* well we are done here ! this is a prime number */
         fprintf(stderr,"BORK : that number is a prime!\n");
-        fprintf(stderr,"     : you lost %" PRIu64 " nsecs of life there!\n", t_delta);
+        fprintf(stderr,"     : you used %" PRIu64 " nsecs\n", t_delta);
         return EXIT_FAILURE;
     }
 
     if ( ( prime_check_test == 1 ) && ( prime_check_reps < 50 ) ) {
         prime_check_reps += 10;
-        fprintf(stderr,"INFO : we just do not know about that number.\n");
+        fprintf(stderr,"INFO : we do not know yet... try again\n");
         goto prime_check;
     }
 
     free(buf);
     buf = NULL;
 
-    fprintf(stderr,"INFO : we know for sure that input is composite.\n");
-    fprintf(stderr,"     : you lost %" PRIu64 " nsecs to verify.\n", t_delta);
+    fprintf(stderr,"INFO : we know for certain that input is composite.\n");
+    fprintf(stderr,"     : you used  %" PRIu64 " nsecs to verify.\n", t_delta);
 
-    printf("\n    : We shall find a factor of ");
+    printf("------------------------------------------------------\n");
+    printf("     : We shall find a factor of ");
     mpfr_printf("%22.Rf\n", input_m);
-
-    /* provide a width field doesn't seem to work
-     *   mpfr_printf("%*.Rf\n", width, input_m);
-     */
 
     mpfr_set_default_prec((mpfr_prec_t)bit_prec);
 
@@ -357,7 +373,6 @@ prime_check:
     mpfr_set_si(one_m, (long)1, MPFR_RNDN);
 
     actual_prec=mpfr_get_default_prec();
-    printf("------------------------------------------------------\n");
     printf("Pollard Rho shall proceed with ");
     printf("%i bits of precision.\n", (int)actual_prec);
     printf("------------------------------------------------------\n");
@@ -467,11 +482,11 @@ do_square:
     printf("DONE : used %i bits of precision.\n", (int)actual_prec);
     mpfr_printf("     : factor of %.Rf is %.Rf\n", number_m, factor_m);
 
-    /* TODO : check the result */
+    /* TODO : check the result to verify that indeed we have a 
+     *        perfect integer factor */
 
     mpfr_clears (number_m, x_m, x_fixed_m, size_m, factor_m, gcd_test_m,
                  one_m, (mpfr_ptr) 0);
-    free(buf);
 
     return EXIT_SUCCESS;
 

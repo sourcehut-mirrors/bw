@@ -7,20 +7,18 @@ see https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
 Using gmp and mpfr with dynamic variable resize as needed : 
 
-The slowest machine I have running FreeBSD : 
-
-esther$ 
-esther$ /usr/bin/time -p /usr/bin/nice -n +18 ./pr_mpfr_quiet 303807867125760417809727278648
+pluto$ 
+pluto$ /usr/bin/time -p /usr/bin/nice -n +19 ./pr_mpfr_quiet 30380786712576041780972727864881 64 32
 -------------------------------------------------------------------
                  system name = FreeBSD
-                   node name = esther
+                   node name = pluto
                      release = 13.1-RELEASE-p3
                      version = FreeBSD 13.1-RELEASE-p3 GENERIC
-                     machine = i386
+                     machine = amd64
                    page size = 4096
-               system memory = 976736256
-                             = 953844 kB
-                             = 931 MB
+               system memory = 51391873024
+                             = 50187376 kB
+                             = 49011 MB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 128
@@ -32,32 +30,25 @@ esther$ /usr/bin/time -p /usr/bin/nice -n +18 ./pr_mpfr_quiet 303807867125760417
           _POSIX_PATH_MAX    = 256
           _POSIX_TZNAME_MAX  = 6
                       endian = little endian
-       sizeof(unsigned long) = 4
+       sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
-               sizeof(void*) = 4
+               sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    1 day    9 hours   53 mins    9 secs
+           system uptime    0 day    2 hours   57 mins   27 secs
 -------------------------------------------------------------------
 GMP  library version : 6.2.1
 MPFR library: 4.2.0       
 MPFR header : 4.2.0 (based on 4.2.0)
             : compiled as thread safe using TLS
-            : sizeof(mpfr_prec_t) = 4
-MPFR thresholds file used at compile time : src/x86/mparam.h
+            : sizeof(mpfr_prec_t) = 8
+MPFR thresholds file used at compile time : src/x86_64/mparam.h
 
 INFO : gmp_mpfr_ver() returns mpfr_flags = 01
 
 INFO : will assume debug is requested.
 
-We shall use 32 bits of precision.
-INFO : chars_formatted = 33
-INFO : buf = '30380786716049848810599023116288'
-WARN : incorrect data on input.
-     : this is most likely caused by insufficient bits
-     : of precision to represent the data correctly.
-INFO : Input variable re-initialized with 64 bits of precision.
-INFO : we shall attempt to read input again.
+We shall use 64 bits of precision.
 INFO : chars_formatted = 33
 INFO : buf = '30380786712576041781441855488000'
 WARN : incorrect data on input.
@@ -75,8 +66,12 @@ INFO : we shall attempt to read input again.
 INFO : chars_formatted = 33
 INFO : buf = '30380786712576041780972727864881'
 INFO : perfect match on data input.
+INFO : prime_check_string is "30380786712576041780972727864881"
+INFO : mpz_probab_prime_p() =          22520 nsec
+INFO : we know for sure that input is composite.
+     : you lost 22520 nsecs to verify.
 
-We shall find a factor of 30380786712576041780972727864881
+    : We shall find a factor of 30380786712576041780972727864881
 ------------------------------------------------------
 Pollard Rho shall proceed with 128 bits of precision.
 ------------------------------------------------------
@@ -116,10 +111,16 @@ loop     24    count =     16777217   x = 28223535352292944010441511784693   fac
 loop     25    count =     31461941   x = 20164649214358358738060905469967   factor = 5944066965503999
 DONE : used 224 bits of precision.
      : factor of 30380786712576041780972727864881 is 5944066965503999
+real 1408.52
+user 1408.52
+sys 0.00
+
+However a very slow machine ( VIA Eden Esther c7 processor at 400MHz ) may
+need more than a day :
+
 real 97159.01
 user 95885.14
 sys 283.15
-esther$ 
 
 ---------------------------------------------------------------------
 some reasonable test case numbers : 
