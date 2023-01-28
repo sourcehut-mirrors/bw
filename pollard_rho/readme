@@ -191,3 +191,149 @@ number.
 mars$ echo ' 5111111111111119  5944066965503999 * pq' | dc 
 30380786712576041780972727864881
 
+---------- NOTE if optimized libs exist ----------
+
+styx$ CC=/usr/bin/cc
+styx$ export CC
+styx$ CFLAGS='-m64 -O3'
+styx$ export CFLAGS 
+styx$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600'
+styx$ export CPPFLAGS 
+styx$ 
+styx$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+styx$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o timediff.o ../time_and_date/timediff.c
+styx$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c
+styx$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o pr_mpfr_quiet.o pr_mpfr_quiet.c
+styx$ $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o pr_mpfr_quiet pr_mpfr_quiet.o gmp_mpfr_ver.o timediff.o sysinfo.o -lm -lgmp -lmpfr
+styx$ 
+
+
+It should be noted that a decent Intel i7 is much slower than a 
+decent Xeon from the same era : 
+
+styx$                                                                                                                                                           
+styx$ sysctl hw.model
+hw.model: Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+styx$
+styx$ /usr/bin/time -p /usr/bin/nice -n +19 ./pr_mpfr_quiet 115792089237316195423570985008687907853269984665640564039457584007913129                            639937 256 1                                                                                                                                                    
+-------------------------------------------------------------------                                                                                             
+                 system name = FreeBSD                                                                                                                          
+                   node name = styx                                                                                                                             
+                     release = 14.0-CURRENT                                                                                                                     
+                     version = FreeBSD 14.0-CURRENT #1 main-n260313-4fde40d9b540: Sat Jan 28 05:13:46 UTC 2023     root@styx:/usr/ob                            j/usr/src/amd64.amd64/sys/GENERIC                                                                                                                               
+                     machine = amd64                                                                                                                            
+                   page size = 4096                                                                                                                             
+               system memory = 16709328896                                                                                                                      
+                             = 16317704 kB                                                                                                                      
+                             = 15935 MB                                                                                                                         
+                 avail pages = unknown                                                                                                                          
+                avail memory = unknown                                                                                                                          
+         clock ticks per sec = 128                                                                                                                              
+             threads support = 200112                                                                                                                           
+               POSIX Version = 200112                                                                                                                           
+          _POSIX_CHILD_MAX   = 25                                                                                                                               
+          _POSIX_NGROUPS_MAX = 8                                                                                                                                
+          _POSIX_OPEN_MAX    = 20                                                                                                                               
+          _POSIX_PATH_MAX    = 256                                                                                                                              
+          _POSIX_TZNAME_MAX  = 6                                                                                                                                
+                      endian = little endian                                                                                                                    
+       sizeof(unsigned long) = 8                                                                                                                                
+  sizeof(unsigned long long) = 8                                                                                                                                
+                 sizeof(int) = 4                                                                                                                                
+               sizeof(void*) = 8                                                                                                                                
+           fp rounding mode is FE_TONEAREST                                                                                                                     
+           system uptime    0 day    0 hour   11 mins   42 secs                                                                                                 
+-------------------------------------------------------------------                                                                                             
+GMP  library version : 6.2.1                                                                                                                                    
+MPFR library: 4.1.1-p1                                                                                                                                          
+MPFR header : 4.2.0 (based on 4.2.0)                                                                                                                            
+            : compiled as thread safe using TLS                                                                                                                 
+            : sizeof(mpfr_prec_t) = 8                                                                                                                           
+MPFR thresholds file used at compile time : src/x86_64/mparam.h                                                                                                 
+                                                                                                                                                                
+INFO : gmp_mpfr_ver() returns mpfr_flags = 01                                                                                                                   
+                                                                                                                                                                
+INFO : will assume debug is requested.                                                                                                                          
+                                                                                                                                                                
+We shall use 256 bits of precision.                                                                                                                             
+INFO : chars_formatted = 86                                                                                                                                     
+INFO : buf = '115792089237316195423570985008687907853269984665640564039457584007913129639936'                                                                   
+WARN : incorrect data on input.                                                                                                                                 
+     : this is most likely caused by insufficient bits                                                                                                          
+     : of precision to represent the data correctly.                                                                                                            
+INFO : Input variable re-initialized with 384 bits of precision.                                                                                                
+INFO : we shall attempt to read input again.                                                                                                                    
+INFO : chars_formatted = 86                                                                                                                                     
+INFO : buf = '115792089237316195423570985008687907853269984665640564039457584007913129639937'                                                                   
+INFO : perfect match on data input.                                                                                                                             
+INFO : prime_check_string is "115792089237316195423570985008687907853269984665640564039457584007913129639937"                                                   
+INFO : mpz_probab_prime_p() =         158009 nsec                                                                                                               
+INFO : we know for certain that input is composite.                                                                                                             
+     : you used  158009 nsecs to verify.                                                                                                                        
+------------------------------------------------------                                                                                                          
+     : We shall find a factor of 115792089237316195423570985008687907853269984665640564039457584007913129639937.000000                                          
+Pollard Rho shall proceed with 384 bits of precision.                                                                                                           
+------------------------------------------------------                                                                                                          
+loop      1    count =            3   x =                  26.000000   factor = 1.000000                                                                        
+loop      2    count =            5   x = 44127887745906175987802.000000   factor = 1.000000                                                                    
+WARN : mpfr_inexflag_flag is set.                                                                                                                               
+WARN : mpfr_mul() raised a flag                                                                                                                                 
+loop      3    All variables are re-initialized with 512 bits of precision.                                                                                     
+loop      3    count =            9   x = 37528029320563145318125764069449894367780122691185286599275206329589461906406.000000   fac                            tor = 1.000000                                                                                                                                                  
+loop      4    count =           17   x = 31536098040124079392726384860997665682624559670713323770852557009763985513269.000000   fac                            tor = 1.000000                                                                                                                                                  
+loop      5    count =           33   x = 101781224077448587010321076904326055853688434737794212307073924863651306901171.000000   fa                            ctor = 1.000000                                                                                                                                                 
+loop      6    count =           65   x = 19535504584212471558516237317931715737210721913563868868302748378109852809370.000000   fac                            tor = 1.000000                                                                                                                                                  
+INFO : prime_check_string is "115792089237316195423570985008687907853269984665640564039457584007913129639937"
+INFO : mpz_probab_prime_p() =         158009 nsec
+INFO : we know for certain that input is composite.
+     : you used  158009 nsecs to verify.
+------------------------------------------------------
+     : We shall find a factor of 115792089237316195423570985008687907853269984665640564039457584007913129639937.000000
+Pollard Rho shall proceed with 384 bits of precision.
+------------------------------------------------------
+loop      1    count =            3   x =                  26.000000   factor = 1.000000
+loop      2    count =            5   x = 44127887745906175987802.000000   factor = 1.000000
+WARN : mpfr_inexflag_flag is set.
+WARN : mpfr_mul() raised a flag
+loop      3    All variables are re-initialized with 512 bits of precision.
+loop      3    count =            9   x = 37528029320563145318125764069449894367780122691185286599275206329589461906406.000000   factor = 1.000000
+loop      4    count =           17   x = 31536098040124079392726384860997665682624559670713323770852557009763985513269.000000   factor = 1.000000
+loop      5    count =           33   x = 101781224077448587010321076904326055853688434737794212307073924863651306901171.000000   factor = 1.000000
+loop      6    count =           65   x = 19535504584212471558516237317931715737210721913563868868302748378109852809370.000000   factor = 1.000000
+loop      7    count =          129   x = 29658425761885146011127791280618461287798875470471572352310876336712487860905.000000   factor = 1.000000
+loop      8    count =          257   x = 30187176826945436535357705693561976681225495341414173259228056551946428175766.000000   factor = 1.000000
+loop      9    count =          513   x = 32840572557298846531804590991045465903946138452837043479583439945573555615440.000000   factor = 1.000000
+loop     10    count =         1025   x = 56109920745726513814576147880952879283646068379622770938709855868106724646457.000000   factor = 1.000000
+loop     11    count =         2049   x = 7478249072517372789125115522527766110597521076100678436613877059191655742396.000000   factor = 1.000000
+loop     12    count =         4097   x = 40095525686442894297335809187239970545506254645046373675795391624453648742644.000000   factor = 1.000000
+loop     13    count =         8193   x = 111359191417609624287522639983836719785594767307858209957846835838452065572425.000000   factor = 1.000000
+loop     14    count =        16385   x = 109800597914356820227888174792217455425055493391577794941886590615663443255054.000000   factor = 1.000000
+loop     15    count =        32769   x = 96414658810345146372561987692517769890214451579420879002092098853812765493869.000000   factor = 1.000000
+loop     16    count =        65537   x = 73702437796377589363075600062837306092382958111145785719023054607568503562385.000000   factor = 1.000000
+loop     17    count =       131073   x = 9422715892770192556959165916105155944914011996654652929596109782947489963631.000000   factor = 1.000000
+loop     18    count =       262145   x = 97979435536756989655850082527754963029812322444266676215051178025212311841835.000000   factor = 1.000000
+loop     19    count =       524289   x = 112711134657426891057534956938859645199813401264969681794580604884166334121705.000000   factor = 1.000000
+loop     20    count =      1048577   x = 92951640163484195131798783186046757440264598761075411523972078926926650280687.000000   factor = 1.000000
+loop     21    count =      2097153   x = 87571506315620551897688071333389160733536619216746593863194605647552655394812.000000   factor = 1.000000
+loop     22    count =      4194305   x = 58889529646241049459359024512056318140499538756996116170685385153979818843165.000000   factor = 1.000000
+loop     23    count =      8388609   x = 108427065557124350379992873337422864982692394677381519882218933341441801981639.000000   factor = 1.000000
+loop     24    count =      7408325   x = 94604917468964190987848928898606392533836481003656797666946538615067645225233.000000   factor = 1238926361552897.000000
+DONE : used 512 bits of precision.
+     : factor of 115792089237316195423570985008687907853269984665640564039457584007913129639937.000000 is 1238926361552897.000000
+real 3866.90
+user 3866.85
+sys 0.01
+
+Whereas a decent Xeon from five years ago does the same task in 1375.18 secs.
+
+
+pluto$ 
+pluto$ uname -apKU
+FreeBSD pluto 13.1-RELEASE-p3 FreeBSD 13.1-RELEASE-p3 GENERIC amd64 amd64 1301000 1301000
+pluto$ sysctl hw.model 
+hw.model: Intel(R) Xeon(R) CPU E5-1650 v3 @ 3.50GHz
+pluto$ 
+
+However the clock speed is quite different.
+
+
