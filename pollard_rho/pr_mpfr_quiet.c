@@ -97,6 +97,19 @@ int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in)
     return EXIT_SUCCESS;
 }
 
+/* For the Pollard Rho factorization algorithm please
+ * see page 976 of the "CLRS" Algorithms textbook.
+ *
+ * Feel free to test with a prime pair that Jenny gave us :
+ *
+ *     75261003596099 = 8675309 * 8675311
+ * Should factor neatly in about 16 secs or so :
+ *
+ *     count = 382124  x = 24317867926243  factor = 8675309
+ *     A factor of 75261003596099 is 8675309
+ *     
+ */
+
 int main (int argc, char *argv[])
 {
     struct timespec t0, t1;

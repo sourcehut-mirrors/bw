@@ -41,14 +41,12 @@
 /* For the Pollard Rho factorization algorithm please
  * see page 976 of the "CLRS" Algorithms textbook.
  *
- * Feel free to test with a prime pair that Jenny gave us :
+ * within the boundary of 64bit integers we should 
+ * be able to factor : 
  *
- *     75261003596099 = 8675309 * 8675311
- * Should factor neatly in about 16 secs or so :
+ * 4294967071 = 65521 x 65551
+ * 4294967099 = 44483 x 96553
  *
- *     count = 382124  x = 24317867926243  factor = 8675309
- *     A factor of 75261003596099 is 8675309
- *     
  */
 
 uint64_t gcd(uint64_t a, uint64_t b) 
