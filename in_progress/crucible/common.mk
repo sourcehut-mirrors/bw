@@ -1,6 +1,5 @@
 
-CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=600
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 SRCS = ./crucible.c ./offset.c ../../sysinfo/sysinfo.c \
 	  ../../time_and_date/timediff.c
@@ -8,7 +7,7 @@ SRCS = ./crucible.c ./offset.c ../../sysinfo/sysinfo.c \
 OBJS = ./crucible.o ./offset.o ../../sysinfo/sysinfo.o \
 	   ../../time_and_date/timediff.o
 
-LIBS = -lrt
+LIBS? = -lrt
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)

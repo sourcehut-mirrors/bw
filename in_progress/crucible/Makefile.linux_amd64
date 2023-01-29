@@ -1,0 +1,13 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+
+LIBS = -lm -lrt
+
+include common.mk
