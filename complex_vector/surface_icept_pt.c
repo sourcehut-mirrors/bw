@@ -34,21 +34,24 @@ int surface_icept_pt( vec_type *pt,
                       vec_type *ray_direction)
 {
     vec_type tmp;
+    double k_root;
     int return_value = MATH_OP_FAIL; 
+
+    /* If we actually do get an intercept then we need to determine
+     * the closest forward looking point which is our actual point
+     * of intercept H.
+     *
+     * We can call that the hit_point just to be consistent with
+     * the diagrams thus far where we use H and hit_point to mean
+     * the actual intercept. */
+    vec_type hit_point;
+
     printf("DBUG : in sip surface_icept_pt()\n");
 
     /* given that we only care about a real root that is forward
      * looking from the observation plane then we need a double
      * value for the root k */
-    double k_root = 0.0;
-
-    /* If we actually do get an intercept then we need to determine
-     * the closest forward looking point which is our actual point
-     * of intercept H.
-     * We can call that the hit_point just to be consistent with
-     * the diagrams thus far where we use H and hit_point to mean
-     * the actual intercept. */
-    vec_type hit_point;
+    k_root = 0.0;
 
     /* if the two real roots are equal then we really only have a single
      * real solution. Note that we only really care about real roots at

@@ -20,14 +20,14 @@
 int cplex_vec_normalize( vec_type *res, vec_type *op1 )
 {
 
+    double magnitude;
+    vec_type tmp;
+
     if ( cplex_vec_check(op1) == MATH_OP_FAIL ) {
 
         return MATH_OP_FAIL;
 
     }
-
-    double magnitude;
-    vec_type tmp;
 
     cplex_vec_copy( &tmp, op1);
     magnitude = cplex_vec_mag( &tmp );

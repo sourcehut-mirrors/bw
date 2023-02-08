@@ -22,6 +22,8 @@
 int cplex_vec_dot( cplex_type *res, vec_type *op1, vec_type *op2 )
 {
 
+    cplex_type tmp[3];
+
     if ( (cplex_vec_check(op1) == MATH_OP_FAIL)
          ||
          (cplex_vec_check(op2) == MATH_OP_FAIL) ) {
@@ -29,8 +31,6 @@ int cplex_vec_dot( cplex_type *res, vec_type *op1, vec_type *op2 )
         return MATH_OP_FAIL;
 
     }
-
-    cplex_type tmp[3];
 
     if ( cplex_mult( &tmp[0], &op1->x, &op2->x ) == MATH_OP_FAIL) {
         return MATH_OP_FAIL;
@@ -58,11 +58,11 @@ int cplex_vec_dot( cplex_type *res, vec_type *op1, vec_type *op2 )
      */
 
     /* NOTE : we can not use the RT_EPSILON check here */
-    if ( ( op1->x.i == 0 ) && ( op2->x.i == 0 )
+    if ( ( op1->x.i == 0.0 ) && ( op2->x.i == 0.0 )
             &&
-         ( op1->y.i == 0 ) && ( op2->y.i == 0 )
+         ( op1->y.i == 0.0 ) && ( op2->y.i == 0.0 )
             &&
-         ( op1->z.i == 0 ) && ( op2->z.i == 0 ) ) {
+         ( op1->z.i == 0.0 ) && ( op2->z.i == 0.0 ) ) {
 
         /* we have pure real space vector inputs
          * and this we check the result for a pure real space */

@@ -19,12 +19,14 @@
 int cplex_sqrt( cplex_type res[2], cplex_type *op1 )
 {
 
+    double theta, sqrt_mag;
+
     if ( cplex_check(op1) == MATH_OP_FAIL ) {
         return MATH_OP_FAIL;
     }
 
-    double theta = cplex_theta( op1 );
-    double sqrt_mag = sqrt(cplex_mag( op1 ));
+    theta = cplex_theta( op1 );
+    sqrt_mag = sqrt(cplex_mag( op1 ));
 
     /* Jefferson Carpenter says in cartesian coordinates,
      *
@@ -44,7 +46,7 @@ int cplex_sqrt( cplex_type res[2], cplex_type *op1 )
      *          ||
      *          ( fabs(theta - PI_L ) < RT_EPSILON ) ) 
      *
-     * So we got rid of that thanks to our good man Traviss.
+     * So we got rid of that problem.
      */
 
     /* Thanks to Euler we go around the circle pi radians

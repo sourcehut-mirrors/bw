@@ -19,12 +19,14 @@
 int cplex_cbrt( cplex_type res[3], cplex_type *op1 )
 {
 
+    double theta, cbrt_mag;
+
     if ( cplex_check(op1) == MATH_OP_FAIL ) {
         return MATH_OP_FAIL;
     }
 
-    double theta = cplex_theta( op1 );
-    double cbrt_mag = cbrt(cplex_mag( op1 ));
+    theta = cplex_theta( op1 );
+    cbrt_mag = cbrt(cplex_mag( op1 ));
 
     /* Please see comment from Jefferson Carpenter
      * regarding roots in the square root source.

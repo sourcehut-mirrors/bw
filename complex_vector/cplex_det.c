@@ -23,6 +23,8 @@ int cplex_det( cplex_type *res,
                vec_type *r3 )
 {
 
+    cplex_type cross[12], tmp[5];
+
     if ( ( cplex_vec_check(r1) == MATH_OP_FAIL )
          ||
          ( cplex_vec_check(r2) == MATH_OP_FAIL )
@@ -33,7 +35,6 @@ int cplex_det( cplex_type *res,
 
     }
 
-    cplex_type cross[12], tmp[5];
     memset( &cross, 0x00, (size_t)(12)*sizeof(cplex_type));
     memset( &tmp, 0x00, (size_t)(5)*sizeof(cplex_type));
 

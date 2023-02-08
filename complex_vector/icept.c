@@ -39,14 +39,13 @@ int icept( cplex_type res[2],
     int soln_count;
     vec_type tmp[9];
     cplex_type c_tmp[18];
+    cplex_type quad_res[2];
+
+    /* we shall need the complex cooefficients of a quadratic */
+    cplex_type A, B, C;
 
     memset( &tmp, 0x00, (size_t)(9)*sizeof(vec_type));
     memset( &c_tmp, 0x00, (size_t)(18)*sizeof(cplex_type));
-
-    cplex_type quad_res[2];
-
-    /* we shall form the complex cooefficients of a quadratic */
-    cplex_type A, B, C;
 
     /* create a tmp vector of the semi_major_axi data to be used
      * in dot product calcs wherein we will have

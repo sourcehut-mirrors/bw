@@ -60,19 +60,6 @@ int line_plane_icept( vec_type *icept_pt,
                       vec_type *plu, vec_type *plv)
 {
     int line_in_plane = 0;
-
-    /* we assume failure until proven otherwise */
-    int return_value = MATH_OP_FAIL;
-
-    cplex_type ctmp[12];
-    vec_type i_hat, j_hat, lpr_norm, pn_norm,
-             pl0_lp0_dir, pl0_lp0_dirn, tmp[15];
-
-
-    /* deal with uninitialized memory on the stack */
-    memset( &ctmp, 0x00, (size_t)(12)*sizeof(cplex_type));
-    memset( &tmp,  0x00, (size_t)(15)*sizeof(vec_type));
-
     double lpr_pn_theta, u_mag, v_mag;
 
     /* vars we may need for a line plane minimal distance
@@ -82,6 +69,17 @@ int line_plane_icept( vec_type *icept_pt,
     /* rh_col is right hand column for Cramer call with
      * res_vec as the result if it exists */
     vec_type v[4], rh_col, res_vec;
+
+    /* we assume failure until proven otherwise */
+    int return_value = MATH_OP_FAIL;
+
+    cplex_type ctmp[12];
+    vec_type i_hat, j_hat, lpr_norm, pn_norm,
+             pl0_lp0_dir, pl0_lp0_dirn, tmp[15];
+
+    /* deal with uninitialized memory on the stack */
+    memset( &ctmp, 0x00, (size_t)(12)*sizeof(cplex_type));
+    memset( &tmp,  0x00, (size_t)(15)*sizeof(vec_type));
 
     /* It seems reasonable to check if the input data is
      * sane. At the very least we must ask if the data even

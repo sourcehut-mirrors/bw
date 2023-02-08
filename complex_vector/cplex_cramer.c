@@ -23,6 +23,13 @@ int cplex_cramer( vec_type *res,
                   vec_type *d )
 {
 
+    vec_type tmp_r1, tmp_r2, tmp_r3;
+
+    /* we will need a determinate of our left hand matrix in
+     * the denominator of further calculations. */
+    cplex_type denom_det, x_numerator, y_numerator, z_numerator;
+
+
     if ( ( cplex_vec_check(r1) == MATH_OP_FAIL )
          ||
          ( cplex_vec_check(r2) == MATH_OP_FAIL )
@@ -34,12 +41,6 @@ int cplex_cramer( vec_type *res,
         return MATH_OP_FAIL;
 
     }
-
-    vec_type tmp_r1, tmp_r2, tmp_r3;
-
-    /* we will need a determinate of our left hand matrix in
-     * the denominator of further calculations. */
-    cplex_type denom_det, x_numerator, y_numerator, z_numerator;
 
     if ( cplex_det( &denom_det, r1, r2, r3 ) == MATH_OP_FAIL ) {
         return MATH_OP_FAIL;
