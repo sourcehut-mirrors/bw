@@ -1,0 +1,17 @@
+
+CC=/opt/bw/gcc12/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 \
+	-fno-fast-math -fno-builtin -malign-double \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-mno-fancy-math-387 -m128bit-long-double \
+	-mlong-double-80 -mstackrealign \
+	-mpreferred-stack-boundary=8 -mno-mmx \
+	-Wl,-rpath=/usr/X11R7/lib,-enable-new-dtags
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-I/usr/X11R7/include -L/usr/X11R7/lib
+
+LIBS= -lX11 -lm
+
+include common.mk
