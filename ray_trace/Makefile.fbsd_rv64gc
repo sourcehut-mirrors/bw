@@ -1,6 +1,6 @@
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
 	-march=rv64imafdc -mabi=lp64d \
 	-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
 	-Wno-missing-prototypes -Wno-padded -fno-fast-math -fno-builtin
 
-include fbsd_common.mk
+include common.mk
