@@ -1,15 +1,15 @@
 CC?=		/usr/bin/cc
 CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
-LIBS?=		-lX11
+LIBS?=		-lX11 -lm
 
 LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include
 
-OBJS=		../../xwin/x_error_handler.o \
-		../../xwin/create_gc.o \
-		../../xwin/create_borderless_topwin.o \
-		../../sysinfo/sysinfo.o
+OBJS=		../../../xwin/x_error_handler.o \
+		../../../xwin/create_gc.o \
+		../../../xwin/create_borderless_topwin.o \
+		../../../sysinfo/sysinfo.o
 
 .PHONY: all
 all: cursor

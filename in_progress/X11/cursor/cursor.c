@@ -887,24 +887,30 @@ draw_a_circle (XColor hack_me_baby,
     int radius_count = 0;
     float intensity;
 
+    int degree_count = 360;
+
     /* for the heck of it 64 pixel radius */
     for (radius_count = 0; radius_count < 64; radius_count++) {
-        for (p = 0; p < 720; p++) {
+
+        for (p = 0; p < degree_count; p++) {
 
             /* quick hack convert from tens of degrees to
              * radians should be (p)( ( 2 x pi )/360 ) */
 
-            angle = 2.0 * M_PI * p / 720.0;
+            angle = 2.0 * M_PI * (double)p / 360.0;
             some_x = radius_count * cos (angle);
             some_y = radius_count * sin (angle);
 
             /* this is total beer hack */
-            intensity = fabs(sin(2.0 * M_PI * p / 12.0f));
+            intensity = fabs(sin(angle));
 
             hack_me_baby.pixel =
-                (unsigned long)((((unsigned long) (p / 2) & 0xff) << 16)*intensity) +
-                (((unsigned long) radius_count) << 8) +
-                (((unsigned long) (255.0 * ((float) p / 720.0))) & 0xff);
+
+                (unsigned long)( ((int)(255.0 * (double)p/(double)degree_count)) << 16 )
+                +
+                (((unsigned long) radius_count) << 8)
+                +
+                ((unsigned long) (255.0 * ((double) p / degree_count)));
 
             XSetForeground (dsp, gc0, hack_me_baby.pixel);
 

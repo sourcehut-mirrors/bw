@@ -531,12 +531,12 @@ int main(int argc, char*argv[])
 
     /* draw the vertical lines */
     for ( j= offset_x + vbox_w; j<lx; j+=vbox_w ){
-        XDrawLine(dsp, win, gc, j, 13, j, height-13);
+        XDrawLine(dsp, win, gc, j, 13, j, (int)( height - 13 ));
     }
 
     /* draw the horizontal lines */
     for ( j = offset_y + vbox_h; j<ly; j+=vbox_h ){
-        XDrawLine(dsp, win, gc, 13, j, width-13, j);
+        XDrawLine(dsp, win, gc, 13, j, (int)( width - 13 ), j);
     }
 
     /* gc3 green text as default */
@@ -544,10 +544,10 @@ int main(int argc, char*argv[])
 
     /* royal blue border around the main viewport */
     XSetForeground(dsp, gc, royal_blue.pixel);
-    XDrawLine(dsp, win, gc, 10, 10, width - 10, 10);
-    XDrawLine(dsp, win, gc, width - 10, 10, width - 10, height - 10);
-    XDrawLine(dsp, win, gc, width - 10, height - 10, 10, height - 10);
-    XDrawLine(dsp, win, gc, 10, height - 10, 10, 10);
+    XDrawLine(dsp, win, gc, 10, 10, (int)( width - 10 ), 10);
+    XDrawLine(dsp, win, gc, (int)( width - 10 ), 10, (int)( width - 10 ), (int)( height - 10 ));
+    XDrawLine(dsp, win, gc, (int)( width - 10), (int)( height - 10 ), 10, (int)( height - 10 ));
+    XDrawLine(dsp, win, gc, 10, (int)( height - 10 ), 10, 10);
 
     XFlush(dsp);
 
