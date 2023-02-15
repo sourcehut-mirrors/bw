@@ -1,6 +1,23 @@
 
-/* mess around with the libquadmath to see IEEE-754 2008 type
- * math done with 128bit data type elements. */
+/*
+ * fp128_q.c  mess around with the libquadmath to see IEEE-754 2008
+ *            floating point stuff sort of work in an emulated way
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0.txt
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,12 +61,16 @@ int main(int argc, char *argv[]){
 #endif
 
 
+    /* NOTE : floating point can NOT precisely represent the
+     *        test values being used here. Such is life in
+     *        the real world of floating point. Good luck.
+     */
     fp0 = 36.584Q;
 
     printf ( "the sizeof(fp0) is %i\n", sizeof(fp0) );
 
     num_chars = quadmath_snprintf(buffer,
-                                  buffer_size, "%40.36Qg", fp0 );
+                                  buffer_size, "%40.36Qg", fp0);
 
     if ( num_chars > 0 ) {
 
@@ -63,13 +84,12 @@ int main(int argc, char *argv[]){
 
     }
 
-    printf ( "the value of fp0 is %s\n", buffer );
+    printf ("the value of fp0 is %s\n", buffer);
 
     fp1 =  7.812;
 
-    printf ( "the sizeof(fp1) is %i\n", sizeof(fp1) );
     num_chars = quadmath_snprintf(buffer,
-                                  buffer_size, "%40.36Qg", fp1 );
+                                  buffer_size, "%40.36Qg", fp1);
 
     if ( num_chars > 0 ) {
 
@@ -83,18 +103,17 @@ int main(int argc, char *argv[]){
 
     }
 
-    printf ( "the value of fp1 is %s\n", buffer );
+    printf ("the value of fp1 is %s\n", buffer);
 
     fp2 = fp0 + fp1;
 
-    printf ( "the sizeof(fp2) is %i bytes\n", sizeof(fp2) );
     num_chars = quadmath_snprintf(buffer,
-                                  buffer_size, "%40.36Qg", fp2 );
+                                  buffer_size, "%40.36Qg", fp2);
 
     if ( num_chars > 0 ) {
 
-        printf ("INFO : quadmath_snprintf formatted %i chars.\n",
-                 num_chars);
+        printf("INFO : quadmath_snprintf formatted %i chars.\n",
+                num_chars);
 
     } else {
 
@@ -103,26 +122,26 @@ int main(int argc, char *argv[]){
 
     }
 
-    printf ( "fp2 = fp0 + fp1 = %s\n", buffer );
+    printf("fp2 = fp0 + fp1 = %s\n", buffer);
 
+    /* more than reasonable value for pi which is a few more
+     * decimal digits past the stuff in math.h */
     pi = 3.1415926535897932384626433832795028841971693993751Q;
 
-    printf ("the sizeof(pi) is %lu bytes\n", sizeof(pi) );
-
     num_chars = quadmath_snprintf(buffer,
-                                  buffer_size, "%42.36Qe", pi );
+                                  buffer_size, "%46.40Qe", pi );
 
     if ( num_chars > 0 ) {
         printf ("INFO : quadmath_snprintf formatted %i chars.\n",
                  num_chars);
     } else {
-        fprintf(stderr,"FAIL : wtf quadmath_snprintf failed.\n");
+        fprintf(stderr,"FAIL : wat? quadmath_snprintf failed.\n");
         return EXIT_FAILURE;
     }
 
-    printf ( "IEEE754-2008 128-bit pi = %s\n", buffer );
-    printf ( "Whereas the real thing is 3.141592653589793238462643");
-    printf ( "3832795028841971693993751\n");
+    printf("libquadmath says pi = %s\n", buffer);
+    printf("the real thing is  ~= ");
+    printf("3.1415926535897932384626433832795028841971693993...\n");
 
     free(buffer);
     return EXIT_SUCCESS;  /* or 42 if you prefer */
