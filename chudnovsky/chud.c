@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     int candidate_int, iteration_limit, inex = 0;
     int debug = 1;
     size_t mpfr_precision_size = 0;
-    mpfr_prec_t prec = 64;
+    mpfr_prec_t actual_prec, effective_prec, prec = 64;
     int mpfr_flags = 0;
 
     sysinfo(VERBOSE);
@@ -97,7 +97,16 @@ int main(int argc, char *argv[])
         printf("INFO : bit precision will be %i\n", candidate_int);
         prec = candidate_int;
     }
-    printf("INFO : using %li bits of precision.\n\n", (long)prec );
+    printf("INFO : request is %li bits of precision.\n\n", (long)prec );
+    /* set the default mpfr precision */
+    mpfr_set_default_prec(prec);
+    /* verify that the default precision is as requested */
+    actual_prec = mpfr_get_default_prec();
+    printf("INFO : the actual_prec is %lu\n", (long)actual_prec );
+    if ( (long)prec != (long)actual_prec ) {
+        fprintf(stderr,"FAIL : the precision request failed\n");
+        return EXIT_FAILURE;
+    }
 
     /* note that we can get a lot of goodness from the Chudnovsky
      * algorithm in only 4 iterations */
@@ -122,7 +131,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    mpfr_set_default_prec(prec);
     mpfr_inits2( prec, pi_mpfr, ell_k_mpfr, x_k_mpfr, bigk_mpfr,
                        pre_k_mpfr, big5_mpfr, big_neg2_mpfr,
                        twelve_mpfr, sixteen_mpfr, one_mpfr,
@@ -161,14 +169,16 @@ int main(int argc, char *argv[])
         } else {
             fprintf(stderr,"FAIL : sqrt\n");
             fprintf(stderr,"     : inter1_mpfr = ");
-            mpfr_printf ("%.Re\n", inter1_mpfr);
+            mpfr_printf ("%Re\n", inter1_mpfr);
             return EXIT_FAILURE;
         }
     }
     printf("INFO : sqrt(10005) = ");
-    mpfr_printf ("%.Re\n", inter1_mpfr);
-
-
+    mpfr_printf ("%Re\n", inter1_mpfr);
+    /*
+    effective_prec = mpfr_get_prec (inter1_mpfr);
+    mpfr_printf ("variable inter1_mpfr with %Pu bits\n\n", effective_prec);
+    */
 
     mpfr_clear_flags();
     inex = mpfr_mul(constant_mpfr, inter0_mpfr, inter1_mpfr,
@@ -186,12 +196,12 @@ int main(int argc, char *argv[])
         } else {
             fprintf(stderr,"FAIL : mul\n");
             fprintf(stderr,"     : constant_mpfr = ");
-            mpfr_printf ("%.Re\n", constant_mpfr);
+            mpfr_printf ("%Re\n", constant_mpfr);
             return EXIT_FAILURE;
         }
     }
     printf("INFO : constant C = ");
-    mpfr_printf ("%.Re\n", constant_mpfr);
+    mpfr_printf ("%Re\n", constant_mpfr);
 
 
 
@@ -208,7 +218,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("INFO : L_0 = ");
-    mpfr_printf ("%.Re\n", ell_k_mpfr);
+    mpfr_printf ("%Re\n", ell_k_mpfr);
 
     inex = mpfr_set_d( x_k_mpfr, 1.0, MPFR_RNDN);
     if ( inex != 0 ){
@@ -216,7 +226,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("INFO : X_0 = ");
-    mpfr_printf ("%.Re\n", x_k_mpfr);
+    mpfr_printf ("%Re\n", x_k_mpfr);
 
     inex = mpfr_set_d( bigk_mpfr, 6.0, MPFR_RNDN);
     if ( inex != 0 ){
@@ -224,7 +234,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("INFO : K_0 = ");
-    mpfr_printf ("%.Re\n", bigk_mpfr);
+    mpfr_printf ("%Re\n", bigk_mpfr);
 
     inex = mpfr_set_d( big_m_mpfr, 1.0, MPFR_RNDN);
     if ( inex != 0 ){
@@ -232,7 +242,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("INFO : M_0 = ");
-    mpfr_printf ("%.Re\n", big_m_mpfr);
+    mpfr_printf ("%Re\n", big_m_mpfr);
 
     inex = mpfr_set_d( big5_mpfr, 545140134.0, MPFR_RNDN);
     if ( inex != 0 ){
@@ -240,7 +250,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("INFO : big5_mpfr = ");
-    mpfr_printf ("%.Re\n", big5_mpfr);
+    mpfr_printf ("%Re\n", big5_mpfr);
 
     inex = mpfr_set_d( big_neg2_mpfr, -262537412640768000.0,
                            MPFR_RNDN);
@@ -249,7 +259,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("INFO : big_neg2_mpfr = ");
-    mpfr_printf ("%.Re\n", big_neg2_mpfr);
+    mpfr_printf ("%Re\n", big_neg2_mpfr);
 
     inex = mpfr_set_d( twelve_mpfr, 12.0,
                            MPFR_RNDN);
@@ -278,7 +288,7 @@ int main(int argc, char *argv[])
 
     inex = mpfr_init_set (sigma_mpfr, ell_k_mpfr, MPFR_RNDN);
     printf("INFO : sigma_0 = ");
-    mpfr_printf ("%.Re\n", sigma_mpfr);
+    mpfr_printf ("%Re\n", sigma_mpfr);
 
 
 
@@ -297,12 +307,12 @@ int main(int argc, char *argv[])
         } else {
             fprintf(stderr,"FAIL : trivial division\n");
             fprintf(stderr,"     : pi_mpfr = ");
-            mpfr_printf ("%.Re\n", pi_mpfr);
+            mpfr_printf ("%Re\n", pi_mpfr);
             return EXIT_FAILURE;
         }
     }
     printf("INFO : pi_0 = ");
-    mpfr_printf ("%.Re\n", pi_mpfr);
+    mpfr_printf ("%Re\n", pi_mpfr);
 
     /* do ten iterations */
     for ( k = 1; k < iteration_limit; k++ ) {
@@ -313,7 +323,7 @@ int main(int argc, char *argv[])
 
         mpfr_clear_flags();
         printf("INFO : L_%-2i = ", k-1);
-        mpfr_printf ("%.Re\n", ell_k_mpfr);
+        mpfr_printf ("%Re\n", ell_k_mpfr);
         inex = mpfr_add(ell_k_mpfr, ell_k_mpfr, big5_mpfr,
                                MPFR_RNDN);
         if ( inex != 0 ){
@@ -322,13 +332,13 @@ int main(int argc, char *argv[])
         }
         printf("     : done L_%-2i = L_%-2i + 545140134\n", k, k-1);
         printf("     : L_%-2i = ", k);
-        mpfr_printf ("%.Re\n\n", ell_k_mpfr);
+        mpfr_printf ("%Re\n\n", ell_k_mpfr);
 
 
 
         mpfr_clear_flags();
         printf("INFO : X_%-2i = ", k-1);
-        mpfr_printf ("%.Re\n", x_k_mpfr);
+        mpfr_printf ("%Re\n", x_k_mpfr);
         inex = mpfr_mul(x_k_mpfr, x_k_mpfr, big_neg2_mpfr,
                                MPFR_RNDN);
         if ( inex != 0 ){
@@ -344,20 +354,20 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : Xk * -262537412640768000\n");
                 fprintf(stderr,"     : x_k_mpfr = ");
-                mpfr_printf ("%.Re\n", x_k_mpfr);
+                mpfr_printf ("%Re\n", x_k_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("     : X_%-2i = X_%-2i * (-262537412640768000)\n",
                                         k, k-1 );
         printf("     : X_%-2i = ", k);
-        mpfr_printf ("%.Re\n\n", x_k_mpfr);
+        mpfr_printf ("%Re\n\n", x_k_mpfr);
 
 
 
         mpfr_clear_flags();
         printf("INFO : K_%-2i = ", k-1);
-        mpfr_printf ("%.Re\n", bigk_mpfr);
+        mpfr_printf ("%Re\n", bigk_mpfr);
         /* we will need this previous iteration val of K soon */
         inex = mpfr_set (pre_k_mpfr, bigk_mpfr, MPFR_RNDN);
         if ( inex != 0 ){
@@ -372,7 +382,7 @@ int main(int argc, char *argv[])
         }
         printf("     : K_%-2i = K_%-2i + 12\n", k, k-1 );
         printf("     : K_%-2i = ", k);
-        mpfr_printf ("%.Re\n\n", bigk_mpfr);
+        mpfr_printf ("%Re\n\n", bigk_mpfr);
 
         /* we need a previously saved copy of K here */
         inex = mpfr_pow_ui(inter0_mpfr, pre_k_mpfr,
@@ -383,7 +393,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
         printf("     : ( K_%-2i )^3 = inter0_mpfr = ", k-1);
-        mpfr_printf ("%.Re\n\n", inter0_mpfr);
+        mpfr_printf ("%Re\n\n", inter0_mpfr);
 
 
 
@@ -395,7 +405,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
         printf("INFO : 16 * K_%-2i = inter1_mpfr = ", k-1);
-        mpfr_printf ("%.Re\n", inter1_mpfr);
+        mpfr_printf ("%Re\n", inter1_mpfr);
 
 
 
@@ -408,7 +418,7 @@ int main(int argc, char *argv[])
         }
         printf("INFO : ( K_%-2i )^3 - 16 * K_%-2i = inter0_mpfr = ",
                                                           k-1, k-1);
-        mpfr_printf ("%.Re\n", inter0_mpfr);
+        mpfr_printf ("%Re\n", inter0_mpfr);
 
 
 
@@ -438,7 +448,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
         printf("INFO : ( (k-1) + 1 )^3 = ");
-        mpfr_printf ("%.Re\n", inter1_mpfr);
+        mpfr_printf ("%Re\n", inter1_mpfr);
 
 
 
@@ -458,15 +468,15 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : intermediate division\n");
                 fprintf(stderr,"     : inter0_mpfr = ");
-                mpfr_printf ("%.Re\n", inter0_mpfr);
+                mpfr_printf ("%Re\n", inter0_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : inter0_mpfr = ");
-        mpfr_printf ("%.Re\n\n", inter0_mpfr);
+        mpfr_printf ("%Re\n\n", inter0_mpfr);
 
         printf("INFO : M_%-2i = ", k-1);
-        mpfr_printf ("%.Re\n", big_m_mpfr);
+        mpfr_printf ("%Re\n", big_m_mpfr);
 
 
         mpfr_clear_flags();
@@ -485,12 +495,12 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : multiply failed\n");
                 fprintf(stderr,"     : big_m_mpfr = ");
-                mpfr_printf ("%.Re\n", big_m_mpfr);
+                mpfr_printf ("%Re\n", big_m_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : M_%-2i = ", k);
-        mpfr_printf ("%.Re\n\n", big_m_mpfr);
+        mpfr_printf ("%Re\n\n", big_m_mpfr);
 
 
 
@@ -510,18 +520,18 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : multiply failed\n");
                 fprintf(stderr,"     : inter0_mpfr = ");
-                mpfr_printf ("%.Re\n", inter0_mpfr);
+                mpfr_printf ("%Re\n", inter0_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : M_k * L_k = ");
-        mpfr_printf ("%.Re\n\n", inter0_mpfr);
+        mpfr_printf ("%Re\n\n", inter0_mpfr);
 
 
 
         mpfr_clear_flags();
         printf("INFO : X_%-2i = ", k);
-        mpfr_printf ("%.Re\n", x_k_mpfr);
+        mpfr_printf ("%Re\n", x_k_mpfr);
         inex = mpfr_div(inter1_mpfr, inter0_mpfr, x_k_mpfr,
                                MPFR_RNDN);
         if ( inex != 0 ){
@@ -537,12 +547,12 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : division failed\n");
                 fprintf(stderr,"     : inter1_mpfr = ");
-                mpfr_printf ("%.Re\n", inter1_mpfr);
+                mpfr_printf ("%Re\n", inter1_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : ( M_k * L_k ) / X_k = ");
-        mpfr_printf ("%.Re\n\n", inter1_mpfr);
+        mpfr_printf ("%Re\n\n", inter1_mpfr);
 
 
         /* accumulate a sigma value term */
@@ -562,12 +572,12 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : sigma addition failed\n");
                 fprintf(stderr,"     : sigma_mpfr = ");
-                mpfr_printf ("%.Re\n", sigma_mpfr);
+                mpfr_printf ("%Re\n", sigma_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : Sigma_%-2i = ", k);
-        mpfr_printf ("%.Re\n", sigma_mpfr);
+        mpfr_printf ("%Re\n", sigma_mpfr);
 
 
 
@@ -587,12 +597,12 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : division failed\n");
                 fprintf(stderr,"     : inter2_mpfr = ");
-                mpfr_printf ("%.Re\n", inter2_mpfr);
+                mpfr_printf ("%Re\n", inter2_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : 1 / sigma = ");
-        mpfr_printf ("%.Re\n\n", inter2_mpfr);
+        mpfr_printf ("%Re\n\n", inter2_mpfr);
 
 
 
@@ -612,12 +622,12 @@ int main(int argc, char *argv[])
             } else {
                 fprintf(stderr,"FAIL : multiply failed\n");
                 fprintf(stderr,"     : inter2_mpfr = ");
-                mpfr_printf ("%.Re\n", inter2_mpfr);
+                mpfr_printf ("%Re\n", inter2_mpfr);
                 return EXIT_FAILURE;
             }
         }
         printf("INFO : C * ( 1 / sigma ) = ");
-        mpfr_printf ("%.Re\n\n", inter2_mpfr);
+        mpfr_printf ("%Re\n\n", inter2_mpfr);
 
     }
 
