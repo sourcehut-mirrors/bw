@@ -49,7 +49,8 @@
 #define VERBOSE 1
 
 int sysinfo(int verbose);
-int mpfr_check_flags( int mpfr_status, int debug_flag );
+int mpfr_check_flags(int mpfr_status, int debug_flag );
+size_t gmp_mpfr_ver(int *mpfr_flags);
 
 int main(int argc, char *argv[])
 {
@@ -57,55 +58,30 @@ int main(int argc, char *argv[])
     int k = 0;
     int candidate_int, iteration_limit, inex = 0;
     int debug = 1;
+    size_t mpfr_precision_size = 0;
+    mpfr_prec_t prec = 64;
+    int mpfr_flags = 0;
 
     sysinfo(VERBOSE);
 
     setlocale(LC_ALL, "C");
-    mpfr_prec_t prec = 256;
 
-    printf("GMP  library version : %d.%d.%d\n",
-            __GNU_MP_VERSION,
-            __GNU_MP_VERSION_MINOR,
-            __GNU_MP_VERSION_PATCHLEVEL );
-
-    printf("MPFR library: %-12s\n", mpfr_get_version ());
-    printf("MPFR header : %s (based on %d.%d.%d)\n",
-            MPFR_VERSION_STRING,
-            MPFR_VERSION_MAJOR,
-            MPFR_VERSION_MINOR,
-            MPFR_VERSION_PATCHLEVEL);
+    mpfr_precision_size = gmp_mpfr_ver(&mpfr_flags);
+    printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n\n", mpfr_flags);
 
     mpfr_t pi_mpfr, ell_k_mpfr, x_k_mpfr, bigk_mpfr, pre_k_mpfr,
            big5_mpfr, big_neg2_mpfr, twelve_mpfr, sixteen_mpfr,
            one_mpfr, big_m_mpfr, constant_mpfr, sigma_mpfr,
            inter0_mpfr, inter1_mpfr, inter2_mpfr;
 
-    if (mpfr_buildopt_tls_p()!=0)
-        printf("            : compiled as thread safe using TLS\n");
-
-    if (mpfr_buildopt_float128_p()!=0) 
-        printf("            : __float128 support enabled\n");
-
-    if (mpfr_buildopt_decimal_p()!=0)
-        printf("            : decimal float support enabled\n");
-
-    if (mpfr_buildopt_gmpinternals_p()!=0)
-        printf("            : compiled with GMP internals\n");
-
-    if (mpfr_buildopt_sharedcache_p()!=0)
-        printf("            : threads share cache per MPFR const\n");
-
-    printf("MPFR thresholds file used at compile time : %s\n",
-                                      mpfr_buildopt_tune_case ());
-
     if ( argc < 2 ) {
         fprintf(stderr,"USAGE : %s precision num_of_loops\n", argv[0]);
-        fprintf(stderr,"      : precision is the computation bitwidth\n");
+        fprintf(stderr,"      : precision is the bitwidth\n");
         fprintf(stderr,"      : num_of_loops is optional.\n");
         return 42;  /* this is the ultimate answer you need */
     }
 
-    /* note that we have prec = 256 initialized above */
+    /* note that we have prec = 64 initialized above */
     errno = 0;
     candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
