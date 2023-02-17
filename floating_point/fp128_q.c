@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
 
     printf ("the value of fp0 is %s\n", buffer);
 
-    fp1 =  7.812;
+    fp1 =  7.812Q;
 
     num_chars = quadmath_snprintf(buffer,
                                   buffer_size, "%40.36Qg", fp1);
