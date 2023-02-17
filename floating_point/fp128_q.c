@@ -19,6 +19,20 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
+/* NOTE : do not even bother to try this on FreeBSD x86 or amd64 
+ *        unless you have gcc installed with the libquadmath lib
+ *
+ *        For any decent machine with gcc and libquadmath you
+ *        need to compile thus : 
+ *
+ * gcc -g -O0 -Wl,-rpath=/PATH_TO_libquadmath.so,-enable-new-dtags \
+ *                 -o fp128_q fp128_q.c -lquadmath
+ *
+ * On FreeBSD systems this is likely /usr/local/lib/gcc12/libquadmath.so
+ * or similar.
+ *
+ * You can choose to make it debuggable or not. Whatever. Good luck.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -35,29 +49,33 @@ int main(int argc, char *argv[]){
     char *buffer = calloc(buffer_size,sizeof(unsigned char));
     int num_chars;
 
+#if defined(__ISO_C_VISIBLE)
+    printf("INFO : __ISO_C_VISIBLE id defined\n");
+#endif
+
 #ifdef FLT_EVAL_METHOD
-    printf ( "INFO : FLT_EVAL_METHOD == %d\n", FLT_EVAL_METHOD);
+    printf("INFO : FLT_EVAL_METHOD == %d\n", FLT_EVAL_METHOD);
 #endif
 
 #ifdef DECIMAL_DIG
-    printf ( "INFO : DECIMAL_DIG == %d\n", DECIMAL_DIG);
+    printf("INFO : DECIMAL_DIG == %d\n", DECIMAL_DIG);
 #endif
 
 /* LDBL_DIG, FLT_DECIMAL_DIG, DBL_DECIMAL_DIG, LDBL_DECIMAL_DIG */
 #ifdef FLT_DECIMAL_DIG
-    printf ( "INFO : FLT_DECIMAL_DIG == %d\n", FLT_DECIMAL_DIG);
+    printf("INFO : FLT_DECIMAL_DIG == %d\n", FLT_DECIMAL_DIG);
 #endif
 
 #ifdef DBL_DECIMAL_DIG
-    printf ( "INFO : DBL_DECIMAL_DIG == %d\n", DBL_DECIMAL_DIG);
+    printf("INFO : DBL_DECIMAL_DIG == %d\n", DBL_DECIMAL_DIG);
 #endif
 
 #ifdef LDBL_DECIMAL_DIG
-    printf ( "INFO : LDBL_DECIMAL_DIG == %d\n", LDBL_DECIMAL_DIG);
+    printf("INFO : LDBL_DECIMAL_DIG == %d\n", LDBL_DECIMAL_DIG);
 #endif
 
 #ifdef LDBL_DIG
-    printf ( "INFO : LDBL_DIG == %d\n", LDBL_DIG);
+    printf("INFO : LDBL_DIG == %d\n", LDBL_DIG);
 #endif
 
 
@@ -67,14 +85,14 @@ int main(int argc, char *argv[]){
      */
     fp0 = 36.584Q;
 
-    printf ( "the sizeof(fp0) is %i\n", sizeof(fp0) );
+    printf("     : the sizeof(fp0) is %i\n", sizeof(fp0) );
 
     num_chars = quadmath_snprintf(buffer,
                                   buffer_size, "%40.36Qg", fp0);
 
     if ( num_chars > 0 ) {
 
-        printf ("INFO : quadmath_snprintf formatted %i chars.\n",
+        printf("     : quadmath_snprintf formatted %i chars.\n",
                  num_chars);
 
     } else {
@@ -84,7 +102,7 @@ int main(int argc, char *argv[]){
 
     }
 
-    printf ("the value of fp0 is %s\n", buffer);
+    printf("     : the value of fp0 is %s\n", buffer);
 
     fp1 =  7.812Q;
 
@@ -93,7 +111,7 @@ int main(int argc, char *argv[]){
 
     if ( num_chars > 0 ) {
 
-        printf ("INFO : quadmath_snprintf formatted %i chars.\n",
+        printf ("     : quadmath_snprintf formatted %i chars.\n",
                  num_chars);
 
     } else {
@@ -103,7 +121,7 @@ int main(int argc, char *argv[]){
 
     }
 
-    printf ("the value of fp1 is %s\n", buffer);
+    printf ("     : the value of fp1 is %s\n", buffer);
 
     fp2 = fp0 + fp1;
 
@@ -122,7 +140,7 @@ int main(int argc, char *argv[]){
 
     }
 
-    printf("fp2 = fp0 + fp1 = %s\n", buffer);
+    printf("     : fp2 = fp0 + fp1 = %s\n", buffer);
 
     /* more than reasonable value for pi which is a few more
      * decimal digits past the stuff in math.h */
@@ -139,7 +157,7 @@ int main(int argc, char *argv[]){
         return EXIT_FAILURE;
     }
 
-    printf("libquadmath says pi = %s\n", buffer);
+    printf("\nlibquadmath says pi = %s\n", buffer);
     printf("the real thing is  ~= ");
     printf("3.1415926535897932384626433832795028841971693993...\n");
 
