@@ -1,8 +1,8 @@
-
 /*
- * fib.c  Really nasty fibonacci computation
+ * fibonacci.c    Really nasty fibonacci computation.
+ *
  *        This results in not much other than magic smoke churning
- *        inside a computer.
+ *        inside a computer. Good luck.
  *
  * Copyright (C) Dennis Clarke 2019
  *
@@ -43,7 +43,7 @@
 #include <string.h>
 #include <time.h>
 
-static uint64_t fib(volatile uint8_t n) 
+static uint64_t fib(volatile uint8_t n)
 {
     /* This is pure ugly horrific and beautiful in its
      * terrible performance where even a very fast computer
@@ -95,14 +95,23 @@ int main(int argc, char **argv)
             fib_limit = (uint8_t)num+1;
         }
     }
-    
+
+    time_buffer[0] = '\0';
     for (f=0; f<fib_limit; f++) {
         clock_gettime(CLOCK_REALTIME, &tn);
-        len = (size_t)snprintf(time_buffer, 21, "%10lu.%-9lu", tn.tv_sec, tn.tv_nsec );
+
+        snprintf(time_buffer, 21, "%10lu.%-9lu",
+                                   tn.tv_sec, tn.tv_nsec);
+
+        len = strlen(time_buffer);
         if (len<20) {
             strncat(time_buffer,"000000000",20 - len);
         }
-        printf("%3i : %12" PRIu64 "    t = %s    %2i\n",f,fib(f),time_buffer, len);
+
+        printf("%3i : %12" PRIu64 "    t = %s    %2i\n",
+                             f,fib(f),time_buffer, len);
+
+        time_buffer[0] = '\0';
     }
 
     return EXIT_SUCCESS;
