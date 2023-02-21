@@ -1,3 +1,4 @@
+
 /*
  * fibonacci.c    Really nasty fibonacci computation.
  *
@@ -43,6 +44,8 @@
 #include <string.h>
 #include <time.h>
 
+#define BILLION 1000000000
+
 static uint64_t fib(volatile uint8_t n)
 {
     /* This is pure ugly horrific and beautiful in its
@@ -69,15 +72,34 @@ int main(int argc, char **argv)
 {
 
     uint8_t f, fib_limit = 57;
-    int num;
+    uint64_t ts, tn, t0, t1;
+    int num, len;
     char time_buffer[32];
-    struct timespec tn;
+    struct timespec tnow;
 
     /* check if we can get the time */
-    if ( clock_gettime(CLOCK_REALTIME, &tn)!= 0 ) {
+    if ( clock_gettime(CLOCK_REALTIME, &tnow)!= 0 ) {
         fprintf(stderr,"FAIL : clock_gettime()\n");
         return EXIT_FAILURE;
     }
+    ts = (uint64_t)tnow.tv_sec;
+    tn = (uint64_t)tnow.tv_nsec;
+    t0 = ts * BILLION + tn;
+
+    /* just for giggles fetch the clock again and
+     * see that there is baseline noise in any 
+     * measurement we make with no computation */
+    if ( clock_gettime(CLOCK_REALTIME, &tnow)!= 0 ) {
+        fprintf(stderr,"FAIL : clock_gettime()\n");
+        return EXIT_FAILURE;
+    }
+    ts = (uint64_t)tnow.tv_sec;
+    tn = (uint64_t)tnow.tv_nsec;
+    t1 = ts * BILLION + tn;
+    printf("Baseline noise in timings %" PRIu64 " nsec\n",
+                             t1 - t0);
+
+    t0 = t1;
 
     if (argc>1) {
         errno = 0;
@@ -97,20 +119,19 @@ int main(int argc, char **argv)
 
     time_buffer[0] = '\0';
     for (f=0; f<fib_limit; f++) {
-        clock_gettime(CLOCK_REALTIME, &tn);
+        clock_gettime(CLOCK_REALTIME, &tnow);
+        ts = (uint64_t)tnow.tv_sec;
+        tn = (uint64_t)tnow.tv_nsec;
+        t1 = ts * BILLION + tn;
 
-        snprintf(time_buffer, 21, "%10lu.%-9lu",
-                                   tn.tv_sec, tn.tv_nsec);
+        snprintf(time_buffer, 21, "%10li.%09li",
+                                   tnow.tv_sec, tnow.tv_nsec);
 
-        /*
-        len = strlen(time_buffer);
-        if (len<20) {
-            strncat(time_buffer,"000000000",20 - len);
-        }
-        */
+        printf("%3i : %12" PRIu64 "    t = %s    dt=%" PRIu64 "\n",
+                             f, fib(f), time_buffer,
+                             t1 - t0);
 
-        printf("%3i : %12" PRIu64 "    t = %s\n",
-                             f, fib(f), time_buffer);
+        t0 = t1;
 
         time_buffer[0] = '\0';
     }
