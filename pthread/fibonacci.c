@@ -35,19 +35,26 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-uint64_t fib(volatile uint8_t n) 
+static uint64_t fib(volatile uint8_t n) 
 {
     /* This is pure ugly horrific and beautiful in its
      * terrible performance where even a very fast computer
      * will be in deep trouble with any n > 50.
+     *
+     * The 64bit limit is F93 and you can check that
+     * for yourself.
+     *
      * The nested calls to fib() result in a massive use
      * of stack frames to unwind.
+     *
      * Good luck and you have been warned. */
     if ( n == 0 ) {
         return 0;
@@ -61,8 +68,9 @@ uint64_t fib(volatile uint8_t n)
 int main(int argc, char **argv)
 {
 
-    int j, k;
-    uint8_t f;
+    size_t len;
+    uint8_t f, fib_limit = 57;
+    int num;
     char time_buffer[32];
     struct timespec tn;
 
@@ -71,11 +79,30 @@ int main(int argc, char **argv)
         fprintf(stderr,"FAIL : clock_gettime()\n");
         return EXIT_FAILURE;
     }
+
+    if (argc>1) {
+        errno = 0;
+        num = (int)strtol(argv[1], (char **)NULL, 10);
+        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
+            fprintf(stderr,"FAIL : integer not understood\n");
+            perror("     ");
+            return EXIT_FAILURE;
+        }
+        if (( num < 1 )||( num > 93 )){
+            fprintf(stderr,"WARN : input is unreasonable\n");
+            fprintf(stderr,"     : we shall assume 56 and proceed.\n");
+        } else {
+            fib_limit = (uint8_t)num+1;
+        }
+    }
     
-    for (f=0; f<54; f++) {
+    for (f=0; f<fib_limit; f++) {
         clock_gettime(CLOCK_REALTIME, &tn);
-        snprintf(time_buffer, 21, "%10lu.%-9lu", tn.tv_sec, tn.tv_nsec );
-        printf("%3i : %12" PRIu64 "    t = %s\n",f,fib(f),time_buffer);
+        len = (size_t)snprintf(time_buffer, 21, "%10lu.%-9lu", tn.tv_sec, tn.tv_nsec );
+        if (len<20) {
+            strncat(time_buffer,"000000000",20 - len);
+        }
+        printf("%3i : %12" PRIu64 "    t = %s    %2i\n",f,fib(f),time_buffer, len);
     }
 
     return EXIT_SUCCESS;
