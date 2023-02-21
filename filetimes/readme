@@ -1,67 +1,86 @@
-    *********************************************************
-
-                    W  A  R  N  I  N  G
-
-    *********************************************************
-
-    Only provide simple text files as the argument to
-    this filetimes code. 
-
-    A binary will likely result in a seg fault or worse.
 
 
+On a Solaris system :
+
+pollux $ 
+pollux $ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+pollux $ $CC $CFLAGS $CPPFLAGS -c -o file_stat_err.o ../stat_test/file_stat_err.c
+pollux $ $CC $CFLAGS $CPPFLAGS -c -o filetimes.o filetimes.c
+pollux $ $CC $CFLAGS $CPPFLAGS -o filetimes filetimes.o ../sysinfo/sysinfo.o file_stat_err.o -lrt -lm
+pollux $ 
 
 
-Also, from a long time ago we saw that the 32-bit arm platform was
-really screwed up. For unknown reasons. Some day we may look there
-again. However here is what we saw : 
+-------------- output looks like -----------------
 
-arm$ ./fg wtf.dat 
+pollux $ touch -t 197001010000.01 readme
+pollux $ ls -lE readme
+-rw-r--r--   1 dclarke  devl         371 1970-01-01 00:00:01.000000000 +0000 readme
+pollux $ 
+pollux $ ./filetimes readme
 -------------------------------------------------------------------
-                 system name = Linux
-                   node name = tinkerboard
-                     release = 4.4.132+
-                     version = #8 SMP Thu Aug 13 08:51:08 UTC 2020
-                     machine = armv7l
-                   page size = 4096
-               system memory = 2106646528
-                             = 2057272 kB
-                             = 2009 MB
-                 avail pages = 9178262494593998848
-                avail memory = 1846431744
+                 system name = SunOS
+                   node name = pollux
+                     release = 5.10
+                     version = Generic_150400-44
+                     machine = sun4u
+                   page size = 8192
+               system memory = 1073741824
+                             = 1048576 kB
+                             = 1024 MB
+                             = 1 GB
+                 avail pages = unknown
+                avail memory = unknown
          clock ticks per sec = 100
-             threads support = 9178263008957169665
-               POSIX Version = 9178263180755861505
-                      endian = little endian
-       sizeof(unsigned long) = 4
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big endian
+       sizeof(unsigned long) = 8
   sizeof(unsigned long long) = 8
                  sizeof(int) = 4
-               sizeof(void*) = 4
+               sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
+           system uptime    2 days   14 hours    6 mins    7 secs
 -------------------------------------------------------------------
 
-INFO : current time is Wed Mar 31 12:26:07 2021
-     : three UNIX times of the file are :
-     : ctime(&buffer.st_atime) = Tue Sep 28 12:34:56 1971
-     :              .st_mtime) = Tue Sep 28 12:34:56 1971
-     :              .st_ctime) = Wed Mar 31 12:23:26 2021
-This will be ugly
-fwrite_ret =    1  and ftell_pos = 18    
-no really ... it will be ugly
-fwrite_ret =    1  and ftell_pos = 48    
-told ya so
-fwrite_ret =    1  and ftell_pos = 59    
-fwrite_ret =    1  and ftell_pos = 62     EOF
+INFO : current time is Tue Feb 21 00:21:05 2023
+     : three UNIX times of the pathname are :
+     : ctime(&buffer.st_atime) = Thu Jan  1 00:00:01 1970
+     :              .st_mtime) = Thu Jan  1 00:00:01 1970
+     :              .st_ctime) = Tue Feb 21 00:20:50 2023
 
-INFO : ftell_pos = 62    
+----------------------- file output -------------------
+line_no   bytes   line_buffer
+-------------------------------------------------------
+1         1       ""
+2         1       ""
+3         22      "On a Solaris system :"
+4         1       ""
+5         10      "pollux $ "
+6         79      "pollux $ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c"
+7         82      "pollux $ $CC $CFLAGS $CPPFLAGS -c -o file_stat_err.o ../stat_test/file_stat_err.c"
+8         61      "pollux $ $CC $CFLAGS $CPPFLAGS -c -o filetimes.o filetimes.c"
+9         102     "pollux $ $CC $CFLAGS $CPPFLAGS -o filetimes filetimes.o ../sysinfo/sysinfo.o file_stat_err.o -lrt -lm"
+10        10      "pollux $ "
+11        1       ""
+12        1       ""
+
+-------------------------------------------------------
+
+
+INFO : ftell_pos = 371   
 INFO : we did hit EOF
-INFO : file wtf.dat is now closed
+INFO : file readme is now closed
 
 
 INFO : three UNIX times are now :
-     : ctime(&buffer.st_atime) = Tue Sep 28 12:34:56 1971
-     :              .st_mtime) = Tue Sep 28 12:34:56 1971
-     :              .st_ctime) = Wed Mar 31 12:23:26 2021
-EOFarm$ 
+     : ctime(&buffer.st_atime) = Tue Feb 21 00:21:05 2023
+     :              .st_mtime) = Thu Jan  1 00:00:01 1970
+     :              .st_ctime) = Tue Feb 21 00:20:50 2023
+pollux $ 
 
 
