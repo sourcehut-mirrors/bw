@@ -68,7 +68,6 @@ static uint64_t fib(volatile uint8_t n)
 int main(int argc, char **argv)
 {
 
-    size_t len;
     uint8_t f, fib_limit = 57;
     int num;
     char time_buffer[32];
@@ -103,13 +102,15 @@ int main(int argc, char **argv)
         snprintf(time_buffer, 21, "%10lu.%-9lu",
                                    tn.tv_sec, tn.tv_nsec);
 
+        /*
         len = strlen(time_buffer);
         if (len<20) {
             strncat(time_buffer,"000000000",20 - len);
         }
+        */
 
-        printf("%3i : %12" PRIu64 "    t = %s    %2i\n",
-                             f,fib(f),time_buffer, len);
+        printf("%3i : %12" PRIu64 "    t = %s\n",
+                             f, fib(f), time_buffer);
 
         time_buffer[0] = '\0';
     }
