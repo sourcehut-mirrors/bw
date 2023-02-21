@@ -35,10 +35,11 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
+#include <time.h>
 
 uint64_t fib(volatile uint8_t n) 
 {
