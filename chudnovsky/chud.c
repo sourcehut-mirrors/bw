@@ -631,6 +631,8 @@ int main(int argc, char *argv[])
 
     }
 
+    printf("A good result would be   = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348...\n\n");
+
     mpfr_clears (  pi_mpfr, ell_k_mpfr, x_k_mpfr, bigk_mpfr,
                    pre_k_mpfr, big5_mpfr, big_neg2_mpfr,
                    twelve_mpfr, sixteen_mpfr, one_mpfr, 

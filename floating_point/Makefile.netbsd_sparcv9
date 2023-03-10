@@ -1,0 +1,34 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-builtin -fno-fast-math -mhard-float \
+	-mno-app-regs -mflat -mhard-quad-float \
+	-mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
+	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany \
+	-mmemory-model=tso \
+	-fPIC -Wl,-rpath=/usr/pkg/lib \
+	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+IDIR=/usr/pkg/include -I/usr/X11R7/include
+LDIR=/usr/pkg/lib -L/usr/X11R7/lib
+LIBS= -lm
+
+OBJS= fp64_wrong.o ../sysinfo/sysinfo.o
+
+.PHONY: all
+all: fp64_wrong
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+
+fp64_wrong: fp64_wrong.o $(OBJS)
+	$(CC) -o fp64_wrong fp64_wrong.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR),-enable-new-dtags $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) fp64_wrong.o fp64_wrong
+
