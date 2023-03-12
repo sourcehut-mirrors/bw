@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
     uint8_t f, fib_limit = 57;
     uint64_t ts, tn, t0, t1;
-    int num, len;
+    int num;
     char time_buffer[32];
     struct timespec tnow;
 
