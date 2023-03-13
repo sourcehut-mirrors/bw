@@ -1,6 +1,5 @@
 
-/*
- * cat_qsort.c  read a SHA512 hash catalog file and then sort
+/* cat_qsort.c  read a SHA512 hash catalog file and then sort
  * Copyright (C) Dennis Clarke 2021
  *
  * This program is free software: you can redistribute it and/or modify
@@ -76,11 +75,6 @@ void swap_data(struct node_element **this, struct node_element **that) {
     char *tmp_filename = (*this)->filename;
     (*this)->filename = (*that)->filename;
     (*that)->filename = tmp_filename;
-    /*
-    strncpy(tmp,(*this)->filename,_POSIX_PATH_MAX+128+3);
-    strncpy((*this)->filename,(*that)->filename,_POSIX_PATH_MAX+128+3);
-    strncpy((*that)->filename,tmp,_POSIX_PATH_MAX+128+3);
-    */
 }
 
 /* suppose that the last element is the pivot.
@@ -150,18 +144,40 @@ void printout(struct node_element *head)
 void push(struct node_element **head_of_list, char *line_data) {
     size_t j;
     struct node_element *new_node = (struct node_element *)calloc(1, sizeof(struct node_element ));
-    /* TODO would be nice to check if the calloc worked */
+    if ( new_node == NULL ) {
+        /* really? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        exit(EXIT_FAILURE);
+    }
 
-    for ( j = 0; (line_data[j]!=' '); ++j) {
+    for (j = 0; (line_data[j]!=' '); ++j) {
         new_node->sha512[j] = line_data[j];
     }
     new_node->sha512[j] = '\0';
     fprintf(stdout,"%3zu  %s ", j, new_node->sha512);
 
-    while ( line_data[j] == ' ' ) j++;
+    while (line_data[j] == ' ') j++;
 
     /* we need enough room for the filename minus the sha512 hash string */
     new_node->filename=calloc(strlen(line_data) - j, sizeof(unsigned char));
+    if ( new_node->filename == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        exit(EXIT_FAILURE);
+    }
 
     /* lets try to avoid the copy of the trailing 0x0ah NL char */
     strncpy(new_node->filename, line_data+j, strlen(line_data)-j-1);
@@ -177,7 +193,7 @@ void push(struct node_element **head_of_list, char *line_data) {
     if (*head_of_list != NULL) {
         (*head_of_list)->prev = new_node;
     } else {
-        /* should only ever happen once */
+        /* this should only ever happen once */
         fprintf (stderr,"INFO  : head_of_list is NULL\n");
         fprintf (stderr,"      : we are building a new linked list\n");
     }
@@ -193,7 +209,7 @@ int main(int argc, char **argv) {
     int status;
     size_t q, p;
 
-    setlocale ( LC_ALL, "POSIX" );
+    setlocale (LC_ALL, "POSIX");
     sysinfo(VERBOSE);
 
     if ( argc < 2 ) {
@@ -203,8 +219,7 @@ usage:
     }
 
     q = strlen(argv[1]);
-    /*
-     * if q > 240 or so then we have a major problem. The path is
+    /* if q > 240 or so then we have a major problem. The path is
      * too long. Or check for _POSIX_PATH_MAX for example.
      */
     if ( q > _POSIX_PATH_MAX ) {
@@ -213,9 +228,20 @@ usage:
     }
 
     char *cat_fid = calloc(q+1,sizeof(unsigned char));
-    /* TODO : check the damn return val of calloc eh? */
-    /* hey ya know we could have just done strncpy here */
-    for ( p = 0; (argv[1][p]!='\0'); ++p) {
+    if ( cat_fid == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        exit(EXIT_FAILURE);
+    }
+
+    /* we could have just done strncpy here */
+    for ( p=0; (argv[1][p]!='\0'); ++p) {
         cat_fid[p] = argv[1][p];
     }
 
@@ -238,7 +264,7 @@ dir_name:
     }
 
     /* now we check the st_mode for a few things */
-    /* yes this conditional is verbose as hell on purpose */
+    /* yes this conditional is verbose on purpose */
     /* also any sequence of octal digits after a leading 0 is valid */
     printf("INFO  : status_buffer.st_mode = %o octal\n",status_buffer.st_mode);
     if ( (status_buffer.st_mode & 040000) == 040000) {
@@ -274,13 +300,7 @@ dir_name:
          * error messages etc */
         perror(cat_fid);
     }
-    printf("\n-----------------------------------\n");
-
-
-    /*
     printf("\n----- Before QSort ----------------\n");
-    printout(foo);
-    */
 
     qs(foo);
 
