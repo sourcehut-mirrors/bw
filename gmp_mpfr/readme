@@ -1,7 +1,5 @@
 
 
-beware ... beware ....   PULL THE STRING !!!
-
 74164006262753080152478714190193747405994078109751902390582131614441\
 5759504705008092818711693940737
 
@@ -15,28 +13,23 @@ beware ... beware ....   PULL THE STRING !!!
 46063738635599565773930892108210210778168305399196915314944498011438\
 291393118209
 
-
-
 ---------------------------------------------------------
 
 Trivial bit of code that will print out the current
 gmp and mpfr library versions. 
 
-Also for fun we print out pi  and e with whatever
+Also for fun we print out pi and e with whatever
 precision we can get up to a billion digits or so.
 
 Even the slowest machine that we can find will 
 easily compute pi and e to a million digits in less
 than an hour : 
 
-C_esther$ 
 C_esther$ /usr/bin/time -p /usr/bin/nice -n +15 ./mpfr_ver 3322000 2>&1 | tail -4 
 
 real 2393.49
 user 2363.55
 sys 3.75
-C_esther$ 
-
 
 --- count the distribution of digits using awk and sed ---
 C_pi$ 
@@ -62,3 +55,20 @@ time for mpfr_cont_pi() was 1800590010 nsecs
 C_pi$ 
 
 
+--------- on a Gentoo SPARC64 server ------------
+
+$ CC='/usr/bin/nice -n +19 /usr/bin/gcc'
+$ export CC
+
+$ CFLAGS='-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors -fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat -msoft-quad-float -mno-unaligned-doubles -mno-faster-structs -mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany -mmemory-model=tso'
+$ export CFLAGS 
+
+$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600'
+$ export CPPFLAGS 
+ 
+$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c 
+$ $CC $CFLAGS $CPPFLAGS -I/usr/include -c -o mpfr_pi_e.o mpfr_pi_e.c
+$ $CC $CFLAGS $CPPFLAGS -c -o timediff.o ../time_and_date/timediff.c 
+
+$ $CC $CFLAGS $CPPFLAGS -L/usr/lib64 -o mpfr_pi_e mpfr_pi_e.o sysinfo.o timediff.o -lm -lgmp -lmpfr 
+ 
