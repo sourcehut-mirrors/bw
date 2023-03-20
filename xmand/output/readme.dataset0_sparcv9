@@ -1,0 +1,135 @@
+sphinx$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = sphinx
+                     release = 5.15.88-gentoo-sparc64
+                     version = #1 Sun Mar 12 18:36:19 GMT 2023
+                     machine = sparc64
+                   page size = 8192
+               system memory = 1054212096
+                             = 1029504 kB
+                             = 1005 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big endian
+       sizeof(unsigned long) = 8
+  sizeof(unsigned long long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    1 hour   33 mins    4 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =            434 nsec
+INFO : magnify accepted as long long int
+
+    mand_bail = 256
+pthread_limit = 2
+    translate = ( -1.22589111328125000000000000e+00 , -1.77673339843750000000000000e-01 )
+      magnify = +1.28000000000000000000000000e+02
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +3.05175781250000000000000000e-05
+pixel_imag_h = +3.05175781250000000000000000e-05
+raw  [ 523  , 523  ]
+DBUG : sample space [ 512   , 513    ]
+     : vbox  [ 008 , 008 ]
+     : win_r = +9.76562500000000000000000000e-04
+     : win_j = +2.92968750000000000000000000e-03
+     : after translation
+     : r_trn   = -1.22589111328125000000000000e+00
+     : j_trn   = -1.77673339843750000000000000e-01
+     : x_prime = -1.22587585449218750000000000e+00
+     : y_prime = -1.77627563476562500000000000e-01
+     : bailout = 256               
+     : magnify = 1.280000000000e+02
+[mand] =   172308615712 nsec   1.723086e+02 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.24150085449218750000000000e+00
+     : j[ 0][ 0][ 0][ 0] = -1.93283081054687500000000000e-01
+     :       mand_height =        13
+     : r[ 7][ 7][63][63] = -1.22590637207031250000000000e+00
+     : j[ 7][ 7][63][63] = -1.77688598632812500000000000e-01
+     :       mand_height =       104
+     : r[ 8][ 8][ 0][ 0] = -1.22587585449218750000000000e+00
+     : j[ 8][ 8][ 0][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        69
+     : r[ 8][ 8][ 1][ 0] = -1.22584533691406250000000000e+00
+     : j[ 8][ 8][ 1][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        65
+     : r[ 8][ 8][32][32] = -1.22489929199218750000000000e+00
+     : j[ 8][ 8][32][32] = -1.76681518554687500000000000e-01
+     :       mand_height =       256
+     : r[ 3][12][44][21] = -1.23429870605468750000000000e+00
+     : j[ 3][12][44][21] = -1.69204711914062500000000000e-01
+     :       mand_height =        45
+     : r[15][15][63][63] = -1.21028137207031250000000000e+00
+     : j[15][15][63][63] = -1.62063598632812500000000000e-01
+     :       mand_height =       256
+--------------------------- full plot done -----------------------------
+click at 522 521 
+raw  [ 1389 , 891  ]
+INFO : dumper_flag = 1
+click at 1388 889 
+raw  [ 1389 , 891  ]
+INFO : file /var/tmp/dclarke/20230320225530 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =      256
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.28000000000000000000000000e+02
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.22589111328125000000000000e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = -1.77673339843750000000000000e-01
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20230320225530 closed.
+INFO : dumper_flag = 0
+click at 1388 889 
+raw  [ 763  , 847  ]
+right click
+click at 762 845 
+raw  [ 763  , 847  ]
+right click
+
+
+
+sphinx$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230320225530
+000000 00 00 10 00 00 01 00 00 00 00 00 00 00 00 60 40
+000010 00 00 00 00 40 9d f3 bf 00 00 00 00 00 be c6 bf
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 00 00 00 00 30 dd f3 bf 00 00 00 00 80 bd c8 bf
+000040 0d 00 00 00 00 00 00 00 10 dd f3 bf 00 00 00 00
+000050 80 bd c8 bf 0d 00 00 00 00 00 00 00 f0 dc f3 bf
+000060
+sphinx$ 
+sphinx$ openssl dgst -sha256 -r /var/tmp/dclarke/20230320225530
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230320225530
+sphinx$ 
+
