@@ -4,11 +4,15 @@
     it is under a GPL license unless otherwise stated in the
     source code.
 
-    I sometimes stream live on YouTube :
+    I sometimes stream live on rtmp://live.genunix.com/blastwave
 
-        https://www.youtube.com/user/lastmiles/videos
+    Systems support costs and coffee may be tossed into PayPal :
 
-    Revision : 25 Dec 2021
+
+                    https://paypal.me/genunix
+
+
+    Revision : 21 Mar 2023
 
 #NOTICE :
 
@@ -19,8 +23,6 @@
           there will be a big damn WARNING file in the code
           directory. Cats are entirely indifferent to this
           sort of stuff and will simply watch from a distance.
-
-          beer money, coffee https://paypal.me/genunix?locale.x=en_US
 
           Also the code is usually really portable C and should
           just work on pretty much any decent machine and sane
@@ -46,6 +48,8 @@
 
                Gustedt, Jens (2019). Modern C (2nd ed.). Manning.
 
+
+
         Almost everything I write can compile with a decent C99 compiler
         and that includes being pedantic. There are some exceptions and
         generally because I was firehosed with water and tazered into a
@@ -64,6 +68,9 @@
                                      don’t mix them up.
 
                Gustedt, Jens (2019). Modern C (2nd ed.). Manning.
+
+
+
 
         Now then, taking into account all of the above you may think
         that anything in this repo will be perfectly beautiful and
@@ -111,7 +118,7 @@
 
 
           A perverse abuse of the standard would be some silly stuff
-          like this :
+          where we may employ those digraph type things :
 
      000001
      000002  %:define _XOPEN_SOURCE 600

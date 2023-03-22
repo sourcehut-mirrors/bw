@@ -1,9 +1,25 @@
 
-27 Jul 2022 : there are a wide range in the timings for the dataset
-              tests :
+21 Mar 2023
 
-C_styx$ 
-C_styx$ grep 'nsec' output/readme.dataset2* | cut -f2 -d\:  | grep -v 'INFO' | cut -f2 -d\=  | sort -n
+There are dataset tests in the "output" directory. At the moment
+we have four possible datasets that have been run on a variety of
+machines. Different OS types and different CPU types have been used
+to run these tests and we generally see consistent results.
+
+There are problems with some systems where the fused multiply add
+support seems to not exist. A fine example would be the VIA Eden
+processor which will throw a SIGILL if the code is compiled with
+the fma opcode support. Remove the fma option from the compiler
+and then we get different numerical results. Welcome to the sad
+world of floating point where sometimes the answer is "maybe".
+
+Also the speed of computation for any of the test cases will vary
+wildly. A Xeon may be orders of magnitude faster than the RISC-V
+hardware produced by SiFive. In fact, the RISC-V hardware tested
+is consistently the slowest ever seen and that includes running
+on a 400MHz Pentium II machine from 1998.
+
+$ grep 'nsec' output/readme.dataset2* | cut -f2 -d\:  | grep -v 'INFO' | cut -f2 -d\=  | sort -n
     13657162873 nsec   1.365716e+01 sec
     13740442785 nsec   1.374044e+01 sec
     29074058300 nsec   2.907406e+01 sec
