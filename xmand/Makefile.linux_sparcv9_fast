@@ -1,12 +1,9 @@
 
-CC=/usr/bin/cc
+CC=/usr/bin/gcc
 
-CFLAGS= -std=iso9899:2011 -m64 -O3 -mhard-float -mno-app-regs -mflat \
-	-msoft-quad-float -mcpu=ultrasparc -mtune=ultrasparc -mno-vis \
-	-mcmodel=medany -mmemory-model=tso -fPIC -Wl,-rpath=/usr/lib64 \
-	-Wl,-rpath=/usr/lib64 -Wl,-pie
+CFLAGS= -std=iso9899:2011 -m64 -O3
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS= -D_LARGEFILE64_SOURCE
 
 IDIR=/usr/include -I/usr/include/X11
 LDIR=/usr/lib64 -L/usr/lib64
