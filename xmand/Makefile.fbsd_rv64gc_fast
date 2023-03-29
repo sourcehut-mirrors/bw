@@ -1,5 +1,5 @@
-CFLAGS= -std=iso9899:1999 \
-	-march=rv64imafdc -mabi=lp64d \
-	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -O3
+
+CFLAGS= -std=iso9899:2011 -m64 -O3 -ffast-math -ffp-contract=on \
+	-march=rv64imafdc -mabi=lp64d -mfma
 
 include common.mk
