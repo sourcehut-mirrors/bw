@@ -1,4 +1,3 @@
-esther$ 
 esther$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
 -------------------------------------------------------------------
                  system name = FreeBSD
@@ -26,7 +25,7 @@ esther$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
                  sizeof(int) = 4
                sizeof(void*) = 4
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    0 hour   46 mins   13 secs
+           system uptime    0 day    0 hour   53 mins   16 secs
 -------------------------------------------------------------------
 INFO : baseline tdelta =          13686 nsec
 INFO : magnify accepted as long long int
@@ -48,19 +47,19 @@ pthread_limit = 2
 --------------------------------------------
 pixel_real_w = +3.05175781250000000000000000e-05
 pixel_imag_h = +3.05175781250000000000000000e-05
-raw  [ 523  , 524  ]
-DBUG : sample space [ 512   , 512    ]
+raw  [ 523  , 523  ]
+DBUG : sample space [ 512   , 513    ]
      : vbox  [ 008 , 008 ]
      : win_r = +9.76562500000000000000000000e-04
-     : win_j = +9.76562500000000000000000000e-04
+     : win_j = +2.92968750000000000000000000e-03
      : after translation
      : r_trn   = -1.22589111328125000000000000e+00
      : j_trn   = -1.77673339843750000000000000e-01
      : x_prime = -1.22587585449218750000000000e+00
-     : y_prime = -1.77658081054687500000000000e-01
+     : y_prime = -1.77627563476562500000000000e-01
      : bailout = 256               
      : magnify = 1.280000000000e+02
-[mand] =    49122351845 nsec   4.912235e+01 sec
+[mand] =     8695489525 nsec   8.695490e+00 sec
 
 
 raw data values -------------------------------------------------------
@@ -86,12 +85,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -1.62063598632812500000000000e-01
      :       mand_height =       256
 --------------------------- full plot done -----------------------------
-click at 522 522 
-raw  [ 1393 , 893  ]
+click at 522 521 
+raw  [ 1394 , 895  ]
 INFO : dumper_flag = 1
-click at 1392 891 
-raw  [ 1393 , 893  ]
-INFO : file /var/tmp/dclarke/20230321000539 dump begins.
+click at 1393 893 
+raw  [ 1394 , 895  ]
+INFO : file /var/tmp/dclarke/20230329014137 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -110,19 +109,11 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20230321000539 closed.
+INFO : file /var/tmp/dclarke/20230329014137 closed.
 INFO : dumper_flag = 0
-click at 1392 891 
-raw  [ 844  , 824  ]
-right click
-click at 843 822 
-raw  [ 844  , 824  ]
-right click
+click at 1393 893 
 
-
-
-esther$ 
-esther$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230321000539
+esther$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230329014137
 0000000    00  00  10  00  00  01  00  00  00  00  00  00  00  00  60  40
 0000010    00  00  00  00  40  9d  f3  bf  00  00  00  00  00  be  c6  bf
 0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
@@ -131,7 +122,7 @@ esther$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230321000539
 0000050    80  bd  c8  bf  0d  00  00  00  00  00  00  00  f0  dc  f3  bf
 0000060
 esther$ 
-esther$ openssl dgst -sha256 -r /var/tmp/dclarke/20230321000539
-51a51bc0fd5109f31fec59f7423f1c643a817e0bfff18dd2b1b9543ed14b19a8 */var/tmp/dclarke/20230321000539
+esther$ openssl dgst -sha256 -r /var/tmp/dclarke/20230329014137
+51a51bc0fd5109f31fec59f7423f1c643a817e0bfff18dd2b1b9543ed14b19a8 */var/tmp/dclarke/20230329014137
 esther$ 
 
