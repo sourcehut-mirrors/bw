@@ -8,6 +8,16 @@ rv64$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
                    page size = 4096
                system memory = 17114402816
                              = 16713284 kB
+rv64$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = ump.daveg.ca
+                     release = 14.0-CURRENT
+                     version = FreeBSD 14.0-CURRENT #3 main-n260421-17c8213559cd-dirty: Thu Feb  2 12:54:22 EST 2023     root@ump.daveg.ca:/usr/obj/usr/src/riscv.riscv64/sys/GENERIC
+                     machine = riscv
+                   page size = 4096
+               system memory = 17114402816
+                             = 16713284 kB
                              = 16321 MB
                  avail pages = unknown
                 avail memory = unknown
@@ -25,7 +35,7 @@ rv64$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime   39 days    1 hour   30 mins   29 secs
+           system uptime   39 days    3 hours   19 mins   31 secs
 -------------------------------------------------------------------
 INFO : baseline tdelta =           1000 nsec
 INFO : magnify accepted as long long int
@@ -59,7 +69,7 @@ DBUG : sample space [ 512   , 512    ]
      : y_prime = -1.77658081054687500000000000e-01
      : bailout = 256               
      : magnify = 1.280000000000e+02
-[mand] =    29937150535 nsec   2.993715e+01 sec
+[mand] =    71825232912 nsec   7.182523e+01 sec
 
 
 raw data values -------------------------------------------------------
@@ -86,11 +96,11 @@ raw data values -------------------------------------------------------
      :       mand_height =       256
 --------------------------- full plot done -----------------------------
 click at 522 522 
-raw  [ 1400 , 890  ]
+raw  [ 1399 , 890  ]
 INFO : dumper_flag = 1
-click at 1399 888 
-raw  [ 1400 , 890  ]
-INFO : file /var/tmp/dclarke/20230329001449 dump begins.
+click at 1398 888 
+raw  [ 1399 , 890  ]
+INFO : file /var/tmp/dclarke/20230329020430 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -109,12 +119,11 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20230329001449 closed.
+INFO : file /var/tmp/dclarke/20230329020430 closed.
 INFO : dumper_flag = 0
-click at 1399 888 
+click at 1398 888 
 
-rv64$ 
-rv64$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230329001449
+rv64$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230329020430
 0000000    00  00  10  00  00  01  00  00  00  00  00  00  00  00  60  40
 0000010    00  00  00  00  40  9d  f3  bf  00  00  00  00  00  be  c6  bf
 0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
@@ -122,8 +131,6 @@ rv64$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230329001449
 0000040    0d  00  00  00  00  00  00  00  10  dd  f3  bf  00  00  00  00
 0000050    80  bd  c8  bf  0d  00  00  00  00  00  00  00  f0  dc  f3  bf
 0000060
+rv64$ openssl dgst -sha256 -r /var/tmp/dclarke/20230329020430
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230329020430
 rv64$ 
-rv64$ openssl dgst -sha256 -r /var/tmp/dclarke/20230329001449
-d3ce03732d8b12b84db0685abc7da4a4039278ecfd63a8aab47cfa1fe3bfa11f */var/tmp/dclarke/20230329001449
-rv64$ 
-
