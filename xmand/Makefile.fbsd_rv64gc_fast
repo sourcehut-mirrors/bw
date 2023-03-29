@@ -1,5 +1,7 @@
 
-CFLAGS= -std=iso9899:2011 -m64 -O3 -ffast-math -ffp-contract=on \
+CFLAGS= -std=iso9899:2011 -m64 -O3 -fno-fast-math \
+	-ffp-contract=on \
+	-fno-builtin \
 	-march=rv64imafdc -mabi=lp64d -mfma
 
 include common.mk
