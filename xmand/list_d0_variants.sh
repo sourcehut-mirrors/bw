@@ -1,0 +1,24 @@
+#!/bin/sh
+
+
+TMPDIR=/var/tmp/`( id | sed -e 's/[^(]*(//' -e 's/).*//' )`
+export TMPDIR
+mkdir -m 0750 $TMPDIR > /dev/null 2>&1
+chmod 0750 $TMPDIR
+
+if [ -d $TMPDIR ]; then
+
+    grep -E '^[[:xdigit:]]{64}' output/readme.dataset0* | cut -f2 -d\: | cut -c1-64  | sort -u | awk 'BEGIN{print"#!/bin/sh"}{print "/usr/bin/printf \042" $1 "    \\n\042\ngrep \042" $1 "\042 output/readme.dataset0\052 | cut -f1 -d\\: \n/usr/bin/printf \042\\n\\n\042"}' > $TMPDIR/wat.sh
+
+    chmod 0755 $TMPDIR/wat.sh
+
+    $TMPDIR/wat.sh
+
+    rm $TMPDIR/wat.sh
+
+else
+
+    /usr/bin/printf "FAIL : please check your /var/tmp and $TMPDIR\n"
+
+fi
+
