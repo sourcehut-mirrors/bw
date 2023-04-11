@@ -1,12 +1,29 @@
 #!/bin/bash
 
+unset ADDR2LINE
+unset AR
+unset AS
+unset CC
+unset CXX
+unset ELFEDIT
+unset LD
+unset NM
+unset OBJCOPY
+unset OBJDUMP
+unset RANLIB
+unset READELF
+unset SIZE
+unset STRINGS
+unset STRIP
+
+
 PATH=/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
 export PATH
 
-if [ -d /usr/local/cuda-11.4 ]; then
-    CUDA_HOME=/usr/local/cuda-11.4
+if [ -d /usr/local/cuda-11.8 ]; then
+    CUDA_HOME=/usr/local/cuda-11.8
     export CUDA_HOME
-    PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+    PATH=/usr/local/cuda-11.8/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/schily/bin
     export PATH
 fi
 
