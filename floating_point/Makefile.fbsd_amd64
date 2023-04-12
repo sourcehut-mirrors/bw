@@ -1,8 +1,8 @@
 CC?=		/usr/bin/cc
 
-CFLAGS=		-std=iso9899:1999 -m64 -g -O0 -fno-builtin \
-		-fno-fast-math -pedantic -pedantic-errors \
-		-Weverything -Wno-reserved-id-macro
+CFLAGS= -std=iso9899:1999 -m32 -g -O0 -fno-builtin -fno-fast-math \
+	-pedantic -pedantic-errors -Weverything -Wno-reserved-id-macro \
+	-ffp-contract=on -mfma
 
 CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
