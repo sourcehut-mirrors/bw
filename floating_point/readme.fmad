@@ -17,3 +17,20 @@ How about declaring all the arrays (a, b, a64, b64, a128, b128) as
 "volatile"? This way the compiler should not be able to optimize
 anything away (eg.  precompute the results of the multiplications).
 
+
+Ordinary run of the mill x86 hardware *may* emit fma SIMD asm : 
+
+     vfmadd213ss     %xmm2, %xmm0, %xmm1    
+
+However no promise that doesn't throw a SIGILL.
+
+
+On a 32-bit VIA Eden processor type machine running FreeBSD 13.2-RELEASE 
+we may use CFLAGS : 
+
+    CFLAGS= -std=iso9899:1999 -m32 -g -O0 -fno-builtin -fno-fast-math -pedantic -pedantic-errors -Weverything -Wno-reserved-id-macro -ffp-contract=on -mfma
+
+
+In this case we do get the SIMD opcodes and that results in SIGILL.
+
+
