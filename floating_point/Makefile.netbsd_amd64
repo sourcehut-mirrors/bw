@@ -1,0 +1,22 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 \
+	-march=k8 -mtune=k8 -Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-fno-builtin -malign-double -mpc80
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+LIBS = -lm
+
+SRC = fp64_inexact.c
+OBJ = fp64_inexact.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+fp64_inexact: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJ) fp64_inexact
