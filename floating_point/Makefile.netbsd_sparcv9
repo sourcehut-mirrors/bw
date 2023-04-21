@@ -17,7 +17,7 @@ IDIR=/usr/pkg/include -I/usr/X11R7/include
 LDIR=/usr/pkg/lib -L/usr/X11R7/lib
 LIBS= -lm
 
-OBJS= fp64_wrong.o ../sysinfo/sysinfo.o
+OBJS= fp64_wrong.o
 
 .PHONY: all
 all: fp64_wrong
