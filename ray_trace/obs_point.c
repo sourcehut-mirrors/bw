@@ -1,4 +1,28 @@
 
+/*
+ * obs_point.c    Push around the various math functions to trace a
+ *                trivial ray of light.
+ *
+ * Copyright (C) Dennis Clarke 2019
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
+
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -232,10 +256,15 @@ int main ( int argc, char **argv)
                       ray_direct.x.r, ray_direct.y.r, ray_direct.z.r );
     printf("\n\n");
 
-    /* Now we call our intercept function */
+    /* Now we call our intercept function. 
+     *
+     * Correction from Paul in May 2023 wherein he smartly notes we
+     * should be using the normalized observation vector. Damn it,
+     * Janet, we just did that computation above! So use it.
+     */
     if ( icept( k_val, &intercept_cnt, &sign_data, &object_location,
                         &semi_major_axi, &obs_point,
-                        &obs_normal ) == MATH_OP_FAIL ) {
+                        &ray_direct ) == MATH_OP_FAIL ) {
 
         fprintf(stderr,"FAIL : icept returns MATH_OP_FAIL\n");
 

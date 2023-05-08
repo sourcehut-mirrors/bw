@@ -1,0 +1,9 @@
+
+CC=/opt/gcc-12.2.0/bin/gcc
+
+CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -m64 \
+	-mregnames -mno-recip \
+	-fno-unsafe-math-optimizations -Wall
+
+include common.mk
