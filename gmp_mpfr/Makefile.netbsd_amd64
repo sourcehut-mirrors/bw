@@ -1,0 +1,11 @@
+
+CC=/opt/bw/gcc13/bin/gcc
+
+CFLAGS=-std=iso9899:1999 -pedantic -pedantic-errors \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-m64 -g -O0 -fno-fast-math -fno-builtin \
+	-malign-double -march=k8 -mtune=k8 -mieee-fp \
+	-mhard-float -mno-fancy-math-387 -m128bit-long-double \
+	-mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8
+
+include common.mk

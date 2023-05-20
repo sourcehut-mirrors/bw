@@ -62,6 +62,13 @@ int main(int argc, char *argv[])
     int inex;
     long candidate_input;
 
+    /* seems we may need to compute the precision in decimal
+     * digits for the binary pile we have. Thus we will need
+     * the ratio log(2)/log(10) */
+    double bits_per = 0.30102999566398119521373889472449;
+    int decimal_dig = 0;
+    char format_buf[64] = "";
+
     mpfr_t pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
            atan_pi4_mpfr, third_mpfr, half_mpfr,
            atan_half_mpfr, atan_third_mpfr, sum_mpfr,
@@ -149,6 +156,10 @@ int main(int argc, char *argv[])
     }
 
     printf("INFO : using %li bits of precision.\n", (long)prec );
+
+    decimal_dig = (int)( 1.0 + ( (double)prec * bits_per ) );
+    printf("     : should be about %i decimal digits.\n", decimal_dig );
+
     printf("-------------------------------------------------------------\n");
 
     mpfr_inits2( prec, pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
@@ -174,7 +185,11 @@ int main(int argc, char *argv[])
     inex = mpfr_atan(atan_pi4_mpfr, one_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("atan(1)   %.Rf\n", atan_pi4_mpfr );
+
+    sprintf(format_buf,"atan(1)   %%.%iR*f\n", decimal_dig);
+    mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
+    format_buf[0]='\0';
+
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* compute atan(1/2) */
@@ -182,7 +197,10 @@ int main(int argc, char *argv[])
     inex = mpfr_atan(atan_half_mpfr, half_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("atan(1/2) %.Rf\n", atan_half_mpfr );
+
+    sprintf(format_buf,"atan(1/2) %%.%iR*f\n", decimal_dig);
+    mpfr_printf (format_buf, atan_half_mpfr );
+    format_buf[0]='\0';
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* compute atan(1/3) */
@@ -190,7 +208,11 @@ int main(int argc, char *argv[])
     inex = mpfr_atan(atan_third_mpfr, third_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("atan(1/3) %.Rf\n", atan_third_mpfr );
+
+    sprintf(format_buf,"atan(1/3) %%.%iR*f\n", decimal_dig);
+    mpfr_printf (format_buf, atan_third_mpfr);
+    format_buf[0]='\0';
+
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* sum atan(1/2) + atan(1/3) */
