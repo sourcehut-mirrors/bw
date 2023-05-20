@@ -160,6 +160,15 @@ int main(int argc, char *argv[])
     decimal_dig = (int)( 1.0 + ( (double)prec * bits_per ) );
     printf("     : should be about %i decimal digits.\n", decimal_dig );
 
+    /* create a MPFR format buffer string with the correct number
+     * of decimal digits. NOTE there is not a newline char. */
+    sprintf(format_buf,"%%.%iR*f", decimal_dig);
+
+    /* NOTE : the use of the asterisk inside the format string seems
+     *        to imply that we need to specify the rounding method
+     *        thus :  mpfr_printf(format_buf, MPFR_RNDN, foo);
+     */
+
     printf("-------------------------------------------------------------\n");
 
     mpfr_inits2( prec, pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
@@ -186,9 +195,9 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
 
-    sprintf(format_buf,"atan(1)   %%.%iR*f\n", decimal_dig);
+    printf("atan(1)   ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
-    format_buf[0]='\0';
+    printf("\n");
 
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
 
@@ -198,10 +207,9 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
 
-    sprintf(format_buf,"atan(1/2) %%.%iR*f\n", decimal_dig);
-    mpfr_printf (format_buf, atan_half_mpfr);
-    format_buf[0]='\0';
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("atan(1/2) ");
+    mpfr_printf(format_buf, MPFR_RNDN, atan_half_mpfr);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* compute atan(1/3) */
     clock_gettime(CLOCK_REALTIME, &t0);
@@ -209,19 +217,19 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
 
-    sprintf(format_buf,"atan(1/3) %%.%iR*f\n", decimal_dig);
-    mpfr_printf (format_buf, atan_third_mpfr);
-    format_buf[0]='\0';
+    printf("atan(1/3) ");
+    mpfr_printf(format_buf, MPFR_RNDN, atan_third_mpfr);
 
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* sum atan(1/2) + atan(1/3) */
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_add(sum_mpfr, atan_half_mpfr, atan_third_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("sum       %.Rf\n", sum_mpfr );
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("sum       ");
+    mpfr_printf(format_buf, MPFR_RNDN, sum_mpfr);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* check delta on atan(1) and ( atan(1/2) + atan(1/3) ) */
     inex = mpfr_sub(delta_mpfr, sum_mpfr, atan_pi4_mpfr, MPFR_RNDN);
@@ -229,7 +237,7 @@ int main(int argc, char *argv[])
         printf("delta( atan(1) - atan(1/2) - atan(1/3) ) = 0 exactly.");
     } else {
         printf("ERROR : atan(1) - atan(1/2) - atan(1/3) = ");
-        mpfr_printf ("%.Rf", delta_mpfr);
+        mpfr_printf(format_buf, MPFR_RNDN, delta_mpfr);
     }
     printf("\n\n");
 
@@ -238,24 +246,27 @@ int main(int argc, char *argv[])
     inex = mpfr_const_pi(pi_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("pi may be %.Rf\n", pi_mpfr );
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf ("pi may be ");
+    mpfr_printf(format_buf, MPFR_RNDN, pi_mpfr );
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* Eulers Number e */
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_exp(e_mpfr, one_mpfr, MPFR_RNDN);
     clock_gettime( CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("Eulers e  %.Rf\n", e_mpfr );
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("Eulers e  ");
+    mpfr_printf(format_buf, MPFR_RNDN, e_mpfr);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* multiply atan(1) * 4 */
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_mul_si(atan_pi_mpfr, atan_pi4_mpfr, 4, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("4*atan(1) %.Rf\n", atan_pi_mpfr );
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("4*atan(1) ");
+    mpfr_printf(format_buf, MPFR_RNDN, atan_pi_mpfr);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     inex = mpfr_sub(delta_mpfr, pi_mpfr, atan_pi_mpfr, MPFR_RNDN);
     /* do we really care about the absolute value here? */
@@ -277,7 +288,7 @@ int main(int argc, char *argv[])
         printf("delta( atan(1) * 4 ) - pi = 0 exactly.");
     } else {
         printf("ERROR : delta((4*atan(1)) - pi) = ");
-        mpfr_printf ("%.Rf", delta_mpfr);
+        mpfr_printf(format_buf, MPFR_RNDN, delta_mpfr);
     }
     printf("\n\n");
 

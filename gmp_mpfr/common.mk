@@ -2,9 +2,9 @@ CC?=		/usr/bin/cc
 CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LOCALBASE!=	if [ -d /opt/bw ]; then     \
-			echo "/opt/bw/";    \
+			echo "/opt/bw";    \
 		else                        \
-			echo "/usr/local/"; \
+			echo "/usr/local"; \
 		fi
 
 IDIR?=		$(LOCALBASE)/include
@@ -14,8 +14,7 @@ LIBS=		-lm -lgmp -lmpfr
 
 OBJS=		mpfr_ver.o \
 		../time_and_date/timediff.o \
-		../sysinfo/sysinfo.o \
-		../sysinfo/sysmem.o
+		../sysinfo/sysinfo.o
 
 .PHONY: all
 all: mpfr_ver
@@ -24,7 +23,7 @@ all: mpfr_ver
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
 
 mpfr_ver: $(OBJS)
-	$(CC) -o mpfr_ver $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o mpfr_ver $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:

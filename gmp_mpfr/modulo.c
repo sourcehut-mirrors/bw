@@ -31,6 +31,7 @@
  *  Macro and in addition to enable the XSI extension.
  *******************************************************************/
 #define _XOPEN_SOURCE 600
+#define VERBOSE 1
 
 #include <errno.h>
 #include <inttypes.h>
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
 {
 
     setlocale( LC_ALL, "C" );
-    sysinfo(1);
+    sysinfo(VERBOSE);
 
     printf("GMP  library version : %d.%d.%d\n\n",
             __GNU_MP_VERSION,
