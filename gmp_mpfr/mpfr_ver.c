@@ -64,9 +64,19 @@ int main(int argc, char *argv[])
 
     /* seems we may need to compute the precision in decimal
      * digits for the binary pile we have. Thus we will need
-     * the ratio log(2)/log(10) */
-    double bits_per = 0.30102999566398119521373889472449;
-    int decimal_dig = 0;
+     * the ratio log(2)/log(10) .
+     *
+     * double bits_per = 0.30102999566398119521373889472449;
+     * Not needed. 
+     * The MPFR library provides the call : 
+     *
+     * size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)
+     *
+     * Return the minimal integer m such that any number of p bits, when
+     * output with m digits in radix b with rounding to nearest, can be
+     * recovered exactly when read again, still with rounding to nearest.
+     */
+    size_t decimal_prec;
     char format_buf[64] = "";
 
     mpfr_t pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
@@ -157,12 +167,16 @@ int main(int argc, char *argv[])
 
     printf("INFO : using %li bits of precision.\n", (long)prec );
 
+    /*
     decimal_dig = (int)( 1.0 + ( (double)prec * bits_per ) );
-    printf("     : should be about %i decimal digits.\n", decimal_dig );
+    */
+
+    decimal_prec = mpfr_get_str_ndigits(10, prec);
+    printf("     : we need %i decimal digits.\n", decimal_prec);
 
     /* create a MPFR format buffer string with the correct number
      * of decimal digits. NOTE there is not a newline char. */
-    sprintf(format_buf,"%%.%iR*f", decimal_dig);
+    sprintf(format_buf,"%%.%iR*f", decimal_prec);
 
     /* NOTE : the use of the asterisk inside the format string seems
      *        to imply that we need to specify the rounding method
