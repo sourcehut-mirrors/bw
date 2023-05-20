@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
     delta_t = timediff(t0, t1);
 
     sprintf(format_buf,"atan(1/2) %%.%iR*f\n", decimal_dig);
-    mpfr_printf (format_buf, atan_half_mpfr );
+    mpfr_printf (format_buf, atan_half_mpfr);
     format_buf[0]='\0';
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
 
