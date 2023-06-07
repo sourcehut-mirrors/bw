@@ -1,6 +1,8 @@
 
 /* On the IBM POWER9 we really should not need to do this
  * crap but such is life in the big city .. at the moment.
+ * We can use _Float128 datatype but not use printf. We
+ * have to call the libquadmath stuff.
  *
  * Things like this drive me bonkers.
  *
@@ -24,6 +26,16 @@
  *    #define __sparc64__ 1
  *    #define __sparc_v9__ 1
  *    #define __sparcv9 1
+ *
+ * However the AMD64 based NetBSD 9.3 defines a pile of
+ * other things :
+ *
+ *    #define __amd64 1
+ *    #define __amd64__ 1
+ *    #define __x86_64 1
+ *    #define __x86_64__ 1
+ *    #define __NetBSD__ 1
+ *    #define __unix__ 1
  */
 
 #ifndef sparc
