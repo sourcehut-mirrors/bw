@@ -15,7 +15,20 @@
 #include <stdlib.h>
 #include <sys/utsname.h>
 
+/* stuff seen on NetBSD 9.3 sparcv9
+ * by using  $CC $CFLAGS $CPPFLAGS -E -dD -o foo pi_ld_quad.c
+ *
+ *    #define sparc 1
+ *    #define __NetBSD__ 1
+ *    #define __unix__ 1
+ *    #define __sparc64__ 1
+ *    #define __sparc_v9__ 1
+ *    #define __sparcv9 1
+ */
+
+#ifndef sparc
 #include <quadmath.h>
+#endif
 
 int main( int argc, char **argv )
 {
@@ -28,7 +41,11 @@ int main( int argc, char **argv )
     /* good old SPARC64 has no problems with this number in memory
      * as a correct 128-bit value. Good luck everywhere else.
      */
+#ifndef sparc
     _Float128 pi = 3.141592653589793238462643383279502884Q;
+#else
+    long double pi = 3.141592653589793238462643383279502884L;
+#endif
 
     setlocale( LC_MESSAGES, "C" );
     if ( uname( &uname_data ) < 0 ) {
@@ -58,8 +75,15 @@ int main( int argc, char **argv )
     }
     printf(" endian machine.\n");
 
+#ifndef sparc
     printf ("Size of _Float128 = %i\n\n", sizeof(_Float128));
-    printf ("A correct _Float128 should be :\n");
+    printf ("A correct _Float128 ");
+#else
+    printf ("Size of long double = %i\n\n", sizeof(long double));
+    printf ("A correct long double ");
+#endif
+
+    printf ("should be :");
     printf ("\n    0x40 00 92 1f b5 44 42 d1 ");
     printf ("84 69 89 8c c5 17 01 b8\n\n");
 
@@ -70,7 +94,8 @@ int main( int argc, char **argv )
     }
     printf("\n\n" );
 
-
+    buffer_size = 44;
+#ifndef sparc
     num_chars = quadmath_snprintf(buffer,
                                   buffer_size, "%44.42Qg", pi);
 
@@ -85,9 +110,12 @@ int main( int argc, char **argv )
         return EXIT_FAILURE;
 
     }
+#else
+    snprintf(buffer, buffer_size, "%44.42Le", pi);
+#endif
 
     printf("Maybe pi is %s\n\n", buffer);
-    printf("Actually is  3.141592653589793238462643383279502884197169...\n");
+    printf("Actually is 3.141592653589793238462643383279502884197169...\n");
 
     return EXIT_SUCCESS;
 
