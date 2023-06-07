@@ -44,7 +44,7 @@
 
 int main(int argc, char *argv[]){
 
-    __float128 fp0, fp1, fp2, pi;
+    _Float128 fp0, fp1, fp2, pi;
     const size_t buffer_size = BUFFERSIZE;
     char *buffer = calloc(buffer_size,sizeof(unsigned char));
     int num_chars;
