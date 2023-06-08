@@ -103,9 +103,14 @@ int main( int argc, char **argv )
     }
     printf ("\n");
 
+#if defined(__clang__)
+    printf("INFO : compiler seems to be LLVM/Clang ver %i.%i.%i\n",
+             __clang_major__, __clang_minor__, __clang_patchlevel__);
+#else
 #if defined(__GNUC__)
-    printf("INFO : seems to be GCC with version %i.%i.%i\n",
+    printf("INFO : compiler seems to be GCC ver %i.%i.%i\n",
             __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#endif
 #endif
 
     j = 1;
@@ -161,7 +166,7 @@ int main( int argc, char **argv )
 
     }
 #else
-    snprintf(buffer, buffer_size, "%.42Le", pi);
+    snprintf(buffer, buffer_size, "%.42Lg", pi);
 #endif
 
     printf("Maybe pi is %s\n\n", buffer);
