@@ -79,7 +79,7 @@ int main( int argc, char **argv )
      * if we use the _Float128 datatype which is NOT really a
      * long double.
      */
-#if defined(__GNUC__) && (__GNUC__ > 7) && !defined(sparc)
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
     _Float128 pi = 3.141592653589793238462643383279502884Q;
 #else
     long double pi = 3.141592653589793238462643383279502884L;
@@ -102,6 +102,11 @@ int main( int argc, char **argv )
         printf ( "------------------------------" );
     }
     printf ("\n");
+
+#if defined(__GNUC__)
+    printf("INFO : seems to be GCC with version %i.%i.%i\n",
+            __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
+#endif
 
     j = 1;
     little_endian = (*(uint8_t*)&j == 1) ? 1 : 0;
