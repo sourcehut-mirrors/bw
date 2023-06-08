@@ -147,7 +147,7 @@ int main( int argc, char **argv )
 
 #if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
     num_chars = quadmath_snprintf(buffer,
-                                  buffer_size, "%44.42Qg", pi);
+                                  buffer_size, "%.42Qg", pi);
 
     if ( num_chars > 0 ) {
 
@@ -161,7 +161,7 @@ int main( int argc, char **argv )
 
     }
 #else
-    snprintf(buffer, buffer_size, "%44.42Le", pi);
+    snprintf(buffer, buffer_size, "%.42Le", pi);
 #endif
 
     printf("Maybe pi is %s\n\n", buffer);
