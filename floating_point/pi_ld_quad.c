@@ -1,5 +1,10 @@
 
-/* On the IBM POWER9 we really should not need to do this
+/* This all started with a trivial test on an IBM POWER9
+ * server which really should know all about long double
+ * floating point data types. Which it does. However it is
+ * a battle to get the compiler and glibc to agree.
+ *
+ * On the IBM POWER9 we really should not need to do this
  * crap but such is life in the big city .. at the moment.
  * We can use _Float128 datatype but not use printf. We
  * have to call the libquadmath stuff.
@@ -36,9 +41,28 @@
  *    #define __x86_64__ 1
  *    #define __NetBSD__ 1
  *    #define __unix__ 1
+ *
+ *
+ * Seen on AMD64 based FreeBSD 14.0 with LLVM/Clang and
+ * using "echo | clang -dM -E -" we see many things :
+ *
+ *    #define __FreeBSD__ 14
+ *    #define __FreeBSD_cc_version 1400004
+ *    #define __VERSION__ "FreeBSD Clang 15.0.7 (https://github.com/llvm/llvm-project.git llvmorg-15.0.7-0-g8dfdcc7b7bf6)"
+ *    #define __amd64 1
+ *    #define __amd64__ 1
+ *    #define __clang__ 1
+ *    #define __clang_major__ 15
+ *    #define __clang_minor__ 0
+ *    #define __clang_patchlevel__ 7
+ *    #define __clang_version__ "15.0.7 (https://github.com/llvm/llvm-project.git llvmorg-15.0.7-0-g8dfdcc7b7bf6)"
+ *    #define __llvm__ 1
+ *    #define __x86_64 1
+ *    #define __x86_64__ 1
+ *    #define unix 1
  */
 
-#ifndef sparc
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
 #include <quadmath.h>
 #endif
 
@@ -51,9 +75,11 @@ int main( int argc, char **argv )
     struct utsname uname_data;
 
     /* good old SPARC64 has no problems with this number in memory
-     * as a correct 128-bit value. Good luck everywhere else.
+     * as a correct 128-bit value. Same with IBM POWER9 but only
+     * if we use the _Float128 datatype which is NOT really a
+     * long double.
      */
-#ifndef sparc
+#if defined(__GNUC__) && (__GNUC__ > 7) && !defined(sparc)
     _Float128 pi = 3.141592653589793238462643383279502884Q;
 #else
     long double pi = 3.141592653589793238462643383279502884L;
@@ -87,7 +113,7 @@ int main( int argc, char **argv )
     }
     printf(" endian machine.\n");
 
-#ifndef sparc
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
     printf ("Size of _Float128 = %i\n\n", sizeof(_Float128));
     printf ("A correct _Float128 ");
 #else
@@ -107,7 +133,8 @@ int main( int argc, char **argv )
     printf("\n\n" );
 
     buffer_size = 44;
-#ifndef sparc
+
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
     num_chars = quadmath_snprintf(buffer,
                                   buffer_size, "%44.42Qg", pi);
 
