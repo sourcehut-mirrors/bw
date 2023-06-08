@@ -110,7 +110,7 @@ int main( int argc, char **argv )
 
     j = 1;
     little_endian = (*(uint8_t*)&j == 1) ? 1 : 0;
-        printf("This is a ");
+    printf("This is a ");
     if (!little_endian) {
         printf("big");
     } else {
@@ -130,10 +130,16 @@ int main( int argc, char **argv )
     printf ("\n    0x40 00 92 1f b5 44 42 d1 ");
     printf ("84 69 89 8c c5 17 01 b8\n\n");
 
+    printf("Address in memory of pi is 0x%" PRIXPTR " : \n", (uintptr_t)&pi);
     printf("This machine claims long double pi is\n    0x");
-
-    for ( j=0; j<sizeof(long double); j++ ) {
-        printf("%02x ", ((unsigned char *)&pi)[j] );
+    if (little_endian) {
+        for ( j=(sizeof(long double)-1); j>(-1); j-- ) {
+            printf("%02x ", ((unsigned char *)&pi)[j] );
+        }
+    } else {
+        for ( j=0; j<sizeof(long double); j++ ) {
+            printf("%02x ", ((unsigned char *)&pi)[j] );
+        }
     }
     printf("\n\n" );
 
