@@ -1,12 +1,12 @@
 
-CC=/usr/bin/cc
+CC=/usr/local/gcc13/bin/gcc
 
-CFLAGS= -std=iso9899:1999 -m64 -O0 -g \
-	-pedantic -pedantic-errors \
+CFLAGS= -std=iso9899:2011 -g -O0 -m64 -fno-builtin -fno-fast-math \
+	-ffp-contract=off -fno-unsafe-math-optimizations -malign-double \
 	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
-	-fno-fast-math -malign-double \
-	-m128bit-long-double -mlong-double-80 \
-	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx -Wall \
-	-fsanitize=undefined
+	-m128bit-long-double -mlong-double-80 -mstackrealign \
+	-mpreferred-stack-boundary=8
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE
 
 include common.mk
