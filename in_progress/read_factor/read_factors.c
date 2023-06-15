@@ -282,7 +282,9 @@ int main (int argc, char **argv)
             max_line_length = (int)factor_line->buffer_length;
             strncpy(max_line,factor_line->buffer,(size_t)max_line_length);
 
-            printf ("%-8i : %-3i    \"%s\"\n",line_count,max_line_length,max_line);
+            printf ("%-8i : %-3i    \"%s\"\n",
+                    line_count,max_line_length,max_line);
+
         }
 
         /* check end of file */
