@@ -69,7 +69,7 @@
 int main( int argc, char **argv )
 {
 
-    int j, little_endian, num_chars;
+    int j, little_endian;
     char buffer[128];
     size_t buffer_size;
     struct utsname uname_data;
@@ -80,6 +80,7 @@ int main( int argc, char **argv )
      * long double.
      */
 #if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
+    int num_chars;
     _Float128 pi = 3.141592653589793238462643383279502884Q;
 #else
     long double pi = 3.141592653589793238462643383279502884L;
