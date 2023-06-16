@@ -17,8 +17,6 @@
  * as well go for something reasonable */
 #define LOCAL_PATH_MAX 255
 
-#define VERBOSE 1
-
 #define ERROR_FILENAME_LENGTH   247
 #define ERROR_FILENAME_EMPTY    248
 #define ERROR_FILENAME_STAT     249
@@ -44,9 +42,4 @@ typedef struct line_item {
     size_t        buffer_length;
     int           error_status;
 } line_item;
-
-int file_stat_err( int file_errno );
-int filepath_ptr(FILE **fp, char *fidname);
-int get_factor_line(FILE *fp, line_item *line);
-char *pathname_trim( char *str );
 

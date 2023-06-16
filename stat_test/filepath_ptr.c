@@ -48,6 +48,10 @@
 
 #include "read_f.h"
 
+char *strtrim(char *str);
+char *pathname_trim(char *str);
+int file_stat_err(int file_errno);
+
 /* we expect that file name is some file identifier
  * string such as /var/tmp/foo/boo/123456 or whatever
  * makes sense for a filename. */

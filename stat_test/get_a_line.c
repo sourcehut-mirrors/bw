@@ -1,6 +1,6 @@
 
 /*
- * get_factor_line.c  read a c10 and its prime factors as a single line
+ * get_factor_line.c  read a single line
  *
  * Copyright (C) Dennis Clarke 2022
  *
@@ -40,7 +40,7 @@
 
 #include "read_f.h"
 
-int get_factor_line(FILE *fp, line_item *line) {
+int get_a_line(FILE *fp, line_item *line) {
 
     int k;
     size_t j;

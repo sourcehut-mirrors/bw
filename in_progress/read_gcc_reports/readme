@@ -1,0 +1,10 @@
+
+s$ $CC $CFLAGS $CPPFLAGS -c -o filepath_ptr.o filepath_ptr.c
+s$ $CC $CFLAGS $CPPFLAGS -c -o file_stat_err.o file_stat_err.c
+s$ $CC $CFLAGS $CPPFLAGS -c -o gcc_tests.o gcc_tests.c
+s$ $CC $CFLAGS $CPPFLAGS -c -o get_a_line.o get_a_line.c
+s$ $CC $CFLAGS $CPPFLAGS -c -o pathname_trim.o pathname_trim.c
+s$ $CC $CFLAGS $CPPFLAGS -o gcc_tests gcc_tests.o filepath_ptr.o file_stat_err.o get_a_line.o pathname_trim.o
+s$ 
+
+
