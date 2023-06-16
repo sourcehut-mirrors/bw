@@ -138,11 +138,11 @@ int main( int argc, char **argv )
     printf("Address in memory of pi is 0x%" PRIXPTR " : \n", (uintptr_t)&pi);
     printf("This machine claims long double pi is\n    0x");
     if (little_endian) {
-        for ( j=(sizeof(long double)-1); j>(-1); j-- ) {
+        for ( j=(int)(sizeof(long double)-1); j>(-1); j-- ) {
             printf("%02x ", ((unsigned char *)&pi)[j] );
         }
     } else {
-        for ( j=0; j<sizeof(long double); j++ ) {
+        for ( j=0; j<((int)(sizeof(long double))); j++ ) {
             printf("%02x ", ((unsigned char *)&pi)[j] );
         }
     }
