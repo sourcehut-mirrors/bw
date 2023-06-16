@@ -8,7 +8,7 @@ export TMPDIR
 mkdir -m 0750 $TMPDIR > /dev/null 2>&1
 chmod 0750 $TMPDIR
 
-AWK=/usr/bin/gawk
+AWK=`( command -v gawk )`
 export AWK
 
 if [ -d $TMPDIR ]; then
