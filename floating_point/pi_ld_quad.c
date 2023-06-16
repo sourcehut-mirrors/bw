@@ -62,7 +62,7 @@
  *    #define unix 1
  */
 
-#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc) && !defined(__arm__)
 #include <quadmath.h>
 #endif
 
@@ -79,7 +79,7 @@ int main( int argc, char **argv )
      * if we use the _Float128 datatype which is NOT really a
      * long double.
      */
-#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc) && !defined(__arm__)
     int num_chars;
     _Float128 pi = 3.141592653589793238462643383279502884Q;
 #else
@@ -124,7 +124,7 @@ int main( int argc, char **argv )
     }
     printf(" endian machine.\n");
 
-#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc) && !defined(__arm__)
     printf ("Size of _Float128 = %i\n\n", sizeof(_Float128));
     printf ("A correct _Float128 ");
 #else
@@ -151,7 +151,7 @@ int main( int argc, char **argv )
 
     buffer_size = 44;
 
-#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc)
+#if defined(__GNUC__) && (__GNUC__ > 9) && !defined(sparc) && !defined(__arm__)
     num_chars = quadmath_snprintf(buffer,
                                   buffer_size, "%.42Qg", pi);
 
