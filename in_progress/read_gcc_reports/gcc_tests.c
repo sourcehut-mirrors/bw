@@ -38,6 +38,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <limits.h>
 #include <inttypes.h>
 #include <time.h>
@@ -50,16 +51,15 @@
 #include "read_f.h"
 #include "gcc_tests.h"
 
-#define VERBOSE 1
-
 int main (int argc, char **argv)
 {
     struct f_item *tests_file;
     struct line_item *test_report_line;
-    int status, len, max_line_length, line_count;
-    char *filename;
-    char *clean_filename;
-    char *max_line;
+    int status, len, max_line_length, line_count, ch;
+    size_t s, j , k;
+    char *filename, *clean_filename, *max_line, *ptr;
+    char search[16] = " testsuite on ";
+    char system[128];
 
     /* it may not be polite but let us assume we can just
      * use the very basic ASCII character set and POSIX
@@ -241,7 +241,7 @@ int main (int argc, char **argv)
 
     line_count = 0;
     max_line_length = 0;
-    /* read the first line which should exist */
+    /* read the first line which should exist as HTML header stuff */
     status = get_a_line(tests_file->fp,test_report_line);
     /* clearly this is the maximum line thus far given
      * we have nothing else */
@@ -249,7 +249,9 @@ int main (int argc, char **argv)
         max_line_length = (int)test_report_line->buffer_length;
         strncpy(max_line,test_report_line->buffer,(size_t)max_line_length);
         line_count = line_count + 1;
+        /* nope. 
         printf ("%-8i : %-3i    \"%s\"\n",line_count,max_line_length,max_line);
+        */
     } else {
         fprintf(stderr,"FAIL : the file seems to be bad\n");
         fprintf(stderr,"     : better inspect the contents\n");
@@ -268,9 +270,30 @@ int main (int argc, char **argv)
             max_line_length = (int)test_report_line->buffer_length;
             strncpy(max_line,test_report_line->buffer,(size_t)max_line_length);
 
+            /* truth is, we do not care anymore .... 
             printf ("%-8i : %-3i    \"%s\"\n",
                     line_count,max_line_length,max_line);
+            */
 
+        }
+
+        ptr = strstr(test_report_line->buffer,search);
+        if ( ptr != NULL ) {
+            s = strlen(ptr);
+            /* search string is at least 14 bytes long */
+            j = 14;
+            while ((isspace(*(ptr+j)))&&(j<s)) j++;
+            system[0] = '\0';
+            k = 0;
+            /* ch = (char)(*(ptr+j)); */
+            while (j<s) {
+                /* system[k++] = ch;
+                ch = (char)(*(ptr+j++));
+                */
+                system[k++] = (char)(*(ptr+j++));
+            }
+            system[k] = '\0';
+            printf ("%s\n",system);
         }
 
         /* check end of file */

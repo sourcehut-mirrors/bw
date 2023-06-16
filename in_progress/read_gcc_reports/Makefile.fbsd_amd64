@@ -1,0 +1,9 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-fast-math -fno-builtin \
+	-Weverything -Wno-reserved-id-macro \
+	-Wno-padded -Wno-missing-prototypes
+
+include common.mk
