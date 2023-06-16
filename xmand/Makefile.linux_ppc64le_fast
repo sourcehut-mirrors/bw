@@ -1,0 +1,8 @@
+
+CC=/opt/bw/gcc13/bin/gcc
+
+CFLAGS = -std=iso9899:1999 -O3
+
+
+include common.mk
+
