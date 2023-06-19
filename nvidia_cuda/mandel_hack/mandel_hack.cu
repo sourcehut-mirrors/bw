@@ -75,6 +75,7 @@ typedef struct {
 
 int sysinfo(void);
 uint64_t system_memory();
+int ConvertSMVer2Cores(int major, int minor);
 uint64_t timediff( struct timespec st, struct timespec en );
 uint32_t cpu_mbrot( double c_r, double c_i, uint32_t bail_out );
 
@@ -229,25 +230,49 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* we may as well do a cudaDeviceReset ( void ) 
-    fprintf( stderr,"DBUG : at %d in %s\n", __LINE__, __FILE__);
-    */
-    err = cudaDeviceReset();
-    if ( err != cudaSuccess) {
-        fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
-        fprintf(stderr, "err = %0x\n", err );
-        exit(EXIT_FAILURE);
-    }
-
     /* display CPU and GPU configuration */
     printf("INFO : number of host CPUs:\t%d\n", omp_get_num_procs());
     printf("INFO : number of CUDA devices:\t%d\n", num_gpus);
 
+    cudaDeviceProp dprop;
     for (int i = 0; i < num_gpus; i++) {
-        cudaDeviceProp dprop;
+
+        err = cudaSetDevice(i);
+        /* possible err values are
+         *  cudaSuccess, cudaErrorInvalidDevice, cudaErrorSetOnActiveProcess */
+        if ( err != cudaSuccess ) {
+            if ( err == cudaErrorInvalidDevice ) {
+                printf("FAIL : cudaErrorInvalidDevice on cudaSetDevice\n");
+            } else if ( err == cudaErrorSetOnActiveProcess ) {
+                printf("FAIL : cudaErrorSetOnActiveProcess on cudaSetDevice\n");
+            } else {
+                printf("FAIL : cuda magic? good luck!\n");
+            }
+            return EXIT_FAILURE;
+        }
+
+        err = cudaDeviceReset();
+        if ( err != cudaSuccess) {
+            fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
+            fprintf(stderr, "err = %0x\n", err );
+            return EXIT_FAILURE;
+        }
+
         cudaGetDeviceProperties(&dprop, i);
-        printf("     :    %d: %s\n", i, dprop.name);
+        printf("     :    %d: %s    %12" PRIu64 " totalGlobalMem  %6i clockRate   %4i memoryBusWidth   %4i multiProcessorCount    %4i maxThreadsPerMultiProcessor   %i cores\n",
+                i, dprop.name, dprop.totalGlobalMem, dprop.clockRate,
+                dprop.memoryBusWidth, dprop.multiProcessorCount,
+                dprop.maxThreadsPerMultiProcessor,
+                ConvertSMVer2Cores(dprop.major, dprop.minor)
+                );
     }
+
+    /* the above Scheiße will leave us with the highest number
+     * GPU selected. TODO : do not do that!
+     */
+    printf("\n");
+    printf("INFO : %s device is selected\n\n", dprop.name);
+
 
     /* Under normal circumstances where we are not doing any sort
      * of a magnify then the region of interest on the complex 
@@ -948,5 +973,42 @@ int array_index(uint32_t Vr, uint32_t Vj,
 
     return result;
 
+}
+
+int ConvertSMVer2Cores(int major, int minor) {   
+    /* Defines for GPU Architecture types
+     * (using the SM version to determine the # of cores per SM */
+    typedef struct {
+        /* 0xMm hex number, M = SM Major version, and m = SM minor version */
+        int SM;
+        int Cores;
+    } sSMtoCores;
+    
+    sSMtoCores nGpuArchCoresPerSM[] = {
+        { 0x30, 192}, /* Kepler  (SM 3.0) GK10x */
+        { 0x32, 192}, /* Kepler  (SM 3.2) GK10x */
+        { 0x35, 192}, /* Kepler  (SM 3.5) GK11x */
+        { 0x37, 192}, /* Kepler  (SM 3.7) GK21x */
+        { 0x50, 128}, /* Maxwell (SM 5.0) GM10x */
+        { 0x52, 128}, /* Maxwell (SM 5.2) GM20x */
+        { 0x53, 128}, /* Maxwell (SM 5.3) GM20x */
+        { 0x60, 64 }, /* Pascal  (SM 6.0) GP100 */
+        { 0x61, 128}, /* Pascal  (SM 6.1) GP10x */
+        { 0x62, 128}, /* Pascal  (SM 6.2) GP10x */
+        { 0x70, 64 }, /* Volta   (SM 7.0) GV100 */
+        {   -1, -1 }
+    };
+    
+    int index = 0;
+    while (nGpuArchCoresPerSM[index].SM != -1) {
+        if (nGpuArchCoresPerSM[index].SM == ((major << 4) + minor)) {
+            return nGpuArchCoresPerSM[index].Cores;
+        }
+        index++;
+    }
+    
+    /* If we don't find the values, we default use the previous one to run properly */
+    printf("MapSMtoCores for SM %d.%d is undefined.  Default to use %d Cores/SM\n", major, minor, nGpuArchCoresPerSM[index-1].Cores);
+    return nGpuArchCoresPerSM[index-1].Cores;
 }
 
