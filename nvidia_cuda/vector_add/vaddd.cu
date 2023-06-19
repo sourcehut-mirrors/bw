@@ -1,5 +1,5 @@
 /*
- * hacked at by Dennis Clarke for some twitch fun stuff
+ * hacked at by Dennis Clarke
  */
 
 #include <stdlib.h>
@@ -22,7 +22,7 @@
 
 int sysinfo(void);
 uint64_t system_memory();
-uint64_t timediff( struct timespec st, struct timespec en );
+uint64_t timediff(struct timespec st, struct timespec en);
 
 /**
  * CUDA Kernel Device code
@@ -52,11 +52,9 @@ int main(int argc, char *argv[])
     int device_id = -1;
 
     /* We have a mantissa of 52 bits plus an implied one bit
-     * thus epsilon of 2^(-50) may work well.
-     *
-     *  0.000000000000000888178419700125232338905334472656250 */
-
-    double epsilon = pow( 2.0, -50.0); 
+     * thus epsilon of 2^(-48) may work well.
+     */
+    double epsilon = pow(2.0, -48.0); 
 
     struct timespec t_start, t_end, t0, t1;
     cudaEvent_t cuda_start, cuda_stop;
@@ -70,7 +68,7 @@ int main(int argc, char *argv[])
 
     int num_gpus = 0;
 
-    setlocale( LC_ALL, "C" );
+    setlocale(LC_ALL, "C");
     sysinfo();
 
     /* Get the CLOCK_REALTIME time in a timespec struct */
@@ -134,21 +132,21 @@ int main(int argc, char *argv[])
     printf("     : we need %" PRIu64 " bytes of memory on a GPU\n",
                  memory_fit_size);
 
-    cudaDeviceProp *dprop = (cudaDeviceProp *)calloc( num_gpus, sizeof(cudaDeviceProp));
+    cudaDeviceProp *dprop = (cudaDeviceProp *)calloc(num_gpus, sizeof(cudaDeviceProp));
     if ( dprop == NULL ) {
         fprintf(stderr, "FAIL : memory allocate cudaDeviceProp dprop at %d in %s\n",
                                __LINE__, __FILE__);
         return EXIT_FAILURE;
     }
 
-    uint64_t *gpu_memory = (uint64_t *)calloc( num_gpus, sizeof(uint64_t));
+    uint64_t *gpu_memory = (uint64_t *)calloc(num_gpus, sizeof(uint64_t));
     if ( gpu_memory == NULL ) {
         fprintf(stderr, "FAIL : memory allocate uint64_t *gpu_memory at %d in %s\n",
                                __LINE__, __FILE__);
         return EXIT_FAILURE;
     }
 
-    int *gpu_unit_number = (int *)calloc( num_gpus, sizeof(int));
+    int *gpu_unit_number = (int *)calloc(num_gpus, sizeof(int));
     if ( gpu_unit_number == NULL ) {
         fprintf(stderr, "FAIL : memory allocate int *gpu_unit_number at %d in %s\n",
                                __LINE__, __FILE__);
@@ -185,7 +183,7 @@ int main(int argc, char *argv[])
 
         /* select a GPU with enough memory */
         if ( ( device_id < 0 ) && ( *(gpu_memory+j) > memory_fit_size ) ) {
-            /* we may want a bit more logic to select the device
+            /* TODO we may want a bit more logic to select the device
              * with just enough memory but no more than that */
             device_id = j;
             printf("     :    %d: %s is to be selected\n",
@@ -193,6 +191,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    /* this is sort of stupid when there is only one GPU */
     printf("     : min memory unit is %i: %s with %" PRIu64 " bytes\n",
                           gpu_unit_min_number,
                           (dprop+gpu_unit_min_number)->name,
@@ -230,8 +229,7 @@ int main(int argc, char *argv[])
 
     }
 
-
-    /*
+    /* this was just a dirty select of the unit with the most memory
     if (cudaSetDevice(gpu_unit_max_number) != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to select %s\n",
@@ -247,7 +245,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
         return EXIT_FAILURE;
     }
-
 
     /* initialize the cuda event timers after we select the device */
     cuda_err = cudaEventCreate(&cuda_start);
@@ -313,8 +310,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    /* TODO it would be nice to know the memory utilization in the
+     * GPU and that would tell us how much memory is still available
+     */
     clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff( t1, t0);
+    tdelta_nsec = timediff(t1, t0);
     printf("     : Wallclock cudaMalloc(A) %10" PRIu64 " nsecs  %9.7g secs\n",
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
@@ -406,8 +406,8 @@ int main(int argc, char *argv[])
      *******************************************************/
     vectorAdd<<<blocksPerGrid, threadsPerBlock, 0>>>(d_A, d_B, d_C, numElements);
 
-    /* a call to cudaError_t cudaDeviceSynchronize ( void )  will ensure
-       that all previous tasks in the GPU are completed. */
+    /* call to cudaError_t cudaDeviceSynchronize ( void ) will ensure
+     * that all previous tasks in the GPU are completed. */
     cuda_err = cudaDeviceSynchronize();
     if (cuda_err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed vectorAdd\n");
@@ -419,7 +419,6 @@ int main(int argc, char *argv[])
     tdelta_nsec = timediff( t0, t1);
     printf("     : Wallclock kernel launch %" PRIu64 " nsecs  %9.7g secs\n",
                             tdelta_nsec, (float)tdelta_nsec/1.0e9);
-
 
 
     cuda_err = cudaEventRecord(cuda_stop, 0);
@@ -458,6 +457,7 @@ int main(int argc, char *argv[])
 
     /* Copy the device result vector in device memory to the host
      * result vector in host memory */
+    clock_gettime( CLOCK_REALTIME, &t1 );
     cuda_err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
     if (cuda_err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed to copy result vector C from device to host\n");
@@ -479,7 +479,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("     : A + B correct within error 2^(-50) epsilon\n");
+    printf("     : A + B correct within error 2^(-48) epsilon\n");
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : result check done %" PRIu64 " nsecs  %9.7g secs\n",

@@ -1,0 +1,115 @@
+
+
+d$ 
+d$ nvprof ./mandel_hack
+==10220== NVPROF is profiling process 10220, command: ./mandel_hack
+-------------------------------------------------------------
+        system name = Linux
+          node name = dev
+            release = 6.3.8-genunix
+            version = #1 SMP Sun Jun 18 13:26:59 UTC 2023
+            machine = x86_64
+          page size = 4096
+       avail memory = 16649641984
+                    = 16259416 kB
+                    = 15878 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K620
+INFO : firing off 1048576 cuda core code chunks
+     : mem size of double data array is 8388608 bytes
+     : mem size of uint32_t height array is 4194304 bytes
+
+-----------------------------------------------------------
+     : 1048576 coord loaded 26732986 nsecs
+     : cudaMalloc device_r 85420353 nsecs
+     : cudaMalloc device_j 113697 nsecs
+     : cudaMalloc device_mval 109364 nsecs
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 1220984nsecs
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 1371536 nsecs
+INFO : CUDA kernel launch with 1024 blocks of 1024 threads
+INFO : done.
+     : gpu_mbrot time delta 33521 nsecs
+INFO : Copy result from device to host done.
+     : copy device result done 1388681 nsecs
+
+     : mand_bail = 256
+     : translate = ( -1.22589111328125000000e+00  , -1.77673339843750000000e-01  )
+     :   magnify = +1.280000000000e+02 
+
+     : r[ 0][ 0][ 0][ 0] = -1.24150085449218750000000000e+00
+     : j[ 0][ 0][ 0][ 0] = -1.93283081054687500000000000e-01
+     :       mand_height =        13
+     : r[ 7][ 7][63][63] = -1.22590637207031250000000000e+00
+     : j[ 7][ 7][63][63] = -1.77688598632812500000000000e-01
+     :       mand_height =       104
+     : r[ 8][ 8][ 0][ 0] = -1.22587585449218750000000000e+00
+     : j[ 8][ 8][ 0][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        69
+     : r[ 8][ 8][ 1][ 0] = -1.22584533691406250000000000e+00
+     : j[ 8][ 8][ 1][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        65
+     : r[ 8][ 8][32][32] = -1.22489929199218750000000000e+00
+     : j[ 8][ 8][32][32] = -1.76681518554687500000000000e-01
+     :       mand_height =       256
+     : r[ 3][12][44][21] = -1.23429870605468750000000000e+00
+     : j[ 3][12][44][21] = -1.69204711914062500000000000e-01
+     :       mand_height =        45
+     : r[15][15][63][63] = -1.21028137207031250000000000e+00
+     : j[15][15][63][63] = -1.62063598632812500000000000e-01
+     :       mand_height =       256
+INFO : file /var/tmp/dclarke/20230619073740 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =      256
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.28000000000000000000000000e+02
+DBUG :  8 byte double centre_r num_written = 1
+     : centre_r = -1.22589111328125000000000000e+00
+     :  8 byte double centre_j num_written = 1
+     : centre_j = -1.77673339843750000000000000e-01
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20230619073740 closed.
+INFO : dumped 1048576 records
+INFO : host memory free and we are done
+==10220== Profiling application: ./mandel_hack
+==10220== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   94.44%  55.190ms         1  55.190ms  55.190ms  55.190ms  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    4.39%  2.5683ms         2  1.2842ms  1.2796ms  1.2887ms  [CUDA memcpy HtoD]
+                    1.17%  683.96us         1  683.96us  683.96us  683.96us  [CUDA memcpy DtoH]
+      API calls:   58.04%  85.635ms         3  28.545ms  108.68us  85.414ms  cudaMalloc
+                   37.54%  55.384ms         1  55.384ms  55.384ms  55.384ms  cudaDeviceSynchronize
+                    2.68%  3.9592ms         3  1.3197ms  1.2107ms  1.3813ms  cudaMemcpy
+                    0.99%  1.4660ms         3  488.67us  138.02us  664.41us  cudaFree
+                    0.36%  524.94us         1  524.94us  524.94us  524.94us  cudaDeviceReset
+                    0.16%  243.38us         1  243.38us  243.38us  243.38us  cudaGetDeviceProperties
+                    0.12%  178.93us       101  1.7710us     140ns  77.975us  cuDeviceGetAttribute
+                    0.05%  73.629us         1  73.629us  73.629us  73.629us  cuDeviceTotalMem
+                    0.03%  38.987us         1  38.987us  38.987us  38.987us  cuDeviceGetName
+                    0.01%  20.883us         1  20.883us  20.883us  20.883us  cudaLaunchKernel
+                    0.01%  8.8790us         1  8.8790us  8.8790us  8.8790us  cuDeviceGetPCIBusId
+                    0.00%  1.5530us         3     517ns     202ns  1.0890us  cuDeviceGetCount
+                    0.00%     862ns         2     431ns     194ns     668ns  cuDeviceGet
+                    0.00%     794ns         1     794ns     794ns     794ns  cudaGetDeviceCount
+                    0.00%     342ns         1     342ns     342ns     342ns  cudaGetLastError
+                    0.00%     260ns         1     260ns     260ns     260ns  cuDeviceGetUuid
+d$ ls -lapbtr /var/tmp/dclarke/2*
+-rw-r--r-- 1 dclarke devl 20971568 Jun 19 07:29 /var/tmp/dclarke/20230619072929
+-rw-r--r-- 1 dclarke devl 20971568 Jun 19 07:37 /var/tmp/dclarke/20230619073740
+d$ openssl dgst -sha256 -r /var/tmp/dclarke/2*
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230619072929
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230619073740
+d$ 
+

@@ -1,5 +1,5 @@
 /**
- * hacked at by Dennis Clarke for some twitch fun stuff
+ * hacked at by Dennis Clarke
  *
  * okay hacked a LOT.
  *

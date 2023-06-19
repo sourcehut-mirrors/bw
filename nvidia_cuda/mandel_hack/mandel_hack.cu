@@ -37,11 +37,12 @@
 #define THREADS_PER_BLOCK 1024
 
 
-/* dataset 2 */
+/* dataset 2 *
 #define BAIL_OUT 32768
 #define MAGNIFY 274877906944
 #define REAL_COORD -0.0157887752805699992098
 #define IMAG_COORD  1.02061921088799989477
+*/
 #define IMG_PIX_W 1024
 
 /* this is the reference dataset 1 
@@ -49,8 +50,14 @@
 #define MAGNIFY 268435456
 #define REAL_COORD 0.399750960350502282381
 #define IMAG_COORD 0.205251797480741515756
-#define IMG_PIX_W 1024
 */
+
+/* dataset 0 
+    256 128 -1.225891113281250 -0.177673339843750 */
+#define BAIL_OUT 256
+#define MAGNIFY 128
+#define REAL_COORD -1.225891113281250
+#define IMAG_COORD -0.177673339843750
 
 /* TODO read in the established data files */
 #define VBOX_REAL_COUNT 16
