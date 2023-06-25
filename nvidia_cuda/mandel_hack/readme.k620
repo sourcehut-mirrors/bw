@@ -1,4 +1,126 @@
 
+Dataset 5 is somewhat extreme 
+
+d$ nvprof ./mandel_hack
+==16820== NVPROF is profiling process 16820, command: ./mandel_hack
+-------------------------------------------------------------
+        system name = Linux
+          node name = dev
+            release = 6.3.8-genunix
+            version = #1 SMP Sun Jun 18 13:26:59 UTC 2023
+            machine = x86_64
+          page size = 4096
+       avail memory = 16649641984
+                    = 16259416 kB
+                    = 15878 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+INFO : number of CUDA devices:  1
+     :    0: Quadro K620
+     :          2099511296 totalGlobalMem
+     :             1124000 clockRate
+     :                 128 memoryBusWidth
+     :                   3 multiProcessorCount
+     :                2048 maxThreadsPerMultiProcessor
+     :                 384 cores
+
+INFO : Quadro K620 device is selected
+
+INFO : firing off 1048576 cuda core code chunks
+     : mem size of double data array is 8388608 bytes
+     : mem size of uint32_t height array is 4194304 bytes
+
+-----------------------------------------------------------
+     : 1048576 coord loaded 21780799 nsecs
+     : cudaMalloc device_r 92458800 nsecs
+     : cudaMalloc device_j 102292 nsecs
+     : cudaMalloc device_mval 101622 nsecs
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 1225209nsecs
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 1352568 nsecs
+INFO : CUDA kernel launch with 1024 blocks of 1024 threads
+INFO : done.
+     : gpu_mbrot time delta 24598 nsecs
+INFO : Copy result from device to host done.
+     : copy device result done 1428924 nsecs
+
+     : mand_bail = 524288
+     : translate = ( -1.57887752802652429895e-02  , +1.02061921090827745218e+00  )
+     :   magnify = +4.398046511104e+12 
+
+     : r[ 0][ 0][ 0][ 0] = -1.57887752807195462512179773e-02
+     : j[ 0][ 0][ 0][ 0] = +1.02061921090782314891498572e+00
+     :       mand_height =     18756
+     : r[ 7][ 7][63][63] = -1.57887752802656870787512133e-02
+     : j[ 7][ 7][63][63] = +1.02061921090827700808745249e+00
+     :       mand_height =    524288
+     : r[ 8][ 8][ 0][ 0] = -1.57887752802647989003315132e-02
+     : j[ 8][ 8][ 0][ 0] = +1.02061921090827789626587219e+00
+     :       mand_height =    524288
+     : r[ 8][ 8][ 1][ 0] = -1.57887752802639107219118131e-02
+     : j[ 8][ 8][ 1][ 0] = +1.02061921090827789626587219e+00
+     :       mand_height =    524288
+     : r[ 8][ 8][32][32] = -1.57887752802363771909011092e-02
+     : j[ 8][ 8][32][32] = +1.02061921090830631797530259e+00
+     :       mand_height =    524288
+     : r[ 3][12][44][21] = -1.57887752805099361441687478e-02
+     : j[ 3][12][44][21] = +1.02061921090852392168812912e+00
+     :       mand_height =      8982
+     : r[15][15][63][63] = -1.57887752798109397278647492e-02
+     : j[15][15][63][63] = +1.02061921090873175543833895e+00
+     :       mand_height =      6170
+INFO : file /var/tmp/dclarke/20230625155524 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =   524288
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +4.39804651110400000000000000e+12
+DBUG :  8 byte double centre_r num_written = 1
+     : centre_r = -1.57887752802652429895413633e-02
+     :  8 byte double centre_j num_written = 1
+     : centre_j = +1.02061921090827745217666234e+00
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20230625155524 closed.
+INFO : dumped 1048576 records
+INFO : host memory free and we are done
+==16820== Profiling application: ./mandel_hack
+==16820== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   99.99%  31.7992s         1  31.7992s  31.7992s  31.7992s  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    0.01%  2.5601ms         2  1.2801ms  1.2799ms  1.2802ms  [CUDA memcpy HtoD]
+                    0.00%  680.89us         1  680.89us  680.89us  680.89us  [CUDA memcpy DtoH]
+      API calls:   99.69%  31.7994s         1  31.7994s  31.7994s  31.7994s  cudaDeviceSynchronize
+                    0.29%  92.657ms         3  30.886ms  101.02us  92.454ms  cudaMalloc
+                    0.01%  3.9837ms         3  1.3279ms  1.2154ms  1.4195ms  cudaMemcpy
+                    0.00%  1.3862ms         3  462.05us  129.30us  630.51us  cudaFree
+                    0.00%  501.99us         1  501.99us  501.99us  501.99us  cudaDeviceReset
+                    0.00%  290.62us         1  290.62us  290.62us  290.62us  cudaGetDeviceProperties
+                    0.00%  283.03us       101  2.8020us     117ns  172.62us  cuDeviceGetAttribute
+                    0.00%  65.967us         1  65.967us  65.967us  65.967us  cuDeviceTotalMem
+                    0.00%  43.856us         1  43.856us  43.856us  43.856us  cuDeviceGetName
+                    0.00%  19.800us         1  19.800us  19.800us  19.800us  cudaLaunchKernel
+                    0.00%  7.1660us         1  7.1660us  7.1660us  7.1660us  cuDeviceGetPCIBusId
+                    0.00%  2.5980us         1  2.5980us  2.5980us  2.5980us  cudaSetDevice
+                    0.00%  1.6170us         3     539ns     169ns  1.2310us  cuDeviceGetCount
+                    0.00%     893ns         1     893ns     893ns     893ns  cudaGetDeviceCount
+                    0.00%     878ns         2     439ns     135ns     743ns  cuDeviceGet
+                    0.00%     268ns         1     268ns     268ns     268ns  cudaGetLastError
+                    0.00%     258ns         1     258ns     258ns     258ns  cuDeviceGetUuid
+d$ 
+
+
+------------------------------------------------
+
+
 
 d$ 
 d$ nvprof ./mandel_hack
