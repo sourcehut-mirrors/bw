@@ -116,7 +116,18 @@ INFO : host memory free and we are done
                     0.00%     268ns         1     268ns     268ns     268ns  cudaGetLastError
                     0.00%     258ns         1     258ns     258ns     258ns  cuDeviceGetUuid
 d$ 
-
+d$ hdump -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230625155524
+     0:  00 00 10 00 00 00 08 00 00 00 00 00 00 00 90 42
+    10:  c3 f9 e3 c5 ee 2a 90 bf 78 53 48 cf 74 54 f0 3f
+    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+    30:  43 f9 e5 c5 ee 2a 90 bf 7a 4b 48 cf 74 54 f0 3f
+    40:  44 49 00 00 43 f8 e5 c5 ee 2a 90 bf 7a 4b 48 cf
+    50:  74 54 f0 3f 7d 38 00 00 43 f7 e5 c5 ee 2a 90 bf
+    60: 
+d$ 
+d$ openssl dgst -sha256 -r /var/tmp/dclarke/20230625155524
+7dad469487ed7df27b7d0c95c4f891b86ad3cf09eee0065047c2bdc84ace2e44 */var/tmp/dclarke/20230625155524
+d$ 
 
 ------------------------------------------------
 
