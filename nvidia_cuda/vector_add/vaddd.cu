@@ -229,15 +229,17 @@ int main(int argc, char *argv[])
 
     }
 
-    /* this was just a dirty select of the unit with the most memory
-    if (cudaSetDevice(gpu_unit_max_number) != cudaSuccess) {
+    /* this was just a dirty select of the unit with the least memory */
+    if (cudaSetDevice(gpu_unit_min_number) != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to select %s\n",
-                                        (dprop+gpu_unit_max_number)->name);
+                                        (dprop+gpu_unit_min_number)->name);
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
-    */
+
+    printf("\n     : %s selected\n\n",(dprop+gpu_unit_min_number)->name);
+    /* end of the hack for min device */
 
     cuda_err = cudaDeviceReset();
     if ( cuda_err != cudaSuccess) {

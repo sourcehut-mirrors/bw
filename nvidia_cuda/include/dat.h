@@ -5,7 +5,7 @@
  * 268435456    256M
  * 402653184    384M
  * 469762048    448M
- * 520000000    should fit onto a 12G GPU card
+ * 516979725    may fit into 12G memory ?
  * 536870912    512M
  * 1073741824   1G
  *
@@ -17,7 +17,7 @@
  * and then slam in 83105600 elements of 64bit.
  */
 
-#define NUM_ELEMENTS 83105600
+#define NUM_ELEMENTS 516979725
 #define THREADS_PER_BLOCK 1024
 
 /* we may need to redefine this in some code */
