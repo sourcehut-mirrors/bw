@@ -1,12 +1,12 @@
 
 CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -m64 -O3 \
-	-mhard-float \
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-builtin -fno-fast-math -mhard-float \
 	-mno-app-regs -mflat -mhard-quad-float \
-	-mno-unaligned-doubles \
+	-mno-unaligned-doubles -mno-faster-structs \
 	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
-	-mcmodel=medany \
+	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany \
 	-mmemory-model=tso \
 	-fPIC -Wl,-rpath=/usr/pkg/lib \
 	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
