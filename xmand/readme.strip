@@ -1,0 +1,14 @@
+
+
+this may possibly remove a pile of cruft from a 
+debuggable binary : 
+
+objcopy --strip-unneeded --remove-section=.comment input.o output.o
+
+possibly CFLAGS : 
+
+    -fvisibility=hidden
+    -fvisibility-inlines-hidden
+    -flto -Wl,--exclude-libs,ALL
+    -Wl,-r,--discard-all -Wl,-flto
+

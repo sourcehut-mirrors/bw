@@ -1,0 +1,25 @@
+
+
+to get timing data for dataset 0 just do :
+
+             put a digit 0 here --+
+                                  |
+                                  |
+                                  V
+d$ cat timing_template | sed 's/X/0/g' > timings.sh; chmod 0700 timings.sh; ./timings.sh; rm timings.sh
+       725705053    linux_amd64_fast
+      1774063794    xeon_fma
+      4956596943    ppc64le_fast
+      8695489525    via_eden_nofma_fast_bork
+     26393241571    linux_pentium_g4500_fast
+     33185639362    amd64_netbsd_fast
+     34790853502    amd64_netbsd
+     71825232912    fbsd14_rv64imafdc_opt
+     75645268058    fbsd14_rv64imafdc
+    161678235728    linux_sparcv9_fast
+    165019169032    netbsd_sparcv9
+    172308615712    linux_sparcv9
+    179061160302    via_eden
+d$ 
+
+
