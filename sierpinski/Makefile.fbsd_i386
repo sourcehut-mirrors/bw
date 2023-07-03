@@ -1,6 +1,6 @@
 CC?=		/usr/bin/cc
 
-CFLAGS=		-I$(IDIR) -std=iso9899:1999 -m64 -g -O0 \
+CFLAGS=		-I$(IDIR) -std=iso9899:1999 -m32 -g -O0 \
 		-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
 		-Weverything -Wno-reserved-id-macro -Wno-unused-macros
 
