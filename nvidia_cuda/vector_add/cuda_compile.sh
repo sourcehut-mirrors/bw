@@ -16,14 +16,17 @@ unset SIZE
 unset STRINGS
 unset STRIP
 
-
-PATH=/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
-export PATH
-
 if [ -d /usr/local/cuda-11.8 ]; then
     CUDA_HOME=/usr/local/cuda-11.8
     export CUDA_HOME
-    PATH=/usr/local/cuda-11.8/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/schily/bin
+    PATH=/usr/local/cuda-11.8/bin:/opt/bw/gcc10/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin
+    export PATH
+fi
+
+if [ -d /usr/local/cuda-11.4 ]; then
+    CUDA_HOME=/usr/local/cuda-11.4
+    export CUDA_HOME
+    PATH=/usr/local/cuda-11.4/bin:/opt/bw/gcc10/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin
     export PATH
 fi
 

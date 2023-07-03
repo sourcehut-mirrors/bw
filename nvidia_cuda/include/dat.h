@@ -12,12 +12,9 @@
  * minimal low level entry point at 16M is 
  *            16777216   elements
  *
- * On an itty bitty little Quadro K620 there is
- * only 2G of memory. So lets try 5% overhead
- * and then slam in 83105600 elements of 64bit.
  */
 
-#define NUM_ELEMENTS 516979725
+#define NUM_ELEMENTS 169519786
 #define THREADS_PER_BLOCK 1024
 
 /* we may need to redefine this in some code */

@@ -25,6 +25,8 @@
 
 #include "dat.h"
 
+#define GIG 1073741824
+
 int sysinfo(void);
 uint64_t system_memory();
 uint64_t timediff( struct timespec st, struct timespec en );
@@ -55,12 +57,32 @@ int main(int argc, char *argv[])
 
     cudaError_t err = cudaSuccess;
     int numElements = NUM_ELEMENTS;
+    int candidate_int;
     size_t size = numElements * sizeof(float);
 
     int num_gpus = 0;
 
     setlocale( LC_ALL, "C" );
     sysinfo();
+
+    if (argc>1) {
+        errno = 0;
+        candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
+        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
+            fprintf(stderr,"FAIL : numElements not understood\n");
+            perror("     ");
+            return EXIT_FAILURE;
+        }
+        if ( ( candidate_int < 16777216 ) || ( candidate_int > GIG ) ){
+            fprintf(stderr,"WARN : numElements is unreasonable\n");
+            fprintf(stderr,"     : we shall assume 16777216 numElements and proceed.\n");
+            numElements = 16777216;
+        } else {
+            numElements = candidate_int;
+            fprintf(stderr,"INFO : numElements is %i\n", numElements);
+        }
+    }
+
 
     /* Get the CLOCK_REALTIME time in a timespec struct */
     if ( clock_gettime( CLOCK_REALTIME, &t_start ) == -1 ) {
@@ -89,11 +111,11 @@ int main(int argc, char *argv[])
     printf("INFO : number of CUDA devices:\t%d\n", num_gpus);
 
     /* we need a device that can handle three arrays with some 
-     * minimal overhead. Say 5% just for giggles. That can be
+     * minimal overhead. Say 3% just for giggles. That can be
      * stupid large on a big NVidia Quadro */
     uint64_t memory_fit_size = (uint64_t)(
 
-                            (double)( 3.0 * size ) * 1.05
+                            (double)( 3.0 * size ) * 1.03
 
                                          );
 
@@ -136,9 +158,9 @@ int main(int argc, char *argv[])
     printf("     : max memory unit is %i: %s with %" PRIu64 " bytes\n",
                           gpu_unit_max_number, gpu_unit_name, gpu_max_memory);
 
-    /* possible return values are : 
-       Returns:
-    cudaSuccess, cudaErrorInvalidDevice, cudaErrorSetOnActiveProcess */
+    /* Returns: cudaSuccess, cudaErrorInvalidDevice,
+     * cudaErrorSetOnActiveProcess
+     */
     if (cudaSetDevice(gpu_unit_max_number) != cudaSuccess) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to select %s\n", gpu_unit_name);
@@ -147,7 +169,7 @@ int main(int argc, char *argv[])
     }
 
     /* we may as well do a cudaDeviceReset ( void ) */
-    if ( cudaDeviceReset() != cudaSuccess) {
+    if (cudaDeviceReset() != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
