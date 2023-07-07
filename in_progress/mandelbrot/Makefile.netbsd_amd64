@@ -1,0 +1,17 @@
+
+CC=/opt/bw/gcc13/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-builtin \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double -mlong-double-80 \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+	-fPIC -Wl,-rpath=/usr/pkg/lib,--enable-new-dtags
+
+IDIR=/usr/pkg/include -I/usr/X11R7/include -I../../pthread -I../read_dump -I../../stat_test
+LDIR=/usr/pkg/lib -L/usr/X11R7/lib
+LIBS= -lrt -lm -lpthread
+
+include common.mk
+

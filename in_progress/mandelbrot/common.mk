@@ -1,17 +1,15 @@
 
 CC?=	/usr/bin/cc
 
-CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-			-D_XOPEN_SOURCE=600
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
-LIBS=		-lm -lpthread
+LIBS?=		-lrt -lm -lpthread
 
 LDIR?=		/usr/local/lib
-IDIR?=		/usr/local/include
 
 OBJS=		../read_dump/read_mbrot_data.o \
-			./parse_pthread_limit.o \
-			../parse_num/parse_double.o \
+		./parse_pthread_limit.o \
+		../parse_num/parse_double.o \
 		../read_dump/file_pointer.o \
 		../read_dump/array_index.o \
 		../trimmer/strtrim.o \
