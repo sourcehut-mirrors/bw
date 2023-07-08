@@ -89,7 +89,7 @@ int main(void)
     sysinfo(VERBOSE);
 
     /* TODO all this stuff needs to be input parameters */
-    char *username = "xtester";
+    char *username = "testdude";
     char *ssh_pub_key_file = calloc(128, sizeof(unsigned char));
     char *ssh_priv_key_file = calloc(128, sizeof(unsigned char));
 
@@ -107,19 +107,19 @@ int main(void)
         }
 
         strncpy(ssh_pub_key_file,homedir,homedir_len);
-        strncat(ssh_pub_key_file,"/.ssh/xtester_rsa4096.pub",26);
+        strncat(ssh_pub_key_file,"/.ssh/libCurl.pub",26);
 
         strncpy(ssh_priv_key_file,homedir,homedir_len);
-        strncat(ssh_priv_key_file,"/.ssh/xtester_rsa4096.id",25);
+        strncat(ssh_priv_key_file,"/.ssh/libCurl.id",25);
 
     }
 
     /* yep ... a hard coded SSH pass phrase for excellent security! */
-    char *ssh_pass = "0xfeeddeadbeefbadcaffeh";
+    char *ssh_pass = "0xfeeddeadbeefh";
     /* TODO verify that the ssh keys actually exist */
 
     char *target_url = calloc(128, sizeof(unsigned char));
-    strcpy (target_url, "sftp://172.16.35.8:22/~/get_things_from_here/" );
+    strcpy (target_url, "sftp://hydra.genunix.com:22/~/get_things_from_here/" );
 
     struct dataflags config;
 
@@ -332,9 +332,9 @@ write_data( void *buffer, size_t size, size_t nmemb, void *userp )
     size_t segsize = size * nmemb;
 
     /* Check to see if this data exceeds the size of our buffer. If so, 
-       * set the user-defined context value and return 0 to indicate a
-       * problem to curl.
-       */
+     * set the user-defined context value and return 0 to indicate a
+     * problem to curl.
+     */
     if ( ( wr_index + segsize ) > LS_REPLYSIZE ) {
         *(int *)userp = 1;
         return 0;
@@ -488,7 +488,7 @@ dump( const char *text,
             }
 
             fprintf (stream, "%c",
-                      ( ptr[i+c]>=0x20 ) && ( ptr[i+c]<0x80 ) ? ptr[i+c] : '.');
+                     ( ptr[i+c]>=0x20 ) && ( ptr[i+c]<0x80 ) ? ptr[i+c] : '.');
 
             /* check again for 0D0A, to avoid an extra \n if it's at width */
             if ( nohex && ( i+c+2 < size )
@@ -505,7 +505,9 @@ dump( const char *text,
 
 }
 
-void hexdump ( char *desc, void *addr, int len ) {
+void
+hexdump ( char *desc, void *addr, int len )
+{
 
     int i;
     unsigned char buff[17];
@@ -516,7 +518,6 @@ void hexdump ( char *desc, void *addr, int len ) {
         printf ( "%s:\n", desc );
     }
 
-    /* Process every byte in the data. */
     for ( i = 0; i < len; i++ ) {
         /* Multiple of 16 means new line (with line offset). */
 
