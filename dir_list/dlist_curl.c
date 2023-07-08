@@ -46,7 +46,7 @@
 
 #include <curl/curl.h>
 
-/* TODO why these globals ? */
+/* globals are easy */
 static char   wr_buf[LS_REPLYSIZE+1];
 static int    wr_index;
 
@@ -63,7 +63,7 @@ typedef struct {
 #define VERBOSE 1
 int sysinfo(int verbose);
 
-/* TODO clean this mess up and use the time and date funcs */
+/* TODO clean this up and use the time and date funcs */
 long double timespec_to_ld( struct timespec t );
 
 size_t write_data( void *buffer, size_t size, size_t nmemb, void *userp );
@@ -93,9 +93,6 @@ int main(void)
     char *ssh_pub_key_file = calloc(128, sizeof(unsigned char));
     char *ssh_priv_key_file = calloc(128, sizeof(unsigned char));
 
-    /* see the damn man page for STRLCPY(3)  and note that you
-     * can not use it in C99 world. */
-
     char *homedir = getenv("HOME");
     if ( homedir == NULL ) {
 	    fprintf(stderr,"WARN : home directory env var HOME not found\n");
@@ -105,7 +102,7 @@ int main(void)
     } else {
         size_t homedir_len = strlen(homedir);
         if ( homedir_len > 96 ) {
-            fprintf(stderr,"FAIL : home directory env var HOME is insane?\n");
+            fprintf(stderr,"FAIL : check home directory env var HOME\n");
             return EXIT_FAILURE;
         }
 
@@ -116,6 +113,8 @@ int main(void)
         strncat(ssh_priv_key_file,"/.ssh/xtester_rsa4096.id",25);
 
     }
+
+    /* yep ... a hard coded SSH pass phrase for excellent security! */
     char *ssh_pass = "0xfeeddeadbeefbadcaffeh";
     /* TODO verify that the ssh keys actually exist */
 
@@ -137,14 +136,17 @@ int main(void)
     time_t *date_tv = calloc(1,sizeof(time_t) );
     if ( date_tv == NULL ) {
         fprintf( stderr, "FAIL : Can not allocate sizeof(time_t)\n" );
-        exit( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
 
     setlocale (LC_ALL, "POSIX" );
-    if (setenv("TZ", "GMT0", 1 ) != 0 ) {
-        fprintf(stderr, "WARN : Unable to use timezone GMT0\n" );
-        if (setenv("TZ", "UTC", 1 ) != 0 ) {
-            fprintf(stderr, "WARN : Unable to use timezone UTC\n" );
+    if (setenv("TZ", "UTC", 1 ) != 0 ) {
+        fprintf(stderr, "WARN : Unable to use timezone UTC\n" );
+        char *timezone = getenv("TZ");
+        if ( timezone == NULL ) {
+            fprintf(stderr, "WARN : we have no timezone set?\n");
+        } else {
+            fprintf(stderr, "INFO : we shall use timezone %s\n", timezone);
         }
     }
 
@@ -160,11 +162,8 @@ int main(void)
     start_ld = timespec_to_ld(start_tv );
     fprintf (stderr, "START : %-22.19Lg \n", start_ld );
 
-    /********************* e n d  t i m e   d a t a ********************/
 
     logfile = fopen("/dev/null", "w" );
-
-    /* hexdump ( NULL, eft_buffer, rarg.len ); */
 
     curl_global_init(CURL_GLOBAL_ALL );
     curl = curl_easy_init();
@@ -176,11 +175,14 @@ int main(void)
 
         /* only allow CURLPROTO_SCP or SFTP */
         curl_easy_setopt(curl, CURLOPT_PROTOCOLS,
-                                        CURLPROTO_SCP | CURLPROTO_SFTP );
+                               CURLPROTO_SCP | CURLPROTO_SFTP );
 
-        /* enforce TLS v1.3  for https web access***********************
-        curl_easy_setopt ( curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3 );
-         ***************************************************************/
+        /* enforce TLS v1.3  for https web access
+         *
+         * curl_easy_setopt ( curl, CURLOPT_SSLVERSION,
+         *                          CURL_SSLVERSION_TLSv1_3 );
+         *
+         */
 
 
         /* For FTP and SFTP based URLs a parameter set to 1 tells the
@@ -221,16 +223,26 @@ int main(void)
 
         /* Check for errors */
         if (res != CURLE_OK ) {
-            fprintf (stderr, "FAIL : curl_easy_perform() failed: %s\n", curl_easy_strerror ( res ) );
-            fprintf (stderr, "FAIL : res = %d (write_error = %d)\n", res, wr_error );
+            fprintf (stderr,
+                    "FAIL : curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror ( res ) );
+
+            fprintf (stderr,
+                    "FAIL : res = %d (write_error = %d)\n",
+                    res, wr_error );
+
+            /* would be nice to free stuff eh? */
             return EXIT_FAILURE;
+
         }
 
         /* now extract transfer info */
         curl_easy_getinfo(curl, CURLINFO_SPEED_UPLOAD, &speed_upload);
         curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &total_time);
 
-        fprintf (stderr, "Speed: %.3f bytes/sec during %.3f seconds\n", speed_upload, total_time); 
+        fprintf (stderr,
+                "Speed: %.3f bytes/sec during %.3f seconds\n",
+                speed_upload, total_time); 
 
         /*
          * we should  null terminate the reply
@@ -239,10 +251,11 @@ int main(void)
         printf("res = %d (write_error = %d)\n", res, wr_error );
 
         /* this may not be reasonable at all */
-        if (res == 0 )
+        if (res == 0 ) {
             printf ("\nData length received : %-06i bytes\n", strlen(wr_buf) );
-        else
+        } else {
             printf ("\nError : \n" );
+        }
 
         /* always cleanup */
         curl_easy_cleanup (curl);
@@ -266,7 +279,9 @@ int main(void)
 
 }
 
-long double timespec_to_ld( struct timespec t ) {
+long double
+timespec_to_ld( struct timespec t )
+{
 
     char buffer[64] = "";
     int bytes_formatted;
@@ -284,7 +299,9 @@ long double timespec_to_ld( struct timespec t ) {
 
 }
 
-static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream) {
+static size_t
+read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
+{
     /* cast the void *stream to our type struct readarg_t */
     readarg_t *rarg = (readarg_t *)stream;
 
@@ -308,7 +325,9 @@ static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream) 
  * Write data callback function (called within the context of 
  * curl_easy_perform.
  */
-size_t write_data( void *buffer, size_t size, size_t nmemb, void *userp ) {
+size_t
+write_data( void *buffer, size_t size, size_t nmemb, void *userp )
+{
 
     size_t segsize = size * nmemb;
 
@@ -337,14 +356,18 @@ size_t write_data( void *buffer, size_t size, size_t nmemb, void *userp ) {
 }
 
 
-static int my_trace( CURL *handle, curl_infotype type, char *data,
-                     size_t size, void *userp ) {
+static int
+my_trace( CURL *handle, curl_infotype type,
+          char *data, size_t size, void *userp )
+{
 
     struct dataflags *config = (struct dataflags *)userp;
     const char *text;
-    (void)handle; /* prevent compiler warning */
+
+    (void)handle; /* prevent compiler warning? */
 
     switch (type) {
+
         case CURLINFO_TEXT:
             fprintf(stderr, "== Info: %s", data);
             break;
@@ -377,7 +400,9 @@ static int my_trace( CURL *handle, curl_infotype type, char *data,
             text = "<= Recv SSL data";
             break;
 
-        default: /* in case a new one is introduced to shock us */
+        /* Just in case a new return value has
+         * been introduced into libCurl to shock us */
+        default:
             return 0;
 
     }
@@ -391,17 +416,24 @@ static int my_trace( CURL *handle, curl_infotype type, char *data,
 }
 
 
-static void dump( const char *text, FILE *stream, unsigned char *ptr,
-                  size_t size, char nohex ) {
+/* does what is claims to do. just dump stuff out to some stream */
+static void
+dump( const char *text,
+      FILE *stream, unsigned char *ptr,
+      size_t size, char nohex )
+{
 
     size_t i;
     size_t c;
   
-    unsigned int width=0x10;  /* Assume 16 chars per hex line */
+    /* Assume 16 chars per hex line */
+    unsigned int width=0x10;
   
-    if (nohex)
+    if (nohex) {
         /* without the hex output, we can fit more on screen */
         width = 0x40;
+    }
+
   
     /* show how many bytes were received */
     fprintf(stream, "%s, 0x%8.8lx\n", text, (long)size);
@@ -410,17 +442,43 @@ static void dump( const char *text, FILE *stream, unsigned char *ptr,
   
         fprintf(stream, "%4.4lx: ", (long)i);
   
-        if (!nohex) { /* hex not disabled, show it */
-            for ( c = 0; c < width; c++ )
-                if ( i+c < size )
+        /* do we spew out the hex data ? */
+        if (!nohex) {
+            for ( c = 0; c < width; c++ ) {
+                if ( i+c < size ) {
                     fprintf (stream, "%02x ", ptr[i+c] );
-                else
+                } else {
                     fprintf (stream, "   " );
+                }
+            }
         }
   
         for ( c = 0; (c < width) && (i+c < size); c++ ) {
-            /* check for 0D0A; if found, skip past and 
-             * start a new line of output 
+            /* check for ye old DOS 0x0D 0x0A and skip past
+             * it with a new line of output. There was an
+             * RFC 1866 section 4.2.2 wherein it claims that
+             * MIME data is a sequence of lines of text
+             * where every line is terminated by CRLF. Seems
+             * a lot of web servers out there do this with
+             * every line that is uttered to a web agent. Even
+             * worse is :
+             *
+             *    In practice, HTML documents are frequently represented
+             *    and transmitted using an end of line convention that
+             *    depends on the conventions of the source of the
+             *    document; frequently, that representation consists of
+             *    CR only, LF only, or a CR LF sequence.  Hence the
+             *    decoding of the octets will often result in a text
+             *    entity with some missing record start and record end
+             *    characters.
+             *
+             *    Since there is no ambiguity, HTML user agents are
+             *    encouraged to infer the missing record start and end
+             *    characters.
+             *
+             * Please see RFC 1866 "Hypertext Markup Language - 2.0"
+             *
+             * Good luck.
              */
             if ( nohex && ( i+c+1 < size ) 
                        && ( ptr[i+c]==0x0D )
