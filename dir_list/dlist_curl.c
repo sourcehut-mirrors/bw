@@ -173,9 +173,7 @@ int main(void)
         /* this is not an upload of data */
         curl_easy_setopt (curl, CURLOPT_UPLOAD, 0L );
 
-        /* only allow CURLPROTO_SCP or SFTP */
-        curl_easy_setopt(curl, CURLOPT_PROTOCOLS,
-                               CURLPROTO_SCP | CURLPROTO_SFTP );
+        curl_easy_setopt (curl, CURLOPT_PROTOCOLS_STR, "sftp");
 
         /* enforce TLS v1.3  for https web access
          *
