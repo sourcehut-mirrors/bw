@@ -1,16 +1,14 @@
 
-CC=/usr/bin/cc
+CC=/usr/bin/gcc
 
-CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
-	-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
-	-Wno-missing-prototypes -Wno-padded -fno-fast-math -fno-builtin \
-	-Wno-disabled-macro-expansion
+CFLAGS= -std=iso9899:1999 -m32 -g -O0 -pedantic -pedantic-errors \
+		-fno-fast-math -fno-builtin
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LDIR=/opt/bw/lib
 IDIR=/opt/bw/include
-LIBS= -lcurl
+LIBS= -lcurl -lm
 
 SRCS = dlist_curl.c ../sysinfo/sysinfo.c
 OBJS = dlist_curl.o ../sysinfo/sysinfo.o
