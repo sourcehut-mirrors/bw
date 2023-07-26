@@ -34,6 +34,7 @@
 #define _XOPEN_SOURCE 600
 
 #define LS_REPLYSIZE 262144
+#define VERBOSE 1
 
 #include <locale.h>
 #include <stdio.h>
@@ -60,11 +61,9 @@ typedef struct {
     int pos;
 } readarg_t;
 
-#define VERBOSE 1
-int sysinfo(int verbose);
-
 /* TODO clean this up and use the time and date funcs */
 long double timespec_to_ld( struct timespec t );
+int sysinfo(int verbose);
 
 size_t write_data( void *buffer, size_t size, size_t nmemb, void *userp );
 static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
@@ -85,8 +84,6 @@ int main(void)
     double total_time, speed_upload;
     long double start_ld;
     char* c_time_string;
-
-    sysinfo(VERBOSE);
 
     /* TODO all this stuff needs to be input parameters */
     char *username = "testdude";
@@ -157,6 +154,8 @@ int main(void)
     }
 
     c_time_string = ctime(&start_tv.tv_sec );
+
+    sysinfo(VERBOSE);
  
     fprintf (stderr, "current time is %s", c_time_string );
     start_ld = timespec_to_ld(start_tv );
