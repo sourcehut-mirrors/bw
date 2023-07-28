@@ -392,10 +392,9 @@ int main(int argc, char *argv[])
             fprintf(stderr,"FAIL : inter0 calc\n");
             return EXIT_FAILURE;
         }
-        printf("     : ( K_%-2i )^3 = inter0_mpfr = ", k-1);
-        mpfr_printf ("%Re\n\n", inter0_mpfr);
-
-
+        printf("     : ( K_%-2i )^3 =\n", k-1);
+        printf("     :  inter0_mpfr = ");
+        mpfr_printf ("%Re\n", inter0_mpfr);
 
         mpfr_clear_flags();
         inex = mpfr_mul(inter1_mpfr, pre_k_mpfr, sixteen_mpfr,
@@ -404,9 +403,9 @@ int main(int argc, char *argv[])
             fprintf(stderr,"FAIL : inter1 calc\n");
             return EXIT_FAILURE;
         }
-        printf("INFO : 16 * K_%-2i = inter1_mpfr = ", k-1);
+        printf("INFO : 16 * K_%-2i =\n", k-1);
+        printf("     : inter1_mpfr = ");
         mpfr_printf ("%Re\n", inter1_mpfr);
-
 
 
         mpfr_clear_flags();
@@ -416,10 +415,9 @@ int main(int argc, char *argv[])
             fprintf(stderr,"FAIL : intermediate calc third pass\n");
             return EXIT_FAILURE;
         }
-        printf("INFO : ( K_%-2i )^3 - 16 * K_%-2i = inter0_mpfr = ",
-                                                          k-1, k-1);
+        printf("INFO : ( K_%-2i )^3 - 16 * K_%-2i =\n", k-1, k-1);
+        printf("     : inter0_mpfr = ");
         mpfr_printf ("%Re\n", inter0_mpfr);
-
 
 
         mpfr_clear_flags();
@@ -430,14 +428,12 @@ int main(int argc, char *argv[])
         }
 
 
-
         mpfr_clear_flags();
         inex = mpfr_add(inter1_mpfr, inter1_mpfr, one_mpfr, MPFR_RNDN);
         if ( inex != 0 ){
             fprintf(stderr,"FAIL : k + 1\n");
             return EXIT_FAILURE;
         }
-
 
 
         mpfr_clear_flags();
@@ -473,7 +469,7 @@ int main(int argc, char *argv[])
             }
         }
         printf("INFO : inter0_mpfr = ");
-        mpfr_printf ("%Re\n\n", inter0_mpfr);
+        mpfr_printf ("%Re\n", inter0_mpfr);
 
         printf("INFO : M_%-2i = ", k-1);
         mpfr_printf ("%Re\n", big_m_mpfr);
@@ -505,8 +501,7 @@ int main(int argc, char *argv[])
 
 
         mpfr_clear_flags();
-        inex = mpfr_mul(inter0_mpfr, big_m_mpfr, ell_k_mpfr,
-                               MPFR_RNDN);
+        inex = mpfr_mul(inter0_mpfr, big_m_mpfr, ell_k_mpfr, MPFR_RNDN);
         if ( inex != 0 ){
             fprintf(stderr,"WARN : multiply Mk * Lk\n");
             inex = mpfr_check_flags(inex,debug);
@@ -524,8 +519,8 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
         }
-        printf("INFO : M_k * L_k = ");
-        mpfr_printf ("%Re\n\n", inter0_mpfr);
+        printf("INFO : M_%-2i * L_%-2i = ", k, k);
+        mpfr_printf ("%Re\n", inter0_mpfr);
 
 
 
@@ -535,7 +530,9 @@ int main(int argc, char *argv[])
         inex = mpfr_div(inter1_mpfr, inter0_mpfr, x_k_mpfr,
                                MPFR_RNDN);
         if ( inex != 0 ){
-            fprintf(stderr,"WARN : division ( M_k * L_k) / X_k\n");
+            fprintf(stderr,"WARN : division (M_%-2i * L_%-2i) / X_%-2i\n",
+                                            k, k, k);
+
             inex = mpfr_check_flags(inex,debug);
             if ( inex != 0 ){
                 if(debug){
@@ -551,16 +548,19 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
             }
         }
-        printf("INFO : ( M_k * L_k ) / X_k = ");
-        mpfr_printf ("%Re\n\n", inter1_mpfr);
+        printf("INFO : ( M_%-2i * L_%-2i ) / X_%-2i = ", k, k, k);
+        mpfr_printf ("%Re\n", inter1_mpfr);
 
 
         /* accumulate a sigma value term */
         mpfr_clear_flags();
         inex = mpfr_add(sigma_mpfr, sigma_mpfr, inter1_mpfr,
                                MPFR_RNDN);
+
         if ( inex != 0 ){
-            fprintf(stderr,"WARN : Sigma ( M_k * L_k ) / X_k = %i\n", k);
+            fprintf(stderr,"WARN : Sigma ( M_%-2i * L_%-2i ) / X_%-2i\n",
+                                             k, k, k);
+
             inex = mpfr_check_flags(inex,debug);
             if ( inex != 0 ){
                 if(debug){
@@ -602,7 +602,7 @@ int main(int argc, char *argv[])
             }
         }
         printf("INFO : 1 / sigma = ");
-        mpfr_printf ("%Re\n\n", inter2_mpfr);
+        mpfr_printf ("%Re\n", inter2_mpfr);
 
 
 
@@ -631,7 +631,8 @@ int main(int argc, char *argv[])
 
     }
 
-    printf("A good result would be   = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348...\n\n");
+    printf("A good result would be   = ");
+    printf("3.14159265358979323846264338327950288...\n\n");
 
     mpfr_clears (  pi_mpfr, ell_k_mpfr, x_k_mpfr, bigk_mpfr,
                    pre_k_mpfr, big5_mpfr, big_neg2_mpfr,

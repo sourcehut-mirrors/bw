@@ -1,0 +1,10 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m32 -O0 -g -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-fno-fast-math -mno-mmx \
+
+LIBS = -lm -lrt
+
+include common.mk

@@ -19,17 +19,15 @@ CFLAGS= -I$(IDIR) -std=iso9899:1999 -m32 -g -O0 \
 	-mno-movdir64b -mno-avx512vpopcntdq -mno-avx5124fmaps \
 	-mno-avx512vnni -mno-avx5124vnniw
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=600
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 IDIR=/opt/bw/include
 LDIR=/opt/bw/lib
 
 LIBS = -lm -lgmp -lmpfr
 
-SRC = chud.c mpfr_check_flags.c
-
-OBJ = chud.o mpfr_check_flags.o
+SRC = chud.c mpfr_check_flags.c ../gmp_mpfr/gmp_mpfr_ver.c
+OBJ = chud.o mpfr_check_flags.o ../gmp_mpfr/gmp_mpfr_ver.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
