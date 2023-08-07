@@ -45,6 +45,7 @@
 #include <sys/utsname.h>
 #include <math.h>
 #include <fenv.h>
+#include <unistd.h>
 
 #define SYSINFO_FAIL 127
 #define VERBOSE 1
@@ -155,7 +156,7 @@ int main( int argc, char *argv[] ) {
 
             if ( ( num_bytes % ( 8 * 1048576 ) ) == 0 ) {
 
-                printf( "      : Allocated %6i MB", (num_bytes/1048576) );
+                printf( "      : %p   %6i MB", buffer, (num_bytes/1048576) );
 
                 /* Get the REALTIME_CLOCK time */
                 clock_gettime( CLOCK_REALTIME, &tn );
@@ -191,6 +192,12 @@ int main( int argc, char *argv[] ) {
 
             free ( buffer );
             buffer = NULL;
+
+            /* This was suggested as a time gap to allow
+             * the kernel and memory allocator a moment
+             * to gather its wits and sort out where the
+             * next chunk or slab or whatever .. goes */
+            (void)usleep((useconds_t)250000);
 
         }
 

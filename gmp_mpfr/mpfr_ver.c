@@ -55,7 +55,7 @@
 int sysinfo(int verbose);
 uint64_t timediff( struct timespec st, struct timespec en );
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
 
     mpfr_prec_t prec;
@@ -191,6 +191,8 @@ int main(int argc, char *argv[])
                  sum_mpfr, (mpfr_ptr*)0 );
 
     inex = mpfr_set_flt(one_mpfr, 1.0, MPFR_RNDN);
+    if ( inex ) fprintf(stderr,"WARN : mpfr_set_flt() returns %i\n", inex);
+
     inex = mpfr_div_si(half_mpfr, one_mpfr, 2, MPFR_RNDN);
     inex = mpfr_div_si(third_mpfr, one_mpfr, 3, MPFR_RNDN);
 

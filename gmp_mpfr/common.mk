@@ -23,7 +23,7 @@ all: mpfr_ver
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
 
 mpfr_ver: $(OBJS)
-	$(CC) -o mpfr_ver $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o mpfr_ver $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR),-enable-new-dtags $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:
