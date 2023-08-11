@@ -44,6 +44,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <fcntl.h>
+#include <limits.h>
 
 #include <curl/curl.h>
 
@@ -83,21 +84,36 @@ int main(void)
     struct timespec start_tv;
     double total_time, speed_upload;
     long double start_ld;
-    char* c_time_string;
+    char *c_time_string;
+    char *ssh_pass, *timezone, *target_url, *username;
+    char *ssh_pub_key_file, *ssh_priv_key_file, *homedir;
+    struct dataflags config;
+    int wr_error;
+    readarg_t rarg;  /* for holding the buffer data and info */
+    time_t *date_tv;
+    size_t homedir_len;
 
     /* TODO all this stuff needs to be input parameters */
-    char *username = "testdude";
-    char *ssh_pub_key_file = calloc(128, sizeof(unsigned char));
-    char *ssh_priv_key_file = calloc(128, sizeof(unsigned char));
+    username = calloc(32, sizeof(unsigned char));
+    strncpy(username,"testdude",8);
 
-    char *homedir = getenv("HOME");
+    ssh_pub_key_file = calloc(128, sizeof(unsigned char));
+    ssh_priv_key_file = calloc(128, sizeof(unsigned char));
+
+#ifndef _POSIX_PATH_MAX
+#define _POSIX_PATH_MAX 256
+#endif
+
+    homedir = calloc(_POSIX_PATH_MAX, sizeof(unsigned char));
+    homedir = getenv("HOME");
+
     if ( homedir == NULL ) {
 	    fprintf(stderr,"WARN : home directory env var HOME not found\n");
         fprintf(stderr,"INFO : ssh keys should be in /opt/bw/ssl/certs\n");
         strcpy(ssh_pub_key_file,"/opt/bw/ssl/certs/xtester_rsa4096.pub");
         strcpy(ssh_priv_key_file,"/opt/bw/ssl/certs/xtester_rsa4096.id");
     } else {
-        size_t homedir_len = strlen(homedir);
+        homedir_len = strlen(homedir);
         if ( homedir_len > 96 ) {
             fprintf(stderr,"FAIL : check home directory env var HOME\n");
             return EXIT_FAILURE;
@@ -111,26 +127,21 @@ int main(void)
 
     }
 
-    /* yep ... a hard coded SSH pass phrase for excellent security! */
-    char *ssh_pass = "0xfeeddeadbeefh";
+    /* yep ... a hard coded SSH pass phrase for testing */
+    ssh_pass = calloc(16,sizeof(unsigned char));
+    (void)strncpy(ssh_pass,"0xfeeddeadbeefh", 16);
+
     /* TODO verify that the ssh keys actually exist */
 
-    char *target_url = calloc(128, sizeof(unsigned char));
+    target_url = calloc(128, sizeof(unsigned char));
     strcpy (target_url, "sftp://hydra.genunix.com:22/~/get_things_from_here/" );
 
-    struct dataflags config;
-
     config.trace_ascii = 0;
-
-    int wr_error;
-
     wr_error = 0;
     wr_index = 0;
 
-    readarg_t rarg;  /* for holding the buffer data and info */
-
     /********************* t i m e   d a t a ***************************/
-    time_t *date_tv = calloc(1,sizeof(time_t) );
+    date_tv = calloc(1,sizeof(time_t) );
     if ( date_tv == NULL ) {
         fprintf( stderr, "FAIL : Can not allocate sizeof(time_t)\n" );
         return EXIT_FAILURE;
@@ -139,7 +150,8 @@ int main(void)
     setlocale (LC_ALL, "POSIX" );
     if (setenv("TZ", "UTC", 1 ) != 0 ) {
         fprintf(stderr, "WARN : Unable to use timezone UTC\n" );
-        char *timezone = getenv("TZ");
+        timezone = calloc(32,sizeof(unsigned char));
+        timezone = getenv("TZ");
         if ( timezone == NULL ) {
             fprintf(stderr, "WARN : we have no timezone set?\n");
         } else {

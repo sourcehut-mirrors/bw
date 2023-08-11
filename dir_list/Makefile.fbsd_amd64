@@ -4,7 +4,7 @@ CC=/usr/bin/cc
 CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
 	-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
 	-Wno-missing-prototypes -Wno-padded -fno-fast-math -fno-builtin \
-	-Wno-disabled-macro-expansion
+	-Wno-disabled-macro-expansion -Wl,-rpath=/opt/bw/lib,-enable-new-dtags
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
