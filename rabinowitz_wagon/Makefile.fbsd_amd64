@@ -9,8 +9,7 @@ LOCALBASE!=	if [ -d /opt/bw ]; then    \
 CFLAGS=		-std=iso9899:1999 -m64 -g -O0 \
 		-fno-fast-math -fno-builtin -I$(LOCALBASE)/include
 
-CPPFLAGS=	 -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-		-D_XOPEN_SOURCE=600
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LIBS=		-lm -lgmp
 
