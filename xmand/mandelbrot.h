@@ -64,8 +64,19 @@
 #define DEFAULT_REAL_CENTRE 0.0
 #define DEFAULT_IMAG_CENTRE 0.0
 
+/* If there is a comparison between 64-bit floating point values
+ * then we need some sort of a minimal epsilon value. Not very
+ * useful with large values but the entire mandelbrot set resides
+ * within the domain [-2, +2] and thus we are safe using this
+ * epsilon value.
+ */
 #define EPSILON 1.0e-12
+
+/* This is needed for sysinfo() call and maybe a decent flag
+ * for other places also. Maybe.
+ */
 #define VERBOSE 1
+int sysinfo(int verbose);
 
 /* These two little functions will reverse the order of bytes
  * inside a four byte or eight byte datatype. This allows data
@@ -75,6 +86,11 @@
 uint64_t swap_eight(uint64_t x);
 uint32_t swap_four(uint32_t x);
 
+/* For the moment we get X11 graphical regions on the display
+ * that are nasty buggers we can not move and can not run away
+ * from. Easy to create but a pain to live with. For the moment
+ * we shall deal with easy to create and use. Sad but true.
+ */
 Window create_borderless_topwin(Display *dsp,
                          unsigned int width, unsigned int height,
                          int x, int y,
@@ -84,11 +100,10 @@ GC create_gc(Display *dsp, Window win);
 
 int X_error_handler(Display *dsp, XErrorEvent *errevt);
 
+/* trivial 64-bit nanosec value returned between two timestamps */
 uint64_t timediff( struct timespec st, struct timespec en );
 
-int sysinfo(int verbose);
-
-
+/* sort of a hacky linear interpolation between color values */
 unsigned long linear_inter( uint8_t  in_val,
                             uint32_t low_col, uint32_t high_col,
                             uint8_t  low_val, uint8_t upper_val);

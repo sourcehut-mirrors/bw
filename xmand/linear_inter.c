@@ -61,10 +61,10 @@ unsigned long linear_inter( uint8_t  in_val,
      * How to do a linear interpolation between two 32-bit colour
      * values?  We need a smooth function :
      *
-     *    uint32_t cpixel = ( uint8_t   red_val << 16 )
+     *    uint32_t cpixel =    ( uint8_t   red_val << 16 )
      *                       + ( uint8_t green_val << 8 )
      *                       +   uint8_t  blue_val
-     **/
+     */
 
     uint16_t red, green, blue;
     int red_direction = 1;
@@ -150,11 +150,11 @@ unsigned long linear_inter( uint8_t  in_val,
                    * ( in_val - low_val ) / ( upper_val - low_val ) );
     }
 
-    cpixel = (unsigned long)(   (uint32_t)red << 16 ) 
-                            | ( (uint32_t)green << 8 ) 
-                              | (uint32_t)blue;
+    cpixel = (unsigned long)  ( (uint32_t)red   << 16 ) 
+                            | ( (uint32_t)green <<  8 ) 
+                            |   (uint32_t)blue;
 
-    return ( cpixel );
+    return cpixel;
 
 }
 

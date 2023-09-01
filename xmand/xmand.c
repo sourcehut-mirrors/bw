@@ -150,8 +150,7 @@ int main(int argc, char*argv[])
     double pixel_real_width, pixel_imag_height;
     double magnify, real_translate, imag_translate;
 
-
-    /* eventually we need to dump out a file */
+    /* we may need to dump out a file */
     FILE *fp;
     size_t filename_len;
     char *err_status;
@@ -163,7 +162,7 @@ int main(int argc, char*argv[])
     struct tm *ptm;
     char *timestamp_filename;
 
-    /* we  may need to swap around bytes from a big endian machine */
+    /* we may need to swap around bytes from a big endian machine */
     uint64_t rotated64;
     uint32_t rotated32;
     uint32_t temp32bit;
@@ -172,7 +171,7 @@ int main(int argc, char*argv[])
     double default_real = DEFAULT_REAL_WIDTH;
     double default_imag = DEFAULT_IMAG_HEIGHT;
 
-    /* ensure these are initialized */
+    /* ensure these are initialized where any value is fine */
     double x_prime = -8.0;
     double y_prime = -8.0;
 
@@ -202,7 +201,6 @@ int main(int argc, char*argv[])
                            * VBOX_REAL_COUNT  * VBOX_IMAG_COUNT;
 
     uint32_t *mandel_val = calloc((size_t)num_elements, sizeof(uint32_t));
-
     if ( mandel_val == NULL ) {
         /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
@@ -217,10 +215,7 @@ int main(int argc, char*argv[])
         return EXIT_FAILURE;
     }
 
-    /* memset(&mandel_val, 0x00,(size_t)num_elements * sizeof(uint32_t)); */
-
     double *coord_r = calloc((size_t)num_elements, sizeof(double));
-
     if ( coord_r == NULL ) {
         if ( errno == ENOMEM ) {
             fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
@@ -235,7 +230,6 @@ int main(int argc, char*argv[])
 
 
     double *coord_j = calloc((size_t)num_elements, sizeof(double));
-
     if ( coord_j == NULL ) {
         if ( errno == ENOMEM ) {
             fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n", __FILE__, __LINE__ );
