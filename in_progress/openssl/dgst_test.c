@@ -139,6 +139,25 @@
  *         https://www.openssl.org/source/license.html
  */
 
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *
+ *********************************************************************
+ * Special note here regarding OpenSSL which has a technical committee
+ * and even a suggested C language standard to comply with. Good luck.
+ * No promise at all that the OpenSSL code base complies with any sort
+ * of a C language specification at all.
+ *********************************************************************/
+#define _XOPEN_SOURCE 600
+
 #include <stdio.h>
 #include <string.h>
 #include <openssl/evp.h>
@@ -188,23 +207,29 @@ int main(int argc, char **argv)
          * Digest algorithms may be listed thus :
          *
          * $ openssl list --digest-commands
-         * blake2b512       blake2s256       gost             md4
-         * md5              mdc2             rmd160           sha1
-         * sha224           sha256           sha3-224         sha3-256
-         * sha3-384         sha3-512         sha384           sha512
-         * sha512-224       sha512-256       shake128         shake256
-         * sm3
+         * blake2b512        blake2s256        md5
+         * sha1              sha224            sha256            sha3-224
+         * sha3-256          sha3-384          sha3-512          sha384
+         * sha512            sha512-224        sha512-256        shake128
+         * shake256          sm3
          *
+         * $ openssl dgst -list
+         * Supported digests:
+         * -blake2b512      -blake2s256      -md4
+         * -md5             -md5-sha1        -mdc2
+         * -ripemd          -ripemd160       -rmd160
+         * -sha1            -sha224          -sha256
+         * -sha3-224        -sha3-256        -sha3-384
+         * -sha3-512        -sha384          -sha512
+         * -sha512-224      -sha512-256      -shake128
+         * -shake256        -sm3             -ssl3-md5
+         * -ssl3-sha1       -whirlpool
          */
         fprintf(stderr,"FAIL : Unknown message digest %s\n", argv[1]);
-  
-        fprintf(stderr,"    : Please use one of the following :\n");
-        fprintf(stderr,"    :   md4, md5, mdc2, rmd160, gost, sha1,\n");
-        fprintf(stderr,"    :   sm3, shake128, shake256, sha224,\n");
-        fprintf(stderr,"    :   sha256, sha384, sha512,\n");
-        fprintf(stderr,"    :   sha512-224, sha512-256, sha3-224,\n");
-        fprintf(stderr,"    :   sha3-256, sha3-384, sha3-512,\n");
-        fprintf(stderr,"    :   blake2s256, blake2b512.\n");
+
+        fprintf(stderr,"    : Please check your available methods :\n");
+        fprintf(stderr,"    :   openssl list --digest-commands\n");
+        fprintf(stderr,"    :   openssl dgst -list\n");
 
         return EXIT_FAILURE;
     }
