@@ -16,8 +16,22 @@
 
 /* struct to pass params to a POSIX thread */
 typedef struct {
-  uint32_t  vbox_r, vbox_j, *m_val;
-  double *coord_r, coord_j; 
-  int status;  /* simply a 0 or 1 to indicate done */
+
+    /* TODO we should mutex lock */
+
+    /* the real and imaginary index into the work region */
+    uint32_t  vbox_r, vbox_j;
+
+    /* this is a pointer to and array of all the values
+     * computed in that region [ r, j ] */
+    uint32_t  *m_val;
+
+    /* these are pointers to the array of all real and
+     * imaginary coordinates in that region [ r, j ] */
+    double    *coord_r, *coord_j; 
+
+     /* status is imply a 0 or 1 to indicate done */
+    int       status;
+
 } thread_parm_t;
 
