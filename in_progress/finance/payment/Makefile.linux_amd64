@@ -1,9 +1,11 @@
 
-CC=/usr/bin/cc
+CC=/usr/bin/gcc
 
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
-	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
-	-fno-fast-math -fno-builtin
+CFLAGS= -std=iso9899:2011 -g -O0 -m64 -fno-builtin -fno-fast-math \
+	-ffp-contract=off -fno-unsafe-math-optimizations -malign-double \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-m128bit-long-double -mlong-double-80 -mstackrealign \
+	-mpreferred-stack-boundary=8
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
@@ -22,3 +24,4 @@ pmt: $(OBJS)
 
 clean:
 	rm -f $(OBJS) pmt
+
