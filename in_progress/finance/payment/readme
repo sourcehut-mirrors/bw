@@ -1,0 +1,98 @@
+
+
+Suppose the net amount to finance over some period of years
+is $67,710.00 and the finance rates given are thus : 
+
+       term in months     term in years     finance rate
+  -----------------------------------------------------------
+           36                  3               1.99 %
+           48                  4               3.99 %
+           60                  5               4.49 %
+           72                  6               4.99 %
+           84                  7               5.99 %
+           96                  8               6.99 %
+
+
+The code may be run to see payment values per a given interval
+as well as the cost of finance. Please note that bi-monthly means
+that there are 24 payments in a given year whereas bi-weekly
+means there are 26 payments in the same year. The weekly and the
+monthly schedules are obvious.
+
+$ ./pmt 67710.0 3 1.99
+
+    +--------------+---------------+---------------+
+    |   schedule   |    payment    |      cost     |
+    +--------------+---------------+---------------+
+    |    monthly   |   1939.0934   |    2097.3634  |
+    | bi-monthly   |    969.1571   |    2069.3119  |
+    |  bi-weekly   |    894.5789   |    2067.1538  |
+    |     weekly   |    447.2064   |    2054.2041  |
+    +--------------+---------------+---------------+
+
+$ ./pmt 67710.0 4 3.99
+
+    +--------------+---------------+---------------+
+    |   schedule   |    payment    |      cost     |
+    +--------------+---------------+---------------+
+    |    monthly   |   1528.5248   |    5659.1912  |
+    | bi-monthly   |    763.6778   |    5603.0728  |
+    |  bi-weekly   |    704.8919   |    5598.7548  |
+    |     weekly   |    352.3214   |    5572.8425  |
+    +--------------+---------------+---------------+
+
+$ ./pmt 67710.0 5 4.49
+
+    +--------------+---------------+---------------+
+    |   schedule   |    payment    |      cost     |
+    +--------------+---------------+---------------+
+    |    monthly   |   1262.0110   |    8010.6582  |
+    | bi-monthly   |    630.4804   |    7947.6446  |
+    |  bi-weekly   |    581.9446   |    7942.7958  |
+    |     weekly   |    290.8604   |    7913.6982  |
+    +--------------+---------------+---------------+
+
+$ ./pmt 67710.0 6 4.99
+
+    +--------------+---------------+---------------+
+    |   schedule   |    payment    |      cost     |
+    +--------------+---------------+---------------+
+    |    monthly   |   1090.1509   |   10780.8676  |
+    | bi-monthly   |    544.5908   |   10711.0718  |
+    |  bi-weekly   |    502.6647   |   10705.7009  |
+    |     weekly   |    251.2291   |   10673.4698  |
+    +--------------+---------------+---------------+
+
+$ ./pmt 67710.0 7 5.99
+
+    +--------------+---------------+---------------+
+    |   schedule   |    payment    |      cost     |
+    +--------------+---------------+---------------+
+    |    monthly   |    988.8207   |   15350.9352  |
+    | bi-monthly   |    493.9153   |   15267.7650  |
+    |  bi-weekly   |    455.8866   |   15261.3645  |
+    |     weekly   |    227.8378   |   15222.9537  |
+    +--------------+---------------+---------------+
+
+$ ./pmt 67710.0 8 6.99
+
+    +--------------+---------------+---------------+
+    |   schedule   |    payment    |      cost     |
+    +--------------+---------------+---------------+
+    |    monthly   |    922.8021   |   20878.9983  |
+    | bi-monthly   |    460.9013   |   20783.0540  |
+    |  bi-weekly   |    425.4119   |   20775.6702  |
+    |     weekly   |    212.5994   |   20731.3563  |
+    +--------------+---------------+---------------+
+
+
+Above we see that the lowest cost option is $447.21 per week
+for a 3 year term with $2054.20 as the finance fee. The worst
+option is to stretch the debt over eight years and therefore
+the finance fee is an incredible $20,879.00. This means that
+a trivial finance fee average is $217.49 on every payment and
+that does not even begin to consider the actual amortization
+schedule in that eight year term.
+
+Be careful !
+
