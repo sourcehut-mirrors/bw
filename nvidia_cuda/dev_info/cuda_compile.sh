@@ -5,6 +5,8 @@ unset AR
 unset AS
 unset CC
 unset CXX
+unset CFLAGS
+unset CPPFLAGS
 unset ELFEDIT
 unset LD
 unset NM
@@ -35,26 +37,26 @@ fi
 
 rm -f dev_info dev_info.o > /dev/null 2>&1
 
+# for device compute level stuff be sure to check
+# the more or less up to date list at
+# https://developer.nvidia.com/cuda-gpus
+# lines to rip out for now 
+#
+# -gencode arch=compute_37,code=sm_37
+# -gencode arch=compute_50,code=sm_50
+# -gencode arch=compute_52,code=sm_52
+# -gencode arch=compute_61,code=sm_61
+# -gencode arch=compute_70,code=sm_70
+# -gencode arch=compute_75,code=sm_75
+#
 ${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
--gencode arch=compute_61,code=sm_61 \
--gencode arch=compute_70,code=sm_70 \
--gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
 
 ${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
--gencode arch=compute_61,code=sm_61 \
--gencode arch=compute_70,code=sm_70 \
--gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets -o dev_info dev_info.o
 
 /usr/bin/printf "\n------- code will run in five seconds .. or stop me!\n\n"

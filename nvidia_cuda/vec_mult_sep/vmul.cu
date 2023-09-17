@@ -48,6 +48,9 @@ int main(int argc, char *argv[])
     unsigned long long min_memory = 105553116266496;
     unsigned long long max_memory = 0;
 
+    /* do we even have a NVidia Quadro GPU ? */
+    int num_gpus = 0;
+
     int driver_ver = 0;
     int runtime_ver = 0;
     int max_dev, min_dev;
@@ -55,9 +58,6 @@ int main(int argc, char *argv[])
     cudaError_t err = cudaSuccess;
     int num_elements = NUM_ELEMENTS;
     size_t size = num_elements * sizeof(double);
-
-    /* do we even have a NVidia Quadro GPU ? */
-    int num_gpus = 0;
 
     setlocale( LC_ALL, "C" );
     sysinfo();
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     cudaDriverGetVersion(&driver_ver);
     cudaRuntimeGetVersion(&runtime_ver);
 
-    printf("INFO : CUDA Driver Version    %d.%d\n",
+    printf("     : CUDA Driver Version    %d.%d\n",
                                  driver_ver/1000, (driver_ver%100)/10);
 
     printf("     : CUDA Runtime Version   %d.%d\n",
@@ -87,13 +87,13 @@ int main(int argc, char *argv[])
     /* determine the number of CUDA capable GPUs */
     cudaGetDeviceCount(&num_gpus);
     if ( num_gpus < 1 ) {
-        printf("FAIL : no CUDA capable devices were detected\n");
+        printf("INFO : no CUDA capable devices were detected\n");
         return EXIT_FAILURE;
     }
 
     /* display CPU and GPU configuration */
-    printf("     : number of host CPUs:\t%d\n", omp_get_num_procs());
-    printf("     : number of CUDA devices:\t%d\n", num_gpus);
+    printf("INFO : number of host CPUs:\t%d\n", omp_get_num_procs());
+    printf("INFO : number of CUDA devices:\t%d\n", num_gpus);
 
     /* only YOU can stop the abuse of i */
     for (int j = 0; j < num_gpus; j++) {
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         printf("     :    %d: %s\n", j, dprop.name);
 
 
-        printf("     : dev number %d: name = \"%s\"\n",
+        printf("INFO : dev number %d: name = \"%s\"\n",
                                                    j, dprop.name);
 
         printf("     : CUDA Capability Major/Minor version %d.%d\n",
@@ -137,16 +137,8 @@ int main(int argc, char *argv[])
 
     }
 
-    printf("     : Max memory device %i has %lu\n", max_dev, max_memory);
+    printf("INFO : Max memory device %i has %lu\n", max_dev, max_memory);
     printf("     : Min memory device %i has %lu\n", min_dev, min_memory);
-
-    if (cudaSetDevice(min_dev)) {
-        err = cudaGetLastError();
-        fprintf(stderr, "FAIL : CUDA failed to select device\n");
-        fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-    printf("     : we selected device %i\n", min_dev);
 
     printf("     : Vector multiply of %d double FP64 elements\n", num_elements);
     printf("     : Memory size of each array is %ld bytes\n", size );
@@ -371,29 +363,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 
-}
-
-uint64_t timediff( struct timespec st, struct timespec en )
-{
-    /* return the delta time as a 64-bit positive number of
-     * nanoseconds.  Regardless of the time direction between
-     * start and end we always get a positive result. */
-
-    struct timespec temp;
-    uint64_t s, n;
-
-    if ( ( en.tv_nsec - st.tv_nsec ) < 0 ) {
-        /* make a full second adjustment to tv_sec */
-        temp.tv_sec = en.tv_sec - st.tv_sec - 1;
-        /* we have to add a full second to temp.tv_nsec */
-        temp.tv_nsec = 1000000000 + en.tv_nsec - st.tv_nsec;
-    } else {
-        temp.tv_sec = en.tv_sec - st.tv_sec;
-        temp.tv_nsec = en.tv_nsec - st.tv_nsec;
-    }
-    s = (uint64_t) temp.tv_sec;
-    n = (uint64_t) temp.tv_nsec;
-    return ( s * (uint64_t)1000000000 + n );
 }
 
 uint64_t system_memory()

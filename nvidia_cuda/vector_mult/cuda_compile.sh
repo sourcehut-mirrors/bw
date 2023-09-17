@@ -1,16 +1,16 @@
 #!/bin/bash
 
-PATH=/usr/local/cuda-11.4/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+PATH=/usr/local/cuda-11.8/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
 export PATH
 
-
-if [ -d /usr/local/cuda-11.4 ]; then
-    CUDA_HOME=/usr/local/cuda-11.4
+if [ -d /usr/local/cuda-11.8 ]; then
+    CUDA_HOME=/usr/local/cuda-11.8
     export CUDA_HOME
 fi
 
-NVCC=`(command -v nvcc)` ; export NVCC
-if [ ! -x ${NVCC} ]; then
+NVCC=`(command -v nvcc)`
+export NVCC
+if [ ! -x $NVCC ]; then
     /usr/bin/printf "FAIL : the NVidia compiler not found\n"
     return 1
 fi
@@ -19,15 +19,22 @@ rm -f vmultd.o vmultd vmultf.o vmultf > /dev/null 2>&1
 
 /usr/bin/printf "\n\n------- attempt to compile vmultf.cu\n"
 
+
+# for device compute level stuff be sure to check
+# the more or less up to date list at
+# https://developer.nvidia.com/cuda-gpus
+# lines to rip out for now 
+#
+# -gencode arch=compute_37,code=sm_37
+# -gencode arch=compute_50,code=sm_50
+# -gencode arch=compute_52,code=sm_52
+# -gencode arch=compute_61,code=sm_61
+# -gencode arch=compute_70,code=sm_70
+# -gencode arch=compute_75,code=sm_75
+#
 ${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
--gencode arch=compute_61,code=sm_61 \
--gencode arch=compute_70,code=sm_70 \
--gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets \
 --ftz=false --prec-div=true --prec-sqrt=true \
 -c -o vmultf.o vmultf.cu
@@ -40,13 +47,7 @@ fi
 
 ${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
--gencode arch=compute_61,code=sm_61 \
--gencode arch=compute_70,code=sm_70 \
--gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets \
 --ftz=false --prec-div=true --prec-sqrt=true \
 -o vmultf vmultf.o -lgomp
@@ -71,13 +72,7 @@ fi
 
 ${NVCC} -ccbin /usr/bin/g++-10 -I../include -m64 \
 -gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
--gencode arch=compute_61,code=sm_61 \
--gencode arch=compute_70,code=sm_70 \
--gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets \
 --ftz=false --prec-div=true --prec-sqrt=true \
 -c -o vmultd.o vmultd.cu
@@ -90,13 +85,7 @@ fi
 
 ${NVCC} -ccbin /usr/bin/g++-10 -m64 \
 -gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
--gencode arch=compute_61,code=sm_61 \
--gencode arch=compute_70,code=sm_70 \
--gencode arch=compute_75,code=sm_75 \
 -Wno-deprecated-gpu-targets \
 --ftz=false --prec-div=true --prec-sqrt=true \
 -o vmultd vmultd.o -lgomp
