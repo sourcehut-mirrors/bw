@@ -44,12 +44,13 @@
 #define IMAG_COORD -0.177673339843750
 */
 
-/* dataset 1 
+/* dataset 1 *
 #define BAIL_OUT 32768
 #define MAGNIFY 268435456
 #define REAL_COORD 0.399750960350502282381
 #define IMAG_COORD 0.205251797480741515756
 */
+
 
 /* dataset 2 *
 #define BAIL_OUT 32768
@@ -58,13 +59,25 @@
 #define IMAG_COORD  1.02061921088799989477
 */
 
+/* some thing extreme that I made up 
+       mand_bail = 16777216
+    translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
+      magnify = +8.589934592000e+09 == 2^33 == 8589934592
+*/
+#define BAIL_OUT 16777216
+#define MAGNIFY 8589934592
+#define REAL_COORD -1.99998588122252840549
+#define IMAG_COORD -0.0000000000236468622460961341858
+
+
 /* dataset 5
    524288 4398046511104 -0.0157887752802652429895 1.02061921090827745218
-   */
+
 #define BAIL_OUT 524288
 #define MAGNIFY 4398046511104
 #define REAL_COORD -0.0157887752802652429895
 #define IMAG_COORD 1.02061921090827745218
+*/
 
 /* TODO read in the established data files */
 #define VBOX_REAL_COUNT 16
@@ -284,9 +297,36 @@ int main(int argc, char *argv[])
 
     }
 
-    /* the above Scheiße will leave us with the highest number
-     * GPU selected. TODO : do not do that!
-     */
+    /* HARD Code hack Scheiße */
+    /* WARNING this is hack set zero */
+    err = cudaSetDevice(0);
+    /* possible err values are
+     *  cudaSuccess, cudaErrorInvalidDevice, cudaErrorSetOnActiveProcess */
+    if ( err != cudaSuccess ) {
+        if ( err == cudaErrorInvalidDevice ) {
+            printf("FAIL : cudaErrorInvalidDevice on cudaSetDevice\n");
+        } else if ( err == cudaErrorSetOnActiveProcess ) {
+            printf("FAIL : cudaErrorSetOnActiveProcess on cudaSetDevice\n");
+        } else {
+            printf("FAIL : cuda magic? good luck!\n");
+        }
+        return EXIT_FAILURE;
+     }
+
+     err = cudaDeviceReset();
+     if ( err != cudaSuccess) {
+         fprintf(stderr, "FAIL : CUDA failed cudaDeviceReset()\n");
+         fprintf(stderr, "err = %0x\n", err );
+         return EXIT_FAILURE;
+     }
+
+    /* WARNING this is hack set zero */
+    cudaGetDeviceProperties(&dprop, 0);
+
+    printf("HALT : be advised this is a hack!\n");
+    printf("     :    %d: %s\n", 0, dprop.name);
+
+    printf("     :        %12" PRIu64 " totalGlobalMem\n", dprop.totalGlobalMem);
     printf("\n");
     printf("INFO : %s device is selected\n\n", dprop.name);
 
