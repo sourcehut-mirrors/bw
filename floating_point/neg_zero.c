@@ -1,5 +1,7 @@
 
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +29,7 @@ int main(int argc, char **argv)
     printf("%s\n", ( foo != bar ? "ne" : "eq" ) );
 
 
-    return ( EXIT_SUCCESS );
+    return 42;
 
 }
 

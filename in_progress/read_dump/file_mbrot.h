@@ -10,7 +10,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 /* there is no promise that _POSIX_PATH_MAX exists or
  * some value for _XOPEN_PATH_MAX and really we may

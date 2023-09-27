@@ -35,7 +35,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <fenv.h>
@@ -229,7 +231,11 @@ int sysinfo(int verbose) {
          * the format string for printf should be %lu. However compilers
          * on 32bit machines will get upset and warn we should use %u. */
         printf ( "       sizeof(unsigned long) = %lu\n", sizeof(unsigned long) );
+
+        /*
         printf ( "  sizeof(unsigned long long) = %lu\n", sizeof(unsigned long long) );
+        */
+
         printf ( "                 sizeof(int) = %lu\n", sizeof(int) );
         printf ( "               sizeof(void*) = %lu\n", sizeof(void*) );
 

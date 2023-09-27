@@ -1,0 +1,17 @@
+
+CC=/usr/pkg/gcc10/bin/gcc
+
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=500
+
+CFLAGS=		-std=iso9899:1990 -pedantic -pedantic-errors \
+		-m64 -g -O0 -fno-builtin -fno-fast-math \
+		-mhard-float -mno-app-regs -mflat -msoft-quad-float \
+		-mno-unaligned-doubles -mno-faster-structs -mcpu=ultrasparc \
+		-mtune=ultrasparc -mno-vis -mno-vis2 -mno-vis3 -mno-vis4 \
+		-mno-vis4b -mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc \
+		-mno-subxc -mmemory-model=tso \
+		-fPIC -Wl,-rpath=/opt/bw/lib -Wl,-rpath=/usr/pkg/lib
+
+LDIR=		/usr/pkg/lib
+
+include common.mk

@@ -20,7 +20,9 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <ctype.h>
 #include <stdio.h>

@@ -74,8 +74,12 @@ void enable_floating_point_exceptions()
 int main(void)
 {
     volatile double x = -1;
+    volatile double zero_me = -0.0;
     printf("y = %f\n",sqrt(x));
-    enable_floating_point_exceptions();
+    /* enable_floating_point_exceptions(); */
     printf("y = %f\n",sqrt(x));
+
+    printf("foobar %f\n", x / zero_me);
+
 }
 

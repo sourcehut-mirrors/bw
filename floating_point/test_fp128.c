@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     printf("62089986280.... etc\n");
 
 
-    return ( EXIT_SUCCESS );
+    return 42;
 
 }
 
