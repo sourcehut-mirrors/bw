@@ -1,0 +1,29 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat \
+	-msoft-quad-float -mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis \
+	-mno-vis2 -mno-vis3 -mno-vis4 -mno-vis4b \
+	-mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc \
+	-mcmodel=medany -mmemory-model=tso -fPIC \
+	-Wl,-rpath=/opt/bw/lib,-enable-new-dtags -Wl,-pie
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+LDIR=/opt/bw/lib
+IDIR=/opt/bw/include
+LIBS= -lcurl -lm
+
+SRCS = dlist_curl.c ../sysinfo/sysinfo.c
+OBJS = dlist_curl.o ../sysinfo/sysinfo.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+dlist_curl: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) dlist_curl

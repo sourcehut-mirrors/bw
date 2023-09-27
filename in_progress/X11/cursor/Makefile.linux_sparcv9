@@ -1,5 +1,5 @@
 
-CC=/usr/bin/gcc
+CC=/opt/bw/gcc13/bin/gcc
 
 CFLAGS=-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
 	-fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat \
