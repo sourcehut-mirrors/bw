@@ -1,0 +1,19 @@
+
+
+Harry the wild greek says 
+
+sphinx$
+sphinx$ $CC $CFLAGS $CPPFLAGS -I/usr/X11R7/include -c -o xcb_intro.o xcb_intro.c
+sphinx$ $CC $CFLAGS $CPPFLAGS -L/usr/lib64 -o xcb_intro xcb_intro.o -lxcb -lxcb-util -lxcb-icccm
+sphinx$
+sphinx$ echo $CC
+/opt/bw/gcc13/bin/gcc
+sphinx$
+sphinx$ echo $CFLAGS
+-std=iso9899:2011 -m64 -g -O0 -fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat -msoft-quad-float -mno-unaligned-doubles -mno-faster-structs -mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany -mmemory-model=tso -fPIC -Wl,-rpath=/usr/lib64 -Wl,-rpath=/usr/lib64
+sphinx$
+sphinx$ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+sphinx$
+
+
