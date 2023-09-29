@@ -1,12 +1,14 @@
 
-CC=/opt/bw/gcc12/bin/gcc
+CC=/usr/bin/gcc
 
-CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
-	-g -O0 -fno-builtin -m64 -mcpu=970 \
-	-mno-altivec -mno-isel -mno-vsx -mno-crypto -mno-htm \
-	-mno-quad-memory-atomic -mfull-toc -mno-multiple -mupdate \
-	-mno-avoid-indexed-addresses -mno-dlmzb -mno-bit-align \
-	-mno-strict-align -mbig -mregnames -mno-recip \
-	-fno-unsafe-math-optimizations -Wall
+CFLAGS = -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
+	-mpowerpc64 -mno-altivec -msecure-plt -mno-vsx -mno-quad-memory \
+	-mno-float128 -mhard-float -mno-float128-hardware \
+	-mno-avoid-indexed-addresses -mno-isel -mno-crypto -mno-htm \
+	-mno-quad-memory-atomic -mno-multiple -mupdate \
+	-mno-avoid-indexed-addresses -mregnames -mno-recip \
+	-fno-unsafe-math-optimizations -fno-fast-math \
+	-mfull-toc -mno-fp-in-toc -mno-sum-in-toc \
+	-ffp-contract=fast -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
 include common.mk

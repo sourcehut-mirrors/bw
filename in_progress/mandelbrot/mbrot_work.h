@@ -13,22 +13,22 @@
 #define _XOPEN_SOURCE 600
 
 #include <stdint.h>
+#include "file_mbrot.h"
 
-/* struct to pass params to a POSIX thread */
+int sysinfo(int verbose);
+int parse_double(const char *str, double **dbl );
+int parse_pthread_limit(const char *str, int *pthread_limit);
+int check_path(void);
+int file_stat_err(int file_errno);
+
+/* params to a POSIX thread */
 typedef struct {
 
-    /* TODO we should mutex lock */
-
-    /* the real and imaginary index into the work region */
+    /* the real and imaginary index [ r, j ] in the work region */
     uint32_t  vbox_r, vbox_j;
 
-    /* this is a pointer to and array of all the values
-     * computed in that region [ r, j ] */
-    uint32_t  *m_val;
-
-    /* these are pointers to the array of all real and
-     * imaginary coordinates in that region [ r, j ] */
-    double    *coord_r, *coord_j; 
+    /* all the values computed in that region [ r, j ] */
+    m_data *dat;
 
      /* status is imply a 0 or 1 to indicate done */
     int       status;

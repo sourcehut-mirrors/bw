@@ -55,13 +55,8 @@
 #include "file_mbrot.h"
 #include "mbrot_work.h"
 
-#define VERBOSE 1
-int sysinfo(int verbose);
-
-int parse_double(const char *str, double **dbl );
-int parse_pthread_limit(const char *str, int *pthread_limit);
-
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 
     /* there is a need for some time data in that we use
@@ -87,14 +82,11 @@ int main(int argc, char **argv)
     }
     sysinfo(VERBOSE);
 
-    /* TODO : do not enforce the need for TMPDIR */
-    tmpdir = getenv("TMPDIR");
-    if ( tmpdir == NULL ) {
-        fprintf(stderr,"FAIL : env var TMPDIR not set\n");
+    if ( check_path() < 1 ) {
+        fprintf(stderr,"FAIL : There seems to be no TMPDIR nor\n");
+        fprintf(stderr,"     : a usable HOME filepath.\n");
         return EXIT_FAILURE;
     }
-    /* TODO : just because we now have a TMPDIR of some
-     * sort does not mean we can use it. */
 
     if ((argc != 3) && (argc != 6)) {
         fprintf(stderr,"FAIL : insufficient arguments provided\n");

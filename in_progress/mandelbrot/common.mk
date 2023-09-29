@@ -16,7 +16,8 @@ OBJS=		../read_dump/read_mbrot_data.o \
 		../data_dump/rot4.o \
 		../data_dump/rot8.o \
 		../../sysinfo/sysinfo.o \
-		../../stat_test/file_stat_err.o
+		../../stat_test/file_stat_err.o \
+		./check_path.o
 
 .PHONY: all
 all: mandelbrot
