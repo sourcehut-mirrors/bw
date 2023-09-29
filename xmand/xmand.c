@@ -97,8 +97,8 @@ int main(int argc, char*argv[])
 
     /* we can swap back and forth on the colour method with
      * a trivial flag */
-    int colour_method_flag = 0;
-    int invert_me_dammit = 0;
+    int colour_method_flag = 1;
+    int invert_colour = 0;
 
     /* we need a double click on replot to trigger */
     int replot_flag = 0;
@@ -1023,13 +1023,13 @@ int main(int argc, char*argv[])
         /* jank adjustment of one or two pixels
          * we see that the arrow tip of the
          * mouse cursor seems to be off by a little
-         * figgle smush these numbers a little
-         * and also we keep the mouse_x_raw and mouse_y_raw data */
+         * figgle smush these numbers a little.
+         * also keep the mouse_x_raw and mouse_y_raw data */
         mouse_x = mouse_x - 1;
         mouse_y = mouse_y - 2;
 
         /* check left mouse button first */
-        if ( button == Button1 ){
+        if ( button == Button1 ) {
             /* are we inside the main plot region? */
             if (    ( mouse_x >=  offset_x ) && ( mouse_y >= offset_y )
                  && ( mouse_x < ( eff_width + offset_x ) )
@@ -1126,10 +1126,6 @@ int main(int argc, char*argv[])
                  *     ( 1 || ( vbox_flag[vbox_r][vbox_j] == 0 ) )
                  * which will forever be true. Thus we grind the gears and do
                  * the thread dispatch every time.
-                 *
-                 * 22 Jun 2022 :
-                 * Sadly the threads are doing the wrong computation. At this
-                 * time.
                  */
                 if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
                     for ( pt = 0; pt < pthread_limit; pt++ ) {
@@ -1158,29 +1154,6 @@ int main(int argc, char*argv[])
 
                         pthread_create( &tid[pt], NULL, mbrot_vbox_pthread, (void *)parm[pt] );
                         /* TODO at some point maybe check the pthread_create err status
-                         *
-                         * The pthread_create() function can return any of the following errors:
-                         *
-                         * [ENOMEM]  The system lacked the necessary resources to create
-                         *           another thread.
-                         *
-                         * [EAGAIN]  The system-imposed limit on the total number of
-                         *           threads in a process [PTHREAD_THREADS_MAX] would be
-                         *           exceeded.
-                         *
-                         * [EAGAIN]  The RACCT_NTHR limit would be exceeded; see racct(2).
-                         *
-                         * [EPERM]   The caller does not have permission to set the
-                         *           scheduling parameters or scheduling policy.
-                         *
-                         * [EINVAL]  A value specified by attr is invalid.
-                         *
-                         * [EDEADLK] The CPU set specified by attr would prevent the thread
-                         *           from running on any CPU.
-                         *
-                         * [EFAULT]  The stack base specified by attr is invalid, or the
-                         *           kernel was unable to put required initial data on the
-                         *           stack.
                          */
                     }
                     /* Blocking call here to gather up all the threads */
@@ -1212,6 +1185,8 @@ int main(int argc, char*argv[])
                             /* really we should use the color Black for portable stuff */
                             XSetForeground(dsp, gc, (unsigned long)0 );
                         } else {
+                            /* seems we are only ever doing the trippy color map
+                             * with the data from the pthreads ? */
                             mandlebrot.pixel = lsd_trippy[ (uint8_t)(mand_height & 0xff) ];
                             XSetForeground(dsp, gc, mandlebrot.pixel);
                         }
@@ -1222,7 +1197,7 @@ int main(int argc, char*argv[])
                                    ( eff_height - vbox_ll_y + offset_y ) );
 
                         /* A few manual offsets of ( 16, 13 ) pixels to centre the
-                         * plot data into a subwindow of gc2 */
+                         * plot data into a subwindow of graphics context gc2 */
                         gc2_x = 16 + ( 3 * mand_x_pix );
                         gc2_y = 13 + ( 192 - ( 3 * mand_y_pix ) );
 
@@ -1264,7 +1239,10 @@ int main(int argc, char*argv[])
 
             } else {
 
-                /* We need to locate the mouse in graphics context gc2 and here
+                /* The left mouse button was clicked but we are not inside
+                 * the main plot region.
+                 *
+                 * We need to locate the mouse in graphics context gc2 and here
                  * the raw values for mouse position serve correctly. Thus the
                  * question is are we inside the top jank slider for magnify ? */
                 if (   ( mouse_x_raw > 1268 ) && ( mouse_y_raw > 733 )
@@ -1309,7 +1287,7 @@ int main(int argc, char*argv[])
 
                     /* we know from direct tests that the centre line
                      * is at 1354 raw mouse X and every tick mark left
-                     * or right with be 8 pixels away. */
+                     * or right will be 8 pixels away. */
                     magnify_jank_in = (uint8_t)( ( ( mouse_x_raw - 1350 ) + 80 ) / 8);
 
                     XDrawLine(dsp, win2, gc2,
@@ -1345,7 +1323,12 @@ int main(int argc, char*argv[])
                 } else if ( ( mouse_x_raw > 1268 ) && ( mouse_y_raw > ( 733 + 50 ) )
                          && ( mouse_x_raw < 1440 ) && ( mouse_y_raw < ( 742 + 50 ) ) ) {
 
-                    /* we should be inside the janky bail_out control */
+                    /* Again the left mouse button was pressed however we are
+                     * not inside the main plot region. 
+                     *
+                     * Also we are not inside the magnify jank slider 
+                     *
+                     * We should be inside the janky bail_out control */
                     XSetLineAttributes(dsp, gc2, 8, LineSolid, CapButt, JoinMiter);
                     XSetForeground(dsp, gc2, BlackPixel(dsp, screen_num) );
                     XDrawLine(dsp, win2, gc2, 218, 16 + 50, 388, 16 + 50);
@@ -1422,7 +1405,13 @@ int main(int argc, char*argv[])
                              && ( ( x_prime + 8.0 ) > EPSILON )
                              && ( ( y_prime + 8.0 ) > EPSILON ) ) {
 
-                    /* The above is a janky EPSILON check which verifies
+                    /* Again we only have the left mouse button to check
+                     * here but we are not doing a magnify change nor are
+                     * we messing with the bail_out value.
+                     *
+                     * How about the REPLOT button?
+                     *
+                     * The above is a janky EPSILON check which verifies
                      * the mouse location is inside the REPLOT button
                      * window area.
                      *
@@ -1469,24 +1458,25 @@ int main(int argc, char*argv[])
                         obs_real = 4.0 / magnify;
                         obs_imag = 4.0 / magnify;
 
-                        colour_method_flag = 1;
-                        invert_me_dammit = 0;
+                        if ( colour_method_flag == 1 ) {
+                            colour_method_flag = 0;
+                        } else {
+                            colour_method_flag = 1;
+                            if ( invert_colour == 0 ) {
+                                invert_colour = 1;
+                            } else {
+                                invert_colour = 0;
+                            }
+                        }
 
                         button = Button2;
-
-                        /* trigger a recalc and thus flush vbox_flag to zero */
-                        memset( &vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
                         real_translate = x_prime;
                         imag_translate = y_prime;
                         fprintf(stderr,"INFO : c = %-+16.12e, %-+16.12e  ", x_prime, y_prime);
 
-                        /* flush away all the data we computed before */
-                        for ( vbox_r=0; vbox_r<VBOX_REAL_COUNT; vbox_r++ ) {
-                            for ( vbox_j=0; vbox_j<VBOX_IMAG_COUNT; vbox_j++ ) {
-                                vbox_flag[vbox_r][vbox_j] = 0;
-                            }
-                        }
+                        /* flush all vbox_flag to zero */
+                        memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
                         goto replot;
 
@@ -1497,7 +1487,10 @@ int main(int argc, char*argv[])
                              && ( ( x_prime + 8.0 ) > EPSILON )
                              && ( ( y_prime + 8.0 ) > EPSILON ) ) {
 
-                    /* The above is a janky EPSILON check which verifies
+                    /* We are still only checking the left mouse button
+                     * click and position.
+                     *
+                     * The above is a janky EPSILON check which verifies
                      * the mouse location is inside the DUMPER button
                      * window area.
                      *
@@ -1727,6 +1720,9 @@ int main(int argc, char*argv[])
                         }
                     }
                 }
+
+                /* this is the end of checking where the mouse is when
+                 * the left mouse button has been clicked */
             }
 
         } else if ( button == Button2 ) {
@@ -1782,10 +1778,10 @@ replot:
                 printf("     : x_prime = %-+32.26e\n", x_prime );
                 printf("     : y_prime = %-+32.26e\n", y_prime );
                 /****************************************************
-                 *    NONE OF THE ABOVE HAS much to do with the
-                 *    actual computations needed. All we did was
-                 *    determine the complex coordinates of the
-                 *    mouse in the sample space.
+                 *    NONE OF THE ABOVE 40 lines HAS much to do with
+                 *    the actual computations needed. All we did was
+                 *    determine the complex coordinates of the mouse
+                 *    in the sample space.
                  ****************************************************/
 
                 XSetForeground(dsp, gc3, red.pixel);
@@ -1811,10 +1807,10 @@ replot:
                     colour_method_flag = 0;
                 } else {
                     colour_method_flag = 1;
-                    if ( invert_me_dammit == 0 ) {
-                        invert_me_dammit = 1;
+                    if ( invert_colour == 0 ) {
+                        invert_colour = 1;
                     } else {
-                        invert_me_dammit = 0;
+                        invert_colour = 0;
                     }
                 }
 
@@ -1867,10 +1863,12 @@ replot:
 
                                     if ( colour_method_flag == 1 ) {
 
-                                        if ( invert_me_dammit == 0 ) {
-                                            t_param = pow( ( (double)mand_height / (double)mand_bail ), t_param_exponent);
+                                        if ( invert_colour == 0 ) {
+                                            t_param = pow( (double)mand_height/(double)mand_bail,
+                                                           t_param_exponent);
                                         } else {
-                                            t_param = pow( 1.0 - ( (double)mand_height / (double)mand_bail ), t_param_exponent);
+                                            t_param = pow( 1.0 - (double)mand_height/(double)mand_bail,
+                                                           t_param_exponent);
                                         }
 
                                         gamma_factor = pow( t_param, gamma );
