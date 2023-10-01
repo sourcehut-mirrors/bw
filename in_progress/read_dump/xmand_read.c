@@ -30,6 +30,8 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *
+ * For ISO/IEC 9899:1990 (“ISO C90”).  The setenv(), putenv() and
+ * unsetenv() functions conforms to IEEE Std 1003.1-2001 (“POSIX.1”).
  *********************************************************************/
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
@@ -57,11 +59,15 @@ int main (int argc, char **argv)
     int status;
     char *tmpdir;
 
-    setlocale (LC_ALL, "C");
+    if ( setlocale (LC_ALL, "C") == NULL ) {
+        fprintf (stderr,"FAIL : can not setlocale LC_ALL=C\n");
+        return EXIT_FAILURE;    
+    }
 
-    status = setenv("TZ", "GMT0", 1);
-    if ( status < 0 ) {
+    errno = 0;
+    if ( setenv("TZ", "GMT0", 1) < 0 ) {
         fprintf (stderr,"FAIL : can not set timezone TZ = GMT0\n");
+        perror("FAIL setenv ");
         return EXIT_FAILURE;
     }
 

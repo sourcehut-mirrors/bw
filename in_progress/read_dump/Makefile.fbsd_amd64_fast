@@ -1,8 +1,0 @@
-
-CC=/usr/bin/cc
-
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -O2 -g \
-	-Weverything -Wno-reserved-identifier -Wno-reserved-id-macro \
-	-fsanitize=address
-
-include common.mk
