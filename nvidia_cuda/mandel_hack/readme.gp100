@@ -1,0 +1,109 @@
+
+The somewhat extreme case : 
+
+     : mand_bail = 16777216
+     : translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
+     :   magnify = +8.589934592000e+09 
+
+t$ ./mandel_hack
+-------------------------------------------------------------
+        system name = Linux
+          node name = titan
+            release = 6.5.7-genunix
+            version = #1 SMP PREEMPT_DYNAMIC Wed Oct 18 07:04:10 GMT 2023
+            machine = x86_64
+          page size = 4096
+       avail memory = 540904054784
+                    = 528226616 kB
+                    = 515846 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     40
+INFO : number of CUDA devices:  2
+     :    0: Quadro GP100
+     :         17069309952 totalGlobalMem
+     :             1442500 clockRate
+     :                4096 memoryBusWidth
+     :                  56 multiProcessorCount
+     :                2048 maxThreadsPerMultiProcessor
+     :                3584 cores
+     :    1: Quadro K6000
+     :         12791250944 totalGlobalMem
+     :             901500 clockRate
+     :                 384 memoryBusWidth
+     :                  15 multiProcessorCount
+     :                2048 maxThreadsPerMultiProcessor
+     :                2880 cores
+HALT : be advised this is a hack!
+     :    0: Quadro GP100
+     :         17069309952 totalGlobalMem
+
+INFO : Quadro GP100 device is selected
+
+INFO : firing off 1048576 cuda core code chunks
+     : mem size of double data array is 8388608 bytes
+     : mem size of uint32_t height array is 4194304 bytes
+
+-----------------------------------------------------------
+     : 1048576 coord loaded 39520333 nsecs
+     : cudaMalloc device_r 174608923 nsecs
+     : cudaMalloc device_j 155031 nsecs
+     : cudaMalloc device_mval 140398 nsecs
+INFO : Copy of real data from host to device done.
+     : cudaMemcpy() 1121147nsecs
+INFO : Copy of imaginary data from host to device done.
+     : cudaMemcpy() 1267074 nsecs
+INFO : CUDA kernel launch with 1024 blocks of 1024 threads
+INFO : done.
+     : gpu_mbrot time delta 15510 nsecs
+INFO : Copy result from device to host done.
+     : copy device result done 1568585 nsecs
+
+     : mand_bail = 16777216
+     : translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
+     :   magnify = +8.589934592000e+09 
+
+     : r[ 0][ 0][ 0][ 0] = -1.99998588145513167546596378e+00
+     : j[ 0][ 0][ 0][ 0] = -2.56250132224522531032562256e-10
+     :       mand_height =        39
+     : r[ 7][ 7][63][63] = -1.99998588122275577916298062e+00
+     : j[ 7][ 7][63][63] = -2.38742359215393662452697754e-11
+     :       mand_height =        71
+     : r[ 8][ 8][ 0][ 0] = -1.99998588122230103181209415e+00
+     : j[ 8][ 8][ 0][ 0] = -2.34194885706529021263122559e-11
+     :       mand_height =        71
+     : r[ 8][ 8][ 1][ 0] = -1.99998588122184628446120769e+00
+     : j[ 8][ 8][ 1][ 0] = -2.34194885706529021263122559e-11
+     :       mand_height =        71
+     : r[ 8][ 8][32][32] = -1.99998588120774911658372730e+00
+     : j[ 8][ 8][32][32] = -8.86757334228605031967163086e-12
+     :       mand_height =       211
+     : r[ 3][12][44][21] = -1.99998588134781130065675825e+00
+     : j[ 3][12][44][21] = +1.02545527624897658824920654e-10
+     :       mand_height =        41
+     : r[15][15][63][63] = -1.99998588098992513550911099e+00
+     : j[15][15][63][63] = +2.08956407732330262660980225e-10
+     :       mand_height =        41
+INFO : file /var/tmp/dclarke/20231018091057 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail = 16777216
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +8.58993459200000000000000000e+09
+DBUG :  8 byte double centre_r num_written = 1
+     : centre_r = -1.99998588122252840548753738e+00
+     :  8 byte double centre_j num_written = 1
+     : centre_j = -2.36468622460961341857910156e-11
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20231018091057 closed.
+INFO : dumped 1048576 records
+INFO : host memory free and we are done
+t$ 
+
