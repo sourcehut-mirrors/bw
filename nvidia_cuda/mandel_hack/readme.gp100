@@ -1,11 +1,80 @@
 
-The somewhat extreme case : 
+titan$ $NVCC --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2022 NVIDIA Corporation
+Built on Wed_Sep_21_10:33:58_PDT_2022
+Cuda compilation tools, release 11.8, V11.8.89
+Build cuda_11.8.r11.8/compiler.31833905_0
 
-     : mand_bail = 16777216
-     : translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
-     :   magnify = +8.589934592000e+09 
+titan$ nvidia-smi 
+Sat Oct 21 06:15:33 2023       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 470.199.02   Driver Version: 470.199.02   CUDA Version: 11.4     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  Quadro K6000        Off  | 00000000:03:00.0 Off |                  Off |
+| 26%   42C    P0    50W / 225W |      0MiB / 12198MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+|   1  Quadro GP100        Off  | 00000000:81:00.0 Off |                  Off |
+| 35%   48C    P0    29W / 235W |      0MiB / 16278MiB |      2%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
 
-t$ ./mandel_hack
+titan$ uname -a 
+Linux titan 6.5.7-genunix #1 SMP PREEMPT_DYNAMIC Wed Oct 18 07:04:10 GMT 2023 x86_64 GNU/Linux
+
+titan$ ls -l /lib/modules/6.5.7-genunix/kernel/drivers/video/
+total 98572
+-rw-r--r-- 1 root root  3864181 Oct 18 08:23 nvidia-drm.ko
+-rw-r--r-- 1 root root 52715773 Oct 18 08:23 nvidia.ko
+-rw-r--r-- 1 root root  2320349 Oct 18 08:23 nvidia-modeset.ko
+-rw-r--r-- 1 root root   326397 Oct 18 08:23 nvidia-peermem.ko
+-rw-r--r-- 1 root root 41690589 Oct 18 08:23 nvidia-uvm.ko
+
+
+Now to push a lot of numbers around : 
+
+#define BAIL_OUT 16777216
+#define MAGNIFY 8589934592
+#define REAL_COORD -1.99998588122252840548753738
+#define IMAG_COORD -0.0000000000236468622460961341857910156
+
+
+
+titan$ $NVCC -ccbin /usr/bin/g++-10 -I../include -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> --ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+> -c -o mandel_hack.o mandel_hack.cu
+mandel_hack.cu(735): warning #550-D: variable "err_status" was set but never used
+
+mandel_hack.cu(735): warning #550-D: variable "err_status" was set but never used
+
+
+
+titan$ $NVCC -ccbin /usr/bin/g++-10 -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> --ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+> -o mandel_hack mandel_hack.o -lgomp
+titan$ 
+
+
+titan$ ./mandel_hack
 -------------------------------------------------------------
         system name = Linux
           node name = titan
@@ -13,8 +82,8 @@ t$ ./mandel_hack
             version = #1 SMP PREEMPT_DYNAMIC Wed Oct 18 07:04:10 GMT 2023
             machine = x86_64
           page size = 4096
-       avail memory = 540904054784
-                    = 528226616 kB
+       avail memory = 540904030208
+                    = 528226592 kB
                     = 515846 MB
 -------------------------------------------------------------
 INFO : number of host CPUs:     40
@@ -33,7 +102,7 @@ INFO : number of CUDA devices:  2
      :                  15 multiProcessorCount
      :                2048 maxThreadsPerMultiProcessor
      :                2880 cores
-HALT : be advised this is a hack!
+WARN : FORCE SELECT the device 0
      :    0: Quadro GP100
      :         17069309952 totalGlobalMem
 
@@ -44,19 +113,19 @@ INFO : firing off 1048576 cuda core code chunks
      : mem size of uint32_t height array is 4194304 bytes
 
 -----------------------------------------------------------
-     : 1048576 coord loaded 39520333 nsecs
-     : cudaMalloc device_r 174608923 nsecs
-     : cudaMalloc device_j 155031 nsecs
-     : cudaMalloc device_mval 140398 nsecs
+     : 1048576 coord loaded 48541272 nsecs
+     : cudaMalloc device_r 219623447 nsecs
+     : cudaMalloc device_j 154343 nsecs
+     : cudaMalloc device_mval 138651 nsecs
 INFO : Copy of real data from host to device done.
-     : cudaMemcpy() 1121147nsecs
+     : cudaMemcpy() 1020374nsecs
 INFO : Copy of imaginary data from host to device done.
-     : cudaMemcpy() 1267074 nsecs
+     : cudaMemcpy() 1050058 nsecs
 INFO : CUDA kernel launch with 1024 blocks of 1024 threads
 INFO : done.
-     : gpu_mbrot time delta 15510 nsecs
+     : gpu_mbrot time delta 16090 nsecs
 INFO : Copy result from device to host done.
-     : copy device result done 1568585 nsecs
+     : copy device result done 1499279 nsecs
 
      : mand_bail = 16777216
      : translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
@@ -83,7 +152,7 @@ INFO : Copy result from device to host done.
      : r[15][15][63][63] = -1.99998588098992513550911099e+00
      : j[15][15][63][63] = +2.08956407732330262660980225e-10
      :       mand_height =        41
-INFO : file /var/tmp/dclarke/20231018091057 dump begins.
+INFO : file /var/tmp/dclarke/20231021061948 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -102,8 +171,27 @@ DBUG :  8 byte double centre_r num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20231018091057 closed.
+INFO : file /var/tmp/dclarke/20231021061948 closed.
 INFO : dumped 1048576 records
 INFO : host memory free and we are done
-t$ 
+titan$ 
+titan$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20231021061948
+000000 00 00 10 00 00 00 00 01 00 00 00 00 00 00 00 42
+000010 00 00 05 32 f1 ff ff bf 00 00 00 00 00 00 ba bd
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 00 fc 14 32 f1 ff ff bf 00 00 00 00 00 9c f1 bd
+000040 27 00 00 00 00 f4 14 32 f1 ff ff bf 00 00 00 00
+000050 00 9c f1 bd 27 00 00 00 00 ec 14 32 f1 ff ff bf
+000060 00 00 00 00 00 9c f1 bd 27 00 00 00 00 e4 14 32
+000070 f1 ff ff bf 00 00 00 00 00 9c f1 bd 27 00 00 00
+000080
+titan$ 
+titan$ openssl dgst -sha256 -r /var/tmp/dclarke/20231021061948
+ad1ac4bf9beb3ba0a4613457d92477dce779ce2541c832c77b5936868852a726 */var/tmp/dclarke/20231021061948
+titan$ 
+titan$ 
+titan$ 
+titan$ grep -c 'ad1ac4bf9beb3ba0a4613457d92477dce779ce2541c832c77b5936868852a726' ../../xmand/output/* | grep -v '0$'
+../../xmand/output/readme.dataset6_ppc64le_fast:1
+titan$ 
 

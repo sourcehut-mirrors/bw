@@ -1,77 +1,204 @@
 
-With fma calls for CPU checking we get horrific performance loss
-on the host : 
+titan$ $NVCC --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2022 NVIDIA Corporation
+Built on Wed_Sep_21_10:33:58_PDT_2022
+Cuda compilation tools, release 11.8, V11.8.89
+Build cuda_11.8.r11.8/compiler.31833905_0
+
+titan$ nvidia-smi 
+Sat Oct 21 06:15:33 2023       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 470.199.02   Driver Version: 470.199.02   CUDA Version: 11.4     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  Quadro K6000        Off  | 00000000:03:00.0 Off |                  Off |
+| 26%   42C    P0    50W / 225W |      0MiB / 12198MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+|   1  Quadro GP100        Off  | 00000000:81:00.0 Off |                  Off |
+| 35%   48C    P0    29W / 235W |      0MiB / 16278MiB |      2%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+
+titan$ uname -a 
+Linux titan 6.5.7-genunix #1 SMP PREEMPT_DYNAMIC Wed Oct 18 07:04:10 GMT 2023 x86_64 GNU/Linux
+
+titan$ ls -l /lib/modules/6.5.7-genunix/kernel/drivers/video/
+total 98572
+-rw-r--r-- 1 root root  3864181 Oct 18 08:23 nvidia-drm.ko
+-rw-r--r-- 1 root root 52715773 Oct 18 08:23 nvidia.ko
+-rw-r--r-- 1 root root  2320349 Oct 18 08:23 nvidia-modeset.ko
+-rw-r--r-- 1 root root   326397 Oct 18 08:23 nvidia-peermem.ko
+-rw-r--r-- 1 root root 41690589 Oct 18 08:23 nvidia-uvm.ko
 
 
-------- attempt to compile mandel_hack.cu
+Now to push a lot of numbers around : 
 
-------- code will run in five seconds .. or stop me!
+#define BAIL_OUT 16777216
+#define MAGNIFY 8589934592
+#define REAL_COORD -1.99998588122252840548753738
+#define IMAG_COORD -0.0000000000236468622460961341857910156
 
--rwxr-xr-x 1 dclarke devl 826224 Aug 26 11:09 mandel_hack
--rw-r--r-- 1 dclarke devl  20904 Aug 26 00:38 mandel_hack.cu
--rw-r--r-- 1 dclarke devl  66032 Aug 26 11:09 mandel_hack.o
-==1438== NVPROF is profiling process 1438, command: ./mandel_hack
+
+
+titan$ $NVCC -ccbin /usr/bin/g++-10 -I../include -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> --ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+> -c -o mandel_hack.o mandel_hack.cu
+mandel_hack.cu(735): warning #550-D: variable "err_status" was set but never used
+
+mandel_hack.cu(735): warning #550-D: variable "err_status" was set but never used
+
+
+
+titan$ $NVCC -ccbin /usr/bin/g++-10 -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> --ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+> -o mandel_hack mandel_hack.o -lgomp
+titan$ 
+
+
+titan$ 
+titan$ ./mandel_hack
 -------------------------------------------------------------
         system name = Linux
-          node name = oberon
-            release = 5.19.2-genunix
-            version = #1 SMP Sat Aug 20 19:46:19 GMT 2022
+          node name = titan
+            release = 6.5.7-genunix
+            version = #1 SMP PREEMPT_DYNAMIC Wed Oct 18 07:04:10 GMT 2023
             machine = x86_64
           page size = 4096
-       avail memory = 16723369984
-                    = 16331416 kB
-                    = 15948 MB
+       avail memory = 540904030208
+                    = 528226592 kB
+                    = 515846 MB
 -------------------------------------------------------------
-DBUG : at 153 in mandel_hack.cu
-INFO : number of host CPUs:     2
-INFO : number of CUDA devices:  1
+INFO : number of host CPUs:     40
+INFO : number of CUDA devices:  2
+     :    0: Quadro GP100
+     :         17069309952 totalGlobalMem
+     :             1442500 clockRate
+     :                4096 memoryBusWidth
+     :                  56 multiProcessorCount
+     :                2048 maxThreadsPerMultiProcessor
+     :                3584 cores
+     :    1: Quadro K6000
+     :         12791250944 totalGlobalMem
+     :             901500 clockRate
+     :                 384 memoryBusWidth
+     :                  15 multiProcessorCount
+     :                2048 maxThreadsPerMultiProcessor
+     :                2880 cores
+WARN : FORCE SELECT the device 0
      :    0: Quadro K6000
+     :         12791250944 totalGlobalMem
+
+INFO : Quadro K6000 device is selected
+
 INFO : firing off 1048576 cuda core code chunks
      : mem size of double data array is 8388608 bytes
      : mem size of uint32_t height array is 4194304 bytes
 
 -----------------------------------------------------------
-     : random data load 50063027 nsecs
-     : cudaMalloc device_r 140961515 nsecs
-     : cudaMalloc device_i 87244 nsecs
-     : cudaMalloc device_mval 93132 nsecs
+     : 1048576 coord loaded 48169298 nsecs
+     : cudaMalloc device_r 209083871 nsecs
+     : cudaMalloc device_j 142637 nsecs
+     : cudaMalloc device_mval 103888 nsecs
 INFO : Copy of real data from host to device done.
-     : cudaMemcpy() 900127nsecs
-DBUG : at 323 in mandel_hack.cu
+     : cudaMemcpy() 1033456nsecs
 INFO : Copy of imaginary data from host to device done.
-     : cudaMemcpy() 885692 nsecs
+     : cudaMemcpy() 1097713 nsecs
 INFO : CUDA kernel launch with 1024 blocks of 1024 threads
-DBUG : at 366 in mandel_hack.cu
 INFO : done.
-     : gpu_mbrot time delta 34483 nsecs
-DBUG : at 393 in mandel_hack.cu
+     : gpu_mbrot time delta 16436 nsecs
 INFO : Copy result from device to host done.
-     : copy device result done 1547964 nsecs
-DBUG : at 428 in mandel_hack.cu
-     : Total error count = 0
-     : data check done 3550061904437 nsecs
+     : copy device result done 1598038 nsecs
+
+     : mand_bail = 16777216
+     : translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
+     :   magnify = +8.589934592000e+09 
+
+     : r[ 0][ 0][ 0][ 0] = -1.99998588145513167546596378e+00
+     : j[ 0][ 0][ 0][ 0] = -2.56250132224522531032562256e-10
+     :       mand_height =        39
+     : r[ 7][ 7][63][63] = -1.99998588122275577916298062e+00
+     : j[ 7][ 7][63][63] = -2.38742359215393662452697754e-11
+     :       mand_height =        71
+     : r[ 8][ 8][ 0][ 0] = -1.99998588122230103181209415e+00
+     : j[ 8][ 8][ 0][ 0] = -2.34194885706529021263122559e-11
+     :       mand_height =        71
+     : r[ 8][ 8][ 1][ 0] = -1.99998588122184628446120769e+00
+     : j[ 8][ 8][ 1][ 0] = -2.34194885706529021263122559e-11
+     :       mand_height =        71
+     : r[ 8][ 8][32][32] = -1.99998588120774911658372730e+00
+     : j[ 8][ 8][32][32] = -8.86757334228605031967163086e-12
+     :       mand_height =       211
+     : r[ 3][12][44][21] = -1.99998588134781130065675825e+00
+     : j[ 3][12][44][21] = +1.02545527624897658824920654e-10
+     :       mand_height =        41
+     : r[15][15][63][63] = -1.99998588098992513550911099e+00
+     : j[15][15][63][63] = +2.08956407732330262660980225e-10
+     :       mand_height =        41
+INFO : file /var/tmp/dclarke/20231021062718 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail = 16777216
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +8.58993459200000000000000000e+09
+DBUG :  8 byte double centre_r num_written = 1
+     : centre_r = -1.99998588122252840548753738e+00
+     :  8 byte double centre_j num_written = 1
+     : centre_j = -2.36468622460961341857910156e-11
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20231021062718 closed.
+INFO : dumped 1048576 records
 INFO : host memory free and we are done
-==1438== Profiling application: ./mandel_hack
-==1438== Profiling result:
-            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   99.07%  294.62ms         1  294.62ms  294.62ms  294.62ms  gpu_mbrot(double const *, double const *, unsigned int*, int)
-                    0.55%  1.6408ms         2  820.42us  810.29us  830.55us  [CUDA memcpy HtoD]
-                    0.38%  1.1282ms         1  1.1282ms  1.1282ms  1.1282ms  [CUDA memcpy DtoH]
-      API calls:   66.20%  294.68ms         1  294.68ms  294.68ms  294.68ms  cudaDeviceSynchronize
-                   31.70%  141.13ms         3  47.044ms  86.407us  140.95ms  cudaMalloc
-                    0.74%  3.3134ms         3  1.1045ms  881.20us  1.5410ms  cudaMemcpy
-                    0.39%  1.7576ms         1  1.7576ms  1.7576ms  1.7576ms  cudaDeviceReset
-                    0.34%  1.5341ms         3  511.38us  133.23us  704.61us  cudaFree
-                    0.25%  1.0952ms         1  1.0952ms  1.0952ms  1.0952ms  cuDeviceTotalMem
-                    0.14%  613.99us         1  613.99us  613.99us  613.99us  cuDeviceGetPCIBusId
-                    0.11%  495.39us         1  495.39us  495.39us  495.39us  cudaGetDeviceProperties
-                    0.10%  447.69us       101  4.4320us     479ns  182.83us  cuDeviceGetAttribute
-                    0.01%  48.520us         1  48.520us  48.520us  48.520us  cuDeviceGetName
-                    0.01%  27.402us         1  27.402us  27.402us  27.402us  cudaLaunchKernel
-                    0.00%  7.4420us         3  2.4800us     926ns  3.4260us  cuDeviceGetCount
-                    0.00%  3.7240us         2  1.8620us  1.1140us  2.6100us  cuDeviceGet
-                    0.00%  2.2010us         1  2.2010us  2.2010us  2.2010us  cudaGetDeviceCount
-                    0.00%     915ns         1     915ns     915ns     915ns  cuDeviceGetUuid
-                    0.00%     271ns         1     271ns     271ns     271ns  cudaGetLastError
+titan$ 
+titan$ 
+titan$ openssl dgst -sha256 -r /var/tmp/dclarke/20231021062718
+ad1ac4bf9beb3ba0a4613457d92477dce779ce2541c832c77b5936868852a726 */var/tmp/dclarke/20231021062718
+titan$ 
+
+
+
+titan$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20231021061948
+000000 00 00 10 00 00 00 00 01 00 00 00 00 00 00 00 42
+000010 00 00 05 32 f1 ff ff bf 00 00 00 00 00 00 ba bd
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 00 fc 14 32 f1 ff ff bf 00 00 00 00 00 9c f1 bd
+000040 27 00 00 00 00 f4 14 32 f1 ff ff bf 00 00 00 00
+000050 00 9c f1 bd 27 00 00 00 00 ec 14 32 f1 ff ff bf
+000060 00 00 00 00 00 9c f1 bd 27 00 00 00 00 e4 14 32
+000070 f1 ff ff bf 00 00 00 00 00 9c f1 bd 27 00 00 00
+000080
+titan$ 
+titan$ 
+titan$ grep -c 'ad1ac4bf9beb3ba0a4613457d92477dce779ce2541c832c77b5936868852a726' ../../xmand/output/* | grep -v '0$'
+../../xmand/output/readme.dataset6_ppc64le_fast:1
+titan$ 
+
+perfect looking data 
 
 

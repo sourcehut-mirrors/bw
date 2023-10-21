@@ -37,47 +37,27 @@
 #define THREADS_PER_BLOCK 1024
 #define IMG_PIX_W 1024
 
-/* dataset 0 
-#define BAIL_OUT 256
-#define MAGNIFY 128
-#define REAL_COORD -1.225891113281250
-#define IMAG_COORD -0.177673339843750
-*/
-
-/* dataset 1 *
-#define BAIL_OUT 32768
-#define MAGNIFY 268435456
-#define REAL_COORD 0.399750960350502282381
-#define IMAG_COORD 0.205251797480741515756
-*/
+/* something extreme that I made up 
 
 
-/* dataset 2 *
-#define BAIL_OUT 32768
-#define MAGNIFY 274877906944
-#define REAL_COORD -0.0157887752805699992098
-#define IMAG_COORD  1.02061921088799989477
-*/
-
-/* some thing extreme that I made up 
-       mand_bail = 16777216
-    translate = ( -1.99998588122252840549e+00  , -2.36468622460961341858e-11  )
       magnify = +8.589934592000e+09 == 2^33 == 8589934592
+
+      The output that I usually see is : 
+
+      mand_bail = 16777216
+      translate = ( -1.99998588122252840548753738e+00 , -2.36468622460961341857910156e-11 )
+      magnify = +8.58993459200000000000000000e+09
+
+      So we may have a 64bit or 53 bit data limit here in terms 
+      of precision.
+
 */
+
 #define BAIL_OUT 16777216
 #define MAGNIFY 8589934592
-#define REAL_COORD -1.99998588122252840549
-#define IMAG_COORD -0.0000000000236468622460961341858
+#define REAL_COORD -1.99998588122252840548753738
+#define IMAG_COORD -0.0000000000236468622460961341857910156
 
-
-/* dataset 5
-   524288 4398046511104 -0.0157887752802652429895 1.02061921090827745218
-
-#define BAIL_OUT 524288
-#define MAGNIFY 4398046511104
-#define REAL_COORD -0.0157887752802652429895
-#define IMAG_COORD 1.02061921090827745218
-*/
 
 /* TODO read in the established data files */
 #define VBOX_REAL_COUNT 16
@@ -212,6 +192,9 @@ int main(int argc, char *argv[])
     /* do we even have a NVidia Quadro GPU ? */
     int num_gpus = 0;
 
+    /* Scheiße select hack */
+    int scheisse_select;
+
     setlocale( LC_ALL, "C" );
     int status = setenv("TZ", "GMT0", 1);
     sysinfo();
@@ -297,9 +280,30 @@ int main(int argc, char *argv[])
 
     }
 
-    /* HARD Code hack Scheiße */
-    /* WARNING this is hack set zero */
-    err = cudaSetDevice(0);
+    /***********************************************************
+     *
+     *            W A R N I N G    F O R C E    S E L E C T
+     *
+     *  The NVidia drivers need to be hacked a bit in order to
+     *  compile for any very recent Linux kernel. This is well
+     *  documented at : 
+     *
+     *  https://gist.github.com/joanbm/dfe8dc59af1c83e2530a1376b77be8ba
+     *
+     *  The question remains, does that actually work ?
+     *
+     *  This is a load test on two very different GPU hardware
+     *  class units.  The old Keplar and the newer Pascal.
+     *
+     *  Device 0 seems to be the GP100 unit.
+     *  Device 1 is the old Keplar K6000.
+     **********************************************************/
+
+    scheisse_select = 1;
+    if ( argc > 1 ) scheisse_select = atoi(argv[1]);
+
+    err = cudaSetDevice(scheisse_select);
+
     /* possible err values are
      *  cudaSuccess, cudaErrorInvalidDevice, cudaErrorSetOnActiveProcess */
     if ( err != cudaSuccess ) {
@@ -320,10 +324,9 @@ int main(int argc, char *argv[])
          return EXIT_FAILURE;
      }
 
-    /* WARNING this is hack set zero */
-    cudaGetDeviceProperties(&dprop, 0);
+    cudaGetDeviceProperties(&dprop, scheisse_select);
 
-    printf("HALT : be advised this is a hack!\n");
+    printf("WARN : FORCE SELECT the device 0\n");
     printf("     :    %d: %s\n", 0, dprop.name);
 
     printf("     :        %12" PRIu64 " totalGlobalMem\n", dprop.totalGlobalMem);
