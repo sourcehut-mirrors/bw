@@ -82,6 +82,10 @@ int main(int argc, char *argv[]) {
 
     sysinfo(VERBOSE);
 
+#if defined(_POSIX_THREAD_PRIORITY_SCHEDULING)
+    fprintf(stderr,"NOTE : _POSIX_THREAD_PRIORITY_SCHEDULING is defined\n");
+#endif
+
     /* use the Round Robin scheduler */
     priority_max = sched_get_priority_max(SCHED_RR);
     priority_min = sched_get_priority_min(SCHED_RR);
