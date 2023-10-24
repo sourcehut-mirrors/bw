@@ -33,6 +33,32 @@ int main(void)
     printf("SCHED_RR     : max = %i\n", pri_max);
     printf("SCHED_RR     : min = %i\n", pri_min);
 
+#ifdef __GLIBC__
+    /* Linux claims to support :
+     *     SCHED_BATCH, SCHED_IDLE, and SCHED_DEADLINE
+     * with no clue what those do ... if anything.
+     */
+
+    pri_max = sched_get_priority_max(SCHED_BATCH);
+    pri_min = sched_get_priority_min(SCHED_BATCH);
+
+    printf("SCHED_BATCH   : max = %i\n", pri_max);
+    printf("SCHED_BATCH   : min = %i\n", pri_min);
+
+    pri_max = sched_get_priority_max(SCHED_IDLE);
+    pri_min = sched_get_priority_min(SCHED_IDLE);
+
+    printf("SCHED_IDLE   : max = %i\n", pri_max);
+    printf("SCHED_IDLE   : min = %i\n", pri_min);
+
+    pri_max = sched_get_priority_max(SCHED_DEADLINE);
+    pri_min = sched_get_priority_min(SCHED_DEADLINE);
+
+    printf("SCHED_DEADLINE   : max = %i\n", pri_max);
+    printf("SCHED_DEADLINE   : min = %i\n", pri_min);
+
+#endif
+
     return 42;
 
 }
