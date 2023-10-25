@@ -135,7 +135,8 @@ int main(int argc, char *argv[]) {
 
     if ( pthread_err == ENOTSUP ) {
         fprintf(stderr,"WARN : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
-        perror("     : Invalid or unsupported value");
+        fprintf(stderr,"     : Invalid or unsupported value\n");
+        perror("     : however errno returns");
         fprintf(stderr,"     : must be a Linux system.\n");
         fprintf(stderr,"     : will attempt PTHREAD_SCOPE_SYSTEM\n");
         errno = 0;

@@ -1,0 +1,11 @@
+
+CC?=	/opt/bw/gcc13/bin/gcc
+
+CFLAGS=	-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+		-fno-builtin -mcpu=power9 -mno-altivec -mno-isel -mno-vsx \
+		-mno-crypto -mno-htm -mno-quad-memory-atomic -mno-multiple \
+		-mupdate -mno-avoid-indexed-addresses -mno-dlmzb \
+		-mno-bit-align -mno-strict-align -mregnames -mno-recip \
+		-fno-unsafe-math-optimizations
+
+include common.mk
