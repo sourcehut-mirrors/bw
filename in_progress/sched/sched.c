@@ -1,7 +1,7 @@
 
 /*
- * foobar.c  Demonstrate trivial POSIX threads dispatch and join with
- *           MT-safe calls to fputs. Attempt thread schedule priority.
+ * sched.c  Demonstrate trivial POSIX threads dispatch and join with
+ *          MT-safe calls to fputs. Attempt thread schedule priority.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,61 +41,88 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <sched.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
-#define NUM_THREADS 32
-#define BASELINE_FIB 22
-#define VERBOSE 1
-
-int sysinfo(int verbose);
-
-uint64_t timediff( struct timespec start_time,
-                   struct timespec end_time );
-
-/* a trivial thread routine */
-void *mocking(void *);
-
-/* a silly fibonacci */
-uint64_t fib(volatile uint8_t n);
-
-static pthread_t thread_id[NUM_THREADS];
+#include "schedule.h"
 
 int main(int argc, char *argv[]) {
 
-    int pthread_err, priority_max, priority_min, j;
-    struct timespec time_now;
+    int j;
+    int pthread_err;
+
+    int fifo_pri_max, fifo_pri_min,
+        other_pri_max, other_pri_min,
+        rr_pri_max, rr_pri_min;
+
+    struct timespec time_start, time_done;
     char *c_time_string;
     pthread_attr_t *attr;
 
-    /* this struct is pretty silly as it only has
-     * one member {int sched_priority = 1} */
+    /* a silly struct with one integer member
+     *   struct sched_param {int sched_priority = 1}
+     */
     struct sched_param thread_schedule_param;
 
     setlocale(LC_ALL, "C");
-    if ( clock_gettime( CLOCK_REALTIME, &time_now ) == -1 ) {
+    if ( clock_gettime( CLOCK_REALTIME, &time_start ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return(EXIT_FAILURE);
+        return -42;
     } else {
-        c_time_string = ctime( &time_now.tv_sec );
+        c_time_string = ctime( &time_start.tv_sec );
         printf("\nINFO : current time is %s", c_time_string );
     }
 
     sysinfo(VERBOSE);
 
+    if ( set_this_priority(PRIORITY_REQUEST) != EXIT_SUCCESS ) {
+        /* well bork bork bork ... */
+        return -42;
+    }
+
+    /* check if we can do POSIX thread schedule stuff at all */
+    fprintf(stderr,"NOTE : _POSIX_THREAD_PRIORITY_SCHEDULING is ");
 #if defined(_POSIX_THREAD_PRIORITY_SCHEDULING)
-    fprintf(stderr,"NOTE : _POSIX_THREAD_PRIORITY_SCHEDULING is defined\n");
+    fprintf(stderr,"defined\n");
+#else
+    fprintf(stderr," not defined\n");
+    fprintf(stderr,"FAIL : there is no reason to continue.\n");
+    return -42;
 #endif
 
+    fifo_pri_max = sched_get_priority_max(SCHED_FIFO);
+    fifo_pri_min = sched_get_priority_min(SCHED_FIFO);
+
+    printf("SCHED_FIFO   : max = %i\n", fifo_pri_max);
+    printf("SCHED_FIFO   : min = %i\n", fifo_pri_min);
+
+    other_pri_max = sched_get_priority_max(SCHED_OTHER);
+    other_pri_min = sched_get_priority_min(SCHED_OTHER);
+
+    printf("SCHED_OTHER  : max = %i\n", other_pri_max);
+    printf("SCHED_OTHER  : min = %i\n", other_pri_min);
+
+    rr_pri_max = sched_get_priority_max(SCHED_RR);
+    rr_pri_min = sched_get_priority_min(SCHED_RR);
+
+    printf("SCHED_RR     : max = %i\n", rr_pri_max);
+    printf("SCHED_RR     : min = %i\n", rr_pri_min);
+
+
     /* use the Round Robin scheduler */
-    priority_max = sched_get_priority_max(SCHED_RR);
-    priority_min = sched_get_priority_min(SCHED_RR);
-
     printf("INFO : Round Robin scheduler SCHED_RR selected\n");
-    printf("     | SCHED_RR priority_max = %i\n", priority_max);
-    printf("     | SCHED_RR priority_min = %i\n", priority_min);
+    printf("     | SCHED_RR priority_max = %i\n", rr_pri_max);
+    printf("     | SCHED_RR priority_min = %i\n", rr_pri_min);
 
-    printf("     : seed drand48() with %lu\n", (long)time_now.tv_nsec);
-    srand48((long)time_now.tv_nsec);
+    printf("     : seed drand48() with %lu\n", (long)time_start.tv_nsec);
+    srand48((long)time_start.tv_nsec);
+
+    if ( create_pthread_attr(&attr) == EXIT_FAILURE ) {
+        fprintf(stderr,"FAIL : pthread attr init failed\n");
+        if ( attr != NULL ) free(attr);
+        return -42;
+    }
 
     /* we will need to specifiy the thread attributes */
     errno = 0;
@@ -114,7 +141,7 @@ int main(int argc, char *argv[]) {
     }
 
     errno = 0;
-    if ( pthread_attr_init(attr) == ENOMEM ) {
+    if ( pthread_attr_init( attr ) == ENOMEM ) {
         fprintf(stderr,"FAIL : ENOMEM from pthread_attr_init\n");
         perror("FAIL : ");
         return EXIT_FAILURE;
@@ -164,12 +191,6 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    /* take a swing at these :
-     *
-     * int pthread_attr_getschedparam(const pthread_attr_t *attr, struct sched_param *param);
-     *
-     * int pthread_attr_setschedparam(pthread_attr_t *attr, const struct sched_param *param);
-     */
     errno = 0;
     thread_schedule_param.sched_priority = -999;
     pthread_err = pthread_attr_getschedparam(attr, &thread_schedule_param);
@@ -184,7 +205,7 @@ int main(int argc, char *argv[]) {
                    thread_schedule_param.sched_priority );
 
     errno = 0;
-    thread_schedule_param.sched_priority = priority_min;
+    thread_schedule_param.sched_priority = rr_pri_min;
     pthread_err = pthread_attr_setschedparam(attr, &thread_schedule_param);
     if ( (pthread_err == EINVAL ) || ( pthread_err == ENOTSUP ) ) {
         fprintf(stderr,"FAIL : pthread_attr_setschedparam\n");
@@ -197,6 +218,12 @@ int main(int argc, char *argv[]) {
     printf("INFO : pthread_attr_setschedparam at SCHED_RR minimum = %i\n",
                    thread_schedule_param.sched_priority );
 
+    if ( clock_gettime( CLOCK_MONOTONIC, &time_start ) == -1 ) {
+        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+        free(attr);
+        attr = NULL;
+        return -42;
+    }
 
     /* create the pool of threads */
     for ( j = 0; j < NUM_THREADS; j++) {
@@ -222,7 +249,17 @@ int main(int argc, char *argv[]) {
         pthread_join(thread_id[j], NULL);
     }
 
-    printf("DONE : main() reporting that all %d threads have terminated\n", j);
+    if ( clock_gettime( CLOCK_MONOTONIC, &time_done ) == -1 ) {
+        fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
+        free(attr);
+        attr = NULL;
+        return -42;
+    }
+
+    printf("DONE : all %d threads have terminated\n", j);
+
+    printf("     : total time %14.6e\n",
+            ((double)timediff(time_start,time_done))/1000000000.0);
 
     free(attr);
     attr = NULL;
@@ -250,7 +287,7 @@ void* mocking(void *arg)
         }
     }
 
-    do_this_fib = (my_thread_id/8) + BASELINE_FIB + ((uint8_t)(drand48()*BASELINE_FIB));
+    do_this_fib = ((uint8_t)(drand48()*BASELINE_FIB)) + 20;
 
     sprintf(tbuf, "     : thread %2i working fib(%2i)\n", my_thread_id, do_this_fib);
     fputs(tbuf, stdout);
@@ -259,7 +296,7 @@ void* mocking(void *arg)
     fibonacci = fib(do_this_fib);
     clock_gettime(CLOCK_MONOTONIC, &end_work);
 
-    sprintf(tbuf,"     : thr %2i did fib(%2i)=%12" PRIu64 " in %14.6e sec\n",
+    sprintf(tbuf,"     : thr %3i did fib(%2i)=%12" PRIu64 " in %14.6e sec\n",
                 my_thread_id, do_this_fib, fibonacci,
                 ((double)timediff(start_work,end_work))/1000000000.0);
 
@@ -268,7 +305,8 @@ void* mocking(void *arg)
     return NULL;
 }
 
-uint64_t fib(volatile uint8_t n) {
+uint64_t fib(volatile uint8_t n)
+{
     if ( n == 0 ) {
         return 0;
     } else if ( n == 1 ) {
@@ -278,3 +316,90 @@ uint64_t fib(volatile uint8_t n) {
     }
 }
 
+int create_pthread_attr(pthread_attr_t **pthread_attr)
+{
+
+    /* we will need to specifiy the thread attributes */
+    errno = 0;
+    *pthread_attr = calloc(1,sizeof(pthread_attr_t));
+    if (*pthread_attr == NULL) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        return EXIT_FAILURE;
+    }
+
+    errno = 0;
+    if ( pthread_attr_init(*pthread_attr) == ENOMEM ) {
+        fprintf(stderr,"FAIL : ENOMEM from pthread_attr_init\n");
+        perror("FAIL : ");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+
+}
+
+int set_this_priority(int new_pri) {
+
+    int this_proc_pri;
+
+    errno = 0;
+    this_proc_pri = getpriority(PRIO_PROCESS, 0);
+    if ( errno != 0 ) {
+        /* [ESRCH]   No process was located using the which and who
+         *           values specified.
+         * [EINVAL]  The which argument was not one of PRIO_PROCESS,
+         *           PRIO_PGRP, or PRIO_USER.
+         */
+        fprintf(stderr,"FAIL : getpriority returns bad stuff\n");
+        perror("FAIL ");
+        return EXIT_FAILURE;
+    }
+    fprintf(stderr,"INFO : getpriority(PRIO_PROCESS, 0) returns %i\n",
+                    this_proc_pri);
+
+    /* toss this process into whatever new_pri is */
+    errno = 0;
+    this_proc_pri = setpriority(PRIO_PROCESS, 0, new_pri);
+
+    if ( errno != 0 ) {
+        /* [ESRCH]   No process was located using the which and who
+         *           values specified.
+         * [EINVAL]  The which argument was not one of PRIO_PROCESS,
+         *           PRIO_PGRP, or PRIO_USER.
+         * [EPERM]   A process was located, but neither its eff nor
+         *           real user ID matched the eff user ID of the
+         *           caller.
+         * [EACCES]  A non super-user attempted to lower a process
+         *           priority.
+         */
+        fprintf(stderr,"FAIL : setpriority returns bad stuff\n");
+        perror("FAIL ");
+        return EXIT_FAILURE;
+    }
+
+    errno = 0;
+    this_proc_pri = getpriority(PRIO_PROCESS, 0);
+    if ( errno != 0 ) {
+        /* [ESRCH]   No process was located using the which and who
+         *           values specified.
+         * [EINVAL]  The which argument was not one of PRIO_PROCESS,
+         *           PRIO_PGRP, or PRIO_USER.
+         */
+        fprintf(stderr,"FAIL : getpriority returns bad stuff\n");
+        perror("FAIL ");
+        return EXIT_FAILURE;
+    }
+    fprintf(stderr,"INFO : getpriority(PRIO_PROCESS, 0) now returns %i\n",
+                    this_proc_pri);
+
+    return EXIT_SUCCESS;
+
+}
