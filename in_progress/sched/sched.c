@@ -124,29 +124,6 @@ int main(int argc, char *argv[]) {
         return -42;
     }
 
-    /* we will need to specifiy the thread attributes */
-    errno = 0;
-    attr = calloc(1,sizeof(pthread_attr_t));
-    if (attr == NULL) {
-        /* really? possible ENOMEM? */
-        if ( errno == ENOMEM ) {
-            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                    __FILE__, __LINE__ );
-        } else {
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                    __FILE__, __LINE__ );
-        }
-        perror("FAIL ");
-        return EXIT_FAILURE;
-    }
-
-    errno = 0;
-    if ( pthread_attr_init( attr ) == ENOMEM ) {
-        fprintf(stderr,"FAIL : ENOMEM from pthread_attr_init\n");
-        perror("FAIL : ");
-        return EXIT_FAILURE;
-    }
-
     /* PTHREAD_SCOPE_PROCESS or PTHREAD_SCOPE_SYSTEM ? */
     errno = 0;
     pthread_err = pthread_attr_setscope(attr, PTHREAD_SCOPE_PROCESS);
@@ -346,7 +323,8 @@ int create_pthread_attr(pthread_attr_t **pthread_attr)
 
 }
 
-int set_this_priority(int new_pri) {
+int set_this_priority(int new_pri)
+{
 
     int this_proc_pri;
 
@@ -365,7 +343,7 @@ int set_this_priority(int new_pri) {
     fprintf(stderr,"INFO : getpriority(PRIO_PROCESS, 0) returns %i\n",
                     this_proc_pri);
 
-    /* toss this process into whatever new_pri is */
+    /* attemp to set this process into whatever new_pri is */
     errno = 0;
     this_proc_pri = setpriority(PRIO_PROCESS, 0, new_pri);
 
@@ -397,9 +375,19 @@ int set_this_priority(int new_pri) {
         perror("FAIL ");
         return EXIT_FAILURE;
     }
-    fprintf(stderr,"INFO : getpriority(PRIO_PROCESS, 0) now returns %i\n",
-                    this_proc_pri);
+
+    /* did we get what we asked for ? */
+    fprintf(stderr,"INFO : getpriority(PRIO_PROCESS, 0) ");
+    if ( this_proc_pri != new_pri ) {
+        /* nope. however something worked anyways */
+        fprintf(stderr,"requested %i priority.\n", new_pri);
+        fprintf(stderr,"     : however we attained ");
+    } else {
+        fprintf(stderr,"success for ");
+    }
+    fprintf(stderr,"%i priority\n",this_proc_pri);
 
     return EXIT_SUCCESS;
 
 }
+

@@ -32,8 +32,8 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
-#define NUM_THREADS 64
-#define BASELINE_FIB 26
+#define NUM_THREADS 16
+#define BASELINE_FIB 28
 #define PRIORITY_REQUEST 20
 #define VERBOSE 1
 

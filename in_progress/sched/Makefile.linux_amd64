@@ -1,0 +1,11 @@
+
+CC?=	/usr/local/gcc13/bin/gcc
+
+CFLAGS=	-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+		-fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float \
+		-mpc80 -fno-fast-math -mno-fancy-math-387 -malign-double \
+	 	-m128bit-long-double -mlong-double-80 -mstackrealign \
+		-mpreferred-stack-boundary=8 -ffp-contract=off -fno-inline \
+	 	-fno-early-inlining -fmath-errno -fno-unsafe-math-optimizations
+
+include common.mk

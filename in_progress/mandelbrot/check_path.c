@@ -1,6 +1,6 @@
 
 /*
- * check_tmpdir.c  See if there exists a temp directory work area
+ * check_path.c  See if a filepath for TMPDIR exists and we can use it
  *
  * Copyright (C) Dennis Clarke 2023
  *
@@ -49,6 +49,8 @@ int check_tmpdir(void) {
      *     true  = 1     everything works
      *     false = 0     sadly no tmpdir to work with
      *     fail  = -1    everything went wrong somewhere
+     *
+     * NOTE : the Microsoft BOOLEAN data type is a sick joke.
      */
 
     errno = 0;
@@ -87,7 +89,7 @@ int check_tmpdir(void) {
              * go looking for HOME */
             tmpdir = getenv("HOME");
             if ( tmpdir == NULL ) {
-                /* this user is a jerk */
+                /* this user is HOMEless ? */
 bail_out:
                 free(dir_buffer);
                 return -1;
