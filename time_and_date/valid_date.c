@@ -72,17 +72,6 @@ int valid_date ( int day, int month, int year )
      *                    1  2 14 15 16 17
      *                18 19 20 21 22 23 24
      *                25 26 27 28 29 30
-     *
-     *
-     * However we only care to check if the month is February
-     *
-     * -------------------------------------------------------
-     * A note from someone in the classroom :
-     * Here is a fancy way which may work to detect a leap year :
-     * (mon%1 ? (mon < 7 ? 31 , 30) , (mon >= 7 ? 30 , 31))
-     *
-     * However, this is not at all obvious or clear to anyone at
-     * first glance.
      */
 
     if ( month == 2 )

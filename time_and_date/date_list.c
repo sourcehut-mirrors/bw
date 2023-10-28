@@ -3,6 +3,8 @@
  * date_list.c generate a list of valid dates from 2019 upwards
  *               or whatever range you want.
  *
+ *             Stay away from September of the year 1752.
+ *
  * Copyright 2020 Dennis Clarke
  *
  * To the extent possible under law, the authors have waived
@@ -58,16 +60,7 @@ int main(int argc, char *argv[])
     int day, month, year;
     char *buf;
     
-    errno = 0;  /* start with no error condition */
-
-    /* we will need a buffer for the setlocale call etc *
-     *    buf = malloc( bufsize );
-     *    if ( buf == NULL ) {
-     *        perror ( "doh! ");
-     *        fprintf (stderr,"FAIL : malloc failed for buf\n");
-     *        return EXIT_FAILURE;
-     *    }
-     */
+    errno = 0;
 
     if ( argc > 1 ) {
         printf ("\nINFO : You suggest a locale of %s\n", argv[1]);
@@ -81,66 +74,9 @@ int main(int argc, char *argv[])
         return(EXIT_FAILURE);
     }
 
-
-/*
-        candidate_int = (int)strtol(argv[5], (char **)NULL, 10);
-        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
-            fprintf(stderr,"FAIL : pthread_limit not understood\n");
-            perror("     ");
-            return ( EXIT_FAILURE );
-        }
-        if ( ( candidate_int < 1 ) || ( candidate_int > 64 ) ){
-            fprintf(stderr,"WARN : pthread_limit is unreasonable\n");
-            fprintf(stderr,"     : we shall assume 1 and proceed.\n");
-            pthread_limit = 1;
-        } else {
-
-            if ( candidate_int > 1 ) {
-
-                * snazzy little bit shifting and counting follows
-                 * where this is not at all efficient but is sort of
-                 * fun *
-
-                k = 0; * number of '1' bits in candidate_int *
-                j = candidate_int;
-                p = 0; * bit position being tested *
-                while (j) {
-                    if ( j & 1 ) {  * test the LSB position * 
-                        k += 1;     * count the '1' bit * 
-                    }
-                    j = j >> 1;     * shift left * 
-                    p += 1;         * keep track of the bit position * 
-                }
-                if ( k > 1 ) {
-                    fprintf(stderr,"WARN : pthread_limit is not a perfect\n");
-                    fprintf(stderr,"     : power of two. We shall assume\n");
-                    pthread_limit = 1 << ( p - 1 );
-                    fprintf(stderr,"     : %i POSIX thread(s).\n", pthread_limit);
-                } else {
-                    pthread_limit = candidate_int;
-                }
-
-            } else {
-                pthread_limit = 1;
-            }
-        }
-*/
-
-    for ( year = 2020; year < 2021; year++ ) {
+    for ( year = 2020; year < 2024; year++ ) {
         for ( month = 1; month < 13; month++ ) {
             for ( day = 1; day < 32; day++ ) {
-
-                /* vanarius_10 in chat suggests this magic :
-                 *
-                 * ( month%1 ?
-                 *    ( month < 7 ? 31 , 30 ) ,
-                 *       ( month >= 7 ? 30 , 31 ) )
-                 *
-                 * However this is not at all obvious. We can
-                 * think about it and yes it seems to make sense
-                 * for months beginning at 1 for January but lets
-                 * just be more clear shall we?
-                 */
 
                 /* does this date exist ? */
                 if ( day < 29 ) {

@@ -20,7 +20,7 @@
 #include <time.h>
 
 /***********************************************************************
- *      tn : trivial UNIX time output function for time now
+ *      tn : trivial UNIX time output
  *
  *  Output : current UNIX time expressed in seven bit ASCII chars 0 - 9
  *           with options for fractional time after a decimal point.
@@ -50,11 +50,6 @@
  *
  * $ ./tn -f
  * 1416795058.948174500
- *
- *        It would be annoying to output the fractional time part byte
- *        by byte with an if clause to detect space chars and replace
- *        the output with 0x30h zero chars.  Annoying but perhaps no 
- *        other way. 
  *
  * Also, merely as a note here, senseless repetition of options may be
  * misunderstood. Since we only check for two char sequences within a
@@ -151,10 +146,10 @@ int main( int argc, char *argv[] ) {
             fprintf ( stderr, "%s : ENOSYS = clock_gettime not supported\n", argv[0] );
         }
 
-        return ( EXIT_FAILURE );
+        return EXIT_FAILURE;
     }
 
-    return ( EXIT_SUCCESS );
+    return EXIT_SUCCESS;
 
 }
 
