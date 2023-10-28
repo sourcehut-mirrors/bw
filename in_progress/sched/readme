@@ -1,0 +1,173 @@
+
+
+Should create a collection of POSIX threads that only do one
+dumb thing. Slowly.
+
+The idea is to set the "nice" or "priority" of the whole process
+down to something very low. Then create threads which have a schedule
+policy of some flavour. Near as I can tell this does a whole lot
+of nothing and then schedule policy seems to be implemented to also
+mean nothing. Perfectly in agreement with the specifications however.
+
+Take note of the idea in these three lines of output : 
+
+    (1)    INFO : getpriority(PRIO_PROCESS, 0) returns 11
+    (2)    INFO : getpriority(PRIO_PROCESS, 0) requested 20 priority.
+    (3)         : however we attained 19 priority
+
+In line (1) we discover what the current process "nice" value it. Some
+people may call that a "priority" of some sort. Those are very likely
+silly words that barely mean anything at all in the grand scheme of
+all processes a machine may be trying to run. Here we see something
+called "11" as the result. Isn't that nice?
+
+In line (2) the code attempts to set a new "nice" value of 20 which is
+supposedly the miss manners niceiest goody two shoes value anyone could
+dream of. So "nice" that the whole process should not disturb anything
+else trying to run. Sure. Good luck.
+
+Then in line (3) we find out that the value "20" was not really accepted.
+There was no error. You just do not get what you asked for. Have something
+close enough at "19" and be happy you were given that. These values of
+some "nice" level really mean nothing to the schedule policy for the pile
+of threads being created. However at least we are being as polite as possible
+to all the other processes trying to run on the machine.
+
+Note that here we use the words "trying to run" as opposed to just "running".
+
+If you have a big thrashing IBM POWER9 server with SMT4 processors and a
+grand total of 128 cores to execute stuff with then yeah, sure, the machine
+will likely "run" everything in some way. However your dirt cheap little
+aarch64 SBC is likely going to report that most processes are in a state of
+"sleeping" or even possibly "swapped". Again, good luck running 70 processes
+on a machine with four processors available to it.
+
+
+
+garak$ /usr/bin/time -p /usr/bin/nice -n +11 ./sched
+
+INFO : current time is Sat Oct 28 01:36:32 2023
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = garak
+                     release = 6.5.8-gentoo-r1-ia64
+                     version = #1 SMP Wed Oct 25 19:26:46 UTC 2023
+                     machine = ia64
+                   page size = 16384
+               system memory = 17027514368
+                             = 16628432 kB
+                             = 16238 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 250
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    2 days    4 hours   51 mins   59 secs
+-------------------------------------------------------------------
+INFO : getpriority(PRIO_PROCESS, 0) returns 11
+INFO : getpriority(PRIO_PROCESS, 0) requested 20 priority.
+     : however we attained 19 priority
+NOTE : _POSIX_THREAD_PRIORITY_SCHEDULING is defined
+SCHED_FIFO   : max = 99
+SCHED_FIFO   : min = 1
+SCHED_OTHER  : max = 0
+SCHED_OTHER  : min = 0
+SCHED_RR     : max = 99
+SCHED_RR     : min = 1
+INFO : Round Robin scheduler SCHED_RR selected
+     | SCHED_RR priority_max = 99
+     | SCHED_RR priority_min = 1
+     : seed drand48() with 599806404
+WARN : pthread_attr_setscope sched.c:137
+     : Invalid or unsupported value
+     : however errno returns: Success
+     : must be a Linux system.
+     : will attempt PTHREAD_SCOPE_SYSTEM
+     : PTHREAD_SCOPE_SYSTEM works here
+INFO : pthread_attr_getschedparam reports sched_priority = 0
+INFO : pthread_attr_setschedparam at SCHED_RR minimum = 1
+     : thread  0 working fib(34)
+     : thread  9 working fib(31)
+     : thread  3 working fib(34)
+     : thread 10 working fib(41)
+     : thread 11 working fib(42)
+     : thread  4 working fib(32)
+     : thread 12 working fib(27)
+     : thread 13 working fib(47)
+     : thread 14 working fib(41)
+     : thread 15 working fib(44)
+     : thread 16 working fib(39)
+     : thread 17 working fib(26)
+     : thread 18 working fib(37)
+     : thread 19 working fib(31)
+     : thread 20 working fib(43)
+     : thread 21 working fib(45)
+     : thread 22 working fib(44)
+     : thread 26 working fib(45)
+     : thread 25 working fib(26)
+     : thread 27 working fib(22)
+     : thread 24 working fib(27)
+     : thr  27 did fib(22)=       17711 in   2.299454e-03 sec
+     : thread 28 working fib(21)
+     : thr  28 did fib(21)=       10946 in   1.459666e-03 sec
+     : thread 29 working fib(38)
+     : thread 30 working fib(23)
+     : thread 23 working fib(26)
+     : thr  30 did fib(23)=       28657 in   3.735878e-03 sec
+     : thread 31 working fib(21)
+     : thr  31 did fib(21)=       10946 in   1.466679e-03 sec
+     : thread  8 working fib(32)
+     : thread  2 working fib(34)
+     : thread  7 working fib(33)
+     : thread  6 working fib(46)
+     : thread  5 working fib(23)
+     : thr   5 did fib(23)=       28657 in   3.644636e-03 sec
+     : thread  1 working fib(43)
+     : thr  23 did fib(26)=      121393 in   7.710908e-02 sec
+     : thr  17 did fib(26)=      121393 in   2.075501e-01 sec
+     : thr  25 did fib(26)=      121393 in   1.954425e-01 sec
+     : thr  12 did fib(27)=      196418 in   3.531193e-01 sec
+     : thr  24 did fib(27)=      196418 in   3.118838e-01 sec
+     : thr  19 did fib(31)=     1346269 in   1.921520e+00 sec
+     : thr   9 did fib(31)=     1346269 in   1.999727e+00 sec
+     : thr   4 did fib(32)=     2178309 in   2.841488e+00 sec
+     : thr   8 did fib(32)=     2178309 in   2.955812e+00 sec
+     : thr   7 did fib(33)=     3524578 in   4.461239e+00 sec
+     : thr   3 did fib(34)=     5702887 in   6.807500e+00 sec
+     : thr   0 did fib(34)=     5702887 in   6.811483e+00 sec
+     : thr   2 did fib(34)=     5702887 in   6.847560e+00 sec
+     : thr  18 did fib(37)=    24157817 in   2.344444e+01 sec
+     : thr  29 did fib(38)=    39088169 in   3.645121e+01 sec
+     : thr  16 did fib(39)=    63245986 in   5.494349e+01 sec
+     : thr  14 did fib(41)=   165580141 in   1.264599e+02 sec
+     : thr  10 did fib(41)=   165580141 in   1.270185e+02 sec
+     : thr  11 did fib(42)=   267914296 in   1.853882e+02 sec
+     : thr   1 did fib(43)=   433494437 in   2.687075e+02 sec
+     : thr  20 did fib(43)=   433494437 in   2.691702e+02 sec
+     : thr  22 did fib(44)=   701408733 in   3.713503e+02 sec
+     : thr  15 did fib(44)=   701408733 in   3.720401e+02 sec
+     : thr  21 did fib(45)=  1134903170 in   4.819020e+02 sec
+     : thr  26 did fib(45)=  1134903170 in   4.831791e+02 sec
+     : thr   6 did fib(46)=  1836311903 in   5.715219e+02 sec
+     : thr  13 did fib(47)=  2971215073 in   7.161863e+02 sec
+DONE : all 32 threads have terminated
+     : total time   7.162036e+02
+real 716.21
+user 1287.02
+sys 0.01
+garak$
+
+So there you see a Gentoo Linux machine running on the Intel Itanium
+architecture with only two processors available. Should come as no
+surprise that the wall clock time was about half of the "user" time.
+
