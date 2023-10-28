@@ -15,7 +15,7 @@ Take note of the idea in these three lines of output :
     (2)    INFO : getpriority(PRIO_PROCESS, 0) requested 20 priority.
     (3)         : however we attained 19 priority
 
-In line (1) we discover what the current process "nice" value it. Some
+In line (1) we discover what the current process "nice" value is. Some
 people may call that a "priority" of some sort. Those are very likely
 silly words that barely mean anything at all in the grand scheme of
 all processes a machine may be trying to run. Here we see something
