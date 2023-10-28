@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
         return(EXIT_FAILURE);
     }
 
-    for ( year = 2020; year < 2024; year++ ) {
+    for ( year = 2023; year < 2024; year++ ) {
         for ( month = 1; month < 13; month++ ) {
             for ( day = 1; day < 32; day++ ) {
 
