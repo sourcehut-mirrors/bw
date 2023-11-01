@@ -39,6 +39,12 @@
 
 /* something extreme that I made up 
 
+   this is trivial 
+
+   16777216 1073741824 -1.99998588117705367039889097 0.0 4
+
+
+   this is not
 
       magnify = +8.589934592000e+09 == 2^33 == 8589934592
 
@@ -54,9 +60,9 @@
 */
 
 #define BAIL_OUT 16777216
-#define MAGNIFY 8589934592
-#define REAL_COORD -1.99998588122252840548753738
-#define IMAG_COORD -0.0000000000236468622460961341857910156
+#define MAGNIFY 1073741824
+#define REAL_COORD -1.99998588117705367039889097
+#define IMAG_COORD  0.0
 
 
 /* TODO read in the established data files */
@@ -648,27 +654,27 @@ int main(int argc, char *argv[])
 
     /***************************************************************
      * Verify the data with CPU and fma() calls
-     ***************************************************************
+     ***************************************************************/
     clock_gettime( CLOCK_REALTIME, &t0 );
     int error_count = 0;
     uint32_t delta_error_sum = 0;
-    for (int i = 0; i < num_elements; ++i)
+    for (int j = 0; j < num_elements; ++j)
     {
 
-        check_val = cpu_mbrot( host_r[i], host_j[i], (uint32_t)mand_bail );
+        uint32_t check_val = cpu_mbrot( host_r[j], host_j[j], (uint32_t)mand_bail );
 
-        if ( host_mval[i] != check_val ) {
+        if ( host_mval[j] != check_val ) {
 
             printf("%-9i    :     ( %-+20.14e , %-+20.14e ) == %-6i",
-                               i, host_r[i], host_j[i], host_mval[i] );
+                               j, host_r[j], host_j[j], host_mval[j] );
             printf("    ERROR %-6i    DELTA = ", check_val);
 
-            if ( host_mval[i] < check_val ){
-                delta_error_sum += check_val - host_mval[i];
-                printf("%i\n", check_val - host_mval[i]);
+            if ( host_mval[j] < check_val ){
+                delta_error_sum += check_val - host_mval[j];
+                printf("%i\n", check_val - host_mval[j]);
             } else {
-                delta_error_sum += host_mval[i] - check_val;
-                printf("%i\n", host_mval[i] - check_val);
+                delta_error_sum += host_mval[j] - check_val;
+                printf("%i\n", host_mval[j] - check_val);
             }
             error_count += 1;
         }
@@ -682,11 +688,6 @@ int main(int argc, char *argv[])
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : data check done %" PRIu64 " nsecs\n", tdelta_nsec);
-    */
-
-
-
-
 
 
     /**********************************************************/
