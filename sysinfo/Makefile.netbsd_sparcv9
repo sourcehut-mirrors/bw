@@ -1,0 +1,34 @@
+
+CC?=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -O0 -g \
+	-mhard-float \
+	-mno-app-regs -mflat -mhard-quad-float \
+	-mno-unaligned-doubles \
+	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
+	-mcmodel=medany \
+	-mmemory-model=tso \
+	-fPIC -Wl,-rpath=/usr/pkg/lib
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+IDIR=/usr/pkg/include
+LDIR=/usr/pkg/lib
+LIBS=-lrt -lm
+
+SRCS = report.c sysinfo.c
+
+OBJS = report.o sysinfo.o
+
+.PHONY: all
+all: report
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report

@@ -155,6 +155,9 @@ int main(int argc, char *argv[])
     printf("IEEE-754 2008 FP64 data : ");
     if ( big_endian ) {
         for ( j=0; j < fp64_length; j++ ) {
+            /* this is bad behavior.... better to use
+             * a memcpy and then deal with the bytes
+             * one at a time. some other day */
             printf("%02x ", ((uint8_t*)&epsilon)[j] );
         }
         printf("\n" );
@@ -167,7 +170,8 @@ int main(int argc, char *argv[])
 
     printf("decimal value is = %+-42.38e\n", epsilon);
 
-    /* Because Charilaos says what about 2^(-1) ? */
+    /* Because Charilaos ( we call him Harry or longbow )
+     * says what about 2^(-1) ? */
     epsilon = pow(2.0, -1.0);
     printf("\n\nΧαρίλαος says \"What about 2^(-1) ?\"\n");
     printf("epsilon is at address %p\n\n", &epsilon);
@@ -188,7 +192,8 @@ int main(int argc, char *argv[])
     printf("decimal value is = %+-12.8e\n", epsilon);
 
 
-    printf("\nIEEE-754 2008 FP128 data :\n    ");
+    printf("\nConsider 2 ^ ( -110 )\n");
+    printf("IEEE-754 2008 FP128 data :\n    ");
     if ( big_endian ) {
         for ( j=0; j < fp128_length; j++ ) {
             printf("%02x ", ((uint8_t*)&fp128)[j] );
@@ -201,7 +206,7 @@ int main(int argc, char *argv[])
     }
     printf("\n" );
 
-    printf("\nThe correct FP128 data is :\n");
+    printf("The correct FP128 data is :\n");
     printf("    3f 91 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n");
 
     printf("\nDecimal value may be : \n");

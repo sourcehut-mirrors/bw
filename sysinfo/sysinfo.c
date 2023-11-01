@@ -161,10 +161,22 @@ int sysinfo(int verbose) {
 
     setlocale( LC_MESSAGES, "C" );
     if ( uname( &uname_data ) < 0 ) {
-        fprintf ( stderr,
-                 "WARNING : Could not attain system uname data.\n" );
-        perror ( "uname" );
+        /* just give up if we can not use uname */
+        return SYSINFO_FAIL;
+        /*
+         * fprintf ( stderr,
+         *       "WARNING : Could not attain system uname data.\n" );
+         * perror ( "uname" );
+         */ 
     } else {
+        /***************************************************************
+         *    S P E C I A L    N O T E   F O R    F R E E B S D
+         *
+         *    FreeBSD can entirely override the uname data with
+         *    some funky environment variables. The ordinary user
+         *    can have "uname -a" report they are on a MIPS machine
+         *    running Windows NT 3.51 if they choose. So be careful.
+         ***************************************************************/
         printf ( "----------------------------------" );
         printf ( "---------------------------------\n" );
         printf ( "                 system name = %s\n", uname_data.sysname );
@@ -230,13 +242,14 @@ int sysinfo(int verbose) {
         /* If sizeof reports back an unsigned long integer as 64bit
          * the format string for printf should be %lu. However compilers
          * on 32bit machines will get upset and warn we should use %u. */
-        printf ( "       sizeof(unsigned long) = %lu\n", sizeof(unsigned long) );
+        printf ( "       sizeof(unsigned long) = %lu\n",
+                                               sizeof(unsigned long) );
 
-        /*
-        printf ( "  sizeof(unsigned long long) = %lu\n", sizeof(unsigned long long) );
-        */
+        printf ( "                sizeof(long) = %lu\n",
+                                          sizeof(unsigned long long) );
 
         printf ( "                 sizeof(int) = %lu\n", sizeof(int) );
+
         printf ( "               sizeof(void*) = %lu\n", sizeof(void*) );
 
         /* get the current floating point rounding mode */
