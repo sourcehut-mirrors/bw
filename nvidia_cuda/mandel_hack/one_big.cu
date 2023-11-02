@@ -37,33 +37,20 @@
 #define THREADS_PER_BLOCK 1024
 #define IMG_PIX_W 1024
 
-/* something extreme that I made up 
-
-   this is trivial 
-
-   16777216 1073741824 -1.99998588117705367039889097 0.0 4
-
-
-   this is not
-
-      magnify = +8.589934592000e+09 == 2^33 == 8589934592
-
-      The output that I usually see is : 
-
-      mand_bail = 16777216
-      translate = ( -1.99998588122252840548753738e+00 , -2.36468622460961341857910156e-11 )
-      magnify = +8.58993459200000000000000000e+09
-
-      So we may have a 64bit or 53 bit data limit here in terms 
-      of precision.
-
-*/
+/* this is a somewhat extreme case 
 
 #define BAIL_OUT 16777216
 #define MAGNIFY 1073741824
 #define REAL_COORD -1.99998588117705367039889097
 #define IMAG_COORD  0.0
 
+*/
+
+/* something more trivial that has been tested everywhere */
+#define BAIL_OUT    32768
+#define MAGNIFY     274877906944
+#define REAL_COORD -0.0157887752805699992098
+#define IMAG_COORD +1.02061921088799989477
 
 /* TODO read in the established data files */
 #define VBOX_REAL_COUNT 16
@@ -831,6 +818,7 @@ int main(int argc, char *argv[])
     }
     free(timestamp_filename);
 
+    fprintf (stderr,"DBUG : err_status = \"%s\"\n", err_status);
     fprintf (stderr,"INFO : dumped %i records\n", sample_counter);
 
 

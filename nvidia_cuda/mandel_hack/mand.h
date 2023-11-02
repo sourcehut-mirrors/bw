@@ -52,7 +52,7 @@ int ConvertSMVer2Cores(int major, int minor);
 uint64_t timediff( struct timespec st, struct timespec en );
 uint32_t cpu_mbrot( double c_r, double c_i, uint32_t bail_out );
 
-__device__ void gpu_mbrot( const double *c_r, const double *c_i, uint32_t *mval, int num_elements );
+__global__ void gpu_mbrot( const double *c_r, const double *c_i, uint32_t *mval, int num_elements );
 
 void fp_vbox(int Vr, int Vj, int Sr, int Sj,
              int real_range, int imag_range,
