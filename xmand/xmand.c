@@ -97,8 +97,8 @@ int main(int argc, char*argv[])
 
     /* we can swap back and forth on the colour method with
      * a trivial flag */
-    int colour_method_flag = 1;
-    int invert_colour = 0;
+    int colour_method_flag = 0;
+    int invert_colour = 1;
 
     /* we need a double click on replot to trigger */
     int replot_flag = 0;
@@ -1803,6 +1803,8 @@ replot:
 
                 clock_gettime(CLOCK_REALTIME, &soln_t0 );
 
+                /* too early for this colour flipping
+                 *
                 if ( colour_method_flag == 1 ) {
                     colour_method_flag = 0;
                 } else {
@@ -1813,6 +1815,8 @@ replot:
                         invert_colour = 0;
                     }
                 }
+                */
+
 
                 /* here we loop over the vbox coords */
                 for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
@@ -1837,19 +1841,6 @@ replot:
                                     x_prime = coord.r;
                                     y_prime = coord.j;
 
-                                    /* DEBUG *
-                                    printf("     : sample[%-4i][%-4i] -> Wr = %-+32.26e\n",
-                                                   sample_r, sample_j, win_r);
-
-                                    printf("     :                    -> Wj = %-+32.26e\n",
-                                                   win_j);
-
-                                    printf("     : r[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",
-                                                   vbox_r,vbox_j,mand_x_pix,mand_y_pix,x_prime);
-
-                                    printf("     : j[%-2i][%-2i][%-2i][%-2i] = %-+32.26e\n",
-                                                   vbox_r,vbox_j,mand_x_pix,mand_y_pix,y_prime);
-                                    */
 
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
                                         mand_height = mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)];
@@ -1884,6 +1875,9 @@ replot:
                                         blue_level  = gamma_factor + ( hue * gamma_factor * ( 1.0 - gamma_factor)
                                                         * (1.97294 * cos( 2.0 * M_PI * (shift/3.0 + rotation * t_param ))))/2.0;
 
+                                        /* generally it is advised to use the proper
+                                         * X11 calls for setting a colour.... however
+                                         * this works and it is fast. */
                                         red_bits     = (uint8_t) ( 255.0 * ( red_level > 1.0 ? 1.0 :
                                                                            ( red_level < 0.0 ? 0.0 : red_level ) ) );
 
