@@ -8,7 +8,7 @@ chmod 0750 $TMPDIR
 
 if [ -d $TMPDIR ]; then
 
-    grep -E '^[[:xdigit:]]{64}' output/readme.dataset3* | cut -f2 -d\: | cut -c1-64  | sort -u | awk 'BEGIN{print"#!/bin/sh"}{print "/usr/bin/printf \042" $1 "    \\n\042\ngrep \042" $1 "\042 output/readme.dataset3\052 | cut -f1 -d\\: \n/usr/bin/printf \042\\n\\n\042"}' > $TMPDIR/wat.sh
+    grep -E '^[[:xdigit:]]{64}' output/readme.dataset1* | cut -f2 -d\: | cut -c1-64  | sort -u | awk 'BEGIN{print"#!/bin/sh"}{print "/usr/bin/printf \042" $1 "    \\n\042\ngrep \042" $1 "\042 output/readme.dataset1\052 | cut -f1 -d\\: \n/usr/bin/printf \042\\n\\n\042"}' > $TMPDIR/wat.sh
 
     chmod 0755 $TMPDIR/wat.sh
 
