@@ -26,12 +26,23 @@
       So we may have a 64bit or 53 bit data limit here in terms 
       of precision.
 
-*/
 
 #define BAIL_OUT 16777216
 #define MAGNIFY 8589934592
 #define REAL_COORD -1.99998588122252840548753738
 #define IMAG_COORD -0.0000000000236468622460961341857910156
+
+*/
+
+
+
+/* something more trivial that has been tested everywhere */
+#define BAIL_OUT    32768
+#define MAGNIFY     274877906944
+#define REAL_COORD -0.0157887752805699992098
+#define IMAG_COORD +1.02061921088799989477
+
+
 
 
 /* TODO read in the established data files */

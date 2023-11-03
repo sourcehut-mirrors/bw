@@ -525,6 +525,13 @@ __host__ int main(int argc, char *argv[])
 
     /***************************************************************
      * Verify the data with CPU and fma() calls
+     *
+     *                         W A R N I N G
+     *
+     * The decent NVidia Quadro GPU will be orders of magnitude
+     * faster than any CPU that I have seen. This section may
+     * drag its ass for ten minutes. Possibly a whole lot more.
+     * Be careful.
      ***************************************************************
     clock_gettime( CLOCK_REALTIME, &t0 );
     int error_count = 0;
@@ -707,8 +714,8 @@ __host__ int main(int argc, char *argv[])
     }
     free(timestamp_filename);
 
+    fprintf (stderr,"DBUG : err_status = \"%s\"\n", err_status);
     fprintf (stderr,"INFO : dumped %i records\n", sample_counter);
-
 
 
     /* Free host memory */

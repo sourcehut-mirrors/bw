@@ -14,12 +14,37 @@
 
   See https://docs.nvidia.com/cuda/cuda-math-api/group__CUDA__MATH__INTRINSIC__DOUBLE.html#group__CUDA__MATH__INTRINSIC__DOUBLE_1g57cb4940e3202c0e1302aa71703b7761
 
+  Also please read the goodness from some cool human on the
+  NVidia dev forums : 
+
+  https://forums.developer.nvidia.com/t/error-kernel-launch-from-device-or-global-functions-requires-separate-compilation-mode/271568/2
+
+
+  You are evidently confused about the decorators __global__, __device__ and when to use them.
+
+__global__ is used to mark a kernel definition only. It indicates code that will run on the device.
+
+__device__ (by itself) is used to mark code that will run on the device, but is not a kernel by itself.
+
+vectorMult should be marked with __global__, what you have there is correct.
+
+deviceMultiply is called from device code (from the vectorMult kernel.) it must be marked with __device__.
+
+allocatedDeviceMemory is called from host code and is expected to run on the host. It should not be marked with __device__.
+
+executeKernel is host code. It should not be marked with __global__.
+
+deallocatedMemory is host code. It should not be marked with __device__.
+
+performTest is host code. It should not be marked with __device__.
+
+
 */
 
 #include <inttypes.h>
 #include "mand.h"
 
-__device__ void gpu_mbrot( const double *c_r, const double *c_i,
+__global__ void gpu_mbrot( const double *c_r, const double *c_i,
        uint32_t *mval, int num_elements )
 {
 

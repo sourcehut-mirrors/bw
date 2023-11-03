@@ -140,13 +140,13 @@ int main(int argc, char *argv[])
     printf("     : Max memory device %i has %lu\n", max_dev, max_memory);
     printf("     : Min memory device %i has %lu\n", min_dev, min_memory);
 
-    if (cudaSetDevice(min_dev)) {
+    if (cudaSetDevice(max_dev)) {
         err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to select device\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
-    printf("     : we selected device %i\n", min_dev);
+    printf("     : we selected device %i\n", max_dev);
 
     printf("     : Vector multiply of %d double FP64 elements\n", num_elements);
     printf("     : Memory size of each array is %ld bytes\n", size );
