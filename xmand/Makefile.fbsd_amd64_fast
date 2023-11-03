@@ -1,3 +1,4 @@
-CFLAGS= -std=iso9899:2011 -m64 -O3 -ffast-math -ffp-contract=on -march=native -mfma
+
+CFLAGS= -std=iso9899:2011 -m64 -O3 -ffast-math -ffp-contract=on -march=k8 -mfma
 
 include common.mk
