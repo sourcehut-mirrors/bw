@@ -14,7 +14,6 @@
 
 /* something extreme that I made up 
 
-
       magnify = +8.589934592000e+09 == 2^33 == 8589934592
 
       The output that I usually see is : 
@@ -34,15 +33,22 @@
 
 */
 
-
-
-/* something more trivial that has been tested everywhere */
+/* something more trivial that has been tested everywhere *
 #define BAIL_OUT    32768
 #define MAGNIFY     274877906944
 #define REAL_COORD -0.0157887752805699992098
 #define IMAG_COORD +1.02061921088799989477
+*/
 
 
+/* hack test live flying numbers 
+ * 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
+ */
+
+#define BAIL_OUT    131072
+#define MAGNIFY     2147483648
+#define REAL_COORD  -0.166949745003876159899
+#define IMAG_COORD  +1.04085236255377822090
 
 
 /* TODO read in the established data files */
