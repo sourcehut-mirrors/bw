@@ -1,4 +1,0 @@
-
-CFLAGS= -std=iso9899:2011 -m64 -O3 -ffast-math -ffp-contract=on -march=k8 -mtune=k8 -mfma -mno-avx -mno-avx2
-
-include common.mk
