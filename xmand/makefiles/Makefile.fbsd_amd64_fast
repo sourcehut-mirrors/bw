@@ -1,4 +1,4 @@
 
-CFLAGS= -m64 -O3 -ffast-math -ffp-contract=on -mno-avx -mno-avx2
+CFLAGS= -m64 -O3 -ffast-math -ffp-contract=on -march=native
 
 include common.mk
