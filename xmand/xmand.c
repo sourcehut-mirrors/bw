@@ -171,7 +171,8 @@ int main(int argc, char*argv[])
     double default_real = DEFAULT_REAL_WIDTH;
     double default_imag = DEFAULT_IMAG_HEIGHT;
 
-    /* ensure these are initialized where any value is fine */
+    /* ensure these are initialized as unreasonable.
+     * reductio ad absurdum still works. Thanks Newton. */
     double x_prime = -8.0;
     double y_prime = -8.0;
 
@@ -1450,6 +1451,8 @@ int main(int argc, char*argv[])
                         mouse_x = 512;   /* try to be dead center */
                         mouse_y = 518;   /* after a hokey adjustment */
 
+                        /* what if there is no change to mand_bail nor
+                         * to magnify ? */
                         mand_bail = (uint32_t)((double)mand_bail * bail_out_factor);
                         fprintf(stderr,"INFO : mand_bail changed to %" PRIu32 "\n", mand_bail);
 
@@ -1475,8 +1478,9 @@ int main(int argc, char*argv[])
                         imag_translate = y_prime;
                         fprintf(stderr,"INFO : c = %-+16.12e, %-+16.12e  ", x_prime, y_prime);
 
-                        /* flush all vbox_flag to zero */
-                        memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
+                        /* REALLY ? flush all vbox_flag to zero */
+                        memset(&vbox_flag, 0x00,
+                                (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
                         goto replot;
 

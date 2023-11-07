@@ -1,4 +1,4 @@
 
-CFLAGS= -m64 -O3 -ffast-math -ffp-contract=on -march=native
+CFLAGS= -m64 -O3 -fno-fast-math -ffp-contract=on -march=native
 
 include common.mk
