@@ -1,8 +1,6 @@
 
 /*
- * permute.c  enumerate all permutations of a small set of tokens
- *            where this is all well described by Donald Knuth in
- *            "The Art of Computer Programming", vol. 4, Fascicle 3. 
+ * permute_flags.c  all permutations of a set of compiler flags
  *
  * Copyright (C) Dennis Clarke 2022
  *
@@ -46,41 +44,60 @@
 int main(void)
 {
 
-    /* Use the trivial method where we have seven tokens that we may
-     * name A, B, C, ..., G, H and those tokens may be used to represent
-     * other strings as required. Give each token a three bit binary
-     * value and we clearly have 7 x 3 = 21 bits to represent a string
-     * of all seven values.
+    /*
+     * essential compiler flags : -m64 -O3
+     *
+     * perhaps optional flags   : -std=iso9899:1999
+     *
+     * mixed bag of stuff : 
+     *
+     *     -ffast-math
+     *     -ffp-contract=on
+     *     -march=native
+     *     -mfma
+     *     -mno-avx
+     *     -mno-avx2
+     *
      */
 
     int j, k, p[8];
+    size_t strl[8];
     const char *tok[8];
-    char buffer[12];
+    char buffer[128];
 
-    tok[0] = "A";
-    tok[1] = "B";
-    tok[2] = "C";
-    tok[3] = "D";
-    tok[4] = "E";
-    tok[5] = "F";
-    tok[6] = "G";
-    tok[7] = "H";
+    tok[0] = "-mno-avx2 ";
+    tok[1] = "-mno-avx ";
+    tok[2] = "-mfma ";
+    tok[3] = "-march=native ";
+    tok[4] = "-ffp-contract=on ";
+    tok[5] = "-ffast-math ";
+    tok[6] = "-m64 -O3 ";
+    tok[7] = "-std=iso9899:1999 ";
+
+    strl[0] = 10;
+    strl[1] = 9;
+    strl[2] = 6;
+    strl[3] = 14;
+    strl[4] = 17;
+    strl[5] = 12;
+    strl[6] = 9;
+    strl[7] = 18;
 
     /* ensure we start with a clear buffer */
-    memset(&buffer, 0x00, 12);
+    memset(&buffer, 0x00, 128);
 
     for ( j = 0; j < ( 1<<21 ); j++ ) {
         buffer[0] = '\0';
         /* 0000 0000 0000 0111 */
         k = j bitand 0x07;
         p[0] = k;
-        strncat(buffer,tok[k],1);
+        strncat(buffer,tok[k],strl[k]);
    
         /* 0000 0000 0011 1000 */
         k = ( j bitand 0x38 ) >> 3;
         if ( k != p[0] ) {
             p[1] = k;
-            strncat(buffer,tok[k],1);
+            strncat(buffer,tok[k],strl[k]);
 
             /* 0000 0001 1100 0000 */
             k = ( j bitand 0x01c0 ) >> 6;
@@ -88,7 +105,7 @@ int main(void)
                  and ( k not_eq p[1] ) )  {
 
                 p[2] = k;
-                strncat(buffer,tok[k],1);
+                strncat(buffer,tok[k],strl[k]);
 
                 /* 0000 1110 0000 0000 */
                 k = ( j bitand 0x0e00 ) >> 9;
@@ -97,7 +114,7 @@ int main(void)
                      and ( k not_eq p[2] ) ) {
 
                     p[3] = k;
-                    strncat(buffer,tok[k],1);
+                    strncat(buffer,tok[k],strl[k]);
 
                     /* 0111 0000 0000 0000 */
                     k = ( j bitand 0x7000 ) >> 12;
@@ -107,7 +124,7 @@ int main(void)
                          and ( k not_eq p[3] ) ) {
 
                         p[4] = k;
-                        strncat(buffer,tok[k],1);
+                        strncat(buffer,tok[k],strl[k]);
 
                         /* 0000 0011 1000 0000 0000 0000 */
                         k = ( j bitand 0x038000 ) >> 15;
@@ -118,7 +135,7 @@ int main(void)
                              and ( k not_eq p[4] ) ) {
 
                             p[5] = k;
-                            strncat(buffer,tok[k],1);
+                            strncat(buffer,tok[k],strl[k]);
 
                             /* 0001 1100 0000 0000 0000 0000 */
                             k = ( j bitand 0x1c0000 ) >> 18;
@@ -130,7 +147,7 @@ int main(void)
                                  and ( k not_eq p[5] ) ) {
 
                                 p[6] = k;
-                                strncat(buffer,tok[k],1);
+                                strncat(buffer,tok[k],strl[k]);
 
                                 /* 1110 0000 0000 0000 0000 0000 */
                                 k = ( j bitand 0xe00000 ) >> 21;
@@ -143,10 +160,10 @@ int main(void)
                                      and ( k not_eq p[6] ) ) {
 
                                     p[7] = k;
-                                    strncat(buffer,tok[k],1);
+                                    strncat(buffer,tok[k],strl[k]);
                                     printf("%s\n",buffer);
 
-                                    memset(&buffer, 0x00, 12);
+                                    memset(&buffer, 0x00, 128);
 
                                 }
 
