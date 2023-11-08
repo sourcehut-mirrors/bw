@@ -1,9 +1,9 @@
 
-CC=/usr/bin/cc
+CC? = /opt/bw/gcc13/bin/gcc
 
 CFLAGS= -std=iso9899:2011 -m64 -O3 \
 	-fPIC -Wl,-rpath=/usr/pkg/lib \
-	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
+	-Wl,-rpath=/usr/X11R7/lib
 
 IDIR=/usr/pkg/include -I/usr/X11R7/include
 LDIR=/usr/pkg/lib -L/usr/X11R7/lib

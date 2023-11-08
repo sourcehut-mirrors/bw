@@ -97,8 +97,7 @@ int main(int argc, char*argv[])
 
     /* we can swap back and forth on the colour method with
      * a trivial flag */
-    int colour_method_flag = 0;
-    int invert_colour = 1;
+    int invert_colour = 0;
 
     /* we need a double click on replot to trigger */
     int replot_flag = 0;
@@ -115,6 +114,7 @@ int main(int argc, char*argv[])
      * available schemes -- is designed to be monotonically increasing
      * in terms of its perceived brightness.
      */
+    int astro_flag = 1;
 
     /* setup mouse x and y */
     int mouse_x = -1, mouse_y = -1;
@@ -844,6 +844,23 @@ int main(int argc, char*argv[])
         XDrawImageString(dsp, win2, gc2, 332, 177, buf, (int)strlen(buf));
     }
 
+
+    /* hack in a dumb button region for ASTRO */
+    XSetForeground(dsp, gc2, WhitePixel(dsp, screen_num));
+    XDrawRectangle(dsp, win2, gc2, 320, 132, 72, 20);
+    sprintf(buf,"  ASTRO");
+    XDrawImageString(dsp, win2, gc2, 324, 147, buf, (int)strlen(buf));
+
+
+
+    /* hack in yet another dumb button thing for INVERT */
+    XSetForeground(dsp, gc2, WhitePixel(dsp, screen_num));
+    XDrawRectangle(dsp, win2, gc2, 240, 132, 72, 20);
+    sprintf(buf," INVERT");
+    XDrawImageString(dsp, win2, gc2, 244, 147, buf, (int)strlen(buf));
+
+
+
     /****************************************************************
      * NOTE : see VBOX_REAL_COUNT and VBOX_IMAG_COUNT
      *
@@ -1461,17 +1478,6 @@ int main(int argc, char*argv[])
                         obs_real = 4.0 / magnify;
                         obs_imag = 4.0 / magnify;
 
-                        if ( colour_method_flag == 1 ) {
-                            colour_method_flag = 0;
-                        } else {
-                            colour_method_flag = 1;
-                            if ( invert_colour == 0 ) {
-                                invert_colour = 1;
-                            } else {
-                                invert_colour = 0;
-                            }
-                        }
-
                         button = Button2;
 
                         real_translate = x_prime;
@@ -1723,6 +1729,67 @@ int main(int argc, char*argv[])
                             }
                         }
                     }
+
+                } else if (     ( mouse_x_raw > 1372 ) && ( mouse_y_raw > 854 )
+                             && ( mouse_x_raw < 1442 ) && ( mouse_y_raw < 872 ) ) {
+
+                    /* We are still only checking the left mouse button
+                     * click and position.
+                     *
+                     * the mouse location is inside the ASTRO flag button
+                     * window area.
+                     */
+
+                    if ( astro_flag == 0 ) {
+
+                        astro_flag = 1;
+
+                        XSetForeground(dsp, gc2, green.pixel);
+                        XDrawRectangle(dsp, win2, gc2, 320, 132, 72, 20);
+                        sprintf(buf,"->ASTRO");
+                        XDrawImageString(dsp, win2, gc2, 324, 147, buf, (int)strlen(buf));
+
+                    } else {
+
+                        astro_flag = 0;
+
+                        XSetForeground(dsp, gc2, cornflowerblue.pixel);
+                        XDrawRectangle(dsp, win2, gc2, 320, 132, 72, 20);
+                        sprintf(buf,"  ASTRO");
+                        XDrawImageString(dsp, win2, gc2, 324, 147, buf, (int)strlen(buf));
+
+                    }
+
+                } else if (     ( mouse_x_raw > 1292 ) && ( mouse_y_raw > 854 )
+                             && ( mouse_x_raw < 1362 ) && ( mouse_y_raw < 872 ) ) {
+
+                    /* We are still only checking the left mouse button
+                     * click and position.
+                     *
+                     * the mouse location is inside the INVERT flag button
+                     * window area.
+                     */
+
+                    if ( invert_colour == 0 ) {
+
+                        invert_colour = 1;
+
+                        XSetForeground(dsp, gc2, green.pixel);
+                        XDrawRectangle(dsp, win2, gc2, 240, 132, 72, 20);
+                        sprintf(buf,">INVERT");
+                        XDrawImageString(dsp, win2, gc2, 244, 147, buf, (int)strlen(buf));
+
+                    } else {
+
+                        invert_colour = 0;
+
+                        XSetForeground(dsp, gc2, cornflowerblue.pixel);
+                        XDrawRectangle(dsp, win2, gc2, 240, 132, 72, 20);
+                        sprintf(buf," INVERT");
+                        XDrawImageString(dsp, win2, gc2, 244, 147, buf, (int)strlen(buf));
+
+                    }
+
                 }
 
                 /* this is the end of checking where the mouse is when
@@ -1807,28 +1874,14 @@ replot:
 
                 clock_gettime(CLOCK_REALTIME, &soln_t0 );
 
-                /* too early for this colour flipping
-                 *
-                if ( colour_method_flag == 1 ) {
-                    colour_method_flag = 0;
-                } else {
-                    colour_method_flag = 1;
-                    if ( invert_colour == 0 ) {
-                        invert_colour = 1;
-                    } else {
-                        invert_colour = 0;
-                    }
-                }
-                */
-
-
                 /* here we loop over the vbox coords */
                 for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                     for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
                         /* printf("     : vbox [ %-3i, %-3i ]\n", vbox_r, vbox_j); */
                         /* loop over the pixels ( samples ) inside a vbox */
-                        /* TODO grind the gears */
-                        if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
+                        /* grind the gears by entirely ignoring the vbox_flag
+                         * where the condition should be  ( vbox_flag[vbox_r][vbox_j] == 0 ) */
+                        if ( 1 ) {
                             clock_gettime(CLOCK_REALTIME, &vbox_t0 );
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                 vbox_ll_y = vbox_j * vbox_h + mand_y_pix;
@@ -1856,7 +1909,7 @@ replot:
                                         mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = mand_height;
                                     }
 
-                                    if ( colour_method_flag == 1 ) {
+                                    if ( astro_flag == 1 ) {
 
                                         if ( invert_colour == 0 ) {
                                             t_param = pow( (double)mand_height/(double)mand_bail,
@@ -1881,7 +1934,9 @@ replot:
 
                                         /* generally it is advised to use the proper
                                          * X11 calls for setting a colour.... however
-                                         * this works and it is fast. */
+                                         * this works and it is fast. A bit lame in
+                                         * that each channel is clamped to 0 --> 255
+                                         */
                                         red_bits     = (uint8_t) ( 255.0 * ( red_level > 1.0 ? 1.0 :
                                                                            ( red_level < 0.0 ? 0.0 : red_level ) ) );
 
