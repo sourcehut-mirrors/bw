@@ -26,8 +26,6 @@ if [ -d /usr/local/cuda-11.8 ]; then
     export PATH
 fi
 
-nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o array_index.o array_index.c
-
 nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o array_offset.o array_offset.c
 
 nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o cpu_mbrot.o cpu_mbrot.c
@@ -38,7 +36,7 @@ nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_
 
 nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o sm_cores.o sm_cores.c
 
-nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o timediff.o timediff.c
+nvcc -x cu -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o timediff.o ../../time_and_date/timediff.c
 
 nvcc -gencode arch=compute_35,code=sm_35 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -I. -c -o gpu_mbrot.o gpu_mbrot.cu
 
