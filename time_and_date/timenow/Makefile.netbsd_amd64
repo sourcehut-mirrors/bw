@@ -1,0 +1,27 @@
+
+CC? = /usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -O0 -g -fno-builtin -march=k8 -mtune=k8 -mieee-fp \
+	-mhard-float -mpc80 -fno-fast-math -malign-double \
+	-m128bit-long-double -mstackrealign \
+	-mpreferred-stack-boundary=4 -mno-mmx
+
+CPPFLAGS = -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+IDIR = /usr/pkg/include
+LDIR = /usr/pkg/lib
+LIBS = -lrt
+
+SRCS = tn.c
+OBJS = tn.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+tn: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) tn
+
