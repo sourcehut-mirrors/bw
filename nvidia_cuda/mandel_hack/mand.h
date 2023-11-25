@@ -12,43 +12,22 @@
 #define THREADS_PER_BLOCK 1024
 #define IMG_PIX_W 1024
 
-/* something extreme that I made up 
-
-      magnify = +8.589934592000e+09 == 2^33 == 8589934592
-
-      The output that I usually see is : 
-
-      mand_bail = 16777216
-      translate = ( -1.99998588122252840548753738e+00 , -2.36468622460961341857910156e-11 )
-      magnify = +8.58993459200000000000000000e+09
-
-      So we may have a 64bit or 53 bit data limit here in terms 
-      of precision.
-
+/* something extreme
+ *      : r_trn   = -1.99998588122252840548753738e+00
+ *      : j_trn   = -2.36468622460961341857910156e-11
+ *      : x_prime = -1.99998588122684850532095879e+00
+ *      : y_prime = -2.16004991671070456504821777e-11
+ *      : bailout = 16777216
+ *      : magnify = 8.589934592000e+09
+ *
+ * even on a very fast machine this takes a long time
+ * [mand] =  5391890426271 nsec   5.391890e+03 sec
+ */
 
 #define BAIL_OUT 16777216
 #define MAGNIFY 8589934592
 #define REAL_COORD -1.99998588122252840548753738
 #define IMAG_COORD -0.0000000000236468622460961341857910156
-
-*/
-
-/* something more trivial that has been tested everywhere *
-#define BAIL_OUT    32768
-#define MAGNIFY     274877906944
-#define REAL_COORD -0.0157887752805699992098
-#define IMAG_COORD +1.02061921088799989477
-*/
-
-
-/* hack test live flying numbers 
- * 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
- */
-
-#define BAIL_OUT    131072
-#define MAGNIFY     2147483648
-#define REAL_COORD  -0.166949745003876159899
-#define IMAG_COORD  +1.04085236255377822090
 
 
 /* TODO read in the established data files */

@@ -1,6 +1,10 @@
 
+be sure to read the comments in offset_check.c
+
 to create a sha512 catalog in the target directory 
 
  /usr/bin/nice -n +15 find ./foo -type f -exec /opt/schily/bin/mdigest -a sha512 {} \; > catalog.sha512u
 
 
+
+be sure to read the comments in offset_check.c

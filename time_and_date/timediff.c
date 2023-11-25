@@ -42,11 +42,8 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <time.h>
-#include <unistd.h>
 
 uint64_t timediff( struct timespec start_time,
                    struct timespec end_time )
