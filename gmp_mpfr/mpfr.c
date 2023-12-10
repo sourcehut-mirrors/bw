@@ -1,26 +1,40 @@
 
-/* mpfr_ver.c  Demonstrate libgmp and libmpfr version reports as well
- *             as a computation of pi and Eulers number e with the
- *             provided mpfr function calls. Compute arctan(1) and
- *             then multiply by 4 with the mpfr functions calls.
- *             Check for correct results where reasonable.
+/* mpfr.c  Demonstrate libgmp and libmpfr version reports as well
+ *         as a computation of pi and Eulers number e with the
+ *         provided mpfr function calls. Compute arctan(1) and
+ *         then multiply by 4 with the mpfr functions calls.
+ *         Check for correct results where reasonable.
  *
- * Copyright (C) Dennis Clarke 2018
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ * ------------------------------------------------------------------
+ * The above text is the "MIT License" which is a permissive free
+ * software license originating at the Massachusetts Institute of
+ * Technology (MIT) somewhere around 1987 maybe. Who knows? Feel
+ * free to read the file README_MIT_LICENSE
+ * ------------------------------------------------------------------
  */
 
 /*******************************************************************
@@ -54,12 +68,13 @@
 
 int sysinfo(int verbose);
 uint64_t timediff( struct timespec st, struct timespec en );
+int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
 int main(int argc, char **argv)
 {
 
     mpfr_prec_t prec;
-    int inex;
+    int j, inex, status, mpfr_flags, mpfr_prec_size;
     long candidate_input;
 
     /* seems we may need to compute the precision in decimal
@@ -67,7 +82,9 @@ int main(int argc, char **argv)
      * the ratio log(2)/log(10) .
      *
      * double bits_per = 0.30102999566398119521373889472449;
-     * Not needed. 
+     *
+     *                      Not needed. 
+     *
      * The MPFR library provides the call : 
      *
      * size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)
@@ -84,44 +101,40 @@ int main(int argc, char **argv)
            atan_half_mpfr, atan_third_mpfr, sum_mpfr,
            delta_mpfr;
 
+    /* Just for fun. There is a nifty little computation
+     * that was written about by Fred Gruenberger way back
+     * in 1984 and it has always been fun to see what very
+     * limited systems do with it. At the moment the old
+     * bc and dc utilities seem to have a real fit with it.
+     *
+     * JOURNAL ARTICLE : COMPUTER RECREATIONS
+     *
+     * "How to handle numbers with thousands of digits, and
+     * why one might want to."
+     *
+     * Fred Gruenberger
+     *
+     * Scientific American
+     * Vol. 250, No. 4 (April 1984), pp. 19-27 (13 pages)
+     */
+
+    mpfr_t gruenberger_0, gruenberger_1;
+    mpfr_t ten_million, one_ten_millionth;
+
     struct timespec t0, t1;
     uint64_t delta_t;
 
     setlocale( LC_ALL, "C" );
     sysinfo(VERBOSE);
 
-    printf("GMP  library version : %d.%d.%d\n",
-            __GNU_MP_VERSION,
-            __GNU_MP_VERSION_MINOR,
-            __GNU_MP_VERSION_PATCHLEVEL );
-
-    printf("MPFR library: %-12s\n", mpfr_get_version ());
-    printf("MPFR header : %s (based on %d.%d.%d)\n",
-            MPFR_VERSION_STRING,
-            MPFR_VERSION_MAJOR,
-            MPFR_VERSION_MINOR,
-            MPFR_VERSION_PATCHLEVEL);
-
-    if (mpfr_buildopt_tls_p()!=0)
-        printf("            : compiled as thread safe using TLS\n");
-
-    if (mpfr_buildopt_float128_p()!=0) 
-        printf("            : __float128 support enabled\n");
-
-    if (mpfr_buildopt_decimal_p()!=0)
-        printf("            : decimal float support enabled\n");
-
-    if (mpfr_buildopt_gmpinternals_p()!=0)
-        printf("            : compiled with GMP internals\n");
-
-    if (mpfr_buildopt_sharedcache_p()!=0)
-        printf("            : threads share cache per MPFR const\n");
-
-    printf("            : sizeof(mpfr_prec_t) = %i\n",
-                                      sizeof(mpfr_prec_t));
-
-    printf("MPFR thresholds file used at compile time : %s\n\n",
-                                      mpfr_buildopt_tune_case ());
+    mpfr_prec_size = gmp_mpfr_ver(&status, &mpfr_flags);
+    if ( mpfr_prec_size == 999 ) {
+        /* That silly magic number will get cleaned
+         * up at some point. Just not now.
+         * This is silly but could happen I guess */
+        fprintf(stderr,"FAIL : bork bork bork\n");
+        return EXIT_FAILURE;
+    }
 
     /* What follows is a tad clumsy but gets the job done.
      *
@@ -167,9 +180,12 @@ int main(int argc, char **argv)
 
     printf("INFO : using %li bits of precision.\n", (long)prec );
 
-    /*
-    decimal_dig = (int)( 1.0 + ( (double)prec * bits_per ) );
-    */
+    /*  This was never really needed. See the MPFR manual 
+     *  for mpfr_get_str_ndigits(). However the math is
+     *  correct if you wanted to do this manually.
+     *
+     *  decimal_dig = (int)( 1.0 + ( (double)prec * bits_per ) );
+     */
 
     decimal_prec = mpfr_get_str_ndigits(10, prec);
     printf("     : we need %i decimal digits.\n", decimal_prec);
@@ -188,7 +204,8 @@ int main(int argc, char **argv)
     mpfr_inits2( prec, pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
                  atan_pi4_mpfr, third_mpfr, half_mpfr,
                  atan_half_mpfr, atan_third_mpfr, delta_mpfr,
-                 sum_mpfr, (mpfr_ptr*)0 );
+                 sum_mpfr, gruenberger_0, gruenberger_1,
+                 ten_million, one_ten_millionth, (mpfr_ptr*)0 );
 
     inex = mpfr_set_flt(one_mpfr, 1.0, MPFR_RNDN);
     if ( inex ) fprintf(stderr,"WARN : mpfr_set_flt() returns %i\n", inex);
@@ -202,11 +219,11 @@ int main(int argc, char **argv)
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
         return EXIT_FAILURE;
     }
+
     /* Note that it is entirely harmless to call clock_gettime()
-     * again. */
+     * again. However it is a waste of time. */
 
     /* compute atan(1) */
-    clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_atan(atan_pi4_mpfr, one_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
@@ -308,10 +325,55 @@ int main(int argc, char **argv)
     }
     printf("\n\n");
 
+
+    /* Now that cute little problem written about
+     * by Fred Gruenberger.
+     *
+     * However the first problem is there there is no
+     * really good way to set the initial value. If
+     * we use a long double precision 1.0000001 then
+     * we start off with perhaps something close to
+     * 1.0000001 but not really. So we have to sum
+     * together, with the full specified precision, the
+     * value 1 plus 1/10000000 and then see what happens.
+     */
+
+    inex = mpfr_set_flt(ten_million, 10000000.0, MPFR_RNDN);
+    inex = mpfr_div(one_ten_millionth, one_mpfr, ten_million, MPFR_RNDN);
+    inex = mpfr_add(gruenberger_0, one_mpfr, one_ten_millionth, MPFR_RNDN);
+
+    printf("\n-------- enter the Fred Gruenberger loop ----------\n");
+    printf("\n");
+    printf("loop  0 : ");
+    mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
+    printf("\n");
+
+    for ( j = 0; j<27; j++ ) {
+
+        inex = mpfr_mul(gruenberger_1,
+                        gruenberger_0, gruenberger_0, MPFR_RNDN);
+
+        printf("loop %2i : ",j+1);
+        mpfr_printf(format_buf, MPFR_RNDN, gruenberger_1);
+        printf("\n");
+
+        mpfr_swap(gruenberger_1, gruenberger_0);
+
+    }
+    printf("---------------------------------------------------\n");
+
+    printf("final   : ");
+    mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
+    printf("\n");
+    printf("expected: ");
+    printf("674530.47074108455938268917802974681284444414341\n\n");
+
+
     mpfr_clears( pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
                  atan_pi4_mpfr, third_mpfr, half_mpfr,
                  atan_half_mpfr, atan_third_mpfr, delta_mpfr,
-                 sum_mpfr, (mpfr_ptr*) 0 );
+                 sum_mpfr, gruenberger_0, gruenberger_1,
+                 ten_million, one_ten_millionth, (mpfr_ptr*) 0 );
 
     return EXIT_SUCCESS;
 
