@@ -50,7 +50,11 @@
 #endif
 
 #include <errno.h>
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
 #include <fenv.h>
+#endif
+
 #include <inttypes.h>
 #include <iso646.h>
 #include <limits.h>
@@ -194,14 +198,6 @@ int sysinfo(int verbose) {
         printf ( "                     release = %s\n", uname_data.release );
         printf ( "                     version = %s\n", uname_data.version );
         printf ( "                     machine = %s\n", uname_data.machine );
-#ifdef HAVE_PAGE_INFO
-        printf ( "                   page size = %" PRIu64 "\n", pagesize );
-        printf ( "               system memory = %" PRIu64 "\n", sysmem );
-        printf ( "                             = %" PRIu64 " kB\n",
-                                                         sysmem/1024 );
-
-        printf ( "                             = %" PRIu64 " MB\n",
-                                                      sysmem/1048576 );
 
         /* If the available system memory is a perfect number aligned on
          * a gigabyte boundary then we report it. Otherwise, this makes
@@ -211,28 +207,70 @@ int sysinfo(int verbose) {
          *  32.00000000
          *  alpha$
          */
+
+#ifdef HAVE_PAGE_INFO
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+
+        printf ( "                   page size = %" PRIu64 "\n", pagesize );
+        printf ( "               system memory = %" PRIu64 "\n", sysmem );
+        printf ( "                             = %" PRIu64 " kB\n",
+                                                         sysmem/1024 );
+
+        printf ( "                             = %" PRIu64 " MB\n",
+                                                      sysmem/1048576 );
+
         if ( (sysmem % ONEGB) == 0 ) {
 
             printf ( "                             = %" PRIu64 " GB\n",
                                                         sysmem >> 30 );
 
         }
+#else
+
+        printf ( "                   page size = %llu\n", pagesize );
+        printf ( "               system memory = %llu\n", sysmem );
+        printf ( "                             = %llu kB\n",
+                                                         sysmem/1024 );
+
+        printf ( "                             = %llu MB\n",
+                                                      sysmem/1048576 );
+
+        if ( (sysmem % ONEGB) == 0 ) {
+
+            printf ( "                             = %llu GB\n",
+                                                        sysmem >> 30 );
+
+        }
+
+#endif
 #endif
 
         if ( verbose ) {
 #ifdef HAVE_PAGE_INFO
             if ( avail_memory > 0 ) {
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
                 printf("                 avail pages = %" PRIu64 "\n", pages_avail);
                 printf("                avail memory = %" PRIu64 "\n", avail_memory);
+#else
+                printf("                 avail pages = %llu\n", pages_avail);
+                printf("                avail memory = %llu\n", avail_memory);
+#endif
             } else {
                 printf("                 avail pages = unknown\n");
                 printf("                avail memory = unknown\n");
             }
 #endif
-            printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
 
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+            printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
             printf("             threads support = %" PRIu64 "\n", threads);
             printf("               POSIX Version = %" PRIu64 "\n", version);
+#else
+            printf("         clock ticks per sec = %llu\n", clock_ticks_sec);
+            printf("             threads support = %llu\n", threads);
+            printf("               POSIX Version = %llu\n", version);
+#endif
             printf("          _POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
             printf("          _POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
             printf("          _POSIX_OPEN_MAX    = %i\n", _POSIX_OPEN_MAX);
@@ -262,6 +300,7 @@ int sysinfo(int verbose) {
 
         printf ( "               sizeof(void*) = %lu\n", sizeof(void*) );
 
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
         /* get the current floating point rounding mode */
         fp_round_mode = fegetround();
         printf("           fp rounding mode is ");
@@ -282,6 +321,7 @@ int sysinfo(int verbose) {
                 printf("bloody unknown!\n");
                 break;
         }
+#endif
 
 #ifndef __MVS__
         errno = 0;

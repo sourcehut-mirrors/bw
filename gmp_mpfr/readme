@@ -1,9 +1,6 @@
-
-
 One may manually compile and link the example together 
 thus : 
 
-io$ 
 io$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c
 io$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o mpfr.o mpfr.c
 io$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c 
@@ -12,9 +9,10 @@ io$
 io$ $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o mpfr mpfr.o gmp_mpfr_ver.o sysinfo.o timediff.o -lgmp -lmpfr -lm 
 io$ 
 
+be sure to set -D_XOPEN_SOURCE=500 on an old old Solaris machine
+also you will likely need -lrt there
 
 ---------------------------------------------------------
-
 
 74164006262753080152478714190193747405994078109751902390582131614441\
 5759504705008092818711693940737

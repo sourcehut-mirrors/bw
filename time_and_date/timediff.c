@@ -1,5 +1,4 @@
 
-
 /*
  * timediff.c  Does what it seems to say.
  *
@@ -45,7 +44,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <inttypes.h>
 #include <time.h>

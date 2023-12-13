@@ -47,7 +47,9 @@
  *  functionality described in The _POSIX_C_SOURCE Feature Test
  *  Macro and in addition to enable the XSI extension.
  *******************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <inttypes.h>
@@ -66,7 +68,7 @@
 
 #define VERBOSE 1
 
-int sysinfo(int verbose);
+/* int sysinfo(int verbose); */
 uint64_t timediff( struct timespec st, struct timespec en );
 int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
@@ -125,7 +127,7 @@ int main(int argc, char **argv)
     uint64_t delta_t;
 
     setlocale( LC_ALL, "C" );
-    sysinfo(VERBOSE);
+    /* sysinfo(VERBOSE); */
 
     mpfr_prec_size = gmp_mpfr_ver(&status, &mpfr_flags);
     if ( mpfr_prec_size == 999 ) {
@@ -232,7 +234,11 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
     printf("\n");
 
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     /* compute atan(1/2) */
     clock_gettime(CLOCK_REALTIME, &t0);
@@ -242,7 +248,12 @@ int main(int argc, char **argv)
 
     printf("atan(1/2) ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_half_mpfr);
-    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     /* compute atan(1/3) */
     clock_gettime(CLOCK_REALTIME, &t0);
@@ -253,7 +264,11 @@ int main(int argc, char **argv)
     printf("atan(1/3) ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_third_mpfr);
 
-    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     /* sum atan(1/2) + atan(1/3) */
     clock_gettime(CLOCK_REALTIME, &t0);
@@ -262,7 +277,12 @@ int main(int argc, char **argv)
     delta_t = timediff(t0, t1);
     printf("sum       ");
     mpfr_printf(format_buf, MPFR_RNDN, sum_mpfr);
-    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     /* check delta on atan(1) and ( atan(1/2) + atan(1/3) ) */
     inex = mpfr_sub(delta_mpfr, sum_mpfr, atan_pi4_mpfr, MPFR_RNDN);
@@ -281,7 +301,12 @@ int main(int argc, char **argv)
     delta_t = timediff(t0, t1);
     printf ("pi may be ");
     mpfr_printf(format_buf, MPFR_RNDN, pi_mpfr );
-    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     /* Eulers Number e */
     clock_gettime(CLOCK_REALTIME, &t0);
@@ -290,7 +315,12 @@ int main(int argc, char **argv)
     delta_t = timediff(t0, t1);
     printf("Eulers e  ");
     mpfr_printf(format_buf, MPFR_RNDN, e_mpfr);
-    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     /* multiply atan(1) * 4 */
     clock_gettime(CLOCK_REALTIME, &t0);
@@ -299,7 +329,12 @@ int main(int argc, char **argv)
     delta_t = timediff(t0, t1);
     printf("4*atan(1) ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi_mpfr);
-    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
+
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+#else
+    printf("delta t = %llu nsecs\n\n", delta_t);
+#endif
 
     inex = mpfr_sub(delta_mpfr, pi_mpfr, atan_pi_mpfr, MPFR_RNDN);
     /* do we really care about the absolute value here? */
