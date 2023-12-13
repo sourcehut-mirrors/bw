@@ -4,7 +4,7 @@
  *                 some capabilities in the form of a flag with bits
  *                 flipped from a 0 to 1 for various features.
  *
- *                 Tested on a pile of machines and that even includes
+ *                 Tested on a pile of machines. That even includes
  *                 an old SPARCStation 20 running Solaris 8.
  *
  * ------------------------------------------------------------------
@@ -55,7 +55,6 @@
  * 
  * The entire subroutine will return a zero if anything goes wrong.
  * A non-zero return value will be the size of the mpfr_prec_t type.
- *
  */
 
 /*********************************************************************
@@ -95,7 +94,7 @@ gmp_mpfr_ver(int *status, int *mpfr_flags)
 
     int ret_val;
 
-    printf("GMP  library version : %d.%d.%d\n",
+    printf("GMP  library: %d.%d.%d\n",
             __GNU_MP_VERSION,
             __GNU_MP_VERSION_MINOR,
             __GNU_MP_VERSION_PATCHLEVEL );
@@ -182,7 +181,7 @@ gmp_mpfr_ver(int *status, int *mpfr_flags)
 
     printf("            : sizeof(mpfr_prec_t) = %i\n", ret_val);
 
-    printf("MPFR thresholds file used at compile time : %s\n\n",
+    printf("MPFR thresholds file used at compile time %s\n\n",
                                       mpfr_buildopt_tune_case ());
 
 

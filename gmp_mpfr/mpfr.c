@@ -5,6 +5,22 @@
  *         then multiply by 4 with the mpfr functions calls.
  *         Check for correct results where reasonable.
  *
+ *         Just for fun. There is a nifty little computation
+ *         that was written about by Fred Gruenberger way back
+ *         in 1984 and it has always been fun to see what very
+ *         limited systems do with it. At the moment the old
+ *         bc and dc utilities seem to have a real fit with it.
+ *
+ *         JOURNAL ARTICLE : COMPUTER RECREATIONS
+ *
+ *         Title : "How to handle numbers with thousands of
+ *                  digits, and why one might want to."
+ *
+ *         Author : Fred Gruenberger
+ *
+ *         Scientific American : Vol. 250, No. 4 (April 1984),
+ *                               pp. 19-27 (13 pages)
+ *
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
  *
@@ -67,6 +83,7 @@
 #include <mpfr.h>
 
 #define VERBOSE 1
+#define MPFR_VERSION_ERROR 999
 
 /* int sysinfo(int verbose); */
 uint64_t timediff( struct timespec st, struct timespec en );
@@ -130,7 +147,7 @@ int main(int argc, char **argv)
     /* sysinfo(VERBOSE); */
 
     mpfr_prec_size = gmp_mpfr_ver(&status, &mpfr_flags);
-    if ( mpfr_prec_size == 999 ) {
+    if ( mpfr_prec_size == MPFR_VERSION_ERROR ) {
         /* That silly magic number will get cleaned
          * up at some point. Just not now.
          * This is silly but could happen I guess */
@@ -180,28 +197,20 @@ int main(int argc, char **argv)
         prec = 113;
     }
 
-    printf("INFO : using %li bits of precision.\n", (long)prec );
-
-    /*  This was never really needed. See the MPFR manual 
-     *  for mpfr_get_str_ndigits(). However the math is
-     *  correct if you wanted to do this manually.
-     *
-     *  decimal_dig = (int)( 1.0 + ( (double)prec * bits_per ) );
-     */
-
     decimal_prec = mpfr_get_str_ndigits(10, prec);
-    printf("     : we need %i decimal digits.\n", decimal_prec);
+    printf("INFO : using %li bits of precision ", (long)prec );
+    printf("and %i decimal digits.\n", decimal_prec);
 
-    /* create a MPFR format buffer string with the correct number
-     * of decimal digits. NOTE there is not a newline char. */
-    sprintf(format_buf,"%%.%iR*f", decimal_prec);
-
-    /* NOTE : the use of the asterisk inside the format string seems
+    /* Create MPFR format buffer string with the correct number
+     * of decimal digits. NOTE there is not a newline char.
+     *
+     * NOTE : the use of the asterisk inside the format string seems
      *        to imply that we need to specify the rounding method
      *        thus :  mpfr_printf(format_buf, MPFR_RNDN, foo);
      */
+    sprintf(format_buf,"%%.%iR*f", decimal_prec);
 
-    printf("-------------------------------------------------------------\n");
+    printf("------------------------------------------------------\n");
 
     mpfr_inits2( prec, pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
                  atan_pi4_mpfr, third_mpfr, half_mpfr,
@@ -377,8 +386,8 @@ int main(int argc, char **argv)
     inex = mpfr_div(one_ten_millionth, one_mpfr, ten_million, MPFR_RNDN);
     inex = mpfr_add(gruenberger_0, one_mpfr, one_ten_millionth, MPFR_RNDN);
 
-    printf("\n-------- enter the Fred Gruenberger loop ----------\n");
-    printf("\n");
+    printf("------------------------------------------------------\n");
+    printf("---------- Enter the Fred Gruenberger loop -----------\n");
     printf("loop  0 : ");
     mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
     printf("\n");
@@ -395,7 +404,7 @@ int main(int argc, char **argv)
         mpfr_swap(gruenberger_1, gruenberger_0);
 
     }
-    printf("---------------------------------------------------\n");
+    printf("------------------------------------------------------\n");
 
     printf("final   : ");
     mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
