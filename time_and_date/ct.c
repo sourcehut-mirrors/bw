@@ -1,9 +1,8 @@
 /*
- * ct.c    report the date for a give UNIX time expressed in secs since
- *         1 Jan 1970 00:00:00 and also support other LANG locales if
- *         requested.  This was likely written somewhere in the 1990s
- *         but the memory of such things has been lost in backup tapes
- *         in cardboard boxes.
+ * ct.c    report the date for a give UNIX time expressed in secs
+ *         since 1 Jan 1970 00:00:00. This was likely written in
+ *         the 1990s but the memory of such things has been lost
+ *         in backup tapes in cardboard boxes.
  *
  * ------------------------------------------------------------------
  * Copyright (c) 1996 Dennis Clarke
@@ -31,7 +30,7 @@
  * ------------------------------------------------------------------
  */
 
-/*********************************************************************
+/********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
  *
@@ -41,7 +40,7 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *
- *********************************************************************/
+ *******************************************************************/
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
 #endif
@@ -87,33 +86,36 @@ main(int argc, char **argv)
             }
         }
         if ( candidate_input < 0 ) {
-            fprintf(stderr,"WARN : negative time is not well understood\n");
-            fprintf(stderr,"     : we shall assume 0 for the very beginning\n");
+            fprintf(stderr,"WARN : negative time not understood\n");
+            fprintf(stderr,"     : we shall assume 0\n");
             candidate_input = 0;
         }
         if ( candidate_input > 2147483647 ) {
             fprintf(stderr,"WARN : end of time detected\n");
             fprintf(stderr,"     : we shall assume 0\n");
-            fprintf(stderr,"     : return back to the future\n");
             candidate_input = 0;
         }
     } else {
-         if ( argc > 2 ) {
-               fprintf(stderr,"FAIL : provide only");
-         } else {
-               fprintf(stderr,"FAIL : provide");
-         }
-         fprintf(stderr," a UNIX time in secs\n");
-         errno = EINVAL;
-         perror("FAIL ");
-         return EXIT_FAILURE;
+        if ( argc > 2 ) {
+            /* actually this would be a nice place
+             * to accept a locale */
+            fprintf(stderr,"FAIL : provide only");
+        } else {
+            fprintf(stderr,"FAIL : provide");
+        }
+        fprintf(stderr," a UNIX time in secs\n");
+        errno = EINVAL;
+        perror("FAIL ");
+        return EXIT_FAILURE;
     }
 
     setlocale ( LC_TIME, "C" );
 
     time_tv.tv_sec = candidate_input;
     /* someday maybe ... deal with fractional seconds ?
-     *   time_tv.tv_nsec = (argc == 3 ) ? strtol(argv[2], (char **)NULL, 10) : 0; 
+     * However I fail to see the use for such a thing.
+     *   time_tv.tv_nsec = (argc == 3 ) ?
+     *            strtol(argv[2], (char **)NULL, 10) : 0; 
      */
     time_tv.tv_nsec = 0;
     c_time_string = ctime(&time_tv.tv_sec);

@@ -51,6 +51,13 @@
 
 #include <errno.h>
 
+/* the whole notion of a floating point environment will require
+ * at least C99 and a reasonably modern system. Otherwise you need
+ * to write a ton of inline assembly for fifty architectures. Not
+ * really true. However the ELF headers surely list a lot of machine
+ * types and we just can not rely on anything else but the stuff
+ * in fenv.h.  Good luck.
+ */
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
 #include <fenv.h>
 #endif
@@ -74,10 +81,11 @@
 #include <sys/types.h>
 #endif
 
-/* 23 Aug 2022 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
+/* 23 Aug 2021 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
  *
- * Some platform don't have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES in sysconf().
- * Let's assume we do, then disable it for certain compilers/platforms.
+ * Some platform do not have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES
+ * in sysconf(). We can assume they do and then disable it for
+ * certain compilers/platforms. Welcome to "ifdef" madness.
  */
 #define HAVE_PAGE_INFO
 #ifdef __MVS__
@@ -111,7 +119,7 @@ int sysinfo(int verbose) {
 
     int fp_round_mode;
     int end_check = 1;
-    int little_endian;
+    int endian;
 
 #ifdef HAVE_PAGE_INFO
     errno = 0;
@@ -140,7 +148,8 @@ int sysinfo(int verbose) {
 
         len = sizeof(pages_avail);
 
-        err_flag = sysctlbyname("hw.availpages", &pages_avail, &len, NULL, 0);
+        err_flag = sysctlbyname("hw.availpages", &pages_avail,
+                                               &len, NULL, 0);
 
         if (err_flag < 0) {
             perror("sysctlbyname(\"hw.availpages\", ...) : ");
@@ -171,7 +180,7 @@ int sysinfo(int verbose) {
     }
 
     /* guess the architecture endianess */
-    little_endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
+    endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
 
     setlocale( LC_MESSAGES, "C" );
     if ( uname( &uname_data ) < 0 ) {
@@ -183,37 +192,48 @@ int sysinfo(int verbose) {
          * perror ( "uname" );
          */ 
     } else {
-        /***************************************************************
+        /**************************************************************
          *    S P E C I A L    N O T E   F O R    F R E E B S D
          *
          *    FreeBSD can entirely override the uname data with
          *    some funky environment variables. The ordinary user
          *    can have "uname -a" report they are on a MIPS machine
          *    running Windows NT 3.51 if they choose. So be careful.
-         ***************************************************************/
+         *************************************************************/
         printf ( "----------------------------------" );
         printf ( "---------------------------------\n" );
-        printf ( "                 system name = %s\n", uname_data.sysname );
-        printf ( "                   node name = %s\n", uname_data.nodename );
-        printf ( "                     release = %s\n", uname_data.release );
-        printf ( "                     version = %s\n", uname_data.version );
-        printf ( "                     machine = %s\n", uname_data.machine );
+        printf ( "                 system name = %s\n",
+                                                  uname_data.sysname );
 
-        /* If the available system memory is a perfect number aligned on
-         * a gigabyte boundary then we report it. Otherwise, this makes
-         * very little sense to bother with.
+        printf ( "                   node name = %s\n",
+                                                 uname_data.nodename );
+
+        printf ( "                     release = %s\n",
+                                                  uname_data.release );
+
+        printf ( "                     version = %s\n",
+                                                  uname_data.version );
+
+        printf ( "                     machine = %s\n",
+                                                  uname_data.machine );
+
+        /* If the available system memory is a number aligned on
+         * a gigabyte boundary then we report it.
          *
-         *  alpha$ echo '8k  34359738368  1073741824 / pq' | dc
-         *  32.00000000
-         *  alpha$
+         * For that reason alone we need a #define ONEGB just for
+         * some trivial modulo math.
          */
 
 #ifdef HAVE_PAGE_INFO
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
 
-        printf ( "                   page size = %" PRIu64 "\n", pagesize );
-        printf ( "               system memory = %" PRIu64 "\n", sysmem );
+        printf ( "                   page size = %" PRIu64 "\n",
+                                                            pagesize );
+
+        printf ( "               system memory = %" PRIu64 "\n",
+                                                              sysmem );
+
         printf ( "                             = %" PRIu64 " kB\n",
                                                          sysmem/1024 );
 
@@ -230,6 +250,7 @@ int sysinfo(int verbose) {
 
         printf ( "                   page size = %llu\n", pagesize );
         printf ( "               system memory = %llu\n", sysmem );
+
         printf ( "                             = %llu kB\n",
                                                          sysmem/1024 );
 
@@ -250,11 +271,17 @@ int sysinfo(int verbose) {
 #ifdef HAVE_PAGE_INFO
             if ( avail_memory > 0 ) {
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-                printf("                 avail pages = %" PRIu64 "\n", pages_avail);
-                printf("                avail memory = %" PRIu64 "\n", avail_memory);
+                printf("                 avail pages = %" PRIu64 "\n",
+                                                          pages_avail);
+
+                printf("                avail memory = %" PRIu64 "\n",
+                                                         avail_memory);
 #else
-                printf("                 avail pages = %llu\n", pages_avail);
-                printf("                avail memory = %llu\n", avail_memory);
+                printf("                 avail pages = %llu\n",
+                                                          pages_avail);
+
+                printf("                avail memory = %llu\n",
+                                                         avail_memory);
 #endif
             } else {
                 printf("                 avail pages = unknown\n");
@@ -263,24 +290,44 @@ int sysinfo(int verbose) {
 #endif
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-            printf("         clock ticks per sec = %" PRIu64 "\n", clock_ticks_sec);
-            printf("             threads support = %" PRIu64 "\n", threads);
-            printf("               POSIX Version = %" PRIu64 "\n", version);
+            printf("         clock ticks per sec = %" PRIu64 "\n",
+                                                      clock_ticks_sec);
+
+            printf("             threads support = %" PRIu64 "\n",
+                                                              threads);
+            
+            printf("               POSIX Version = %" PRIu64 "\n",
+                                                              version);
 #else
-            printf("         clock ticks per sec = %llu\n", clock_ticks_sec);
-            printf("             threads support = %llu\n", threads);
-            printf("               POSIX Version = %llu\n", version);
+            printf("         clock ticks per sec = %llu\n",
+                                                      clock_ticks_sec);
+             
+
+            printf("             threads support = %llu\n",
+                                                              threads);
+
+            printf("               POSIX Version = %llu\n",
+                                                              version);
 #endif
-            printf("          _POSIX_CHILD_MAX   = %i\n", _POSIX_CHILD_MAX);
-            printf("          _POSIX_NGROUPS_MAX = %i\n", _POSIX_NGROUPS_MAX);
-            printf("          _POSIX_OPEN_MAX    = %i\n", _POSIX_OPEN_MAX);
-            printf("          _POSIX_PATH_MAX    = %i\n", _POSIX_PATH_MAX);
-            printf("          _POSIX_TZNAME_MAX  = %i\n", _POSIX_TZNAME_MAX);
+            printf("          _POSIX_CHILD_MAX   = %i\n",
+                                                     _POSIX_CHILD_MAX);
+
+            printf("          _POSIX_NGROUPS_MAX = %i\n", 
+                                                   _POSIX_NGROUPS_MAX);
+
+            printf("          _POSIX_OPEN_MAX    = %i\n",
+                                                      _POSIX_OPEN_MAX);
+
+            printf("          _POSIX_PATH_MAX    = %i\n",
+                                                      _POSIX_PATH_MAX);
+
+            printf("          _POSIX_TZNAME_MAX  = %i\n",
+                                                    _POSIX_TZNAME_MAX);
 
         }
 
         printf ( "                      endian = ");
-        if ( little_endian ) {
+        if ( endian ) {
             printf ( "little");
         } else {
             printf ( "big");
@@ -288,18 +335,22 @@ int sysinfo(int verbose) {
         printf ( " endian\n" );
 
         /* If sizeof reports back an unsigned long integer as 64bit
-         * the format string for printf should be %lu. However compilers
-         * on 32bit machines will get upset and warn we should use %u. */
+         * the format string for printf should be %lu. However
+         * compilers on 32bit machines will get upset and warn
+         * we should use %u. */
         printf ( "       sizeof(unsigned long) = %lu\n",
-                                               sizeof(unsigned long) );
+                                               sizeof(unsigned long));
 
+#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
         printf ( "                sizeof(long) = %lu\n",
-                                          sizeof(unsigned long long) );
+                                          sizeof(unsigned long long));
+#endif
 
-        printf ( "                 sizeof(int) = %lu\n", sizeof(int) );
+        printf ( "                 sizeof(int) = %lu\n",sizeof(int));
 
-        printf ( "               sizeof(void*) = %lu\n", sizeof(void*) );
+        printf ( "               sizeof(void*) = %lu\n",sizeof(void*));
 
+/* some older systems may not have fenv.h at all */
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
         /* get the current floating point rounding mode */
         fp_round_mode = fegetround();
@@ -323,6 +374,16 @@ int sysinfo(int verbose) {
         }
 #endif
 
+/* The situation with IBM MVS systems is that you only get the things
+ * that are in the POSIX specs if you really really do need them. So
+ * you can forget all about the clock idea. There may be clock data
+ * somewhere but you will not get there easily or in a portable way.
+ * Perhaps you need to spend more money and just let IBM take all
+ * they can carry. Repeatedly.
+ *
+ * WARNING : this does not work on a Solaris 8 machine either. I
+ * have yet to check Solaris 2.5.1 or earlier.
+ */
 #ifndef __MVS__
         errno = 0;
         err_flag = sysconf(_SC_MONOTONIC_CLOCK);
@@ -340,16 +401,24 @@ int sysinfo(int verbose) {
                 printf("%4lu day", uptime_day);
                 if ( uptime_day > 1 ) printf("s");
 
-                uptime_hour = ( uptime.tv_sec - ( uptime_day * 86400 ) ) / 3600;
+                uptime_hour = ( uptime.tv_sec
+                                - ( uptime_day * 86400 ) ) / 3600;
 
                 printf("  %3lu hour", uptime_hour);
                 if ( uptime_hour > 1 ) printf("s");
 
-                uptime_min = ( uptime.tv_sec - ( uptime_day * 86400 ) - ( uptime_hour * 3600 ) ) / 60;
+                uptime_min = ( uptime.tv_sec 
+                                - ( uptime_day * 86400 ) 
+                                - ( uptime_hour * 3600 ) ) / 60;
+
                 printf("  %3lu min", uptime_min);
                 if ( uptime_min > 1 ) printf("s");
 
-                uptime_sec = uptime.tv_sec - ( uptime_day * 86400 ) - ( uptime_hour * 3600 ) - ( uptime_min * 60 );
+                uptime_sec = uptime.tv_sec 
+                                - ( uptime_day * 86400 )
+                                - ( uptime_hour * 3600 )
+                                - ( uptime_min * 60 );
+
                 printf("  %3lu sec", uptime_sec);
                 if ( uptime_sec > 1 ) printf("s");
           
@@ -357,8 +426,9 @@ int sysinfo(int verbose) {
 
             }
         } else {
-            /* the Apple M1 seems to fail here for some obscure reason */
-            printf("WAT : sysconf(_SC_MONOTONIC_CLOCK) returns %li\n", err_flag);
+            /* Apple M1 seems to fail here for some obscure reason */
+            printf("WAT : sysconf(_SC_MONOTONIC_CLOCK) returns %li\n",
+                                                            err_flag);
             perror("WAT : ");
         }
 #endif
@@ -372,7 +442,7 @@ int sysinfo(int verbose) {
     }
     printf ("\n");
 
-    return little_endian;
+    return endian;
 
 }
 
