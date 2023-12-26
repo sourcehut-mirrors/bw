@@ -1,7 +1,7 @@
 
-CC=/usr/bin/cc
+CC?=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+CFLAGS?= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
 	-fno-fast-math -fno-builtin
 
 include common.mk
