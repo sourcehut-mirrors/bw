@@ -69,22 +69,40 @@ main(int argc, char **argv)
     struct f_item *mandelbrot_file;
     char *tmpdir;
 
+    char *dir_buffer;
+
     setlocale( LC_ALL, "C" );
 
-    /* Get the uptime in a timespec struct */
+    /* this will not work on MVS systems as there is no CLOCK_foo */
     if ( clock_gettime( CLOCK_MONOTONIC, &now_time ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_MONOTONIC\n");
         return EXIT_FAILURE;
-    } else {
-        /* call srand48() with the sub-second time data */
-        srand48( (long) now_time.tv_nsec );
     }
+
+    /* seed srand48() with the sub-second time data */
+    srand48( (long) now_time.tv_nsec );
+
     sysinfo(VERBOSE);
 
-    if ( check_path() < 1 ) {
-        fprintf(stderr,"FAIL : There seems to be no TMPDIR nor\n");
-        fprintf(stderr,"     : a usable HOME filepath.\n");
+    errno = 0;
+    dir_buffer = calloc(LOCAL_PATH_MAX+1,sizeof(unsigned char));
+
+    if ( dir_buffer == NULL ) {
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        /* calloc() fails? there is no reason to continue */
+        return EXIT_FAILURE;
+    }
+
+    if ( check_path(&dir_buffer) < 1 ) {
+        fprintf(stderr,"FAIL : There is no usable filepath.\n");
         return EXIT_FAILURE;
     }
 
@@ -169,7 +187,7 @@ main(int argc, char **argv)
         if ( status < 0 ) {
                 /* as a rock bottom minimum we run single threaded */
                 mandelbrot_file->pthread_limit = 1;
-            }
+        }
         mandelbrot_file->pthread_limit = pthread_limit;
 
         /* extract mandelbrot data from the header */
@@ -339,9 +357,8 @@ main(int argc, char **argv)
         if ( status < 0 ) {
                 /* as a rock bottom minimum we run single threaded */
                 mandelbrot_file->pthread_limit = 1;
-            }
+        }
         mandelbrot_file->pthread_limit = pthread_limit;
-
 
     } 
 

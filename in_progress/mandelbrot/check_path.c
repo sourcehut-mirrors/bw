@@ -42,69 +42,56 @@
 #include "file_mbrot.h"
 #include "read_f.h"
 
-int check_tmpdir(void) {
+int
+check_tmpdir(char **dir_buffer)
+{
 
-    /* we can assume the Microsoft BOOLEAN type here where
-     * our return value is :
-     *     true  = 1     everything works
-     *     false = 0     sadly no tmpdir to work with
-     *     fail  = -1    everything went wrong somewhere
-     *
-     * NOTE : the Microsoft BOOLEAN data type is a sick joke.
+    /* can we use TMPDIR or HOME dir or /tmp ?
+     *     true  = 1
+     *     false = 0
      */
 
-    errno = 0;
     int status = 0;
     struct stat status_buffer;
     size_t dir_len = 0;
+
     char *tmpdir = getenv("TMPDIR");
-    char *dir_buffer = calloc(LOCAL_PATH_MAX+1,sizeof(unsigned char));
-    if ( dir_buffer == NULL ) {
+    char *homedir = getenv("HOME");
 
-        if ( errno == ENOMEM ) {
-
-            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                    __FILE__, __LINE__ );
-
-        } else {
-
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                    __FILE__, __LINE__ );
-
-        }
-        perror("FAIL ");
-        /* just return the Microsoft BOOLEAN value
-         * for bork bork bork */
-        return -1;
+    if ( *dir_buffer == NULL ) {
+        fprintf(stderr,"FAIL : no valid dir_buffer\n");
+        return 0;
     }
 
     if ( tmpdir == NULL ) {
         fprintf(stderr,"WARN : env var TMPDIR not set\n");
-        /* TODO : give consideration to strlcpy and the cat */
-        strncpy(dir_buffer,"/tmp",4);
+        /* TODO : give consideration to strlcpy */
+        strncpy(*dir_buffer,"/tmp",4);
     } else {
         dir_len = strlen(tmpdir);
         if (dir_len > LOCAL_PATH_MAX) {
-            /* well that won't work well .. so may as well
+            /* some crazy long pathname will not work well
              * go looking for HOME */
-            tmpdir = getenv("HOME");
-            if ( tmpdir == NULL ) {
+            if ( homedir == NULL ) {
                 /* this user is HOMEless ? */
+                fprintf(stderr,"WARN : user has no HOME dir?\n");
 bail_out:
-                free(dir_buffer);
-                return -1;
+                return 0;
             } else {
-                dir_len = strlen(tmpdir);
+                dir_len = strlen(homedir);
                 if (dir_len > LOCAL_PATH_MAX) {
+                    fprintf(stderr,"WARN : HOME dir is unreasonable.\n");
                     goto bail_out;
                 }
+                strncpy(*dir_buffer,homedir,dir_len);
             }
+        } else {
+            strncpy(*dir_buffer,tmpdir,dir_len);
         }
-        strncpy(dir_buffer,tmpdir,dir_len);
     }
 
     errno = 0;
-    status = stat(dir_buffer, &status_buffer);
+    status = stat(*dir_buffer, &status_buffer);
 
     if ( status < 0 ) {
         status = file_stat_err(errno);
