@@ -22,12 +22,17 @@
  *
  * even on a very fast machine this takes a long time
  * [mand] =  5391890426271 nsec   5.391890e+03 sec
+
+    mand_bail = 32768
+    translate = ( -1.57887752805699992098e-02  , +1.02061921088799989477e+00  )
+      magnify = +2.748779069440e+11 
+
  */
 
-#define BAIL_OUT 16777216
-#define MAGNIFY 8589934592
-#define REAL_COORD -1.99998588122252840548753738
-#define IMAG_COORD -0.0000000000236468622460961341857910156
+#define BAIL_OUT 32768
+#define MAGNIFY 274877906944
+#define REAL_COORD -0.0157887752805699992098
+#define IMAG_COORD +1.02061921088799989477
 
 
 /* TODO read in the established data files */

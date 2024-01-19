@@ -176,7 +176,7 @@ __host__ int main(int argc, char *argv[])
      *  Device 1 is the old Keplar K6000.
      **********************************************************/
 
-    scheisse_select = 1;
+    scheisse_select = 0;
     if ( argc > 1 ) scheisse_select = atoi(argv[1]);
 
     err = cudaSetDevice(scheisse_select);

@@ -1,5 +1,5 @@
 
-CC=/usr/local/gcc13/bin/gcc
+CC?=/usr/local/gcc13/bin/gcc
 
 CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -fno-fast-math \
 	-ffp-contract=off -fno-unsafe-math-optimizations -malign-double \
