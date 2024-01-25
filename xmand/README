@@ -1,0 +1,37 @@
+
+
+you will need the termingus fonts in order for this to work : 
+
+$ 
+$ cd $HOME
+$ rm -rf $HOME/.fonts/ $HOME/.cache/fontconfig
+$ mkdir .fonts
+$ rm -rf termingus
+$ git clone git@github.com:neutaaaaan/termingus.git
+Cloning into 'termingus'...
+remote: Enumerating objects: 249, done.
+remote: Counting objects: 100% (249/249), done.
+remote: Compressing objects: 100% (174/174), done.
+remote: Total 249 (delta 160), reused 164 (delta 75), pack-reused 0
+Receiving objects: 100% (249/249), 489.85 KiB | 4.62 MiB/s, done.
+Resolving deltas: 100% (160/160), done.
+$ cd termingus/
+$ cp -p termingus* $HOME/.fonts
+$ cd $HOME/.fonts
+$ mkfontscale
+$ mkfontdir
+$ xset +fp $HOME/.fonts
+$ fc-cache -fv
+
+Verify that you have the termingus fonts with : 
+
+$ xlsfonts -l | grep -c 'termingus'
+14
+$ 
+
+
+To disable the screensave or screen blanker 
+
+ xset -dpms
+
+
