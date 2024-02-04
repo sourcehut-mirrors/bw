@@ -114,7 +114,7 @@ int main(int argc, char*argv[])
      * available schemes -- is designed to be monotonically increasing
      * in terms of its perceived brightness.
      */
-    int astro_flag = 1;
+    int astro_flag = 0;
 
     /* setup mouse x and y */
     int mouse_x = -1, mouse_y = -1;
