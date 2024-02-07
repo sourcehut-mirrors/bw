@@ -822,6 +822,7 @@ int main(int argc, char*argv[])
     char *tmpdir = getenv("TMPDIR");
     /* most compilers won't care that I separate these two checks */
     if (tmpdir == NULL) {
+        /* we must have a TMPDIR somewhere or bad things happen */
         dumper_flag = -1;
     } else if (strlen(tmpdir) > _POSIX_PATH_MAX) {
         dumper_flag = -1;
