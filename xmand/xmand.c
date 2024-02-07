@@ -97,7 +97,7 @@ int main(int argc, char*argv[])
 
     /* we can swap back and forth on the colour method with
      * a trivial flag */
-    int invert_colour = 0;
+    int invert_colour = 1;
 
     /* we need a double click on replot to trigger */
     int replot_flag = 0;
