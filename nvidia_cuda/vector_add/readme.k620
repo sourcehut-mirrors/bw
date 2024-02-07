@@ -139,3 +139,48 @@ DONE : total time 4123660394 nsecs    4.12366 secs
 $ 
 
 
+--- late night silly research prooves this is the last bit of memory we can squeeze ---
+
+esther$ ./vaddf 172752896
+-------------------------------------------------------------
+        system name = Linux
+          node name = esther
+            release = 6.7.4-genunix
+            version = #1 SMP PREEMPT_DYNAMIC Tue Feb  6 02:07:08 GMT 2024
+            machine = x86_64
+          page size = 4096
+       avail memory = 16623816704
+                    = 16234196 kB
+                    = 15853 MB
+-------------------------------------------------------------
+INFO : number of host CPUs:     2
+     : number of CUDA devices:  1
+     : array size is 172752896
+     : we need 2073034752 bytes of memory on a GPU
+     :    0: Quadro K620 totalGlobalMem = 2097610752
+     :    0: Quadro K620 is to be selected
+     : min memory unit is 0: Quadro K620 with 2097610752 bytes
+     : max memory unit is 0: Quadro K620 with 2097610752 bytes
+     : selected Quadro K620
+
+     : Quadro K620 selected
+
+     : Vector addition of 172752896 float FP32 elements
+     : random data loaded 2152683685 nsecs   2.152684 secs
+     : Wallclock cudaMalloc(A)     511953 nsecs  0.000511953 secs
+     : Wallclock cudaMalloc(B)     385513 nsecs  0.000385513 secs
+     : Wallclock cudaMalloc(C)     384005 nsecs  0.000384005 secs
+     : Copy of vector A from host to device done.
+     : Wallclock cudaMemcpy() 105079680 nsecs  0.1050797 secs
+     : Copy of vector B from host to device done.
+     : Wallclock cudaMemcpy() 105629933 nsecs  0.1056299 secs
+     : CUDA kernel launch with 168704 blocks of 1024 threads
+     : vectorAdd done.
+     : Wallclock kernel launch 75408842 nsecs  0.07540884 secs
+     : cudaEventElapsedTime claims 0.07519798 secs
+     : Copy result vector C from device to host done.
+     : cudaMemcpy() 134198161 nsecs  0.1341982 secs
+     : A + B correct within error 2^(-21) epsilon
+     : result check done 750548762 nsecs  0.7505487 secs
+DONE : total time 3756626790 nsecs   3.756627 secs
+esther$ 
