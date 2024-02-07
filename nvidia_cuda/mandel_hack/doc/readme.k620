@@ -1,28 +1,22 @@
 
-Dataset 5 is somewhat extreme 
+from the nasty DataSet 5 
 
-d$ nvprof ./mandel_hack
-==16820== NVPROF is profiling process 16820, command: ./mandel_hack
--------------------------------------------------------------
-        system name = Linux
-          node name = dev
-            release = 6.3.8-genunix
-            version = #1 SMP Sun Jun 18 13:26:59 UTC 2023
-            machine = x86_64
-          page size = 4096
-       avail memory = 16649641984
-                    = 16259416 kB
-                    = 15878 MB
--------------------------------------------------------------
+see  ./xmand 524288 4398046511104 -0.0157887752802652429895 1.02061921090827745218 16
+
+$ nvprof ./mbrot 
+==18586== NVPROF is profiling process 18586, command: ./mbrot
 INFO : number of host CPUs:     2
 INFO : number of CUDA devices:  1
      :    0: Quadro K620
-     :          2099511296 totalGlobalMem
+     :          2097610752 totalGlobalMem
      :             1124000 clockRate
      :                 128 memoryBusWidth
      :                   3 multiProcessorCount
      :                2048 maxThreadsPerMultiProcessor
      :                 384 cores
+WARN : FORCE SELECT the device 0
+     :    0: Quadro K620
+     :          2097610752 totalGlobalMem
 
 INFO : Quadro K620 device is selected
 
@@ -31,19 +25,19 @@ INFO : firing off 1048576 cuda core code chunks
      : mem size of uint32_t height array is 4194304 bytes
 
 -----------------------------------------------------------
-     : 1048576 coord loaded 21780799 nsecs
-     : cudaMalloc device_r 92458800 nsecs
-     : cudaMalloc device_j 102292 nsecs
-     : cudaMalloc device_mval 101622 nsecs
+     : 1048576 coord loaded 23431597 nsecs
+     : cudaMalloc device_r 52182621 nsecs
+     : cudaMalloc device_j 149420 nsecs
+     : cudaMalloc device_mval 139903 nsecs
 INFO : Copy of real data from host to device done.
-     : cudaMemcpy() 1225209nsecs
+     : cudaMemcpy() 1163016nsecs
 INFO : Copy of imaginary data from host to device done.
-     : cudaMemcpy() 1352568 nsecs
+     : cudaMemcpy() 1364568 nsecs
 INFO : CUDA kernel launch with 1024 blocks of 1024 threads
 INFO : done.
-     : gpu_mbrot time delta 24598 nsecs
+     : gpu_mbrot time delta 266279 nsecs
 INFO : Copy result from device to host done.
-     : copy device result done 1428924 nsecs
+     : copy device result done 872542 nsecs
 
      : mand_bail = 524288
      : translate = ( -1.57887752802652429895e-02  , +1.02061921090827745218e+00  )
@@ -70,7 +64,7 @@ INFO : Copy result from device to host done.
      : r[15][15][63][63] = -1.57887752798109397278647492e-02
      : j[15][15][63][63] = +1.02061921090873175543833895e+00
      :       mand_height =      6170
-INFO : file /var/tmp/dclarke/20230625155524 dump begins.
+INFO : file /var/tmp/dclarke/20240207081740 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -89,160 +83,52 @@ DBUG :  8 byte double centre_r num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20230625155524 closed.
+INFO : file /var/tmp/dclarke/20240207081740 closed.
+DBUG : err_status = "�
+                      �ڌ"
 INFO : dumped 1048576 records
 INFO : host memory free and we are done
-==16820== Profiling application: ./mandel_hack
-==16820== Profiling result:
+==18586== Profiling application: ./mbrot
+==18586== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   99.99%  31.7992s         1  31.7992s  31.7992s  31.7992s  gpu_mbrot(double const *, double const *, unsigned int*, int)
-                    0.01%  2.5601ms         2  1.2801ms  1.2799ms  1.2802ms  [CUDA memcpy HtoD]
-                    0.00%  680.89us         1  680.89us  680.89us  680.89us  [CUDA memcpy DtoH]
-      API calls:   99.69%  31.7994s         1  31.7994s  31.7994s  31.7994s  cudaDeviceSynchronize
-                    0.29%  92.657ms         3  30.886ms  101.02us  92.454ms  cudaMalloc
-                    0.01%  3.9837ms         3  1.3279ms  1.2154ms  1.4195ms  cudaMemcpy
-                    0.00%  1.3862ms         3  462.05us  129.30us  630.51us  cudaFree
-                    0.00%  501.99us         1  501.99us  501.99us  501.99us  cudaDeviceReset
-                    0.00%  290.62us         1  290.62us  290.62us  290.62us  cudaGetDeviceProperties
-                    0.00%  283.03us       101  2.8020us     117ns  172.62us  cuDeviceGetAttribute
-                    0.00%  65.967us         1  65.967us  65.967us  65.967us  cuDeviceTotalMem
-                    0.00%  43.856us         1  43.856us  43.856us  43.856us  cuDeviceGetName
-                    0.00%  19.800us         1  19.800us  19.800us  19.800us  cudaLaunchKernel
-                    0.00%  7.1660us         1  7.1660us  7.1660us  7.1660us  cuDeviceGetPCIBusId
-                    0.00%  2.5980us         1  2.5980us  2.5980us  2.5980us  cudaSetDevice
-                    0.00%  1.6170us         3     539ns     169ns  1.2310us  cuDeviceGetCount
-                    0.00%     893ns         1     893ns     893ns     893ns  cudaGetDeviceCount
-                    0.00%     878ns         2     439ns     135ns     743ns  cuDeviceGet
-                    0.00%     268ns         1     268ns     268ns     268ns  cudaGetLastError
-                    0.00%     258ns         1     258ns     258ns     258ns  cuDeviceGetUuid
-d$ 
-d$ hdump -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230625155524
-     0:  00 00 10 00 00 00 08 00 00 00 00 00 00 00 90 42
-    10:  c3 f9 e3 c5 ee 2a 90 bf 78 53 48 cf 74 54 f0 3f
-    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
-    30:  43 f9 e5 c5 ee 2a 90 bf 7a 4b 48 cf 74 54 f0 3f
-    40:  44 49 00 00 43 f8 e5 c5 ee 2a 90 bf 7a 4b 48 cf
-    50:  74 54 f0 3f 7d 38 00 00 43 f7 e5 c5 ee 2a 90 bf
-    60: 
-d$ 
-d$ openssl dgst -sha256 -r /var/tmp/dclarke/20230625155524
-7dad469487ed7df27b7d0c95c4f891b86ad3cf09eee0065047c2bdc84ace2e44 */var/tmp/dclarke/20230625155524
-d$ 
-
-------------------------------------------------
-
-
-
-d$ 
-d$ nvprof ./mandel_hack
-==10220== NVPROF is profiling process 10220, command: ./mandel_hack
--------------------------------------------------------------
-        system name = Linux
-          node name = dev
-            release = 6.3.8-genunix
-            version = #1 SMP Sun Jun 18 13:26:59 UTC 2023
-            machine = x86_64
-          page size = 4096
-       avail memory = 16649641984
-                    = 16259416 kB
-                    = 15878 MB
--------------------------------------------------------------
-INFO : number of host CPUs:     2
-INFO : number of CUDA devices:  1
-     :    0: Quadro K620
-INFO : firing off 1048576 cuda core code chunks
-     : mem size of double data array is 8388608 bytes
-     : mem size of uint32_t height array is 4194304 bytes
-
------------------------------------------------------------
-     : 1048576 coord loaded 26732986 nsecs
-     : cudaMalloc device_r 85420353 nsecs
-     : cudaMalloc device_j 113697 nsecs
-     : cudaMalloc device_mval 109364 nsecs
-INFO : Copy of real data from host to device done.
-     : cudaMemcpy() 1220984nsecs
-INFO : Copy of imaginary data from host to device done.
-     : cudaMemcpy() 1371536 nsecs
-INFO : CUDA kernel launch with 1024 blocks of 1024 threads
-INFO : done.
-     : gpu_mbrot time delta 33521 nsecs
-INFO : Copy result from device to host done.
-     : copy device result done 1388681 nsecs
-
-     : mand_bail = 256
-     : translate = ( -1.22589111328125000000e+00  , -1.77673339843750000000e-01  )
-     :   magnify = +1.280000000000e+02 
-
-     : r[ 0][ 0][ 0][ 0] = -1.24150085449218750000000000e+00
-     : j[ 0][ 0][ 0][ 0] = -1.93283081054687500000000000e-01
-     :       mand_height =        13
-     : r[ 7][ 7][63][63] = -1.22590637207031250000000000e+00
-     : j[ 7][ 7][63][63] = -1.77688598632812500000000000e-01
-     :       mand_height =       104
-     : r[ 8][ 8][ 0][ 0] = -1.22587585449218750000000000e+00
-     : j[ 8][ 8][ 0][ 0] = -1.77658081054687500000000000e-01
-     :       mand_height =        69
-     : r[ 8][ 8][ 1][ 0] = -1.22584533691406250000000000e+00
-     : j[ 8][ 8][ 1][ 0] = -1.77658081054687500000000000e-01
-     :       mand_height =        65
-     : r[ 8][ 8][32][32] = -1.22489929199218750000000000e+00
-     : j[ 8][ 8][32][32] = -1.76681518554687500000000000e-01
-     :       mand_height =       256
-     : r[ 3][12][44][21] = -1.23429870605468750000000000e+00
-     : j[ 3][12][44][21] = -1.69204711914062500000000000e-01
-     :       mand_height =        45
-     : r[15][15][63][63] = -1.21028137207031250000000000e+00
-     : j[15][15][63][63] = -1.62063598632812500000000000e-01
-     :       mand_height =       256
-INFO : file /var/tmp/dclarke/20230619073740 dump begins.
-     :  4 byte uint32_t num_elements num_written = 1
-     : num_elements =  1048576
-     :  4 byte uint32_t mand_bail    num_written = 1
-     : mand_bail =      256
-     :  8 byte double magnify        num_written = 1
-     :        magnify = +1.28000000000000000000000000e+02
-DBUG :  8 byte double centre_r num_written = 1
-     : centre_r = -1.22589111328125000000000000e+00
-     :  8 byte double centre_j num_written = 1
-     : centre_j = -1.77673339843750000000000000e-01
-     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
-     : VBOX_REAL_COUNT =       16
-     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
-     : VBOX_IMAG_COUNT =       16
-     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
-     : VBOX_SAMPLE_REAL =       64
-     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
-     : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20230619073740 closed.
-INFO : dumped 1048576 records
-INFO : host memory free and we are done
-==10220== Profiling application: ./mandel_hack
-==10220== Profiling result:
-            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
- GPU activities:   94.44%  55.190ms         1  55.190ms  55.190ms  55.190ms  gpu_mbrot(double const *, double const *, unsigned int*, int)
-                    4.39%  2.5683ms         2  1.2842ms  1.2796ms  1.2887ms  [CUDA memcpy HtoD]
-                    1.17%  683.96us         1  683.96us  683.96us  683.96us  [CUDA memcpy DtoH]
-      API calls:   58.04%  85.635ms         3  28.545ms  108.68us  85.414ms  cudaMalloc
-                   37.54%  55.384ms         1  55.384ms  55.384ms  55.384ms  cudaDeviceSynchronize
-                    2.68%  3.9592ms         3  1.3197ms  1.2107ms  1.3813ms  cudaMemcpy
-                    0.99%  1.4660ms         3  488.67us  138.02us  664.41us  cudaFree
-                    0.36%  524.94us         1  524.94us  524.94us  524.94us  cudaDeviceReset
-                    0.16%  243.38us         1  243.38us  243.38us  243.38us  cudaGetDeviceProperties
-                    0.12%  178.93us       101  1.7710us     140ns  77.975us  cuDeviceGetAttribute
-                    0.05%  73.629us         1  73.629us  73.629us  73.629us  cuDeviceTotalMem
-                    0.03%  38.987us         1  38.987us  38.987us  38.987us  cuDeviceGetName
-                    0.01%  20.883us         1  20.883us  20.883us  20.883us  cudaLaunchKernel
-                    0.01%  8.8790us         1  8.8790us  8.8790us  8.8790us  cuDeviceGetPCIBusId
-                    0.00%  1.5530us         3     517ns     202ns  1.0890us  cuDeviceGetCount
-                    0.00%     862ns         2     431ns     194ns     668ns  cuDeviceGet
-                    0.00%     794ns         1     794ns     794ns     794ns  cudaGetDeviceCount
-                    0.00%     342ns         1     342ns     342ns     342ns  cudaGetLastError
-                    0.00%     260ns         1     260ns     260ns     260ns  cuDeviceGetUuid
-d$ ls -lapbtr /var/tmp/dclarke/2*
--rw-r--r-- 1 dclarke devl 20971568 Jun 19 07:29 /var/tmp/dclarke/20230619072929
--rw-r--r-- 1 dclarke devl 20971568 Jun 19 07:37 /var/tmp/dclarke/20230619073740
-d$ openssl dgst -sha256 -r /var/tmp/dclarke/2*
-a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230619072929
-a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230619073740
-d$ 
+ GPU activities:   99.99%  31.7128s         1  31.7128s  31.7128s  31.7128s  gpu_mbrot(double const *, double const *, unsigned int*, int)
+                    0.01%  2.5631ms         2  1.2816ms  1.2768ms  1.2863ms  [CUDA memcpy HtoD]
+                    0.00%  717.78us         1  717.78us  717.78us  717.78us  [CUDA memcpy DtoH]
+      API calls:   99.35%  31.7128s         1  31.7128s  31.7128s  31.7128s  cudaDeviceSynchronize
+                    0.33%  106.90ms         2  53.449ms  52.745ms  54.152ms  cudaSetDevice
+                    0.16%  52.465ms         3  17.488ms  139.28us  52.178ms  cudaMalloc
+                    0.13%  42.088ms         2  21.044ms  20.937ms  21.151ms  cudaDeviceReset
+                    0.01%  3.3613ms         3  1.1204ms  847.32us  1.3608ms  cudaMemcpy
+                    0.00%  1.4969ms         3  498.97us  201.48us  649.38us  cudaFree
+                    0.00%  379.22us         2  189.61us  188.96us  190.27us  cudaGetDeviceProperties
+                    0.00%  260.13us         1  260.13us  260.13us  260.13us  cudaLaunchKernel
+                    0.00%  229.77us       114  2.0150us      92ns  101.78us  cuDeviceGetAttribute
+                    0.00%  28.897us         1  28.897us  28.897us  28.897us  cuDeviceGetName
+                    0.00%  5.5270us         1  5.5270us  5.5270us  5.5270us  cuDeviceGetPCIBusId
+                    0.00%  5.0500us         1  5.0500us  5.0500us  5.0500us  cuDeviceTotalMem
+                    0.00%  1.2530us         3     417ns      97ns  1.0100us  cuDeviceGetCount
+                    0.00%     981ns         2     490ns     150ns     831ns  cuDeviceGet
+                    0.00%     446ns         1     446ns     446ns     446ns  cudaGetDeviceCount
+                    0.00%     330ns         1     330ns     330ns     330ns  cudaGetLastError
+                    0.00%     228ns         1     228ns     228ns     228ns  cuModuleGetLoadingMode
+                    0.00%     195ns         1     195ns     195ns     195ns  cuDeviceGetUuid
+$ 
+$ ls -l /var/tmp/dclarke/20240207081740
+-rw-r--r-- 1 dclarke devl 20971568 Feb  7 08:18 /var/tmp/dclarke/20240207081740
+$ 
+$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20240207081740
+000000 00 00 10 00 00 00 08 00 00 00 00 00 00 00 90 42
+000010 c3 f9 e3 c5 ee 2a 90 bf 78 53 48 cf 74 54 f0 3f
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 43 f9 e5 c5 ee 2a 90 bf 7a 4b 48 cf 74 54 f0 3f
+000040 44 49 00 00 43 f8 e5 c5 ee 2a 90 bf 7a 4b 48 cf
+000050 74 54 f0 3f 7d 38 00 00 43 f7 e5 c5 ee 2a 90 bf
+000060
+$ 
+$ /opt/bw/bin/openssl version
+OpenSSL 3.2.0 23 Nov 2023 (Library: OpenSSL 3.2.0 23 Nov 2023)
+$ 
+$ /opt/bw/bin/openssl dgst -sha256 -r /var/tmp/dclarke/20240207081740
+7dad469487ed7df27b7d0c95c4f891b86ad3cf09eee0065047c2bdc84ace2e44 */var/tmp/dclarke/20240207081740
+$ 
 

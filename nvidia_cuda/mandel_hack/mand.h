@@ -12,27 +12,11 @@
 #define THREADS_PER_BLOCK 1024
 #define IMG_PIX_W 1024
 
-/* something extreme
- *      : r_trn   = -1.99998588122252840548753738e+00
- *      : j_trn   = -2.36468622460961341857910156e-11
- *      : x_prime = -1.99998588122684850532095879e+00
- *      : y_prime = -2.16004991671070456504821777e-11
- *      : bailout = 16777216
- *      : magnify = 8.589934592000e+09
- *
- * even on a very fast machine this takes a long time
- * [mand] =  5391890426271 nsec   5.391890e+03 sec
-
-    mand_bail = 32768
-    translate = ( -1.57887752805699992098e-02  , +1.02061921088799989477e+00  )
-      magnify = +2.748779069440e+11 
-
- */
-
-#define BAIL_OUT 32768
-#define MAGNIFY 274877906944
-#define REAL_COORD -0.0157887752805699992098
-#define IMAG_COORD +1.02061921088799989477
+/* data that made an IBM POWER9 server grind for over 200 secs */
+#define BAIL_OUT 524288
+#define MAGNIFY 4398046511104
+#define REAL_COORD -0.0157887752802652429895
+#define IMAG_COORD +1.02061921090827745218
 
 
 /* TODO read in the established data files */

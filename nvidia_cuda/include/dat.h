@@ -14,7 +14,7 @@
  *
  */
 
-#define NUM_ELEMENTS 516979725
+#define NUM_ELEMENTS 84778434
 #define THREADS_PER_BLOCK 1024
 
 /* we may need to redefine this in some code */

@@ -112,10 +112,10 @@ int main(int argc, char *argv[])
 
         /* 677353568 elements of 8-byte floating point in three arrays
          * will likely fit into a 16G mem GPU. Barely */
-        if ( ( candidate_int < 16777216 ) || ( candidate_int > 677353568 ) ){
+        if ( ( candidate_int < 1024 ) || ( candidate_int > 677353568 ) ){
             fprintf(stderr,"WARN : array size is unreasonable\n");
             fprintf(stderr,"     : we shall assume 2^28 and proceed.\n");
-            numElements = 268435456;
+            numElements = 16777216;
         } else {
             numElements = candidate_int;
         }
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
     /* we need a device that can handle three arrays with some 
      * minimal overhead. Say 5% just for giggles. That can be
      * stupid large on a big NVidia Quadro */
-    uint64_t memory_fit_size = (uint64_t)(3.0 * size * 1.05);
+    uint64_t memory_fit_size = 3 * size;
 
     printf("     : we need %" PRIu64 " bytes of memory on a GPU\n",
                  memory_fit_size);

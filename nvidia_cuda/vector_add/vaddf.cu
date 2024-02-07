@@ -113,11 +113,7 @@ int main(int argc, char *argv[])
     /* we need a device that can handle three arrays with some 
      * minimal overhead. Say 3% just for giggles. That can be
      * stupid large on a big NVidia Quadro */
-    uint64_t memory_fit_size = (uint64_t)(
-
-                            (double)( 3.0 * size ) * 1.03
-
-                                         );
+    uint64_t memory_fit_size = (uint64_t)( 3 * size );
 
     printf("     : we need %" PRIu64 " bytes of memory on a GPU\n", memory_fit_size);
 
@@ -176,7 +172,6 @@ int main(int argc, char *argv[])
     }
 
     printf("INFO : Vector addition of %d float FP32 elements\n", numElements);
-    printf("     : Memory size is %ld bytes\n", size );
 
     float *h_A = (float *)malloc(size);
     float *h_B = (float *)malloc(size);
