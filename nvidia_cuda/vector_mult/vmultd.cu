@@ -68,8 +68,13 @@ int main(int argc, char *argv[])
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
         return(EXIT_FAILURE);
     } else {
-        /* call srand48() with the sub-second time data */
+        /* Usually I call srand48() with the sub-second time data
         srand48( (long) t0.tv_nsec );
+
+        to get consistent data in the so-called random arrays we
+        shall use 2^31 -1 = 2147483647
+        */
+        srand48( 2147483647 ); 
     }
 
     time_begin.tv_sec = t0.tv_sec;
