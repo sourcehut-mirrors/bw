@@ -1,6 +1,3 @@
-/**
- * same idea just do a multiply
- */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,7 +14,6 @@
 #include <helper_cuda.h>
 #include <cuda_profiler_api.h>
 #include <omp.h>
-
 
 #include "dat.h"
 
@@ -50,7 +46,7 @@ int main(int argc, char *argv[])
 
     int driver_ver = 0;
     int runtime_ver = 0;
-    int max_dev, min_dev;
+    int j, max_dev, min_dev;
 
     cudaError_t err = cudaSuccess;
     int num_elements = NUM_ELEMENTS;
@@ -69,11 +65,12 @@ int main(int argc, char *argv[])
         return(EXIT_FAILURE);
     } else {
         /* Usually I call srand48() with the sub-second time data
-        srand48( (long) t0.tv_nsec );
-
-        to get consistent data in the so-called random arrays we
-        shall use 2^31 -1 = 2147483647
-        */
+         *     srand48( (long) t0.tv_nsec );
+         *
+         * to get consistent data in the so-called random arrays we
+         * shall use 2^31 -1 = 2147483647
+         *     why that number?  well ... why not?
+         */
         srand48( 2147483647 ); 
     }
 
@@ -101,7 +98,7 @@ int main(int argc, char *argv[])
     printf("     : number of CUDA devices:\t%d\n", num_gpus);
 
     /* only YOU can stop the abuse of i */
-    for (int j = 0; j < num_gpus; j++) {
+    for (j = 0; j < num_gpus; j++) {
         cudaDeviceProp dprop;
         cudaGetDeviceProperties(&dprop, j);
         printf("     :    %d: %s\n", j, dprop.name);
@@ -151,6 +148,8 @@ int main(int argc, char *argv[])
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         exit(EXIT_FAILURE);
     }
+
+    /* give the user the ability to select the device number */
     printf("     : we selected device %i\n", max_dev);
 
     printf("     : Vector multiply of %d double FP64 elements\n", num_elements);
