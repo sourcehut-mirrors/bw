@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     size_t size = numElements * sizeof(float);
 
     int num_gpus = 0;
+    int user_select = 0;
 
     setlocale(LC_ALL, "C");
     sysinfo();
@@ -109,9 +110,8 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-        /* 677353568 elements of 8-byte floating point in three arrays
-         * will likely fit into a 16G mem GPU. Barely */
-        if ( ( candidate_int < 1024 ) || ( candidate_int > 677353568 ) ){
+        /* the insane 96G value is for the big barking Ampere A100X */
+        if ( ( candidate_int < 1024 ) || ( candidate_int > 103079215104 ) ){
             fprintf(stderr,"WARN : array size is unreasonable\n");
             fprintf(stderr,"     : we shall assume 2^28 and proceed.\n");
             numElements = 16777216;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
             numElements = candidate_int;
         }
 
-        size = numElements * sizeof(float);
+        size = candidate_int * sizeof(float);
         fprintf(stderr,"     : array size is %i\n", numElements);
     }
 
@@ -201,34 +201,49 @@ int main(int argc, char *argv[])
                           (dprop+gpu_unit_max_number)->name,
                           gpu_max_memory);
 
-    /* select the unit with enough memory */
-    if ( device_id >= 0 ) {
-
-        cuda_err = cudaSetDevice(device_id);
-
-        if (cuda_err != cudaSuccess) {
-
-            fprintf(stderr, "FAIL : CUDA failed to select %s\n",
-                                        (dprop+device_id)->name);
-
-            fprintf(stderr, "FAIL : error %s\n",
-                                   cudaGetErrorString(cuda_err));
-            return EXIT_FAILURE;
-
+    /* provide the opportunity for the user to force select a device id */
+    errno = 0;
+    if ( argc > 2 ) {
+        candidate_int = (int)strtol(argv[2], (char **)NULL, 10);
+        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ) {
+            fprintf(stderr,"WARN : device choice not understood\n");
+            perror("     ");
+            /* may not be needed but certainly is clear */
+            user_select = 0;
         } else {
-
-            printf("     : selected %s\n", (dprop+device_id)->name);
-
+            if ( ( candidate_int < 0 ) || ( candidate_int > num_gpus ) ) {
+                fprintf(stderr,"WARN : device select unreasonable\n");
+                fprintf(stderr,"     : we shall assume device 0 and proceed.\n");
+                /* again this is harmless but very clear */
+                user_select = 0;
+            } else {
+                user_select = candidate_int;
+            }
         }
-
-    } else {
-
-        fprintf(stderr, "FAIL : Insufficient memory on any GPU\n");
-        return EXIT_FAILURE;
-
+        /* let the user shoot themselves in the foot */
+        device_id = user_select;
     }
 
-    /* this was just a dirty select of the unit with the least memory */
+    /* the user my bork this up and we are not to blame damn it */
+    cuda_err = cudaSetDevice(device_id);
+    
+    if (cuda_err != cudaSuccess) {
+    
+        fprintf(stderr, "FAIL : CUDA failed to select %s\n",
+                                            (dprop+device_id)->name);
+    
+        fprintf(stderr, "FAIL : error %s\n",
+                                       cudaGetErrorString(cuda_err));
+        return EXIT_FAILURE;
+    
+    } else {
+    
+        printf("     : selected %s\n", (dprop+device_id)->name);
+    
+    }
+    
+
+    /* this was just a dirty select of the unit with the least memory *
     if (cudaSetDevice(gpu_unit_min_number) != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to select %s\n",
@@ -236,9 +251,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
         return EXIT_FAILURE;
     }
-
-    printf("\n     : %s selected\n\n",(dprop+gpu_unit_min_number)->name);
-    /* end of the hack for min device */
+    */
 
     cuda_err = cudaDeviceReset();
     if ( cuda_err != cudaSuccess) {
