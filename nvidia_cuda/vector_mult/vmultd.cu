@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
          *     why that number?  well ... why not?
          */
         srand48( 2147483647 ); 
+        printf("INFO : srand48( 2147483647 ) static seed used.\n");
     }
 
     time_begin.tv_sec = t0.tv_sec;
@@ -288,7 +289,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(err));
         return EXIT_FAILURE;
     }
-    printf("INFO : Copy result A from device to host done.\n");
+    printf("INFO : Copy result C from device to host done.\n");
     tdelta_nsec = timediff(t0, t1);
     cuda_memcpy += tdelta_nsec;
     printf("     : cudaMemcpy %10" PRIu64 " nsecs  %9.7g secs\n",

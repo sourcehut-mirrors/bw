@@ -1,23 +1,27 @@
 
-With an up to date Linux kernel and a newly boot strapped GCC the thing
-just grinds away madly for almost an hour : 
-
-$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 2
+esther$ date -u 
+Fri Nov  3 07:13:10 UTC 2023
+esther$ uname -apKU
+FreeBSD esther 13.2-RELEASE-p4 FreeBSD 13.2-RELEASE-p4 GENERIC amd64 amd64 1302001 1302001
+esther$ sysctl hw.model
+hw.model: Intel(R) Pentium(R) CPU G4500 @ 3.50GHz
+esther$ 
+esther$ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 4
 -------------------------------------------------------------------
-                 system name = Linux
+                 system name = FreeBSD
                    node name = esther
-                     release = 6.7.4-genunix
-                     version = #1 SMP PREEMPT_DYNAMIC Tue Feb  6 02:07:08 GMT 2024
-                     machine = x86_64
+                     release = 13.2-RELEASE-p4
+                     version = FreeBSD 13.2-RELEASE-p4 GENERIC
+                     machine = amd64
                    page size = 4096
-               system memory = 16623816704
-                             = 16234196 kB
-                             = 15853 MB
+               system memory = 17079603200
+                             = 16679300 kB
+                             = 16288 MB
                  avail pages = unknown
                 avail memory = unknown
-         clock ticks per sec = 100
-             threads support = 200809
-               POSIX Version = 200809
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
           _POSIX_CHILD_MAX   = 25
           _POSIX_NGROUPS_MAX = 8
           _POSIX_OPEN_MAX    = 20
@@ -29,9 +33,9 @@ $ ./xmand 32768 268435456 0.399750960350502282381 0.205251797480741515756 2
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    1 hour   34 mins    9 secs
+           system uptime    3 days    1 hour    3 mins   52 secs
 -------------------------------------------------------------------
-INFO : baseline tdelta =             28 nsec
+INFO : baseline tdelta =            223 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -39,7 +43,7 @@ INFO : FP Exception raised is FE_INEXACT
 imag : Perfectly safe to ignore FE_INEXACT
 
     mand_bail = 32768
-pthread_limit = 2
+pthread_limit = 4
     translate = ( +3.99750960350502282381057739e-01 , +2.05251797480741515755653381e-01 )
       magnify = +2.68435456000000000000000000e+08
 
@@ -55,29 +59,19 @@ pthread_limit = 2
 --------------------------------------------
 pixel_real_w = +1.45519152283668518066406250e-11
 pixel_imag_h = +1.45519152283668518066406250e-11
-raw  [ 1324 , 859  ]
-click at 1323 857 
-raw  [ 1324 , 859  ]
-click at 1323 857 
-raw  [ 1396 , 861  ]
-click at 1395 859 
-raw  [ 1396 , 861  ]
-click at 1395 859 
-raw  [ 1396 , 861  ]
-click at 1395 859 
-raw  [ 514  , 882  ]
-DBUG : sample space [ 503   , 154    ]
-     : vbox  [ 007 , 002 ]
-     : win_r = -1.66015625000000000000000000e-02
-     : win_j = -6.98242187500000000000000000e-01
+raw  [ 522  , 523  ]
+DBUG : sample space [ 511   , 513    ]
+     : vbox  [ 007 , 008 ]
+     : win_r = -9.76562500000000000000000000e-04
+     : win_j = +2.92968750000000000000000000e-03
      : after translation
      : r_trn   = +3.99750960350502282381057739e-01
      : j_trn   = +2.05251797480741515755653381e-01
-     : x_prime = +3.99750960226811002939939499e-01
-     : y_prime = +2.05251792278431821614503860e-01
+     : x_prime = +3.99750960343226324766874313e-01
+     : y_prime = +2.05251797502569388598203659e-01
      : bailout = 32768             
      : magnify = 2.684354560000e+08
-[mand] =  3539056671710 nsec   3.539057e+03 sec
+[mand] =   723090055914 nsec   7.230901e+02 sec
 
 
 raw data values -------------------------------------------------------
@@ -103,12 +97,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +2.05251804924046155065298080e-01
      :       mand_height =     16940
 --------------------------- full plot done -----------------------------
-click at 513 880 
-raw  [ 1395 , 891  ]
+click at 521 521 
+raw  [ 1398 , 892  ]
 INFO : dumper_flag = 1
-click at 1394 889 
-raw  [ 1395 , 891  ]
-INFO : file /var/tmp/dclarke/20240218214621 dump begins.
+click at 1397 890 
+raw  [ 1398 , 892  ]
+INFO : file /var/tmp/dclarke/20231103072715 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -127,29 +121,29 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20240218214621 closed.
+INFO : file /var/tmp/dclarke/20231103072715 closed.
 INFO : dumper_flag = 0
-click at 1394 889 
-raw  [ 1012 , 936  ]
+click at 1397 890 
+raw  [ 1001 , 932  ]
 right click
-click at 1011 934 
-raw  [ 1012 , 936  ]
+click at 1000 930 
+raw  [ 1001 , 932  ]
 right click
 
 
 
-$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240218214621
-000000 00 00 10 00 00 80 00 00 00 00 00 00 00 00 b0 41
-000010 00 00 50 0d 85 95 d9 3f 00 00 d0 de b0 45 ca 3f
-000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
-000030 00 00 52 05 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f
-000040 7f 0c 00 00 00 00 56 05 85 95 d9 3f 00 00 d4 ce
-000050 b0 45 ca 3f 7f 0c 00 00 00 00 5a 05 85 95 d9 3f
-000060 00 00 d4 ce b0 45 ca 3f 80 0c 00 00 00 00 5e 05
-000070 85 95 d9 3f 00 00 d4 ce b0 45 ca 3f 80 0c 00 00
-000080
-$ 
-$ openssl dgst -sha256 -r /var/tmp/dclarke/20240218214621
-da10c083ef0199b5cec137517276b6b04f70edaa6462056b47984774ccc956ba */var/tmp/dclarke/20240218214621
-$ 
+esther$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20231103072715
+0000000    00  00  10  00  00  80  00  00  00  00  00  00  00  00  b0  41
+0000010    00  00  50  0d  85  95  d9  3f  00  00  d0  de  b0  45  ca  3f
+0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
+0000030    00  00  52  05  85  95  d9  3f  00  00  d4  ce  b0  45  ca  3f
+0000040    7f  0c  00  00  00  00  56  05  85  95  d9  3f  00  00  d4  ce
+0000050    b0  45  ca  3f  7f  0c  00  00  00  00  5a  05  85  95  d9  3f
+0000060    00  00  d4  ce  b0  45  ca  3f  80  0c  00  00  00  00  5e  05
+0000070    85  95  d9  3f  00  00  d4  ce  b0  45  ca  3f  80  0c  00  00
+0000080
+esther$ 
+esther$ openssl dgst -sha256 -r /var/tmp/dclarke/20231103072715
+da10c083ef0199b5cec137517276b6b04f70edaa6462056b47984774ccc956ba */var/tmp/dclarke/20231103072715
+ 
 
