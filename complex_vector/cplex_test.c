@@ -1,4 +1,34 @@
 
+/*
+ * cplex_test.c  Attempt to test and verify all complex math
+ *               functions
+ *
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -199,12 +229,22 @@ int main (int argc, char **argv)
     printf("\n-----------------------------------------------\n\n");
 
 
-    /* do a trivial cube root of 27 first 
-     *
-     * set real operand component to 27 and knock the imaginary
-     * down to zero. */
+    /* do a trivial cube root of 1 */
+    op1.r = 1.0; op1.i = 0.0;
+    printf("\n********** trivial cube root test  of ( 1, 0 ) ***********\n");
+    printf("     : op1 = ( %g, %g )\n", op1.r, op1.i);
+    printf("     :     theta = %16.12e\n", cplex_theta(&op1) );
+    printf("     :     magnitude is %g\n", cplex_mag(&op1));
+
+    cplex_cbrt(opr2, &op1);
+
+    printf("root : 1 = ( %16.12e, %16.12e )\n", opr2[0].r, opr2[0].i);
+    printf("root : 2 = ( %16.12e, %16.12e )\n", opr2[1].r, opr2[1].i);
+    printf("root : 3 = ( %16.12e, %16.12e )\n", opr2[2].r, opr2[2].i);
+
+    /* cube root of 27 */
     op1.r = 27.0; op1.i = 0.0;
-    printf("\n******************** trivial cube root test ***********\n");
+    printf("\n********** trivial cube root test  of ( 27, 0 ) *******\n");
     printf("     : op1 = ( %g, %g )\n", op1.r, op1.i);
     printf("     :     theta = %16.12e\n", cplex_theta(&op1) );
     printf("     :     magnitude is %g\n", cplex_mag(&op1));
