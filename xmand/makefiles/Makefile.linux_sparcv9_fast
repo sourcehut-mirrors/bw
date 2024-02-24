@@ -1,5 +1,5 @@
 
-CC=/usr/bin/gcc
+CC?=/usr/bin/gcc
 
 CFLAGS= -std=iso9899:2011 -m64 -O3
 
