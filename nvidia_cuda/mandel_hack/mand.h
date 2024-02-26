@@ -14,7 +14,11 @@
 
 /* data that made an IBM POWER9 server grind for over 1939.24 secs
  * 16777216 8589934592 -1.99998588122252840549 -0.0000000000236468622460961341858
+ *
+ * However, thanks to Matthew Wilson we were able to run the same
+ * test on an IBM POWER10 server where we saw 1597.227 secs.
  * 
+ * NOTE: what follows is just a strange test set. No idea yet.
  * This test is very strange as there are wildly different computation
  * times from the same hardware : 
  *  32768 268435456 0.399750960350502282381 0.205251797480741515756 

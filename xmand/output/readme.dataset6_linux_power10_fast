@@ -222,7 +222,9 @@ PTHRD: join 4 done
 PTHRD: join 5 done
 PTHRD: join 6 done
 PTHRD: join 7 done
-[join] =    36116555999 nsec   3.611656e+01 sec
+
+
+The above was done with a POSIX thread blocking join call in 3.611656e+01 sec
 
 p10$ 
 
