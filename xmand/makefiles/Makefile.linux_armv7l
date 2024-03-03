@@ -1,7 +1,11 @@
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -fno-builtin -march=armv7-a \
+CC?=/opt/bw/gcc13/bin/gcc
+
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -pedantic -pedantic-errors \
+	-O0 -g \
+	-fno-builtin -march=armv7-a \
 	-mtune=cortex-a17 -mfpu=vfpv4-d16 \
-	-marm -mtls-dialect=gnu2 -pedantic \
-	-mno-sched-prolog -mlittle-endian -O0 -g
+	-marm -mtls-dialect=gnu2 \
+	-mno-sched-prolog -mlittle-endian
 
 include common.mk

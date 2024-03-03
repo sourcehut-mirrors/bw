@@ -1,8 +1,9 @@
+CC?=/opt/bw/gcc13/bin/gcc
 
 CFLAGS= -I$(IDIR) -std=iso9899:1999 -march=armv7-a \
 	-mtune=cortex-a17 -mfpu=vfpv4-d16 \
 	-marm -mtls-dialect=gnu2 \
-	-mlittle-endian -O3 -march=native \
+	-mlittle-endian -O3 \
 	-ffp-contract=on
 
 include common.mk
