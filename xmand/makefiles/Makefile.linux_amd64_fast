@@ -1,5 +1,5 @@
 
-CC? = /usr/local/gcc13/bin/gcc
+CC?=/opt/bw/gcc13/bin/gcc
 
 CFLAGS= -std=iso9899:1999 -m64 -O3 -ffast-math -ffp-contract=on -mfma
 

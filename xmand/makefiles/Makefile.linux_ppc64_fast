@@ -1,5 +1,5 @@
 
-CC=gcc
+CC?=/opt/bw/gcc13/bin/gcc
 
 CFLAGS = -std=iso9899:1999 -O3 -m64 -mcpu=970 -mfull-toc \
 	-mregnames -ffp-contract=on
