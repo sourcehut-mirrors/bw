@@ -4,3 +4,4 @@ of the hashed data source.
 
 See example in catalog_sample_08.sha512
 
+Should compile neatly as strict C90 but good luck.

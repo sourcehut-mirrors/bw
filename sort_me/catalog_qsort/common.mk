@@ -1,6 +1,6 @@
 CC?=		/usr/bin/cc
 
-CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=500
 
 OBJS=		cat_qsort.o ../../sysinfo/sysinfo.o
 

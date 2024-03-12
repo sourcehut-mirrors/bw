@@ -1,0 +1,13 @@
+
+CC?=/opt/bw/gcc13/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors \
+	-g -O0 -m64 -fno-builtin -fno-fast-math \
+	-ffp-contract=off -fno-unsafe-math-optimizations -malign-double \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
+	-m128bit-long-double -mstackrealign \
+	-mpreferred-stack-boundary=8
+
+CPPFLAGS= -D_XOPEN_SOURCE=500 -D_LARGEFILE64_SOURCE
+
+include common.mk

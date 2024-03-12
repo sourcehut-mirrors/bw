@@ -1,21 +1,31 @@
 
-/* cat_qsort.c  read a SHA512 hash catalog file and then sort
- * Copyright (C) Dennis Clarke 2021
+/*
+ * cat_qsort.c  read a SHA512 hash catalog file and then sort
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
 /*********************************************************************
@@ -29,7 +39,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <locale.h>
@@ -65,14 +77,15 @@ struct node_element *lastnode_element(struct node_element *root)
 }
 
 void swap_data(struct node_element **this, struct node_element **that) {
+    /* swap the data between nodes this and that */
+    char *tmp_filename = (*this)->filename;
     char tmp[_POSIX_PATH_MAX+128+3];
-    /* please pardon the bonkers struct member notation */
+
     strncpy(tmp,(*this)->sha512,129);
     strncpy((*this)->sha512,(*that)->sha512,129);
     strncpy((*that)->sha512,tmp,129);
 
-    /* just swap around the filename pointers */
-    char *tmp_filename = (*this)->filename;
+    /* swap the filename pointers */
     (*this)->filename = (*that)->filename;
     (*that)->filename = tmp_filename;
 }
@@ -83,29 +96,28 @@ void swap_data(struct node_element **this, struct node_element **that) {
  * move bigger elements to right */
 struct node_element *partition(struct node_element *l, struct node_element *h)
 {
-    /* int x = h->num_dat; */
     char pivot_sha512[129];
-    strncpy(pivot_sha512, h->sha512, 129);
 
     /* look at previous element */
     struct node_element *i = l->prev;
 
+    /* init the node j for our loop */
+    struct node_element *j = l;
+
+    strncpy(pivot_sha512, h->sha512, 129);
+
     /* walk through the left of the list */
-    for (struct node_element *j = l; j != h; j = j->next) {
+    for ( ; j != h; j = j->next) {
 
         if ( strncmp(j->sha512, pivot_sha512, 128) < 0 ) {
-
-        /* if ( (j->num_dat) <= x) { */
             /* move to next node if we can */
             i = ( (i == NULL) ? l : i->next );
             if ( i != j ) swap_data(&i,&j);
-            /* switch_around(&(i->num_dat), &(j->num_dat)); */
         }
     }
 
     /* again move to the next node if we can */
     i = ( (i == NULL) ? l : i->next );
-    /* switch_around(&(i->num_dat), &(h->num_dat)); */
     if ( i != h ) swap_data(&i,&h);
     return i;
 }
@@ -145,7 +157,7 @@ void push(struct node_element **head_of_list, char *line_data) {
     size_t j;
     struct node_element *new_node = (struct node_element *)calloc(1, sizeof(struct node_element ));
     if ( new_node == NULL ) {
-        /* really? */
+        /* really? a memory fault? */
         if ( errno == ENOMEM ) {
             fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
                     __FILE__, __LINE__ );
@@ -168,6 +180,7 @@ void push(struct node_element **head_of_list, char *line_data) {
     /* we need enough room for the filename minus the sha512 hash string */
     new_node->filename=calloc(strlen(line_data) - j, sizeof(unsigned char));
     if ( new_node->filename == NULL ) {
+        /* really? a memory fault? */
         if ( errno == ENOMEM ) {
             fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
                     __FILE__, __LINE__ );
@@ -209,6 +222,31 @@ int main(int argc, char **argv) {
     int status;
     size_t q, p;
 
+    /* we need enough room for the SHA512 hash string as well
+     * as the entire filename and then intermediate space or
+     * two spaces and a terminating nul char
+     *
+     * n.b.: most compilers will optimize the next line
+     *        into just being a memset */
+    char cat_line[ _POSIX_PATH_MAX + 128 + 3 ] = {0};
+
+    /* we will need a file pointer */
+    FILE *cat_file;
+
+    char *cat_fid = calloc(q+1,sizeof(unsigned char));
+    if ( cat_fid == NULL ) {
+        /* really? a memory fault? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        exit(EXIT_FAILURE);
+    }
+
     setlocale (LC_ALL, "POSIX");
     sysinfo(VERBOSE);
 
@@ -225,19 +263,6 @@ usage:
     if ( q > _POSIX_PATH_MAX ) {
         fprintf(stderr,"FAIL  : filename is too long\n");
         goto usage;
-    }
-
-    char *cat_fid = calloc(q+1,sizeof(unsigned char));
-    if ( cat_fid == NULL ) {
-        if ( errno == ENOMEM ) {
-            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                    __FILE__, __LINE__ );
-        } else {
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                    __FILE__, __LINE__ );
-        }
-        perror("FAIL ");
-        exit(EXIT_FAILURE);
     }
 
     /* we could have just done strncpy here */
@@ -263,9 +288,9 @@ dir_name:
         goto usage;
     }
 
-    /* now we check the st_mode for a few things */
-    /* yes this conditional is verbose on purpose */
-    /* also any sequence of octal digits after a leading 0 is valid */
+    /* now we check the st_mode for a few things
+     * yes this conditional is verbose on purpose
+     * also any sequence of octal digits after a leading 0 is valid */
     printf("INFO  : status_buffer.st_mode = %o octal\n",status_buffer.st_mode);
     if ( (status_buffer.st_mode & 040000) == 040000) {
         /* S_IFDIR  0040000  directory */
@@ -281,14 +306,7 @@ dir_name:
     }
 
     printf("\n----- Read the SHA512 Catalog -----\n");
-    /* we need enough room for the SHA512 hash string as well
-     * as the entire filename and then intermediate space or
-     * two spaces and a terminating nul char
-     *
-     * n.b.: most compilers will optimize the next line
-     *        into just being a memset */
-    char cat_line[ _POSIX_PATH_MAX + 128 + 3 ] = {0};
-    FILE *cat_file = fopen(cat_fid, "r" );
+    cat_file = fopen(cat_fid, "r" );
     if (cat_file != NULL) {
         while( fgets(cat_line,sizeof(cat_line),cat_file)!= NULL) {
             fprintf(stdout,"%s",cat_line);
@@ -296,7 +314,7 @@ dir_name:
         }
         fclose(cat_file);
     } else {
-        /* TODO do a bit of handling here and provide the usual
+        /* TODO a bit of handling here and provide the usual
          * error messages etc */
         perror(cat_fid);
     }
@@ -307,6 +325,7 @@ dir_name:
     printf("\n----- After QSort -----------------\n");
     printout(foo);
 
+    /* free up all that stuff we calloc'd */
     foo = lastnode_element(foo);
     while ( (foo->prev) != NULL ) {
         free(foo->filename);
