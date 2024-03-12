@@ -1,0 +1,141 @@
+mercury$ 
+mercury$ ./xmand 16384 16384 -7.499656677246e-01  -1.210403442383e-02 8
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = mercury
+                     release = 6.1.0-17-amd64
+                     version = #1 SMP PREEMPT_DYNAMIC Debian 6.1.69-1 (2023-12-30)
+                     machine = x86_64
+                   page size = 4096
+               system memory = 16505491456
+                             = 16118644 kB
+                             = 15740 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime   49 days   12 hours   23 mins   53 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =             37 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 16384
+pthread_limit = 8
+    translate = ( -7.49965667724600049126593149e-01 , -1.21040344238300002360775309e-02 )
+      magnify = +1.63840000000000000000000000e+04
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +2.38418579101562500000000000e-07
+pixel_imag_h = +2.38418579101562500000000000e-07
+raw  [ 482  , 674  ]
+DBUG : sample space [ 471   , 362    ]
+     : vbox  [ 007 , 005 ]
+     : win_r = -7.91015625000000000000000000e-02
+     : win_j = -2.91992187500000000000000000e-01
+     : after translation
+     : r_trn   = -7.49965667724600049126593149e-01
+     : j_trn   = -1.21040344238300002360775309e-02
+     : x_prime = -7.49975323677053662407843149e-01
+     : y_prime = -1.21396780014056838298275309e-02
+     : bailout = 16384             
+     : magnify = 1.638400000000e+04
+[mand] =    22497162903 nsec   2.249716e+01 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -7.50087618827810498345343149e-01
+     : j[ 0][ 0][ 0][ 0] = -1.22259855270404494548275309e-02
+     :       mand_height =       256
+     : r[ 7][ 7][63][63] = -7.49965786933889599907843149e-01
+     : j[ 7][ 7][63][63] = -1.21041536331195510173275309e-02
+     :       mand_height =      4119
+     : r[ 8][ 8][ 0][ 0] = -7.49965548515310498345343149e-01
+     : j[ 8][ 8][ 0][ 0] = -1.21039152145404494548275309e-02
+     :       mand_height =      5149
+     : r[ 8][ 8][ 1][ 0] = -7.49965310096731396782843149e-01
+     : j[ 8][ 8][ 1][ 0] = -1.21039152145404494548275309e-02
+     :       mand_height =     13144
+     : r[ 8][ 8][32][32] = -7.49957919120779248345343149e-01
+     : j[ 8][ 8][32][32] = -1.20962858200091994548275309e-02
+     :       mand_height =      1097
+     : r[ 3][12][44][21] = -7.50031352043142529595343149e-01
+     : j[ 3][12][44][21] = -1.20378732681293166423275309e-02
+     :       mand_height =       260
+     : r[15][15][63][63] = -7.49843716621389599907843149e-01
+     : j[15][15][63][63] = -1.19820833206195510173275309e-02
+     :       mand_height =     16384
+--------------------------- full plot done -----------------------------
+click at 481 672 
+raw  [ 1396 , 890  ]
+INFO : dumper_flag = 1
+click at 1395 888 
+raw  [ 1396 , 890  ]
+INFO : file /var/tmp/dclarke/20240312020813 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    16384
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.63840000000000000000000000e+04
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -7.49965667724600049126593149e-01
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = -1.21040344238300002360775309e-02
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20240312020813 closed.
+INFO : dumper_flag = 0
+click at 1395 888 
+raw  [ 921  , 835  ]
+right click
+click at 920 833 
+raw  [ 921  , 835  ]
+right click
+
+
+
+mercury$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240312020813
+000000 00 00 10 00 00 40 00 00 00 00 00 00 00 00 d0 40
+000010 ac ff ff ff b7 ff e7 bf 39 04 00 00 00 ca 88 bf
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 ac ff ff bf b7 00 e8 bf 39 04 00 00 f0 09 89 bf
+000040 00 01 00 00 ac ff ff 3f b7 00 e8 bf 39 04 00 00
+000050 f0 09 89 bf 00 01 00 00 ac ff ff bf b6 00 e8 bf
+000060 39 04 00 00 f0 09 89 bf 00 01 00 00 ac ff ff 3f
+000070 b6 00 e8 bf 39 04 00 00 f0 09 89 bf 00 01 00 00
+000080
+mercury$ 
+mercury$ openssl dgst -sha256 -r /var/tmp/dclarke/20240312020813
+2a1cf7976c725e152f5e2def4e08f8256e346c1310a4e51369ee1ac5a99c5709 */var/tmp/dclarke/20240312020813
+mercury$ 
