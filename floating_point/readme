@@ -1,4 +1,16 @@
 
+--- minor note that just landed on my desk is that debug info
+    for gcc is best collected thus : 
+
+-std=iso9899:1990 -pedantic -pedantic-errors -m64 -O0 -g -mhard-float
+ -mno-app-regs -mflat -mhard-quad-float -mno-unaligned-doubles
+ -mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond -mcmodel=medany
+ -mmemory-model=tso -fPIC -Wl,-rpath=/usr/pkg/lib
+
+However of course the C90 is just athing to try.
+
+------------------------------------------------------------------
+
 This is just a quick look at trivial floating point problems wherein
 various machines and architectures may represent the data in very
 different ways. Also we see a total failure on a trivial addition
