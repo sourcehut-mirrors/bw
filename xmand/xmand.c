@@ -68,6 +68,8 @@
 int main(int argc, char*argv[])
 {
     pthread_t tid[MAX_THREADS]; /* array of thread IDs */
+    int pthread_err = 0;
+
     /* our display and window and graphics context */
     Display *dsp;
     Window win, win2, win3;
@@ -1145,6 +1147,8 @@ int main(int argc, char*argv[])
                  *     ( 1 || ( vbox_flag[vbox_r][vbox_j] == 0 ) )
                  * which will forever be true. Thus we grind the gears and do
                  * the thread dispatch every time.
+                 *
+                 * At this time in April 2024 we check for computation.
                  */
                 if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
                     for ( pt = 0; pt < pthread_limit; pt++ ) {
@@ -1171,9 +1175,55 @@ int main(int argc, char*argv[])
                         parm[pt]->coord_j = coord_j;
                         parm[pt]->ret_val = 0;
 
-                        pthread_create( &tid[pt], NULL, mbrot_vbox_pthread, (void *)parm[pt] );
-                        /* TODO at some point maybe check the pthread_create err status
+                        pthread_err = pthread_create(
+                                          &tid[pt], NULL,
+                                          mbrot_vbox_pthread,
+                                          (void *)parm[pt] );
+
+                        /* checking the error status of pthread_create is
+                         * academic at best.
+                         *
+                         * ERRORS :
+                         *
+                         *     EAGAIN A system-imposed limit on the number
+                         *            of threads was encountered. There are
+                         *            a number of limits that may trigger
+                         *            this error: the RLIMIT_NPROC soft
+                         *            resource limit (set via setrlimit(2)),
+                         *            which limits the number of processes
+                         *            and threads for a real user ID, was
+                         *            reached; the kernel's system-wide
+                         *            limit on the number of processes and
+                         *            threads, /proc/sys/kernel/threads-max,
+                         *            was reached (see proc(5)); or the
+                         *            max num of PIDs /proc/sys/kernel/pid_max,
+                         *            was reached (see proc(5)).
+                         *
+                         *     EINVAL Invalid settings in attr.
+                         *
+                         *     EPERM  No permission to set the scheduling
+                         *            policy and parameters specified in attr.
                          */
+                        switch(pthread_err) {
+                               case EAGAIN:
+                                   printf("pthread_create() has tossed EAGAIN\n");
+                                   exit(EAGAIN);
+                                   break;
+
+                               case EPERM:
+                                   printf("pthread_create() has tossed EPERM\n");
+                                   exit(EPERM);
+                                   break;
+                       
+                               case EINVAL:
+                                   printf("pthread_create() has tossed EINVAL\n");
+                                   exit(EINVAL);
+                                   break;
+                       
+                               default:
+                                   printf("PTHRD: create %i done\n", pt);
+                        }
+
                     }
                     /* Blocking call here to gather up all the threads */
                     for ( pt = 0; pt < pthread_limit; pt++ ) {
@@ -1226,12 +1276,24 @@ int main(int argc, char*argv[])
                             for ( q = 0; q < 3; q++ ) {
 
                                 /* coordinates of the sub-sample location */
-                                sub_pixel_real = coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)]
+                                sub_pixel_real = coord_r[
+
+                                                    array_offset(vbox_r,vbox_j,
+                                                                 mand_x_pix,mand_y_pix)
+                                                        ]
+
                                                  + ( p - 1 ) * pixel_real_width / 3.0;
 
-                                sub_pixel_imag = coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)]
+                                sub_pixel_imag = coord_j[
+                                    
+                                                    array_offset(vbox_r,vbox_j,
+                                                                 mand_x_pix,mand_y_pix)
+                                
+                                                        ]
+
                                                  - ( q - 1 ) * pixel_imag_height / 3.0;
 
+                                /* provide the Fused Multiply Add function our data */
                                 sub_pixel_mand_height = mbrot_fma(sub_pixel_real, sub_pixel_imag, mand_bail);
 
                                 if ( sub_pixel_mand_height == mand_bail ) {
@@ -1554,8 +1616,24 @@ int main(int argc, char*argv[])
                                 time(&time_now);
                                 ptm = gmtime(&time_now);
 
-                                /* TODO we need to check the calloc return value */
                                 timestamp_filename = calloc(_POSIX_PATH_MAX,sizeof(unsigned char));
+                                if ( timestamp_filename  == NULL ) {
+                                    if ( errno == ENOMEM ) {
+                                        fprintf(stderr,
+                                                "FAIL : calloc returns ENOMEM at %s:%d\n",
+                                                __FILE__, __LINE__ );
+                                    } else {
+                                        fprintf(stderr,
+                                                "FAIL : calloc fails at %s:%d\n",
+                                                __FILE__, __LINE__ );
+                                    }
+                                    perror("FAIL ");
+                                    /* NOTE : basty bail out
+                                     *        but why bother ?
+                                     *        Even Sartre would say fuk it. */
+                                    return EXIT_FAILURE;
+                                }
+
                                 filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
 
                                 /* at the moment we are not even using the error status return */
@@ -1588,6 +1666,7 @@ int main(int argc, char*argv[])
                                                     sizeof(uint32_t), num_written);
                                         printf("     : num_elements = %8i\n",num_elements);
 
+                                        /* this code is endian agnostic */
                                         if ( endian_flag == 0 ) {
                                             rotated32 = swap_four(mand_bail);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
@@ -1598,7 +1677,10 @@ int main(int argc, char*argv[])
                                                 sizeof(uint32_t), num_written);
                                         printf("     : mand_bail = %8i\n",mand_bail);
 
-                                        /* need to swap around bytes of the 8-byte floating point double */
+                                        /* need to swap around bytes of the 8-byte FP64
+                                         * and no one should look too closely at how this
+                                         * hack is done. Ha. When in doubt just move the
+                                         * bytes one at a time. Right?  */
                                         if ( endian_flag == 0 ) {
                                             rotated64 = swap_eight(*((uint64_t *)&magnify));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
@@ -1609,6 +1691,7 @@ int main(int argc, char*argv[])
                                                 sizeof(double), num_written);
                                         printf("     :        magnify = %-+32.26e\n", magnify);
 
+                                        /* yet another glorious 8-byte swap around */
                                         if ( endian_flag == 0 ) {
                                             rotated64 = swap_eight(*((uint64_t *)&real_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
@@ -1878,36 +1961,97 @@ replot:
                 /* here we loop over the vbox coords */
                 for ( vbox_j = 0; vbox_j < VBOX_IMAG_COUNT; vbox_j++ ) {
                     for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
-                        /* printf("     : vbox [ %-3i, %-3i ]\n", vbox_r, vbox_j); */
-                        /* loop over the pixels ( samples ) inside a vbox */
-                        /* grind the gears by entirely ignoring the vbox_flag
-                         * where the condition should be  ( vbox_flag[vbox_r][vbox_j] == 0 ) */
-                        if ( 1 ) {
+
+                        /* loop over the pixels ( samples ) inside a vbox
+                         * and here we may set the conditional to a trivial
+                         * "if ( 1 )" which will force us to grind the gears
+                         * by entirely ignoring the vbox_flag array.
+                         * The conditional should be
+                         *       ( vbox_flag[vbox_r][vbox_j] == 0 ) */
+                        if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
+
+                            /* get a start time value */
                             clock_gettime(CLOCK_REALTIME, &vbox_t0 );
+
+                            /* now we loop over the vbox region */
                             for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
+
+                                /* what is the lower left "ll" y coordinate? */
                                 vbox_ll_y = vbox_j * vbox_h + mand_y_pix;
+
+                                /* copy the lower left "ll" y coord into a
+                                 * complex coordinate on the imaginary axi */
                                 sample_j = vbox_ll_y;
+
                                 for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
+
+                                    /* compute the real axi coordinate of the
+                                     * lower left "ll" point on the vbox */
                                     vbox_ll_x = vbox_r * vbox_w + mand_x_pix;
+
+                                    /* copy the lower left "ll" x coord into a
+                                     * complex coordinate on the real axi */
                                     sample_r = vbox_ll_x;
 
-                                    fp_vbox(vbox_r, vbox_j, mand_x_pix, mand_y_pix, eff_width, eff_height, &coord);
+                                    /* We have two coordinate systems to deal with. */
+                                    fp_vbox(vbox_r, vbox_j,
+                                            mand_x_pix, mand_y_pix,
+                                            eff_width, eff_height, &coord);
+
+                                    /* we now have the real and imaginary complex
+                                     * coordinates before any translation */
                                     win_r = coord.r;
                                     win_j = coord.j;
 
-                                    fp_translate(win_r, win_j, magnify, real_translate, imag_translate, &coord);
+                                    /* now we do a linear translation to the point
+                                     * or sample of interest */
+                                    fp_translate(win_r, win_j,
+                                                 magnify,
+                                                 real_translate, imag_translate,
+                                                 &coord);
+
                                     x_prime = coord.r;
                                     y_prime = coord.j;
 
 
+                                    /* have we already computed this sample?
+                                     * There exists an array of boolean flags
+                                     * called "vbox_flag". They tell us if a
+                                     * given vbox region has been previously
+                                     * computed. So no need to do it again. */
                                     if ( vbox_flag[vbox_r][vbox_j] == 1 ) {
-                                        mand_height = mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)];
+
+                                        /* We already have the data in the 
+                                         * array mand_height. */
+
+                                        mand_height = mandel_val[
+
+                                            array_offset( vbox_r, vbox_j, mand_x_pix, mand_y_pix)
+
+                                                                ];
+
                                     } else {
-                                        coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = x_prime;
-                                        coord_j[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = y_prime;
-                                        /* the actual mandelbrot computation for (x_prime, y_prime) */
+
+                                        coord_r[
+                                            array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)
+                                               ] = x_prime;
+
+                                        coord_j[
+                                            array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)
+                                               ] = y_prime;
+
+                                        /* the actual computation for (x_prime, y_prime) 
+                                         * with Fused Multiply Add opcodes in the current
+                                         * architecture. Here we fukin need POWER10 baby! */
                                         mand_height = mbrot_fma(x_prime, y_prime, mand_bail);
-                                        mandel_val[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)] = mand_height;
+
+                                        /* save that into the mandel_val array */
+                                        mandel_val[
+
+                                            array_offset(    vbox_r, vbox_j,
+                                                             mand_x_pix, mand_y_pix)
+
+                                                  ] = mand_height;
                                     }
 
                                     if ( astro_flag == 1 ) {
