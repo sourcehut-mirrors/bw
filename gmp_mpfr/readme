@@ -1,10 +1,23 @@
 One may manually compile and link the example together 
 thus : 
 
-$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c
-$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o mpfr.o mpfr.c
-$ $CC $CFLAGS $CPPFLAGS -c -o timediff.o ../time_and_date/timediff.c 
-$ $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o mpfr mpfr.o gmp_mpfr_ver.o timediff.o -lgmp -lmpfr -lm 
+$ 
+$ echo $CC
+/opt/bw/gcc13/bin/gcc
+
+$ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+$ echo $CFLAGS 
+-std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -fno-fast-math -malign-double -m128bit-long-double -mstackrealign -mpreferred-stack-boundary=8 -mno-mmx -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+$ 
+
+$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o mpfr_info.o mpfr_info.c 
+$ $CC $CFLAGS $CPPFLAGS -c -o timediff.o ../time_and_date/timediff.c
+$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
+$ 
+$ $CC $CFLAGS -L/opt/bw/lib $CPPFLAGS -o mpfr_info mpfr_info.o timediff.o sysinfo.o -lgmp -lmpfr -lrt -lm 
+$ 
 
 be sure to set -D_XOPEN_SOURCE=500 on an old old Solaris machine
 also you will likely need -lrt there
@@ -65,19 +78,3 @@ digit    count
 
 time for mpfr_cont_pi() was 1800590010 nsecs
 
---------- on a Gentoo SPARC64 server ------------
-
-$ CC='/usr/bin/nice -n +19 /usr/bin/gcc'
-$ export CC
-
-$ CFLAGS='-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors -fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat -msoft-quad-float -mno-unaligned-doubles -mno-faster-structs -mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany -mmemory-model=tso'
-$ export CFLAGS 
-
-$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600'
-$ export CPPFLAGS 
- 
-$ $CC $CFLAGS $CPPFLAGS -I/usr/include -c -o mpfr_pi_e.o mpfr_pi_e.c
-$ $CC $CFLAGS $CPPFLAGS -c -o timediff.o ../time_and_date/timediff.c 
-
-$ $CC $CFLAGS $CPPFLAGS -L/usr/lib64 -o mpfr_pi_e mpfr_pi_e.o timediff.o -lm -lgmp -lmpfr 
- 

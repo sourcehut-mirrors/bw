@@ -48,11 +48,15 @@
 
 #define VERBOSE 1
 
+int sysinfo(int verbose);
+
 int
 main(int argc, char *argv[])
 {
 
     mpfr_prec_t prec;
+
+    sysinfo(VERBOSE);
 
     printf("GMP  library version : %d.%d.%d\n",
             __GNU_MP_VERSION,

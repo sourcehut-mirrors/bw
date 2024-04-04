@@ -1,30 +1,22 @@
-CC?=		/usr/bin/cc
-CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
-LOCALBASE!=	if [ -d /opt/bw ]; then     \
-			echo "/opt/bw";    \
-		else                        \
-			echo "/usr/local"; \
-		fi
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
-IDIR?=		$(LOCALBASE)/include
-LDIR?=		$(LOCALBASE)/lib
+CC?=/usr/bin/cc
+LDIR?=	/usr/local/lib
+IDIR?=	/usr/local/include
+LIBS?=	-lgmp -lmpfr
 
-LIBS=		-lm -lgmp -lmpfr
+SRCS = ../sysinfo/sysinfo.c ../time_and_date/timediff.c \
+	mpfr_info.c
 
-OBJS=		mpfr_ver.o \
-		../time_and_date/timediff.o \
-		../sysinfo/sysinfo.o
-
-.PHONY: all
-all: mpfr_ver
+OBJS = ../sysinfo/sysinfo.o ../time_and_date/timediff.o \
+	mpfr_info.o
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
 
-mpfr_ver: $(OBJS)
-	$(CC) -o mpfr_ver $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR),-enable-new-dtags $(CPPFLAGS) -L$(LDIR) $(LIBS)
+mpfr_info: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
-.PHONY: clean
 clean:
-	rm -f $(OBJS) mpfr_ver
+	rm -f $(OBJS) mpfr_info
