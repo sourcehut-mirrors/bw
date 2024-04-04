@@ -7,7 +7,97 @@ see https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm
 
 Using gmp and mpfr with dynamic variable resize as needed : 
 
-pluto$ 
+$ ./pr_mpfr_quiet 58847794414050617225093332427 64
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = esther
+                     release = 6.6.23-genunix
+                     version = #1 SMP Tue Apr  2 05:55:57 GMT 2024
+                     machine = x86_64
+                   page size = 4096
+               system memory = 16624029696
+                             = 16234404 kB
+                             = 15853 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 200809
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    1 day   23 hours   58 mins   10 secs
+-------------------------------------------------------------------
+GMP  library: 6.3.0
+MPFR library: 4.2.1       
+MPFR header : 4.2.1 (based on 4.2.1)
+            : compiled as thread safe using TLS
+            : __float128 support enabled
+            : decimal float support enabled
+            : sizeof(mpfr_prec_t) = 8
+MPFR thresholds file used at compile time src/amd/mparam.h
+
+INFO : gmp_mpfr_ver() returns mpfr_flags = 00
+
+
+We shall use 64 bits of precision.
+INFO : chars_formatted = 30
+INFO : buf = '58847794414050617227103698944'
+WARN : incorrect data on input.
+     : this is most likely caused by insufficient bits
+     : of precision to represent the data correctly.
+INFO : Input variable re-initialized with 96 bits of precision.
+INFO : perfect match on data input.
+INFO : prime_check_string is "58847794414050617225093332427"
+INFO : mpz_probab_prime_p() =        2369632 nsec
+INFO : we know for certain that input is composite.
+     : you used  2369632 nsecs to verify.
+------------------------------------------------------
+     : We shall find a factor of 58847794414050617225093332427
+Pollard Rho shall proceed with 96 bits of precision.
+------------------------------------------------------
+loop      1    count =            3 
+loop      2    count =            5 
+loop      3      try again with 128 bits of precision.
+loop      3      try again with 160 bits of precision.
+loop      3      try again with 192 bits of precision.
+loop      3    count =            9 
+loop      4    count =           17 
+loop      5    count =           33 
+loop      6    count =           65 
+loop      7    count =          129 
+loop      8    count =          257 
+loop      9    count =          513 
+loop     10    count =         1025 
+loop     11    count =         2049 
+loop     12    count =         4097 
+loop     13    count =         8193 
+loop     14    count =        16385 
+loop     15    count =        32769 
+loop     16    count =        65537 
+loop     17    count =       131073 
+loop     18    count =       262145 
+loop     19    count =       524289 
+loop     20    count =      1048577 
+loop     21    count =      2097153 
+loop     22    count =      4194305 
+loop     23    count =      8388609 
+loop     24    count =     11333255 
+DONE : used 192 bits of precision.
+     : factor of 58847794414050617225093332427 is 33366699733067
+$ 
+
+
+
+
 pluto$ /usr/bin/time -p /usr/bin/nice -n +19 ./pr_mpfr_quiet 30380786712576041780972727864881 64 32
 -------------------------------------------------------------------
                  system name = FreeBSD
@@ -585,7 +675,6 @@ sys 0.01
 Whereas a decent Xeon from five years ago does the same task in 1375.18 secs.
 
 
-pluto$ 
 pluto$ uname -apKU
 FreeBSD pluto 13.1-RELEASE-p3 FreeBSD 13.1-RELEASE-p3 GENERIC amd64 amd64 1301000 1301000
 pluto$ sysctl hw.model 

@@ -1,15 +1,16 @@
 
-CC=/opt/bw/gcc12/bin/gcc
+CC?=/usr/bin/gcc
+LDIR?=/opt/bw/lib
+IDIR?=/opt/bw/include
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
-	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+CFLAGS= -I$(IDIR) -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-builtin \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
 	-fno-fast-math -malign-double \
-	-m128bit-long-double -mlong-double-80 \
-	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+	-m128bit-long-double \
+	-mstackrealign -mpreferred-stack-boundary=8 -mno-mmx \
+	-Wl,-rpath=$(LDIR),--enable-new-dtags
 
-LDIR= /opt/bw/lib
-IDIR= /opt/bw/include
 LIBS= -lm -lgmp -lmpfr
 
 include common.mk
