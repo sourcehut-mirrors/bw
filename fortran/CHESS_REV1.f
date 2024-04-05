@@ -1,3 +1,21 @@
+C
+C
+C     SOME HACKARY WAS DONE BY DENNIS CLARKE IN APRIL 2024 AND IT
+C     STILL MAY MAKE NO SENSE WHATSOEVER.
+C
+C     ALSO THERE SEEMS TO BE SOME CONFUSION WHERE MODERN FOLKS ARE
+C     THINKING THIS SOFTWARE IS USING MODERN CHESS NOTATION.
+C
+C     *******************************************************
+C     *                                                     *
+C     *  I T    I S    N O T    D O I N G    M O D E R N    *
+C     *                                                     *
+C     *              C H E S S    N O T A T I O N           *
+C     *                                                     *
+C     *******************************************************
+C
+C
+C     ******************************************************************
       PROGRAM CHESS
       IMPLICIT INTEGER (A-Z)
       INTEGER I1,WGAME,BGAME,MOVENUM,WSQUARES
@@ -261,9 +279,8 @@ C
       CALL WNOGOOD(WSQUARES(2,1,16))
 2600  RETURN
       END
-C
-C     NOTE : this is called from way up top and I just felt like
-C     putting in a gap here and a comment. See? This is a comment.
+C 
+C     ******************************************************************
       SUBROUTINE SETUP
       IMPLICIT INTEGER (A-Z)
       INTEGER I1,WGAME,BGAME,MOVENUM,WSQUARES
@@ -300,35 +317,49 @@ C     putting in a gap here and a comment. See? This is a comment.
     3 BGAME(I)=0
       VAR=.TRUE.
       MOVENUM=1
+C     ASSUME THAT THE HUMAN PLAYER WILL MOVE FIRST AND
+C     THUS THE BOOLEAN VAR "FIRST" IS FALSE FOR THE SOFTWARE
       FIRST=.FALSE.
       CALL TELER(REPLY,3)
-      IF(REPLY.EQ.'Y'.OR.REPLY.EQ.'y')MOVENUM=0
+C     DETERMINE IF THE USER WANTS TO MOVE FIRST
+      IF(REPLY.EQ.'Y')MOVENUM=0
       IF(MOVENUM.EQ.0)FIRST=.TRUE.
+C
+C     BLANK THE BOARD WITH ZERO VALUES EVERYWHERE
       DO 4 J=1,8
       DO 4 I=1,8
-    4 BOARD(i,j)=0
+    4 BOARD(I,J)=0
+C     PLACE THE WHITE QUEENS ROOK   QR=13   AT A1
       BOARD(1,1)=13
-      BOARD(2,1)= 9
+C     PLACE THE WHITE QUEENS KNIGHT QN=9    AT B1
+      BOARD(2,1)=9
+C     PLACE THE WHITE QUEENS BISHOP QB=11   AT C1
       BOARD(3,1)=11
+C     PLACE THE WHITE QUEEN         Q=15    AT D1
       BOARD(4,1)=15
+C     THE NEXT FEW LINES SHOULD BE OBVIOUS
       BOARD(5,1)=16
       BOARD(6,1)=12
       BOARD(7,1)=10
       BOARD(8,1)=14
+C     NOW WE PLACE ALL THE WHITE PAWNS AND BLACK PAWNS
       DO 100 I=1,8
       BOARD(I,2)=I
       BOARD(I,7)=-I
+C     HERE WE PLACE ALL THE BLACK PIECES WITH A TRIVIAL NEG ONE FACTOR
+C     PAY ATTENTION TO THE ROW NUMBER 8
       BOARD(I,8)=-BOARD(I,1)
+C     THESE LINES TO THE END OF THIS SUBROUTINE ARE CONVOLUTED
       BSQUARES(2,2,I)=1
       WSQUARES(2,2,I)=1
       BSQUARES(1,1,I)=I
       BSQUARES(1,2,I)=7
       WSQUARES(1,1,I)=I
       WSQUARES(1,2,I)=2
-      BSQUARES( 1,2,I+8)=8
+      BSQUARES(1,2,I+8)=8
       WSQUARES(1,2,I+8)=1
   100 CONTINUE
-      WSQUARES( 2,2,9)=2
+      WSQUARES(2,2,9)=2
       WSQUARES(2,2,10)=2
       WSQUARES(2,2,11)=3
       WSQUARES(2,2,12)=3
@@ -336,7 +367,7 @@ C     putting in a gap here and a comment. See? This is a comment.
       WSQUARES(2,2,14)=4
       WSQUARES(2,2,15)=5
       WSQUARES(2,2,16)=6
-      BSQUARES( 2,2,9)=2
+      BSQUARES(2,2,9)=2
       BSQUARES(2,2,10)=2
       BSQUARES(2,2,11)=3
       BSQUARES(2,2,12)=3
@@ -344,22 +375,22 @@ C     putting in a gap here and a comment. See? This is a comment.
       BSQUARES(2,2,14)=4
       BSQUARES(2,2,15)=5
       BSQUARES(2,2,16)=6
-      WSQUARES( 1,1,9)= 2
-      WSQUARES(1,1,10)= 7
-      WSQUARES(1,1,11)= 3
-      WSQUARES(1,1,12)= 6
-      WSQUARES(1,1,13)= 1
-      WSQUARES(1,1,14)= 8
-      WSQUARES(1,1,15)= 4
-      WSQUARES(1,1,16)= 5
-      BSQUARES( 1,1,9)= 2
-      BSQUARES(1,1,10)= 7
+      WSQUARES(1,1,9)=2
+      WSQUARES(1,1,10)=7
+      WSQUARES(1,1,11)=3
+      WSQUARES(1,1,12)=6
+      WSQUARES(1,1,13)=1
+      WSQUARES(1,1,14)=8
+      WSQUARES(1,1,15)=4
+      WSQUARES(1,1,16)=5
+      BSQUARES(1,1,9)=2
+      BSQUARES(1,1,10)=7
       BSQUARES(1,1,11)=3
-      BSQUARES(1,1,12)= 6
-      BSQUARES(1,1,13)= 1
-      BSQUARES(1,1,14)= 8
-      BSQUARES(1,1,15)= 4
-      BSQUARES(1,1,16)= 5
+      BSQUARES(1,1,12)=6
+      BSQUARES(1,1,13)=1
+      BSQUARES(1,1,14)=8
+      BSQUARES(1,1,15)=4
+      BSQUARES(1,1,16)=5
       BKCASTLE=.TRUE.
       WKCASTLE=.TRUE.
       BQCASTLE=.TRUE.
@@ -377,14 +408,16 @@ C     putting in a gap here and a comment. See? This is a comment.
       WGAME(11)=3
       WGAME(12)=4
       WGAME(13)='K'
-         WGAME(15)=5
-         WGAME(16)=1
-         WGAME(17)=4
-         WGAME(18)=2
-         WGAME(19)=4
-         WGAME(20)=3
+      WGAME(15)=5
+      WGAME(16)=1
+      WGAME(17)=4
+      WGAME(18)=2
+      WGAME(19)=4
+      WGAME(20)=3
       RETURN
       END
+C
+C     ******************************************************************
           SUBROUTINE READB(* )
       IMPLICIT INTEGER (A-Z)
       INTEGER I1,WGAME,BGAME,MOVENUM,WSQUARES
@@ -547,6 +580,8 @@ C        CALL TELER(REPLY,2)
          IF(REPLY.EQ.'Y')RETURN 1
          RETURN 2
       END
+C
+C     ******************************************************************
       SUBROUTINE PRINT
       IMPLICIT INTEGER (A-Z)
       INTEGER I1,WGAME,BGAME,MOVENUM,WSQUARES
@@ -569,14 +604,15 @@ C        CALL TELER(REPLY,2)
       DATA HOME/' '/
       DATA REP/'<K>|','<Q>|','<R>|','<B>|','<N>|','<P>|','   |',
      X ' P |',' N |',' B |',' R |',' Q |',' K |',' : |'/
-         CALL TELEW(HOME,1)
-         CALL TELEW(TOP,37)
-      LINE=' 0 |'
+      CALL TELEW(HOME,1)
+      CALL TELEW(TOP,37)
+      IF(FIRST) LINE=' 0 |'
+      IF(.NOT.FIRST) LINE=' 9 |'
       DO 200 Q=1,8
       CALL TELEW(SEP,38)
-         I=Q
-c     PRINT BOARD UPSIDE DOWN
-         IF(.NOT.FIRST)I=9-Q
+      I=Q
+C     PRINT BOARD UPSIDE DOWN
+      IF(.NOT.FIRST)I=9-Q
       DO 100 L=1,8
       J=9-L
       T1=BOARD(J,I)
@@ -584,10 +620,13 @@ c     PRINT BOARD UPSIDE DOWN
       ITEST=I+J
       IF(ITEST.NE.2*(ITEST/2)) PIECE=7
       IF(T1.LT.0) PIECE=-BSQUARES(2,2,-T1)
-      IF(T1.GT.0) PIECE= WSQUARES( 2,2,T1)
+      IF(T1.GT.0) PIECE= WSQUARES(2,2,T1)
       LINE(4*J+1:4*J+4)=REP(PIECE)
   100 CONTINUE
-      LINE(2:2)=CHAR(ICHAR(LINE(2:2))+1)
+C     THIS NEXT LINE MAY BE THE SOURCE OF OUR CONFUSION
+      IF(FIRST) LINE(2:2)=CHAR(ICHAR(LINE(2:2))+1)
+      IF(.NOT.FIRST) LINE(2:2)=CHAR(ICHAR(LINE(2:2))-1)
+C
       LINE(38:38)=LINE(2:2)
       CALL TELEW(LINE,38)
   200 CONTINUE
@@ -595,6 +634,8 @@ c     PRINT BOARD UPSIDE DOWN
       CALL TELEW(TOP,37)
       RETURN
       END
+C
+C     ******************************************************************
       SUBROUTINE PROMOTE(T5)
       IMPLICIT INTEGER (A-Z)
       INTEGER T5
@@ -1529,44 +1570,57 @@ c        DON'T EVEN TAKE A QUEEN IF CMATE
       CALL EVAL
       RETURN
       END
-      subroutine teler (string, isize)
-c
-c     Read a string of size 'isize' from the user.
-c     Convert lower case to upper case.
-c
-      character string*(*)
-c
-      ll = len (string)
-C     write (0,*) 'In teler, isize = ', isize, ', but ll = ', ll
-      string = ' '
-      read (5,100) string(1:isize)
-  100 format (a)
-      l = LEN_TRIM(string)
-C     write (0,*) 'Got string >', string, '< with LEN_TRIM = ', l
-      do 110 i=1,l
-  110 if (string(i:i).ge.'a' .and. string(i:i).le.'z')
-     1 string(i:i) = char(ichar(string(i:i))-32)
-C     write (0,*) 'Returning string >', string, '<'
-      return
-      end
-      subroutine telew (string, isize)
-c
-c     Write a string of size 'isize' to the user.
-c
-      character string*(*)
-c
-      write (6,100) string(1:isize)
-  100 format (a)
-      return
-      end
-      subroutine telewb (string, isize)
-c
-c     Write a string of size 'isize' to the user without a trailing
-c     carriage return.
-c
-      character string*(*)
-c
-      write (6,100) string(1:isize)
-  100 format (a,$)
-      return
-      end
+C
+C     ******************************************************************
+      SUBROUTINE TELER (STRING, ISIZE)
+C
+C     READ A STRING OF SIZE 'ISIZE' FROM THE USER.
+C     CONVERT LOWER CASE TO UPPER CASE.
+C
+      CHARACTER STRING*(*)
+C
+      LL = LEN(STRING)
+C     WRITE (0,*) 'IN TELER, ISIZE = ', ISIZE, ', BUT LL = ', LL
+      STRING = ' '
+      READ (5,100) STRING(1:ISIZE)
+  100 FORMAT (A)
+      L = LEN_TRIM(STRING)
+C     WRITE (0,*) 'GOT STRING >', STRING, '< WITH LEN_TRIM = ', l
+      DO 110 I=1,L
+  110 IF ((ICHAR(STRING(I:I)).GE.ICHAR('a'))
+     X    .AND.
+     X    (ICHAR(STRING(I:I)).LE.ICHAR('z')))
+     X STRING(I:I) = CHAR(ICHAR(STRING(I:I))-32)
+C
+C     THIS NEXT LINE WAS A COMMENT
+C     ------------------------------------------------------
+      WRITE (0,*) 'RETURNING STRING >', STRING, '<'
+C     ------------------------------------------------------
+      RETURN
+      END
+C
+C     ******************************************************************
+      SUBROUTINE TELEW (STRING, ISIZE)
+C
+C     WRITE A STRING OF SIZE 'ISIZE' TO THE USER.
+C
+      CHARACTER STRING*(*)
+C
+      WRITE (6,100) STRING(1:ISIZE)
+  100 FORMAT (A)
+      RETURN
+      END
+C
+C     ******************************************************************
+      SUBROUTINE TELEWB (STRING, ISIZE)
+C
+C     WRITE A STRING OF SIZE 'ISIZE' TO THE USER WITHOUT A TRAILING
+C     CARRIAGE RETURN.
+C
+      CHARACTER STRING*(*)
+C
+      WRITE (6,100) STRING(1:ISIZE)
+  100 FORMAT (A,$)
+      RETURN
+      END
+C     ******************************************************************
