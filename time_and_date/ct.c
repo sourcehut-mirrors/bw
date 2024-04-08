@@ -1,8 +1,8 @@
 /*
- * ct.c    report the date for a give UNIX time expressed in secs
+ * ct.c    report the date for a given UNIX time expressed in secs
  *         since 1 Jan 1970 00:00:00. This was likely written in
  *         the 1990s but the memory of such things has been lost
- *         in backup tapes in cardboard boxes.
+ *         in backup tapes left in a dark closet somewhere.
  *
  * ------------------------------------------------------------------
  * Copyright (c) 1996 Dennis Clarke
@@ -116,6 +116,24 @@ main(int argc, char **argv)
      * However I fail to see the use for such a thing.
      *   time_tv.tv_nsec = (argc == 3 ) ?
      *            strtol(argv[2], (char **)NULL, 10) : 0; 
+     *
+     * NOTE : the timezone information is not printed.
+     *
+     * We need to consult strftime(3) and perhaps set the
+     * current TZ env var to "GMT0" or "UTC".
+     *
+     * Examples :
+     * $ date -u
+     * Mon Apr  8 10:20:32 UTC 2024
+     *
+     * $ date -u "+%a %b %e %H:%M:%S %Y"
+     * Mon Apr  8 10:21:52 2024
+     *
+     * $ date -u "+%a %b %e %H:%M:%S %Z %Y"
+     * Mon Apr  8 10:22:00 UTC 2024
+     * 
+     * $ date -u "+%a %b %e %H:%M:%S %Z %Y"
+     * Mon Apr  8 10:22:24 UTC 2024
      */
     time_tv.tv_nsec = 0;
     c_time_string = ctime(&time_tv.tv_sec);
