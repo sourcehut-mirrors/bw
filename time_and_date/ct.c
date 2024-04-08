@@ -40,6 +40,11 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *
+ *
+ * HOWEVER THIS CODE WAS WRITTEN SOMEWHERE IN THE EARLY 1990's
+ * AND THEREFORE JUST USE -std=iso9899:1990 AND 
+ *                 #define _XOPEN_SOURCE 500
+ *
  *******************************************************************/
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
@@ -122,7 +127,7 @@ main(int argc, char **argv)
      * We need to consult strftime(3) and perhaps set the
      * current TZ env var to "GMT0" or "UTC".
      *
-     * Examples :
+     * Examples : with TZ=GMT0
      * $ date -u
      * Mon Apr  8 10:20:32 UTC 2024
      *
@@ -131,9 +136,6 @@ main(int argc, char **argv)
      *
      * $ date -u "+%a %b %e %H:%M:%S %Z %Y"
      * Mon Apr  8 10:22:00 UTC 2024
-     * 
-     * $ date -u "+%a %b %e %H:%M:%S %Z %Y"
-     * Mon Apr  8 10:22:24 UTC 2024
      */
     time_tv.tv_nsec = 0;
     c_time_string = ctime(&time_tv.tv_sec);
