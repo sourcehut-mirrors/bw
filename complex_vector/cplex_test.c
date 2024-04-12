@@ -242,6 +242,19 @@ int main (int argc, char **argv)
     printf("root : 2 = ( %16.12e, %16.12e )\n", opr2[1].r, opr2[1].i);
     printf("root : 3 = ( %16.12e, %16.12e )\n", opr2[2].r, opr2[2].i);
 
+    /* cube root of 2 */
+    op1.r = 2.0; op1.i = 0.0;
+    printf("\n********** trivial cube root test  of ( 2, 0 ) *******\n");
+    printf("     : op1 = ( %g, %g )\n", op1.r, op1.i);
+    printf("     :     theta = %16.12e\n", cplex_theta(&op1) );
+    printf("     :     magnitude is %g\n", cplex_mag(&op1));
+
+    cplex_cbrt(opr2, &op1);
+
+    printf("root : 1 = ( %16.12e, %16.12e )\n", opr2[0].r, opr2[0].i);
+    printf("root : 2 = ( %16.12e, %16.12e )\n", opr2[1].r, opr2[1].i);
+    printf("root : 3 = ( %16.12e, %16.12e )\n", opr2[2].r, opr2[2].i);
+
     /* cube root of 27 */
     op1.r = 27.0; op1.i = 0.0;
     printf("\n********** trivial cube root test  of ( 27, 0 ) *******\n");

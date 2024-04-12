@@ -229,23 +229,10 @@ int main(int argc, char **argv) {
      * n.b.: most compilers will optimize the next line
      *        into just being a memset */
     char cat_line[ _POSIX_PATH_MAX + 128 + 3 ] = {0};
+    char *cat_fid;
 
     /* we will need a file pointer */
     FILE *cat_file;
-
-    char *cat_fid = calloc(q+1,sizeof(unsigned char));
-    if ( cat_fid == NULL ) {
-        /* really? a memory fault? */
-        if ( errno == ENOMEM ) {
-            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                    __FILE__, __LINE__ );
-        } else {
-            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                    __FILE__, __LINE__ );
-        }
-        perror("FAIL ");
-        exit(EXIT_FAILURE);
-    }
 
     setlocale (LC_ALL, "POSIX");
     sysinfo(VERBOSE);
@@ -259,10 +246,29 @@ usage:
     q = strlen(argv[1]);
     /* if q > 240 or so then we have a major problem. The path is
      * too long. Or check for _POSIX_PATH_MAX for example.
+     *
+     * It may be of value to strip double forward slash
+     * chars as well as leading and trailing white space.
+     *
+     * That would be really pedantic and picky.
      */
     if ( q > _POSIX_PATH_MAX ) {
         fprintf(stderr,"FAIL  : filename is too long\n");
         goto usage;
+    }
+
+    cat_fid = calloc(q+1,sizeof(unsigned char));
+    if ( cat_fid == NULL ) {
+        /* really? a memory fault? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        exit(EXIT_FAILURE);
     }
 
     /* we could have just done strncpy here */
@@ -310,6 +316,7 @@ dir_name:
     if (cat_file != NULL) {
         while( fgets(cat_line,sizeof(cat_line),cat_file)!= NULL) {
             fprintf(stdout,"%s",cat_line);
+            /* It may be reasonable to syntax check the SHA512 hash */
             push(&foo, cat_line);
         }
         fclose(cat_file);
