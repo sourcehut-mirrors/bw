@@ -71,7 +71,10 @@ int main(int argc, char *argv[])
     struct timespec t0, t1;
     uint64_t delta_t;
 
+    char format_buf[64] = "";
+
     setlocale( LC_ALL, "C" );
+
     sysinfo(VERBOSE);
 
     printf("GMP  library version : %d.%d.%d\n",
@@ -149,13 +152,25 @@ int main(int argc, char *argv[])
         prec = 113;
     }
 
-    printf("INFO : using %li bits of precision.\n", (long)prec );
-    printf("-------------------------------------------------------------\n");
-
     mpfr_inits2( prec, pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
                  atan_pi4_mpfr, third_mpfr, half_mpfr,
                  atan_half_mpfr, atan_third_mpfr, delta_mpfr,
                  sum_mpfr, (mpfr_ptr*)0 );
+
+    decimal_prec = mpfr_get_str_ndigits(10, prec);
+    printf("INFO : using %li bits of precision ", (long)prec );
+    printf("and %i decimal digits.\n", decimal_prec);
+
+    /* Create MPFR format buffer string with the correct number
+     * of decimal digits. NOTE there is not a newline char.
+     *
+     * NOTE : the use of the asterisk inside the format string seems
+     *        to imply that we need to specify the rounding method
+     *        thus :  mpfr_printf(format_buf, MPFR_RNDN, foo);
+     */
+    sprintf(format_buf,"%%.%iR*f", decimal_prec);
+
+    printf("-------------------------------------------------------------\n");
 
     inex = mpfr_set_flt(one_mpfr, 1.0, MPFR_RNDN);
     inex = mpfr_div_si(half_mpfr, one_mpfr, 2, MPFR_RNDN);
@@ -175,7 +190,9 @@ int main(int argc, char *argv[])
     inex = mpfr_atan(atan_pi4_mpfr, one_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    mpfr_printf ("atan(1)   %.Re\n", atan_pi4_mpfr );
+    printf ("atan(1)   ");
+    mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
+    /* mpfr_printf ("atan(1)   %.Re\n", atan_pi4_mpfr ); */
     printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
 
     /* compute atan(1/2) */
