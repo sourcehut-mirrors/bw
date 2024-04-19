@@ -1,5 +1,5 @@
 
-CC=/opt/bw/gcc13/bin/gcc
+CC=/usr/bin/gcc
 
 CFLAGS=-std=iso9899:1999 -pedantic -pedantic-errors \
 	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \

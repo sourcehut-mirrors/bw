@@ -58,7 +58,7 @@
 #define MAX_PREC 8192
 
 int mpfr_check_flags(int status, int debug_flag);
-size_t gmp_mpfr_ver(int *mpfr_flags);
+int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
 uint64_t timediff( struct timespec start_time,
                    struct timespec end_time );
@@ -127,6 +127,7 @@ int main (int argc, char *argv[])
     int input_attempt_loop = 0;
 
     int mpfr_flags = 0;
+    int status = 0;
     size_t mpfr_precision_size = 0;
 
     setlocale(LC_ALL, "C");
@@ -135,7 +136,11 @@ int main (int argc, char *argv[])
     int prime_check_reps, prime_check_test;
     mpz_t prime_check_input;
 
-    mpfr_precision_size = gmp_mpfr_ver(&mpfr_flags);
+    mpfr_precision_size = gmp_mpfr_ver(&status, &mpfr_flags);
+    if ( status == 999 ) {
+        printf("FAIL : gmp_mpfr_ver() returns nein nein nein!\n");
+        return EXIT_FAILURE;
+    }
 
     printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n\n", mpfr_flags);
 

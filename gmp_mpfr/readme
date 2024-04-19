@@ -1,25 +1,23 @@
 One may manually compile and link the example together 
 thus : 
 
-$ 
+$ uname -a 
+NetBSD io.bw.genunix.com 10.0 NetBSD 10.0 (GENERIC) #0: Thu Mar 28 08:33:33 UTC 2024  mkrepro@mkrepro.NetBSD.org:/usr/src/sys/arch/amd64/compile/GENERIC amd64
 $ echo $CC
-/opt/bw/gcc13/bin/gcc
-
+/usr/bin/gcc
+$ echo $CFLAGS
+-std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -march=k8 -mtune=k8 -fno-builtin -malign-double -fno-fast-math -fomit-frame-pointer -fstrict-aliasing -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 $ echo $CPPFLAGS
 -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+$
+$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o mpfr.o mpfr.c
+$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
+$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o timediff.o ../time_and_date/timediff.c
+$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c
+$ $CC $CFLAGS -L/opt/bw/lib $CPPFLAGS -o mpfr mpfr.o gmp_mpfr_ver.o timediff.o sysinfo.o -lgmp -lmpfr -lm
+$
 
-$ echo $CFLAGS 
--std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -fno-fast-math -malign-double -m128bit-long-double -mstackrealign -mpreferred-stack-boundary=8 -mno-mmx -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
-$ 
-
-$ $CC $CFLAGS -I/opt/bw/include $CPPFLAGS -c -o mpfr_info.o mpfr_info.c 
-$ $CC $CFLAGS $CPPFLAGS -c -o timediff.o ../time_and_date/timediff.c
-$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
-$ 
-$ $CC $CFLAGS -L/opt/bw/lib $CPPFLAGS -o mpfr_info mpfr_info.o timediff.o sysinfo.o -lgmp -lmpfr -lrt -lm 
-$ 
-
-be sure to set -D_XOPEN_SOURCE=500 on an old old Solaris machine
+Be sure to set -D_XOPEN_SOURCE=500 on an old old Solaris machine
 also you will likely need -lrt there
 ---------------------------------------------------------
 

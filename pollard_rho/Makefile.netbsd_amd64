@@ -4,7 +4,7 @@
 # and mpfr likely exist there also. Good luck.
 # Dennis Clarke  9 Jan 2023
 
-CC=/opt/bw/gcc12/bin/gcc
+CC=/usr/bin/gcc
 
 CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
 	-pedantic -pedantic-errors \

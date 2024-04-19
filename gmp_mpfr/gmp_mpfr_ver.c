@@ -125,6 +125,7 @@ gmp_mpfr_ver(int *status, int *mpfr_flags)
 
     errno = 0;
     if (mpfr_flags == NULL) {
+        /* calloc() ensures that we get *mpfr_flags == 0 */
         mpfr_flags = calloc(1, sizeof(int));
         if ( mpfr_flags == NULL ) {
             /* possible ENOMEM? */
@@ -147,9 +148,6 @@ gmp_mpfr_ver(int *status, int *mpfr_flags)
             /* NOTE : this is nasty */
             return ret_val;
         }
-    } else {
-        /* not really needed given that we used calloc() */
-        *mpfr_flags = 0;
     }
 
     if (mpfr_buildopt_tls_p()!=0) {
