@@ -1,0 +1,23 @@
+
+This is wrong behavior on a FreeBSD 15-CURRENT system with the
+system LLVM/Clang : 
+
+$ 
+$ 
+$ $CC -std=iso9899:1990 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=500 -o c90 c90_or_c99.c
+$ 
+$ ./c90 0x10
+It's a float with value 16
+
+For the record we were returned 0
+$ 
+$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -o c99 c90_or_c99.c
+$ 
+$ ./c99 0x10
+It's a float with value 16
+
+For the record we were returned 0
+$ 
+
+----------------------------------------------------------
+
