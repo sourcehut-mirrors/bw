@@ -1,0 +1,71 @@
+
+
+C90 clean code that seems to do exactly what is needed on
+just about any system : 
+
+hubble $ 
+hubble $ pwd
+/export/home/dclarke/pgm/floating_point
+hubble $ /opt/developerstudio12.6/bin/cc -std=iso9899:1990 -m64 \
+> -xarch=sparc -g -mc -xs -errfmt=error -erroff=%none -errshort=full \
+> -errtags=yes -errwarn=%none -ftrap=%none -xbuiltin=%none \
+> -xildoff -xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s \
+> -xnolibmil -xunroll=1 -xregs=no%appl -xdebugformat=dwarf \
+> -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=500 \
+> -o fp64_dump fp64_dump.c 
+ld: warning: option -Q appears more than once, first setting taken
+hubble $ 
+hubble $ ./fp64_dump
+eight_byte[0] = 0
+eight_byte[1] = 0
+eight_byte[2] = 0
+eight_byte[3] = 1
+
+little_endian = eight_byte[0] = 0
+
+addr ffffffff7ffff720  : 40 09 21 fb 54 44 2d 18
+hubble $ 
+hubble $ pwd
+/export/home/dclarke/pgm/floating_point
+hubble $ uname -a 
+SunOS hubble 5.10 Generic_150400-67 sun4u sparc SUNW,SPARC-Enterprise
+hubble $ 
+hubble $ cc -#
+### cc: Note: NLSPATH = /opt/developerstudio12.6/bin/../lib/locale/%L/LC_MESSAGES/%N.cat:/opt/developerstudio12.6/bin/../../lib/locale/%L/LC_MESSAGES/%N.cat
+###     command line files and options (expanded):
+### -#
+usage: cc [ options ] files.  Use 'cc -flags' for details
+hubble $ 
+hubble $ cc -V
+cc: Studio 12.6 Sun C 5.15 SunOS_sparc 2017/05/30
+hubble $ 
+
+
+
+xad$ 
+xad$ uname -a 
+Linux xad 6.6.9-powerpc64 #1 SMP Debian 6.6.9-1 (2024-01-01) ppc64 GNU/Linux
+
+
+xad$ 
+xad$ echo $CC
+/usr/bin/gcc
+xad$ echo $CFLAGS
+-std=iso9899:1990 -pedantic -pedantic-errors -g -O0 -m64 -fno-builtin -mcpu=970 -mpowerpc64 -mno-altivec -msecure-plt -mno-vsx -mno-quad-memory -mno-float128 -mhard-float -mno-float128-hardware -mno-avoid-indexed-addresses -mno-isel -mno-crypto -mno-htm -mno-quad-memory-atomic -mno-multiple -mupdate -mno-avoid-indexed-addresses -mregnames -mno-recip -fno-unsafe-math-optimizations -fno-fast-math -mbig -mno-fp-in-toc -mno-sum-in-toc -ffp-contract=off
+xad$ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=500
+xad$ 
+
+xad$ ./fp64_dump
+eight_byte[0] = 0
+eight_byte[1] = 0
+eight_byte[2] = 0
+eight_byte[3] = 1
+
+little_endian = eight_byte[0] = 0
+
+addr 0x7ffffe11e7b8  : 40 09 21 fb 54 44 2d 18
+xad$ 
+
+
+
