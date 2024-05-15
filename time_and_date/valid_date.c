@@ -2,40 +2,33 @@
  * valid_date.c  Does what it says on the tin. Checks if the date
  *               provided actually exists.
  *
- * Copyright 2020 Dennis Clarke
+ * ------------------------------------------------------------------
+ * Copyright (c) 1999 Dennis Clarke
  *
- * To the extent possible under law, the authors have waived
- * all copyright and related or neighboring rights to this file.
- * This work is published from: United States, Canada.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
-/*********************************************************************
- * The Open Group Base Specifications Issue 6
- * IEEE Std 1003.1, 2004 Edition
- *
- *    An XSI-conforming application should ensure that the feature
- *    test macro _XOPEN_SOURCE is defined with the value 600 before
- *    inclusion of any header. This is needed to enable the
- *    functionality described in The _POSIX_C_SOURCE Feature Test
- *    Macro and in addition to enable the XSI extension.
- *
- *********************************************************************/
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 500
 
 int valid_date ( int day, int month, int year )
 {
@@ -46,15 +39,17 @@ int valid_date ( int day, int month, int year )
                               31, 31, 30, 31, 30, 31 };
 
     /* check for bad data */
-    if ( ( day < 1 ) || ( day > 31 ) )
+    if ( ( day < 1 ) || ( day > 31 ) ) {
         return ( -1 );
+    }
 
-    if ( ( month < 1 ) || ( month > 12 ) )
+    if ( ( month < 1 ) || ( month > 12 ) ) {
         return ( -1 );
+    }
 
-    if ( ( year < 1800 ) || ( year > 2038 ) )
+    if ( ( year < 1752 ) || ( year > 2038 ) ) {
         return ( -1 );
-
+    }
 
     /* Any year that is evenly divisible by 4 is a leap year
      *
@@ -63,9 +58,27 @@ int valid_date ( int day, int month, int year )
      * calendar stipulates that a year that is evenly divisible
      * by 100 (for example, 1900) is a leap year only if it
      * is also evenly divisible by 400.
-     *
-     * Also there exists the strange and historically correct
-     * month of September in the year 1752 : 
+     */
+
+    if ( month == 2 ) {
+        if (    ( ( year%4 == 0 ) && ( ( year%100 ) > 0 ) )
+             || ( year%400 == 0 ) ) {
+
+            /* leap year */
+            days_in_month[1] = 29;
+
+        }
+    }
+
+    /* we may still have bad data for February */
+    if ( day > days_in_month[month-1] ) {
+        /* I really do not recall how this can happen */
+        return 0;
+    }
+
+    /* For the sake of being really pedantic there exists
+     * a strange and historically correct month of September
+     * in the year 1752 : 
      *
      *                   September 1752
      *                 S  M Tu  W Th  F  S
@@ -73,18 +86,13 @@ int valid_date ( int day, int month, int year )
      *                18 19 20 21 22 23 24
      *                25 26 27 28 29 30
      */
-
-    if ( month == 2 )
-        if (    ( ( year%4 == 0 ) && ( ( year%100 ) > 0 ) )
-             || ( year%400 == 0 ) )
-            days_in_month[1] = 29;
-
-    /* we may still have bad data for February */
-    if ( day > days_in_month[month-1] )
-        return ( 0 );
+    if ( ( year == 1752 ) && ( month == 9 )
+           && ( day > 2 ) && ( day < 14 ) ) {
+        return 0;
+    }
 
     /* If we arrive here then we have a valid date */
-    return ( 1 );
+    return 1;
 
 }
 

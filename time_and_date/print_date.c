@@ -1,40 +1,34 @@
 
 /*
  * print_date.c  pretty print a date
- * Copyright 2020 Dennis Clarke
  *
- * To the extent possible under law, the authors have waived
- * all copyright and related or neighboring rights to this file.
- * This work is published from: United States, Canada.
+ * ------------------------------------------------------------------
+ * Copyright (c) 1999 Dennis Clarke
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
-/*********************************************************************
- * The Open Group Base Specifications Issue 6
- * IEEE Std 1003.1, 2004 Edition
- *
- *    An XSI-conforming application should ensure that the feature
- *    test macro _XOPEN_SOURCE is defined with the value 600 before
- *    inclusion of any header. This is needed to enable the
- *    functionality described in The _POSIX_C_SOURCE Feature Test
- *    Macro and in addition to enable the XSI extension.
- *
- *********************************************************************/
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 500
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,10 +37,10 @@
 size_t print_date( int day, int month, int year )
 {
 
-    /* lets make the assumption that the date is already
-     * checked to be valid */
-
-    /*
+    /* Make the assumption that the date is valid.
+     *
+     * Also worth knowing :
+     *
      *  size_t strftime(char *s, size_t max, const char *format,
      *                 const struct tm *tm);
      *
@@ -69,11 +63,15 @@ size_t print_date( int day, int month, int year )
      *  long    tm_gmtoff;      * offset from UTC in seconds
      *  char    *tm_zone;       * timezone abbreviation
      * };
+     *
+     * We should note that the env vars related to locale are
+     * of great importance here.
      */
 
     size_t n;
     char buffer[128] = "";
 
+    /* why use the heap ? ... I do not recall */
     struct tm *e_time = calloc( (size_t) 1, sizeof(struct tm) );
 
     (*e_time).tm_year = year - 1900;

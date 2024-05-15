@@ -1,21 +1,19 @@
 CC?=		/usr/bin/cc
 
-CFLAGS=		-std=iso9899:1999 -m64 -g -O0 \
+CFLAGS=		-std=iso9899:1990 -m64 -g -O0 \
 		-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
 		-Weverything -Wno-reserved-id-macro -Wno-unused-macros
 
 CPPFLAGS=	-D_LARGEFILE64_SOURCE \
-		-D_XOPEN_SOURCE=600
+		-D_XOPEN_SOURCE=500
 
-LIBS=		-lrt
-
-OBJS=		date_list.o print_date.o timediff.o valid_date.o
+OBJS=		date_list.o print_date.o valid_date.o
 
 .PHONY: all
 all: date_list
 
 date_list: $(OBJS)
-	$(CC) -o date_list $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+	$(CC) -o date_list $(OBJS) $(CFLAGS) $(CPPFLAGS)
 
 .PHONY: clean
 clean:
