@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         return(EXIT_FAILURE);
     }
 
-    for ( year = 1752; year < 1753; year++ ) {
+    for ( year = 1952; year < 1953; year++ ) {
         for ( month = 1; month < 13; month++ ) {
             for ( day = 1; day < 32; day++ ) {
 

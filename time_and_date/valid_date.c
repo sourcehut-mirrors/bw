@@ -2,6 +2,8 @@
  * valid_date.c  Does what it says on the tin. Checks if the date
  *               provided actually exists.
  *
+ *             RETURN : 1 if valid and 0 otherwise
+ *
  * ------------------------------------------------------------------
  * Copyright (c) 1999 Dennis Clarke
  *
@@ -40,15 +42,15 @@ int valid_date ( int day, int month, int year )
 
     /* check for bad data */
     if ( ( day < 1 ) || ( day > 31 ) ) {
-        return ( -1 );
+        return 0;
     }
 
     if ( ( month < 1 ) || ( month > 12 ) ) {
-        return ( -1 );
+        return 0;
     }
 
     if ( ( year < 1752 ) || ( year > 2038 ) ) {
-        return ( -1 );
+        return 0;
     }
 
     /* Any year that is evenly divisible by 4 is a leap year
