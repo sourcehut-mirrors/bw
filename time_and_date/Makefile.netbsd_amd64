@@ -1,0 +1,31 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-builtin \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
+	-fno-fast-math -malign-double \
+	-m128bit-long-double \
+	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+	-fPIC -Wl,-rpath=/usr/pkg/lib \
+	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
+
+IDIR=/usr/pkg/include -I/usr/X11R7/include
+LDIR=/usr/pkg/lib -L/usr/X11R7/lib
+LIBS=-lX11 -lrt -lm -lpthread
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=500
+
+SRCS = date_list.c print_date.c valid_date.c
+
+OBJS = ${SRCS:.c=.o}
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+date_list: $(OBJS)
+	$(CC) -o date_list $(OBJS) $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) date_list
