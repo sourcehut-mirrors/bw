@@ -1,14 +1,19 @@
 
-CC=/opt/developerstudio12.6/bin/c99
+CC=/opt/developerstudio12.6/bin/cc
 
-CFLAGS= -Xc -g -errfmt=error -erroff=%none \
-	-xmemalign=8s -errshort=full -xstrconst -xildoff -m64 -xnolibmil \
-	-xcode=pic32 -xregs=no%appl -xlibmieee -ftrap=%none -xarch=sparc -mc \
-	-xs -xbuiltin=%none -xdebugformat=dwarf -xunroll=1
+CFLAGS= -std=iso9899:1999 -m64 -xarch=sparc -g -xO0 -mc -xs \
+	-errfmt=error -erroff=%none -errshort=full -errtags=yes \
+	-errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff \
+	-xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s \
+	-xnolibmil -xunroll=1 -xdepend -xregs=no%appl \
+	-xdebugformat=dwarf
 
-LDIR=/opt/bw/lib
-IDIR=/opt/bw/include
-RPATH=/opt/bw/lib
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_TS_ERRNO -D_XOPEN_SOURCE=600
+
+LIBS= -lm -lrt
+IDIR= ../../stat_test
+LDIR= /opt/bw/lib
 
 include common.mk
 

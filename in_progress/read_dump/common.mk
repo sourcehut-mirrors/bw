@@ -3,7 +3,7 @@ CC?=	/usr/bin/cc
 
 CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
-LIBS=		-lm
+LIBS?=		-lm
 
 LDIR?=		/usr/local/lib
 IDIR?=		../../stat_test
