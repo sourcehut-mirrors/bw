@@ -241,12 +241,11 @@ int main(int argc, char **argv)
 
     printf("atan(1)   ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
-    printf("\n");
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     /* compute atan(1/2) */
@@ -259,9 +258,9 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, atan_half_mpfr);
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     /* compute atan(1/3) */
@@ -274,9 +273,9 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, atan_third_mpfr);
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     /* sum atan(1/2) + atan(1/3) */
@@ -288,9 +287,9 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, sum_mpfr);
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     /* check delta on atan(1) and ( atan(1/2) + atan(1/3) ) */
@@ -312,9 +311,9 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, pi_mpfr );
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     /* Eulers Number e */
@@ -326,9 +325,9 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, e_mpfr);
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     /* multiply atan(1) * 4 */
@@ -340,9 +339,9 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi_mpfr);
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-    printf("delta t = %" PRIu64 " nsecs\n\n", delta_t);
+    printf("\ndelta t = %" PRIu64 " nsecs\n\n", delta_t);
 #else
-    printf("delta t = %llu nsecs\n\n", delta_t);
+    printf("\ndelta t = %llu nsecs\n\n", delta_t);
 #endif
 
     inex = mpfr_sub(delta_mpfr, pi_mpfr, atan_pi_mpfr, MPFR_RNDN);
