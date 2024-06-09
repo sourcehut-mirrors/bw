@@ -1,0 +1,17 @@
+
+
+What you may see if you ask for a silly high percentage of
+heads in the results. Also yeah yeah I did compile with a
+stack of GCC compiler flags that disables all optimizations
+and also all inline internal "builtin" magic that GCC will
+often do. 
+
+oberon$ /opt/bw/gcc14/bin/gcc -std=iso9899:1999 -pedantic \
+-pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 \
+-mieee-fp -mhard-float -fno-fast-math -mno-fancy-math-387 \
+-malign-double -m128bit-long-double -mstackrealign \
+-mpreferred-stack-boundary=8 -ffp-contract=off -fno-inline \
+-fno-early-inlining -fmath-errno \
+-fno-unsafe-math-optimizations -o coin_flip coin_flip.c 
+
+
