@@ -6,6 +6,7 @@ stack of GCC compiler flags that disables all optimizations
 and also all inline internal "builtin" magic that GCC will
 often do. 
 
+This is a silly way to compile for x86_64 :
 oberon$ /opt/bw/gcc14/bin/gcc -std=iso9899:1999 -pedantic \
 -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 \
 -mieee-fp -mhard-float -fno-fast-math -mno-fancy-math-387 \
@@ -14,4 +15,31 @@ oberon$ /opt/bw/gcc14/bin/gcc -std=iso9899:1999 -pedantic \
 -fno-early-inlining -fmath-errno \
 -fno-unsafe-math-optimizations -o coin_flip coin_flip.c 
 
+
+For the sake of something silly we can look at an old Sun SPARCv9
+server : 
+
+sphinx$ 
+sphinx$ uname -a 
+Linux sphinx 5.15.88-gentoo-sparc64 #1 Sun Mar 12 18:36:19 GMT 2023 sparc64 sun4u TI UltraSparc IIi (Sabre) GNU/Linux
+sphinx$ 
+sphinx$ which gcc
+/usr/bin/gcc
+sphinx$ 
+sphinx$ gcc --version
+gcc (Gentoo 13.2.1_p20240210 p14) 13.2.1 20240210
+Copyright (C) 2023 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+sphinx$ 
+sphinx$ gcc -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+> -fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat \
+> -msoft-quad-float -mno-unaligned-doubles -mno-faster-structs \
+> -mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
+> -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany \
+> -mmemory-model=tso -fPIC -Wl,-rpath=/usr/lib64 \
+> -Wl,-rpath=/usr/lib64 -Wl,-pie \
+> -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -o coin_flip coin_flip.c 
+sphinx$ 
 
