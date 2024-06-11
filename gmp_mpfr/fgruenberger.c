@@ -52,7 +52,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <time.h>
 
 #include "gmp.h"
 #include "tdiff.h"

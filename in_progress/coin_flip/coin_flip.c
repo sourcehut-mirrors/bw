@@ -37,28 +37,26 @@
  * ------------------------------------------------------------------
  */
 
-/*********************************************************************
- * The Open Group Base Specifications Issue 6
- * IEEE Std 1003.1, 2004 Edition
- *
- *    An XSI-conforming application should ensure that the feature
- *    test macro _XOPEN_SOURCE is defined with the value 600 before
- *    inclusion of any header. This is needed to enable the
- *    functionality described in The _POSIX_C_SOURCE Feature Test
- *    Macro and in addition to enable the XSI extension.
- *
- *********************************************************************/
 #if ! defined (_XOPEN_SOURCE)
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 500
 #endif
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 #include <math.h>
 #include <inttypes.h>
 #include <time.h>
 
+/* timestamp delta */
+#include "tdiff.h"
+
 #define LIMIT 70
+#define VERBOSE 1
+#define LOOP_LIMIT 17179869184L;
+
+int sysinfo(int verbose);
 
 int
 main ( int argc, char **argv )
@@ -80,35 +78,82 @@ main ( int argc, char **argv )
     int max_tails_when;
     int this_flip;
     int limit = LIMIT;
+    long candidate_int;
     int64_t loop_up = 0;
     int64_t loop_last = -1;
-    /* stop the fray if we are past 2^34 loops */
-    uint64_t loop_limit = 17179869184L;
     int bit_shift = 1;
     double x;
-    struct timespec now_time;
+    struct timespec t0, t1;
+    int err_clock;
+
+    /* stop the fray if we are past some unreasonable limit */
+    uint64_t loop_limit = LOOP_LIMIT;
+
+    /* would be nice to get timestamps */
+    tdiff_type delta_time;
+
+    /* we may or may not have CLOCK_MONOTONIC implemented */
+    clockid_t clock_flag;
+
+    setlocale(LC_ALL, "C");
+    sysinfo(VERBOSE);
 
     /* did the user suggest a given percentage ? */
+    errno = 0;
     if ( argc > 1 ) {
-        /*     * * * *    W  A  R  N  I  N  G    * * * *
-         *
-         * There is no checking for reasonable data here.
-         */
-        limit = atoi(argv[1]);
-        printf("Geez I hope you really want %i\n", limit );
+        candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
+        if ( (errno == ERANGE) || (errno == EINVAL) ){
+            fprintf(stderr,"FAIL : percentage not understood\n");
+            perror("     ");
+            return EXIT_FAILURE;
+        }
+        if ( ( candidate_int < 50 ) || ( candidate_int > 100 ) ){
+            fprintf(stderr,"WARN : percentage is unreasonable\n");
+            fprintf(stderr,"     : we shall assume %i%% and proceed.\n",
+                    limit);
+
+        } else {
+            limit = candidate_int;
+        }
     }
 
-    /* Get the REALTIME_CLOCK time in a timespec struct */
-    if ( clock_gettime(CLOCK_REALTIME, &now_time ) == -1 ) {
-        /* We could not get the clock. Bail out. */
-        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return EXIT_FAILURE;
-    } else {
-        /* call srand48() with the nanosecond time data */
-        srand48( (long) now_time.tv_nsec );
+    printf("\nINFO : so we flip a coin until we see %i%% heads in 100 flips\n", limit);
+
+    errno = 0;
+    clock_flag = CLOCK_MONOTONIC;
+    err_clock = clock_gettime(clock_flag, &t0);
+    if ( err_clock != 0 ) {
+        fprintf(stderr,"FAIL : ");
+        if ( errno == ENOSYS ) {
+            fprintf(stderr,"clock_gettime() not supported\n");
+            return EXIT_FAILURE;
+        }
+
+        if ( errno == EINVAL ) {
+            fprintf(stderr,"CLOCK_MONOTONIC not known\n");
+            errno = 0;
+            clock_flag = CLOCK_REALTIME;
+            err_clock = clock_gettime(clock_flag, &t0);
+
+            if ( err_clock != 0 ) {
+                if ( errno == EINVAL ) {
+                    /* Not very likely to ever happen as CLOCK_REALTIME
+                     * shall always be implemented if the clock_gettime()
+                     * function exists. */
+                    fprintf(stderr,"FAIL : CLOCK_REALTIME not supported\n");
+                    fprintf(stderr,"     : your system is bork bork bork\n");
+                    return EXIT_FAILURE;
+                }
+                fprintf(stderr,"FAIL : bizarre error. good luck.\n");
+                return EXIT_FAILURE;
+            }
+        }
     }
 
-    /* this is the iteration counter */
+    /* call srand48() with the nanosecond time data */
+    srand48( (long)t0.tv_nsec );
+
+    /* this is the 64-bit iteration counter */
     j = 0;
 
     max_heads_in_a_row = 0;
@@ -121,6 +166,9 @@ doagain:
     this_flip = 0;
     head_count = 0;
     tail_count = 0;
+
+    /* we already know from above that the clock_gettime works */
+    clock_gettime( clock_flag, &t0 );
 
     for ( k=0 ; k<100; k++ ) {
         x = drand48();
@@ -169,6 +217,9 @@ doagain:
         printf ("max number of tails in a row was %i\n", max_tails_in_a_row);
         printf ("max tails happened at loop num   %i\n", max_tails_when);
         bit_shift *= 2;
+        clock_gettime( clock_flag, &t1 );
+        err_clock = tdiff( &delta_time, t0, t1);
+        printf ("time  %7i secs %9i nsecs\n", delta_time.sec, delta_time.nsec);
     }
 
     /* be sure to bail out if we have already run 2^34 loops */
@@ -179,6 +230,14 @@ doagain:
     printf ("max heads happened at loop num   %i\n", max_heads_when);
     printf ("max number of tails in a row was %i\n", max_tails_in_a_row);
     printf ("max tails happened at loop num   %i\n", max_tails_when);
+
+    if ( j == loop_limit ) {
+        fprintf(stderr,"\n\nFAIL : * * * we hit a hard limit * * *\n\n");
+    }
+
+    clock_gettime( clock_flag, &t1 );
+    err_clock = tdiff( &delta_time, t0, t1);
+    printf ("time  %7i secs %9i nsecs\n", delta_time.sec, delta_time.nsec);
 
     /* Please see "The Hitch Hikers Guide to the Galaxy" */
     return 42;
