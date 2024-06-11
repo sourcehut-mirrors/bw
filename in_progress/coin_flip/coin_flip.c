@@ -64,7 +64,7 @@ int
 main ( int argc, char **argv )
 {
 
-    /* this code was written with some beers and while
+    /* This code was written with some beers and while
      * ranting about uniform distribution results for
      * a given source of random data. No attempt was
      * made to make the code well organized and variables
@@ -82,6 +82,8 @@ main ( int argc, char **argv )
     int limit = LIMIT;
     int64_t loop_up = 0;
     int64_t loop_last = -1;
+    /* stop the fray if we are past 2^34 loops */
+    uint64_t loop_limit = 17179869184L;
     int bit_shift = 1;
     double x;
     struct timespec now_time;
@@ -170,7 +172,7 @@ doagain:
     }
 
     /* be sure to bail out if we have already run 2^34 loops */
-    if ( ( bias < 1 ) && ( j < ( 1L<<34 ) ) ) goto doagain;
+    if ( ( bias < 1 ) && ( j < loop_limit ) ) goto doagain;
 
     printf ("\nbias events count at %" PRIu64 " for %i%% heads.\n", j, limit );
     printf ("max number of heads in a row was %i\n", max_heads_in_a_row);
