@@ -1,8 +1,7 @@
 
 /*
- * tdiff_c90.c  entirely strict compliant ISO9899:1990 code to return
- *              a struct which holds the time delta between two timespec
- *              parameters.
+ * tdiff_c90_test.c  strict compliant ISO9899:1990 code to return
+ *              a struct which holds the time delta
  *
  * ------------------------------------------------------------------
  * Copyright (c) 2024 Dennis Clarke

@@ -41,8 +41,44 @@ int tdiff( tdiff_type *delta,
            struct timespec end_time )
 {
 
+    /* If this is called with a possible negative time delta
+     * between start_time and end_time then we have to respect
+     * the data and report a negative time delta.
+     *
+     * Also the nanosec components may be a negative time delta
+     * while the seconds are equal. This is also valid.
+     */
+
     struct timespec temp;
     long seconds, nanosecs;
+
+
+
+    /* check for the trivial situation where the seconds are
+     * equal in start_time and end_time */
+    if ( start_time.tv_sec == end_time.tv_sec ) {
+        temp.tv_sec = 0;
+        temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+    } else {
+        /* check if we are dealing with a negative time
+         * between the secs */
+        if ( end_time.sec < start_time.sec ) {
+            /* check if the end.tv_nsec is less than start.tv_nsec */
+            if ( end_time.tv_nsec <= start_time.tv_nsec ) {
+                /* this is trivial, with no adjustment required */
+                temp.tv_sec = start_time.tv_sec - end_time.tv_sec;
+                temp.tv_sec = start_time.tv_nsec - end_time.tv_nsec;
+            }
+
+        }
+
+
+
+    }
+
+
+
+
 
     if ( ( end_time.tv_nsec - start_time.tv_nsec ) < 0 ) {
         /* make a full second adjustment to tv_sec */
