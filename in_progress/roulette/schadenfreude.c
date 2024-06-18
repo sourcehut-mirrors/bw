@@ -19,18 +19,7 @@
  * https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-/*********************************************************************
- * The Open Group Base Specifications Issue 6
- * IEEE Std 1003.1, 2004 Edition
- *
- *    An XSI-conforming application should ensure that the feature
- *    test macro _XOPEN_SOURCE is defined with the value 600 before
- *    inclusion of any header. This is needed to enable the
- *    functionality described in The _POSIX_C_SOURCE Feature Test
- *    Macro and in addition to enable the XSI extension.
- *
- *********************************************************************/
-#define _XOPEN_SOURCE 600
+#define _XOPEN_SOURCE 500
 
 #include <errno.h>
 #include <locale.h>
@@ -82,16 +71,12 @@ double genrand(void);
 #define VERBOSE 1
 int sysinfo(int verbose);
 
-uint64_t timediff( struct timespec start_time,
-                   struct timespec end_time );
-
 int main (int argc, char **argv) { 
 
     uint64_t colour_mask, colour_flag;
     uint64_t one = 1;
 
     struct timespec time_start, time_end, time_now;
-    uint64_t total_time;
     char *c_time_string = NULL;
     int drand48_flag = 0;
 
@@ -99,6 +84,7 @@ int main (int argc, char **argv) {
     uint32_t bankroll_start = bankroll;
     uint32_t criteria = WALKAWAY;
     uint32_t bet = BET;
+    long max_spin_l;
 
     uint32_t n_even, n_odd, n_red, n_black, n_zero;
     uint32_t iteration_count, i;
@@ -110,14 +96,17 @@ int main (int argc, char **argv) {
      * and watch the roulette wheel spin for them */
     uint32_t max_spin;
 
-    setlocale(LC_ALL, "C");
-    sysinfo(VERBOSE);
-
     /* The ball[] array is a record of the number of times that the
      * roulette wheel ball lands on a given number with ball[0]
      * being the single 0 and ball[1] being the double 00. Therefore
      * we have thirty eight possible places the ball can land. */
     uint32_t ball[38];
+
+    /* see detailed description below for the bit_flag */
+    static uint64_t bit_flag;
+
+    setlocale(LC_ALL, "C");
+    sysinfo(VERBOSE);
 
     /* This next array lets us know what colour the ball had landed
      * on top of.  A zero indicates black and a one indicates red
@@ -172,7 +161,7 @@ int main (int argc, char **argv) {
      * why do such a thing?  Just for fun I guess.
      */
 
-    static uint64_t bit_flag = 0x0aa556a955;
+    bit_flag = 0x0aa556a955;
 
     /* check if a max_spin parameter was on the command line */
     if ( argc > 1 ) {
@@ -183,7 +172,7 @@ int main (int argc, char **argv) {
          * need an intermediate. Also the errno may not work
          * at all. */
         str = argv[1];
-        long max_spin_l = strtol(str, &endptr, 10);
+        max_spin_l = strtol(str, &endptr, 10);
         errno = 0;
         if ( ( ( errno == ERANGE ) &&
                    ( ( max_spin_l == LONG_MAX ) 
@@ -414,10 +403,6 @@ bail_out:
     printf ( " black = %5i     %11.8f\n", n_black, 
              ( 1.0 * n_black / ( 1.0 * iteration_count ) ) );
 
-
-    total_time = timediff( time_start, time_end );
-    printf ( "\n Total time = %" PRIu64 " nsec =  %11.8f secs\n",
-                 total_time, ( 1.0 * total_time )/1.0E9);
 
     printf("\n-----------------------------------------\n");
     printf("final :    Bank roll = %5i    after    %3i  spins\n",

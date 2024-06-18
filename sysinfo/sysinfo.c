@@ -170,6 +170,7 @@ int sysinfo(int verbose) {
         }
         version = (uint64_t)err_flag;
 
+#if __POSIX_VISIBLE >= 200112
         errno = 0;
         err_flag = sysconf(_SC_THREADS);
         if ( err_flag < 0 ){
@@ -177,6 +178,8 @@ int sysinfo(int verbose) {
             return SYSINFO_FAIL;
         }
         threads = (uint64_t)err_flag;
+#endif
+
     }
 
     /* guess the architecture endianess */
@@ -378,12 +381,11 @@ int sysinfo(int verbose) {
  * that are in the POSIX specs if you really really do need them. So
  * you can forget all about the clock idea. There may be clock data
  * somewhere but you will not get there easily or in a portable way.
- * Perhaps you need to spend more money and just let IBM take all
- * they can carry. Repeatedly.
  *
  * WARNING : this does not work on a Solaris 8 machine either. I
  * have yet to check Solaris 2.5.1 or earlier.
  */
+#if __POSIX_VISIBLE >= 200112
 #ifndef __MVS__
         errno = 0;
         err_flag = sysconf(_SC_MONOTONIC_CLOCK);
@@ -431,6 +433,7 @@ int sysinfo(int verbose) {
                                                             err_flag);
             perror("WAT : ");
         }
+#endif
 #endif
 
 #ifdef FLT_EVAL_METHOD

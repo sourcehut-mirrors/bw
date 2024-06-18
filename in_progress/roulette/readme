@@ -1,5 +1,5 @@
 
-Put a $5 chip on every black square. Then I put a $5 chip on every split
+Put a $5 chip on every black square. Then put a $5 chip on every split
 that is beside the black square and provides a red number.
 
 /* The layout generally looks like this : 
@@ -102,52 +102,52 @@ are less of a payoff by a large margin.
 But wait.
 
 That 35 factor pay off with the added 17 is only for a black number. We
-can says that black numbers matter here. Almost every red number is very
+can say that black numbers matter here. Almost every red number is very
 similar to a Black Jack surrender in that you get the 17:1 pay off and
 lose everything else.  For the sake of being detailed lets look at the
 actual loss and win numbers for this crazy sort of roulette bet :
 
 
-       number          pay out factor             With $5 chips
+     number            pay out                    With $5 chips
     ------------------------------------------------------------
-            0          total loss                             0
-           00          total loss                             0
-       red  1          17                                    85
-            2          35 + 17                              260
-       r    3          17                                    85
-            4          35 + 17                              260
-       r    5          17                                    85
-            6          35 + 17                              260
-       r    7          17                                    85
-            8          35 + 17                              260
-       r    9          17                                    85
-           10          35 + 17                              260
-           11          35 + 17                              260
-       r   12          17                                    85
-           13          35 + 17                              260
-       r   14          17                                    85
-           15          35 + 17                              260
-       r   16          17                                    85
-           17          35 + 17                              260
-       r   18          17                                    85
-       r   19          17                                    85
-           20          35 + 17                              260
-       r   21          17                                    85
-           22          35 + 17                              260
-       r   23          17                                    85
-           24          35 + 17                              260
-       r   25          17                                    85
-           26          35 + 17                              260
-       r   27          17                                    85
-           28          35 + 17                              260
-           29          35 + 17                              260
-       r   30          17                                    85
-           31          35 + 17                              260
-       r   32          17                                    85
-           33          35 + 17                              260
-       r   34          17                                    85
-           35          35 + 17                              260
-       r   36          17                                    85
+     green  0          total loss                             0
+     green 00          total loss                             0
+     red    1          17                                    85
+     black  2          35 + 17                              260
+     red    3          17                                    85
+     black  4          35 + 17                              260
+     red    5          17                                    85
+     black  6          35 + 17                              260
+     red    7          17                                    85
+     black  8          35 + 17                              260
+     red    9          17                                    85
+     black 10          35 + 17                              260
+     black 11          35 + 17                              260
+     red   12          17                                    85
+     black 13          35 + 17                              260
+     red   14          17                                    85
+     black 15          35 + 17                              260
+     red   16          17                                    85
+     black 17          35 + 17                              260
+     red   18          17                                    85
+     red   19          17                                    85
+     black 20          35 + 17                              260
+     red   21          17                                    85
+     black 22          35 + 17                              260
+     red   23          17                                    85
+     black 24          35 + 17                              260
+     red   25          17                                    85
+     black 26          35 + 17                              260
+     red   27          17                                    85
+     black 28          35 + 17                              260
+     black 29          35 + 17                              260
+     red   30          17                                    85
+     black 31          35 + 17                              260
+     red   32          17                                    85
+     black 33          35 + 17                              260
+     red   34          17                                    85
+     black 35          35 + 17                              260
+     red   36          17                                    85
 
 How many of the above are maximum value 260? Well those are the black
 numbers. So we already know the percentage there is 47.368 or at best
@@ -164,31 +164,27 @@ However lets look at the probabilities :
 
 The sum of those probabilities has to be 1 exactly unless we consider
 the bizarre situation where the roulette balls jumps out of the track
-and onto the floor somewhere. However that
-results in nothing happening except for a scramble around to find the
-little white ball and then toss it in the trash. Sort of like dice at
-a craps table one should, in theory, throw away a little red die that
-made a leap for the floor.  That never happens.  Regardless the total
-bet on the table has to be $170 in order to cover all those numbers
-and the splits.  There is a 47.37% chance that you lose a large piece
-of that with only $85 payout.
+and onto the floor somewhere. However that results in nothing happening
+except for a scramble around to find the little white ball and then toss
+it in the trash. Sort of like dice at a craps table one should, in theory,
+throw away a little red die that made a leap for the floor. That never
+happens.  Regardless the total bet on the table has to be $170 in order
+to cover all those numbers and the splits.  There is a 47.37% chance that
+you lose a large piece of that with only $85 payout.
 
 So a dumb question that is perfectly unreasonable is what happens
 if a schmuck walks into a casino with a bankroll of $2000 and then
 plays this situation? The math will always tell us that the house
-wins and over any period of time you go broke.  However, how often
-does that happen?  Over what period of time? When can we expect the
-schmuck to walk away to the bar and just drink on the remains of a
-credit card?  Well a good criteria here would be to say the walk
-away happens after $1000 is won or lost. Even more likely is that
-the $1000 win amount is the walk away criteria and no other option
-than to go broke.  Should be easy to simulate with some decent RNG
-source.
+wins and over any period of time you go broke. However, what if there
+is a rull to walk away when $500 has been won or lost. Should be easy
+to simulate with some decent RNG source.
 
 For the sake of another discussion we will use the Mersenne Twister
 as the PRNG here.  Mostly because it is entirely repeatable. As you
 may know we can also use drand48() with a set seed value and get a
 very repeatable sequence of random numbers also.  Unless we use a
 radiation decay source then a pseudo random number sequence is all
-we can expect.
+we can expect. Another possible approach is to determine the current
+time on a computer and use that data as a seed to something reasonable
+such as drand48().
 
