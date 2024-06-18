@@ -103,16 +103,18 @@ int tdiff( tdiff_type *delta,
      *              The delta here should be -6.270 which is a
      *              negative time report.
      *
-     *              sec = 102 - 108 = -6
+     *               sec = 102 - 108 = -6
      *
-     *              nsec = 925 - 655 = 270
+     *              nsec = -1 * ( 655000000  -  925000000 )
+     *                   = -1 * ( -270000000 )
+     *                   = 270000000
      *
-     *              result -->    sec = -6    nsec = 270 
+     *              result -->    sec = -6    nsec = 270000000
      *
      *              The operation here should be :
      *
      *                  result.sec  = end.tv_sec    - start.tv_sec
-     *                  result.nsec = start.tv_nsec - end.tv_nsec
+     *                  result.nsec = -1 * ( start.tv_nsec - end.tv_nsec )
      *
      *
      *         (1.2)   start.tv_nsec   =    end.tv_nsec
@@ -132,18 +134,23 @@ int tdiff( tdiff_type *delta,
      *
      *              example :  126.587       104.816
      *
-     *              delta should be -21.771
+     *              time delta should be -21.771
      *
-     *              end.tv_sec 104   -  start.tv_sec 126   = -22
+     *              end.tv_sec  104  -   start.tv_sec   126   =   -22
      *
-     *              end.tv_nsec 816  -   start.tv_nsec 587 = 229
+     *                     then add one full second  +1  to get   -21
      *
-     *              The actual data in the nsec components will be
-     *              587000000 and 816000000. These numbers to represent
-     *              nanosecond timings.
+     *              The nanosecs will require an offset of 1 billion
+     *              as well as a sign change :
      *
-     *              Compute the integer delta 816000000 - 587000000 and
-     *              then offset by a full second of 1 billion nanosecs.
+     *               -1 * ( end.tv_nsec - start_nsec - 1000000000 )
+     *
+     *               -1 * ( 816000000 - 587000000 - 1000000000 )
+     *
+     *               -1 * ( 229000000 - 1000000000 )
+     *
+     *               -1 * ( -771000000 )
+     *
      *
      *              Therefore : 
      *
@@ -151,11 +158,11 @@ int tdiff( tdiff_type *delta,
      *                              =      104    -      126     + 1
      *                              =     -21
      *
-     *                  result.nsec = end.tv_nsec - start.tv_nsec
-     *                              =  816000000  - 587000000
-     *                              =  229000000
      *
-     *                  The delta time should be -21.229 secs.
+     *                  result.nsec = -1 * ( end.tv_nsec 
+     *                                     - start_nsec
+     *                                     - 1000000000 )
+     *
      *
      *
      *     (2)   start tv_sec    =   end   tv_sec
@@ -202,15 +209,22 @@ int tdiff( tdiff_type *delta,
      *
      *         (3.1)   start.tv_nsec   >    end.tv_nsec
      *
-     *              example :  54387.090145701   68712.127084199
+     *              example :  54387.390145701   68712.127084199
      *
-     *              return sec = 68712  -  54387
-     *                         = 14325
+     *              time delta is 14324.736938498
      *
-     *                    nsec = 127084199  -   090145701
-     *                         = 036938498
+     *              We need to adjust the seconds :
      *
-     *              Results in 14325.036938498 delta.
+     *                sec = 68712  -  54387 - 1
+     *                    = 14324
+     *
+     *              We also need to adjust the nanosecs :
+     *
+     *               nsec = 127084199  -   390145701 + 1000000000
+     *                    =      -263061502  +  1000000000
+     *                    = 736938498
+     *
+     *              Results in 14324.736938498 delta.
      *
      *
      *         (3.2)   start.tv_nsec   =    end.tv_nsec
@@ -224,19 +238,15 @@ int tdiff( tdiff_type *delta,
      * 
      *         (3.3)   start.tv_nsec   <    end.tv_nsec
      *
-     *              example :  1718604178.047684173   1718607011.034571341
+     *              example :  1718604178.047684173   1718607011.094571341
      *
-     *              Here we will need a one second adjustment.
+     *              The delta time is 2833.046887168
      *
-     *              return  sec = 1718607011   -   1718604178
-     *                          = 2833 - 1
-     *                          = 2832
+     *              return  sec = 1718607011 - 1718604178
+     *                          = 2833
      *
-     *                     nsec = 034571341   -   047684173 + 1000000000
-     *                          =      -13112832 + 1000000000
-     *                          = 986887168
-     *
-     *              This represents a delta t1 - t0 = 2832.986887168
+     *                     nsec = 94571341  -  47684173
+     *                          = 46887168
      *
      * There are no other possible situations and in some cases we will
      * need to adjust the seconds. To be more clear, the data arrives in
@@ -248,50 +258,47 @@ int tdiff( tdiff_type *delta,
     struct timespec temp;
     long seconds, nanosecs;
 
-    if ( start_time.tv_sec == end_time.tv_sec ) {
+    if ( start_time.tv_sec > end_time.tv_sec ) {
+        if ( start_time.tv_nsec > end_time.tv_nsec ) {
+            temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
+            temp.tv_nsec = -1 * ( end_time.tv_nsec - start_time.tv_nsec );
+        }
+        if ( start_time.tv_nsec == end_time.tv_nsec ) {
+            temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
+            temp.tv_nsec = 0;
+        }
+        if ( start_time.tv_nsec < end_time.tv_nsec ) {
+            temp.tv_sec = end_time.tv_sec - start_time.tv_sec + 1;
+            temp.tv_nsec = -1 * ( end_time.tv_nsec
+                                - start_time.tv_nsec
+                                - 1000000000 );
+        }
+    }
 
+    if ( start_time.tv_sec == end_time.tv_sec ) {
         temp.tv_sec = 0;
         temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
-    } else {
-        /* check if we are dealing with a negative time
-         * between the secs */
-        if ( end_time.sec < start_time.sec ) {
-            /* check if the end.tv_nsec is less than start.tv_nsec */
-            if ( end_time.tv_nsec <= start_time.tv_nsec ) {
-                /* this is trivial, with no adjustment required */
-                temp.tv_sec = start_time.tv_sec - end_time.tv_sec;
-                temp.tv_sec = start_time.tv_nsec - end_time.tv_nsec;
-            }
+    } 
 
+    if ( start_time.tv_sec < end_time.tv_sec ) {
+        if ( start_time.tv_nsec > end_time.tv_nsec ) {
+            temp.tv_sec = end_time.tv_sec - start_time.tv_sec - 1;
+            temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec
+                              + 1000000000;
+        }
+        if ( start_time.tv_nsec == end_time.tv_nsec ) {
+            temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
+            temp.tv_nsec = 0;
+        }
+        if ( start_time.tv_nsec < end_time.tv_nsec ) {
+            temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
+            temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
         }
 
-
-
     }
 
-
-
-
-
-    if ( ( end_time.tv_nsec - start_time.tv_nsec ) < 0 ) {
-        /* make a full second adjustment to tv_sec */
-        temp.tv_sec = end_time.tv_sec - start_time.tv_sec - 1;
-        /* we have to add a full second to temp.tv_nsec */
-        temp.tv_nsec = 1000000000 
-                     + end_time.tv_nsec - start_time.tv_nsec;
-
-    } else {
-
-        temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
-        temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
-
-    }
-
-    seconds = temp.tv_sec;
-    nanosecs = temp.tv_nsec;
-
-    delta->sec = seconds;
-    delta->nsec = nanosecs;
+    delta->sec = temp.tv_sec;
+    delta->nsec = temp.tv_nsec;
     
     return EXIT_SUCCESS;
 
