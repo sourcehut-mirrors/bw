@@ -37,6 +37,7 @@
 #endif
 
 #include <errno.h>
+#include <iso646.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,13 +45,7 @@
 #include <string.h>
 #include <unistd.h>
 
-/*
-#include <fenv.h>
-#pragma STDC FENV_ACCESS ON
-
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-*/
+int endian( void );
 
 int
 what_is (char *some_string)
@@ -77,10 +72,9 @@ what_is (char *some_string)
     return 0;
 }
 
-/* Accept a pointer to a pointer of some data element which
- * is expected to be an IEEE 754-2008 floating point FP64
- * type object. Then print out the hex and the binary data
- * in some meaningful way.
+/* Accept a pointer of some data element which is expected to be
+ * an IEEE 754-2008 floating point FP64 type object. Then print
+ * out the hex and the binary data in some meaningful way.
  *
  * The FP64 data element in IEEE 754-2008 looks like :
  *
@@ -102,38 +96,122 @@ what_is (char *some_string)
 
 int fp64_dump ( double *some_fp64 )
 {
-
+    int s, e, d, j;
+    void *dst_ptr, *some_ptr;
+    /* keep it simple for now ... just dump the fucker */
     unsigned char eight_byte[8];
+    /* at the moment I can not think of a reason this would
+     * ever be anything else than 64-bits ... and if it is
+     * then the machine is borked. */
     size_t len_double = sizeof(double);
-    size_t len_int = sizeof(int);
-    int j = 1;
-    int little_endian;
-    void *some_ptr;
-    void *int_ptr = (void *)&j;
-    void *src_ptr = (void *)some_fp64;
-    void *dst_ptr = (void *)&eight_byte;
+    int little_endian = endian();
 
+    /* silly question .. would any machine ever implement
+     * these eight bytes in strange ordered chunks like
+     * 16-bit words or some nonsense? */
+    dst_ptr = (void*)&eight_byte[0];
 
-    /* this is bad ju ju
-     * Type punning is a bad idea.
-     *    int little_endian = (*(uint8_t*)&j == 1) ? 1 : 0;
-     */
+    printf("\naddr %p  :", some_fp64);
+    some_ptr = memcpy(dst_ptr, some_fp64, len_double);
+    if ( little_endian == 2 ) {
+        /* wow ... a big endian machine ... nifty */
+        for ( j=0; j<len_double; j++ ) {
+            printf(" %02x", eight_byte[j]);
+        }
+        printf("\n");
+        /* now we rock out the bits one byte at a time
+         * where we know we have the sign bit s and then
+         * eleven bits of exponent in the next four nibbles
+         *
+         * a tad wide .. looks like 
+         * 0 100 0000 0000 1001 0010 0001 1111 1011 0101 0100 0100 0100 0010 1101 0001 1000
+         *
+         */
+        printf("s eee eeee eeee dddd dddd dddd dddd dddd dddd");
+        printf(" dddd dddd dddd dddd dddd dddd dddd\n");
 
-    some_ptr = memcpy(dst_ptr, int_ptr, len_int);
-    for ( j=0; j<len_int; j++ ) {
-        printf("eight_byte[%i] = %i\n", j, eight_byte[j]);
+        s = eight_byte[0] >> 7;
+        printf ("%1i ", s);
+
+        e = ( eight_byte[0] bitand 0x40 ) >> 6;
+        printf ("%1i", e);
+
+        e = ( eight_byte[0] bitand 0x20 ) >> 5;
+        printf ("%1i", e);
+
+        e = ( eight_byte[0] bitand 0x10 ) >> 4;
+        printf ("%1i ", e);
+
+        e = ( eight_byte[0] bitand 0x08 ) >> 3;
+        printf ("%1i", e);
+
+        e = ( eight_byte[0] bitand 0x04 ) >> 2;
+        printf ("%1i", e);
+
+        e = ( eight_byte[0] bitand 0x02 ) >> 1;
+        printf ("%1i", e);
+
+        e = eight_byte[0] bitand 0x01;
+        printf ("%1i ", e);
+
+        e = ( eight_byte[1] bitand 0x80 ) >> 7;
+        printf ("%1i", e);
+
+        e = ( eight_byte[1] bitand 0x40 ) >> 6;
+        printf ("%1i", e);
+
+        e = ( eight_byte[1] bitand 0x20 ) >> 5;
+        printf ("%1i", e);
+
+        e = ( eight_byte[1] bitand 0x10 ) >> 4;
+        printf ("%1i ", e);
+
+        e = ( eight_byte[1] bitand 0x08 ) >> 3;
+        printf ("%1i", e);
+
+        e = ( eight_byte[1] bitand 0x04 ) >> 2;
+        printf ("%1i", e);
+
+        e = ( eight_byte[1] bitand 0x02 ) >> 1;
+        printf ("%1i", e);
+
+        e = eight_byte[1] bitand 0x01;
+        printf ("%1i ", e);
+
+        for ( j=2; j<8; j++ ) {
+            d = ( eight_byte[j] bitand 0x80 ) >> 7;
+            printf ("%1i", d);
+
+            d = ( eight_byte[j] bitand 0x40 ) >> 6;
+            printf ("%1i", d);
+
+            d = ( eight_byte[j] bitand 0x20 ) >> 5;
+            printf ("%1i", d);
+
+            d = ( eight_byte[j] bitand 0x10 ) >> 4;
+            printf ("%1i ", d);
+
+            d = ( eight_byte[j] bitand 0x08 ) >> 3;
+            printf ("%1i", d);
+
+            d = ( eight_byte[j] bitand 0x04 ) >> 2;
+            printf ("%1i", d);
+
+            d = ( eight_byte[j] bitand 0x02 ) >> 1;
+            printf ("%1i", d);
+
+            d = eight_byte[j] bitand 0x01;
+            printf ("%1i ", d);
+
+        }
+        printf ("\n");
+
+    } else {
+        for ( j=7; j>0; j-- ) {
+            printf(" %02x", eight_byte[j]);
+        }
+        printf("\n");
     }
-    little_endian = eight_byte[0];
-    printf("\nlittle_endian = eight_byte[0] = %i\n",little_endian);
-
-
-    printf("\naddr %p  :", src_ptr);
-    some_ptr = memcpy(dst_ptr, src_ptr, len_double);
-    for ( j=0; j<len_double; j++ ) {
-        printf(" %02x", eight_byte[j]);
-    }
-    printf("\n");
-
 
     return EXIT_SUCCESS;
 

@@ -49,6 +49,9 @@
 #define _XOPEN_SOURCE 500
 #endif
 
+#include <stdint.h>
+#include <string.h>
+
 int endian( void )
 {
 
