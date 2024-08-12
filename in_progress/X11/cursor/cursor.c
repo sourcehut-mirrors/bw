@@ -113,17 +113,6 @@ int main(int argc, char **argv)
     int mouse_x = -1, mouse_y = -1;
     int mouse_x_raw, mouse_y_raw;
 
-    /* these next five are just mouse button counters where the
-     * roll_up and roll_dn are mouse wheel events */
-    int button = 0;
-    int left_count, mid_count, right_count, roll_up_count, roll_dn_count;
-
-    left_count = 0;
-    mid_count = 0;
-    right_count = 0;
-    roll_up_count = 0;
-    roll_dn_count = 0;
-
     /* some primordial vars */
     int p, q;
     int disp_width, disp_height;
@@ -135,6 +124,17 @@ int main(int argc, char **argv)
 
     /* small general purpose char buffer */
     char *buf = calloc((size_t)128,sizeof(unsigned char));
+
+    /* these next five are just mouse button counters where the
+     * roll_up and roll_dn are mouse wheel events */
+    int button = 0;
+    int left_count, mid_count, right_count, roll_up_count, roll_dn_count;
+
+    left_count = 0;
+    mid_count = 0;
+    right_count = 0;
+    roll_up_count = 0;
+    roll_dn_count = 0;
 
     setlocale(LC_ALL, "C");
     sysinfo(VERBOSE);
