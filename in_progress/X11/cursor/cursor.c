@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     /* TODO get a list of the available fonts and then
      * use one that should work in the correct size */
     type_font = XLoadFont(dsp,
-            "-xos4-t3rmingus-medium-r-normal--16-160-72-72-c-80-iso10646-1");
+            "-xos4-termingus-medium-r-normal--16-160-72-72-c-80-iso10646-1");
 
     disp_width = DisplayWidth(dsp, screen_num);
     disp_height = DisplayHeight(dsp, screen_num);
