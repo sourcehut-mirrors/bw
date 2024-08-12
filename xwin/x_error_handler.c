@@ -25,8 +25,13 @@ int X_error_handler(Display *dsp, XErrorEvent *errevt)
          && ( errevt->minor_code == 0 ) ) {
 
         fprintf(stderr,"dBUG : we have an error code from XLoadFont() = %i\n", errevt->error_code);
+        /* this may not exist for some people ... ha ha .. NixOS
         type_font = XLoadFont(dsp, "-xos4-terminus-medium-r-normal--16-160-72-72-c-80-iso10646-1");
         fprintf(stderr,"dBUG : tried to load font \"-xos4-terminus-medium-r-normal--16-160-72-72-c-80-iso10646-1\"\n");
+        */
+        type_font = XLoadFont(dsp, "-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1");
+        fprintf(stderr,"dBUG : tried to load font \"");
+        fprintf(stderr,"-misc-fixed-medium-r-normal--18-120-100-100-c-90-iso10646-1\"\n");
 
     }
 

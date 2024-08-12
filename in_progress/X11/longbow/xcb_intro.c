@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     xcb_create_window(xcb_conn,screen->root_depth,win,screen->root,
                       20,20,600,600,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,
                       screen->root_visual, XCB_CW_BACK_PIXEL,
-                      &(int[]){});    
+                      &(int[]){0});
 
     char *title = "xcb intro";
     int title_len=strlen(title);
