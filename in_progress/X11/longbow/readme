@@ -42,10 +42,16 @@ sphinx$
 
 ------- to be pedantic on FreeBSD with LLVM/Clang --------------
 
-mercury$ cc -std=iso9899:1999 -pedantic -pedantic-errors -Weverything -m64 -g -O0 -fno-builtin -fno-fast-math -Wno-documentation -Wno-reserved-macro-identifier -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -I/usr/local/include -c -o xcb_intro.o
- xcb_intro.c
+$ cc -std=iso9899:1999 -pedantic -pedantic-errors \
+-Weverything -g -O0 -fno-builtin -fno-fast-math \
+-Wno-documentation -Wno-reserved-macro-identifier \
+-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+-I/usr/local/include -c -o xcb_intro.o xcb_intro.c
 
 
-mercury$ cc -std=iso9899:1999 -pedantic -pedantic-errors -Weverything -m64 -g -O0 -fno-builtin -fno-fast-math -Wno-documentation -Wno-reserved-macro-identifier -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -L/usr/local/lib -o xcb_intro xcb_intro.o -lxcb -lxcb-util -lxcb-icccm
-mercury$ 
+$ cc -std=iso9899:1999 -pedantic -pedantic-errors \
+-Weverything -g -O0 -fno-builtin -fno-fast-math \
+-Wno-documentation -Wno-reserved-macro-identifier \
+-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -L/usr/local/lib \
+-o xcb_intro xcb_intro.o -lxcb -lxcb-util -lxcb-icccm
 

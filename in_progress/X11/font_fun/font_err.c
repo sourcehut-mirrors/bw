@@ -133,6 +133,9 @@ int main(int argc, char **argv)
     /*
      * see
      * https://www.x.org/releases/current/doc/man/man3/XSetErrorHandler.3.xhtml
+     *
+     * per the great ddmage we know that the return value of this messy
+     * thing is ignored
      */
     XSetErrorHandler(X_error_handler);
 
