@@ -12,6 +12,9 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+/* some large number for the length of the fonts list */
+#define N_START INT_MAX
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -247,5 +250,49 @@ int X_error_handler(Display *dsp, XErrorEvent *errevt)
     /* the errevt->error_code is returned */
     return errevt->error_code;
 
+}
+
+static void
+get_list(const char *pattern)
+{
+    char **fonts;
+    int nnames = N_START;
+    int available = nnames + 1;
+
+    XFontStruct *info;
+
+        for (;;) {
+            if (long_list == L_MEDIUM)
+                fonts = XListFontsWithInfo(dpy, pattern, nnames, &available,
+                                           &info);
+            else
+                fonts = XListFonts(dpy, pattern, nnames, &available);
+            if (fonts == NULL) {
+                fprintf(stderr, "%s: pattern \"%s\" unmatched\n",
+                        program_name, pattern);
+                return;
+            }
+            if (available < nnames)
+                break;
+            if (long_list == L_MEDIUM)
+                XFreeFontInfo(fonts, info, available);
+            else
+                XFreeFontNames(fonts);
+            nnames = available * 2;
+        }
+
+        font_list = reallocarray(font_list,
+                                 (font_cnt + available), sizeof(FontList));
+        if (font_list == NULL)
+            Fatal_Error("Out of memory!");
+        for (int i = 0; i < available; i++) {
+            font_list[font_cnt].name = fonts[i];
+            if (long_list == L_MEDIUM)
+                font_list[font_cnt].info = info + i;
+            else
+                font_list[font_cnt].info = NULL;
+
+            font_cnt++;
+        }
 }
 
