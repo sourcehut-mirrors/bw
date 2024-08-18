@@ -139,7 +139,7 @@ int filepath_ptr(FILE **fp, char *fidname) {
     if ( status_buffer.st_mode & S_IFDIR ) {
         errno = EINVAL;
         perror("FAIL ");
-        fprintf(stderr,"FAIL : is pathname a directory?\n");
+        fprintf(stderr,"FAIL : pathname is a directory\n");
         return ERROR_FILENAME_STAT;
     }
 
