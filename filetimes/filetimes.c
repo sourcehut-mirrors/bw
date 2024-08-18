@@ -129,39 +129,55 @@ int main(int argc, char **argv)
          * This is the struct stat taken directly from the
          * include file /usr/include/sys/stat.h :
          *
-         *     struct stat {
-         *             dev_t     st_dev;             * inode's device * 
-         *             ino_t     st_ino;             * inode's number * 
-         *             nlink_t   st_nlink;           * number of hard links * 
-         *             mode_t    st_mode;            * inode protection mode * 
-         *             __int16_t st_padding0;
-         *             uid_t     st_uid;             * user ID of the file's owner * 
-         *             gid_t     st_gid;             * group ID of the file's group * 
-         *             __int32_t st_padding1;
-         *             dev_t     st_rdev;            * device type * 
+         *   struct stat {
+         *     dev_t     st_dev;       * inode's device
+         *     ino_t     st_ino;       * inode's number
+         *     nlink_t   st_nlink;     * number of hard links
+         *     mode_t    st_mode;      * inode protection mode
+         *
+         *     __int16_t st_padding0;
+         *
+         *     uid_t     st_uid;       * user ID of file owner
+         *     gid_t     st_gid;       * group ID of file group
+         *
+         *     __int32_t st_padding1;
+         *
+         *     dev_t     st_rdev;      * device type
+         *
          *     #ifdef  __STAT_TIME_T_EXT
          *             __int32_t st_atim_ext;
          *     #endif
-         *             struct  timespec st_atim;     * time of last access * 
+         *
+         *     struct  timespec st_atim; * access time
+         *
          *     #ifdef  __STAT_TIME_T_EXT
          *             __int32_t st_mtim_ext;
          *     #endif
-         *             struct  timespec st_mtim;     * time of last data modification * 
+         *
+         *     struct  timespec st_mtim; * modification time
+         *
          *     #ifdef  __STAT_TIME_T_EXT
          *             __int32_t st_ctim_ext;
          *     #endif
-         *             struct  timespec st_ctim;     * time of last file status change * 
+         *
+         *     struct  timespec st_ctim; * file status time
+         *
          *     #ifdef  __STAT_TIME_T_EXT
          *             __int32_t st_btim_ext;
          *     #endif
-         *             struct  timespec st_birthtim; * time of file creation * 
-         *             off_t     st_size;            * file size, in bytes * 
-         *             blkcnt_t st_blocks;           * blocks allocated for file * 
-         *             blksize_t st_blksize;         * optimal blocksize for I/O * 
-         *             fflags_t  st_flags;           * user defined flags for file * 
-         *             __uint64_t st_gen;            * file generation number * 
-         *             __uint64_t st_spare[10];
-         *     };
+         *
+         *     *** this seems to be an extension in FreeBSD ? ***
+         *     struct  timespec st_birthtim; * time of file creation * 
+         *
+         *     off_t     st_size;        * file size in bytes
+         *     blkcnt_t st_blocks;       * blocks allocated
+         *     blksize_t st_blksize;     * optimal blocksize for I/O
+         *     fflags_t  st_flags;       * user defined flags for file
+         *
+         *     *** again these seem to be extensions ***
+         *     __uint64_t st_gen;        * file generation number
+         *     __uint64_t st_spare[10];
+         *   };
          */
         fprintf (stderr,"\nINFO : current time is %s", c_time_string );
         fprintf (stderr,"     : three UNIX times of the pathname are :\n");
