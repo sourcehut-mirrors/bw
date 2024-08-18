@@ -90,6 +90,9 @@ int main(int argc, char **argv)
     /* dirty little pixmap that we use and throw away */
     XImage *foobar = NULL;
 
+    /* dirty list of fonts */
+    char **font_list;
+
     /* a very few colours */
     XColor red, green, blue, yellow, cyan, magenta;
     XColor cornflowerblue, royal_blue, very_dark_grey;
@@ -160,6 +163,10 @@ int main(int argc, char **argv)
 
     /* TODO get a list of the available fonts and then
      * use one that should work in the correct size */
+    font_list = XListFonts(dsp, char *pattern, int maxnames, int *actual_count_return);
+
+
+
     type_font = XLoadFont(dsp,
             "-adobe-new c3ntury schoolbook-medium-r-normal--18-180-75-75-p-103-iso10646-1");
 
@@ -252,6 +259,7 @@ int X_error_handler(Display *dsp, XErrorEvent *errevt)
 
 }
 
+/* 
 static void
 get_list(const char *pattern)
 {
@@ -295,4 +303,5 @@ get_list(const char *pattern)
             font_cnt++;
         }
 }
+*/
 

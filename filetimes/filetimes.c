@@ -69,11 +69,14 @@ int main(int argc, char **argv)
     int fpos_status;
     long ftell_pos;
     struct timespec time_tv;
+    struct timespec modification_t;
+    struct timespec creation_t;
+    struct timespec access_t;
 
     uint64_t candidate;
     struct tm *time_tm;
     time_t unix_secs_now;
-    struct tm *barf_tm;
+    struct tm *sample_tm;
     time_t unix_secs;
 
     setlocale ( LC_ALL, "C" );
@@ -97,20 +100,93 @@ int main(int argc, char **argv)
     errno = 0;
     status = stat(argv[1], &status_buffer);
     if ( status == 0 ) {
+        /* typical contents of status_buffer for these
+         * essential timestamps :
+         *
+         * { st_dev = 2208041306733982082,
+         *   st_ino = 662, st_nlink = 1, st_mode = 33188, 
+         *   st_padding0 = 0, st_uid = 16411, st_gid = 16411,
+         *   st_padding1 = 0, st_rdev = 0, 
+         *       st_atim = {tv_sec = 1721761189, tv_nsec = 711706000},
+         *       st_mtim = {tv_sec = 1721761189, tv_nsec = 711749000},
+         *       st_ctim = {tv_sec = 1723953512, tv_nsec = 819791000}, 
+         *   st_birthtim = {tv_sec = 1721761189, tv_nsec = 711706000},
+         *   st_size = 62, st_blocks = 1, st_blksize = 4096,
+         *   st_flags = 2048, st_gen = 0,
+         *   st_spare = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+         * }
+         *
+         * Some of the above is not entirely portable and part of a
+         * standard. All the needed data is there however. Such as :
+         *
+         *     st_atim = {tv_sec  = 1721761189,
+         *                tv_nsec = 710337000   },
+         *     st_mtim = {tv_sec  = 1721761189, 
+         *                tv_nsec = 710382000   },
+         *     st_ctim = {tv_sec  = 1723954137,
+         *                tv_nsec = 509936000} 
+         *
+         * This is the struct stat taken directly from the
+         * include file /usr/include/sys/stat.h :
+         *
+         *     struct stat {
+         *             dev_t     st_dev;             * inode's device * 
+         *             ino_t     st_ino;             * inode's number * 
+         *             nlink_t   st_nlink;           * number of hard links * 
+         *             mode_t    st_mode;            * inode protection mode * 
+         *             __int16_t st_padding0;
+         *             uid_t     st_uid;             * user ID of the file's owner * 
+         *             gid_t     st_gid;             * group ID of the file's group * 
+         *             __int32_t st_padding1;
+         *             dev_t     st_rdev;            * device type * 
+         *     #ifdef  __STAT_TIME_T_EXT
+         *             __int32_t st_atim_ext;
+         *     #endif
+         *             struct  timespec st_atim;     * time of last access * 
+         *     #ifdef  __STAT_TIME_T_EXT
+         *             __int32_t st_mtim_ext;
+         *     #endif
+         *             struct  timespec st_mtim;     * time of last data modification * 
+         *     #ifdef  __STAT_TIME_T_EXT
+         *             __int32_t st_ctim_ext;
+         *     #endif
+         *             struct  timespec st_ctim;     * time of last file status change * 
+         *     #ifdef  __STAT_TIME_T_EXT
+         *             __int32_t st_btim_ext;
+         *     #endif
+         *             struct  timespec st_birthtim; * time of file creation * 
+         *             off_t     st_size;            * file size, in bytes * 
+         *             blkcnt_t st_blocks;           * blocks allocated for file * 
+         *             blksize_t st_blksize;         * optimal blocksize for I/O * 
+         *             fflags_t  st_flags;           * user defined flags for file * 
+         *             __uint64_t st_gen;            * file generation number * 
+         *             __uint64_t st_spare[10];
+         *     };
+         */
         fprintf (stderr,"\nINFO : current time is %s", c_time_string );
         fprintf (stderr,"     : three UNIX times of the pathname are :\n");
 
         /* access time */
-        fprintf(stderr,"     : ctime(&buffer.st_atime) = %s",
+        fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_atim.tv_sec,
+                               status_buffer.st_atim.tv_nsec);
+        fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_atime));
 
         /* modification time */
-        fprintf(stderr,"     :              .st_mtime) = %s",
+        fprintf(stderr,"\n     : mtime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_mtim.tv_sec,
+                               status_buffer.st_mtim.tv_nsec);
+        fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_mtime));
 
         /* creation time */
-        fprintf(stderr,"     :              .st_ctime) = %s",
+        fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_ctim.tv_sec,
+                               status_buffer.st_ctim.tv_nsec);
+        fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_ctime));
+        fprintf(stderr,"\n");
 
         /* Check if pathname is a directory.
          * Note the ISO646 bitand. */
@@ -139,7 +215,8 @@ int main(int argc, char **argv)
      *      }
      *
      * We may then call gmtime_r() with the above tv_sec data to get
-     * a struct tm that we see on modern linux :
+     * a struct tm :
+     *
      *      {    tm_sec    = 23,
      *           tm_min    = 31,
      *           tm_hour   = 15,
@@ -212,13 +289,13 @@ int main(int argc, char **argv)
         }
 
         unix_secs_now = time_tv.tv_sec;
-        barf_tm = gmtime_r(&unix_secs_now, time_tm);
+        sample_tm = gmtime_r(&unix_secs_now, time_tm);
 
         /* The user may have provided some bizarre UNIX time
          * in seconds. See if it causes bad things. */
         unix_secs = candidate;
-        barf_tm = gmtime_r(&unix_secs, time_tm);
-        if ( barf_tm == NULL ) {
+        sample_tm = gmtime_r(&unix_secs, time_tm);
+        if ( sample_tm == NULL ) {
             fprintf(stderr,"FAIL : %" PRIu64 " fail\n", (uint64_t)unix_secs);
         } else {
             printf("INFO : time_tm->tm_year = %i\n", time_tm->tm_year);
@@ -227,8 +304,6 @@ int main(int argc, char **argv)
         free(time_tm);
         time_tm = NULL;
     }
-
-
 
     fp = fopen( argv[1], "r");
     if ( fp == NULL ) {
@@ -275,9 +350,9 @@ int main(int argc, char **argv)
      *       indicate the error.
      */
 
-    printf("\n----------------------- file output -------------------\n");
-    printf("line_no   bytes   line_buffer\n");
-    printf("-------------------------------------------------------\n");
+    printf("\n------------------------- file output ---------------------\n");
+    printf("line_no   bytes   line_buffer where \"~\" is a special char\n");
+    printf("-----------------------------------------------------------\n");
     char_count = 0;
     line_count = 0;
     errno = 0;
