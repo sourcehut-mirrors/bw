@@ -327,6 +327,12 @@ int sysinfo(int verbose) {
             printf("          _POSIX_TZNAME_MAX  = %i\n",
                                                     _POSIX_TZNAME_MAX);
 
+            /* I am somewhat unsure what this is for */
+#ifdef __STAT_TIME_T_EXT
+            printf("          __STAT_TIME_T_EXT  = %i\n",
+                                                    __STAT_TIME_T_EXT);
+#endif
+
         }
 
         printf ( "                      endian = ");

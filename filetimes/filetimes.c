@@ -100,7 +100,15 @@ int main(int argc, char **argv)
     errno = 0;
     status = stat(argv[1], &status_buffer);
     if ( status == 0 ) {
-        /* typical contents of status_buffer for these
+        /* ----------------------------------------------------------
+         * W A R N I N G : be sure to see sys/stat.h
+         * atime is re-defined as foo.atim <-- note the "e" vanished
+         *
+         * H O W E V E R that is wrapped in an ifndef.
+         * ----------------------------------------------------------
+         *
+         *
+         * typical contents of status_buffer for these
          * essential timestamps :
          *
          * { st_dev = 2208041306733982082,
@@ -133,7 +141,7 @@ int main(int argc, char **argv)
          *     dev_t     st_dev;       * inode's device
          *     ino_t     st_ino;       * inode's number
          *     nlink_t   st_nlink;     * number of hard links
-         *     mode_t    st_mode;      * inode protection mode
+         *     mode_t    st_mode;      * inode mode
          *
          *     __int16_t st_padding0;
          *
@@ -186,6 +194,8 @@ int main(int argc, char **argv)
         fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_atim.tv_sec,
                                status_buffer.st_atim.tv_nsec);
+
+        /* See WARNING above for why st_atime may lose the letter "e" */
         fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_atime));
 

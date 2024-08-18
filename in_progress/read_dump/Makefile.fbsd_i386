@@ -1,0 +1,9 @@
+
+CC=	/usr/bin/cc
+
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+CFLAGS=	-std=iso9899:1999 -pedantic -pedantic-errors -m32 -O0 -g \
+	-fno-fast-math -fno-builtin -fsanitize=address
+
+include common.mk
