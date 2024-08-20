@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 
 #include <xcb/xcb.h>
 #include <xcb/xcb_util.h>
@@ -16,7 +16,8 @@ int main(int argc, char *argv[])
 
     if(xcb_connection_has_error(xcb_conn))
     {
-        fprintf(stderr,"Faied to connect!\n");
+        fprintf(stderr,"Failed to connect!\n");
+        return EXIT_FAILURE;
     }
     else
     {
