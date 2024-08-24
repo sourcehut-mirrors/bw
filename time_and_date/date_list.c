@@ -46,11 +46,13 @@ size_t print_date( int day, int month, int year );
 
 int main(int argc, char *argv[])
 {
-    size_t bufsize = BUFFERSIZE;
-    int day, month, year;
+    int day, month, year, start_year, end_year;
     char *buf;
     
     errno = 0;
+
+    start_year = 2023;
+    end_year = 2024;
 
     if ( argc > 1 ) {
         printf ("\nINFO : You suggest a locale of %s\n", argv[1]);
@@ -59,12 +61,25 @@ int main(int argc, char *argv[])
         buf = setlocale ( LC_ALL, "POSIX" );
     }
 
+    if ( argc == 4 ) {
+        start_year = atoi(argv[2]);
+        end_year = atoi(argv[3]);
+        printf ("\nINFO : You provide start year = %i\n", start_year);
+        printf ("     :       with an end year = %i\n", end_year);
+        if ( ( start_year < 1700 ) || ( end_year > 2038 ) ) {
+            printf ("     : good luck.\n");
+        }
+    } else {
+        printf ("\nINFO : start year = %i and end year = %i\n",
+                start_year, end_year);
+    }
+
     if ( buf == NULL ) {
         fprintf (stderr,"FAIL : setlocale fail\n");
         return(EXIT_FAILURE);
     }
 
-    for ( year = 2023; year < 2025; year++ ) {
+    for ( year = start_year; year < ( end_year + 1 ); year++ ) {
         for ( month = 1; month < 13; month++ ) {
             for ( day = 1; day < 32; day++ ) {
 

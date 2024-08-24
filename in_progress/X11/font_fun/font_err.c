@@ -162,7 +162,18 @@ int main(int argc, char **argv)
     printf("     : default depth is %i\n", depth);
 
     /* TODO get a list of the available fonts and then
-     * use one that should work in the correct size */
+     * use one that should work in the correct size 
+     *
+     * These two are really great looking fonts for just
+     * dumping out data :
+     *
+     * -schumacher-clean-medium-r-normal--16-160-75-75-c-80-iso646.1991-irv
+     * -xos4-termingus-medium-r-normal--16-160-72-72-c-80-iso10646-1
+     *
+     * However it would be nice if people had at least a terminus
+     * font.
+     *
+     */
     font_list = XListFonts(dsp, char *pattern, int maxnames, int *actual_count_return);
 
 

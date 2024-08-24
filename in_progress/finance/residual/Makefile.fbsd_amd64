@@ -3,9 +3,9 @@ CC=/usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
-	-fno-fast-math -fno-builtin
+	-fno-fast-math -fno-builtin -Wno-unsafe-buffer-usage
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 LDIR=/usr/local/lib

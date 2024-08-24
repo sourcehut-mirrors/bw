@@ -2,7 +2,8 @@ CC?=		/usr/bin/cc
 
 CFLAGS=		-std=iso9899:1990 -m64 -g -O0 \
 		-fno-fast-math -fno-builtin -pedantic -pedantic-errors \
-		-Weverything -Wno-reserved-id-macro -Wno-unused-macros
+		-Weverything -Wno-reserved-id-macro -Wno-unused-macros \
+		-Wno-unsafe-buffer-usage -Wno-missing-prototypes
 
 CPPFLAGS=	-D_LARGEFILE64_SOURCE \
 		-D_XOPEN_SOURCE=500
