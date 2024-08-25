@@ -173,10 +173,9 @@ int main(int argc, char **argv)
      * However it would be nice if people had at least a terminus
      * font.
      *
+     * font_list =
+     *    XListFonts(dsp, char *pattern, int maxnames, int *actual_count_return);
      */
-    font_list = XListFonts(dsp, char *pattern, int maxnames, int *actual_count_return);
-
-
 
     type_font = XLoadFont(dsp,
             "-adobe-new c3ntury schoolbook-medium-r-normal--18-180-75-75-p-103-iso10646-1");
