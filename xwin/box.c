@@ -1,4 +1,34 @@
 
+/*
+ * box.c   Trivial X11 stuff to draw a box with no promise anything
+ *         here works at all. Good luck.
+ *
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -35,6 +65,10 @@ int main( int argc, char *argv[])
     char *disp_name = NULL;
     int conn_num, screen_num, depth, disp_width, disp_height;
     int offset_x, offset_y, width, height;
+
+    /* the background color is a RGB value of 0xff2020h hexadecimal
+     * to give some reddish monster */
+    unsigned long bg_color = 0xff2020;
 
     Colormap screen_colormap;
     XColor red, green, blue, yellow, cyan, orange, truecolor;
@@ -78,20 +112,15 @@ int main( int argc, char *argv[])
      * printf ("INFO : looks like display is %i mm high\n", disp_height);
      */
 
-    /* a few default values that seem to work with Twitch OBS stream */
-
     offset_x = 10;  /* across to the right from the left border */
     offset_y = 10;  /* down from the top border */
     width = 640;
     height = 480;
 
-    /* the background color is a RGB value of 0xff2020h hexadecimal
-     * to give some reddish monster */
-
     Window win = create_borderless_topwin(display,
                                          offset_x, offset_y,
                                          width, height,
-                                         0xff2020 );
+                                         bg_color );
 
     /* Create a Graphics Context object handle for
      * this window we just created.
@@ -163,10 +192,13 @@ int main( int argc, char *argv[])
 
     XFlush( display );  /* send a pending messages to the Xserver */
 
-    printf ("INFO : we shall sleep %d secs\n", sleep_time );
+    printf("INFO : we shall sleep %d secs\n", sleep_time);
     slept_time = sleep( sleep_time );
+    if ( slept_time != 0 ) {
+        printf("INFO : maybe we slept for %d secs\n", sleep_time - slept_time);
+    }
 
-    return ( EXIT_SUCCESS );
+    return EXIT_SUCCESS;
 
 }
 

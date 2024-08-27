@@ -1,4 +1,52 @@
 
+/*
+ * numpad.c   Trivial X11 stuff to draw a numeric keypad where the
+ *            only valid function seems to be HLT for halt
+ *
+ *
+ *     * * *    W A R N I N G    * * *
+ *   There are direct calls to use the termingus font. You may need
+ *   to see github.com:neutaaaaan/termingus.git
+ *
+ *   Otherwise the fonts will be a mess.  Good luck.
+ *
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
 #define _XOPEN_SOURCE 600
 
 #include <stdio.h>
@@ -144,9 +192,10 @@ int main (int argc, char *argv[])
         }
     }
 
-    /* we have no idea if these fonts exist */
-    pad_font = XLoadFont(dsp, "-adobe-courier-medium-r-normal--34-240-100-100-m-200-iso8859-1");
-    dsp_font = XLoadFont(dsp, "*-lucidatypewriter-medium-r-normal-sans-14-100-100-100-*-iso8859-1");
+    /* we have no idea if these fonts exist however we need a big
+     * one for the keypads and a little one for the display */
+    pad_font = XLoadFont(dsp,"-xos4-termingus-medium-r-normal--32-320-72-72-c-160-iso10646-1");
+    dsp_font = XLoadFont(dsp,"-xos4-termingus-medium-r-normal--16-160-72-72-c-80-iso10646-1");
     XSetFont(dsp, gc, pad_font);
 
     /* general purpose buffer */
@@ -210,7 +259,9 @@ int main (int argc, char *argv[])
     /* clear the buffer */
     buf[0]='\0';
     XSetFont(dsp, gc, dsp_font);
-    while( pad_hlt == 0 ){ /* cycle until HLT pressed */
+
+    /* we do a whole lot of nothing until HLT is clicked */
+    while( pad_hlt == 0 ){
 
         XNextEvent(dsp,&event);
 
