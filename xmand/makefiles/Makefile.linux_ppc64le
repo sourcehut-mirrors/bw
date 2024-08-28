@@ -1,8 +1,9 @@
 
-CC=/opt/gcc-12.2.0/bin/gcc
+CC?=/opt/gcc-12.2.0/bin/gcc
 
 CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
-	-g -O0 -fno-builtin -m64 -fno-unsafe-math-optimizations
+	-g -O0 -mcpu=power9 -fno-builtin -m64 \
+	-fno-unsafe-math-optimizations
 
 include common.mk
 
