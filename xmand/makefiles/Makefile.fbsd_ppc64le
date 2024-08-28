@@ -1,0 +1,12 @@
+
+CC?=/usr/bin/cc
+
+CFLAGS=		-std=iso9899:1999 -pedantic -pedantic-errors \
+		-g -O0 -fno-builtin -m64 \
+		-mcpu=power9 -mno-altivec -mno-isel -mno-vsx \
+		-mno-crypto -mno-htm \
+		-fno-unsafe-math-optimizations -Weverything \
+		-Wno-unsafe-buffer-usage -Wno-reserved-identifier
+
+include common.mk
+

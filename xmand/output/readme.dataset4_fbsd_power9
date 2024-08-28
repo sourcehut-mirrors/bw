@@ -1,0 +1,79 @@
+
+I stopped this shit after an hour ..
+
+scotty$ 
+scotty$ ./xmand 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = scotty
+                     release = 14.1-RELEASE-p3
+                     version = FreeBSD 14.1-RELEASE-p3 releng/14.1-n267694-1a207e5cdf99 GENERIC
+                     machine = powerpc
+                   page size = 4096
+               system memory = 34314166272
+                             = 33509928 kB
+                             = 32724 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime   16 days    3 hours   50 mins   40 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =            139 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 131072
+pthread_limit = 16
+    translate = ( -1.66949745003876159898936749e-01 , +1.04085236255377822089940310e+00 )
+      magnify = +2.14748364800000000000000000e+09
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +1.81898940354585647583007812e-12
+pixel_imag_h = +1.81898940354585647583007812e-12
+raw  [ 1415 , 863  ]
+click at 1414 861 
+raw  [ 1415 , 863  ]
+click at 1414 861 
+raw  [ 1415 , 863  ]
+click at 1414 861 
+raw  [ 562  , 540  ]
+DBUG : sample space [ 551   , 496    ]
+     : vbox  [ 008 , 007 ]
+     : win_r = +7.71484375000000000000000000e-02
+     : win_j = -3.02734375000000000000000000e-02
+     : after translation
+     : r_trn   = -1.66949745003876159898936749e-01
+     : j_trn   = +1.04085236255377822089940310e+00
+     : x_prime = -1.66949744932026078458875418e-01
+     : y_prime = +1.04085236252558388514444232e+00
+     : bailout = 131072            
+     : magnify = 2.147483648000e+09
+
+scotty$ 
+
+
