@@ -1,4 +1,6 @@
+
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
-	-fno-fast-math -fno-builtin
+	-fno-fast-math -fno-builtin -fno-unsafe-math-optimizations \
+	-Weverything -Wno-unsafe-buffer-usage -Wno-reserved-identifier
 
 include common.mk
