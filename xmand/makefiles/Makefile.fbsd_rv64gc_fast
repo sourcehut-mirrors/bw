@@ -1,7 +1,6 @@
-
-CFLAGS= -std=iso9899:2011 -m64 -O3 -fno-fast-math \
-	-ffp-contract=on \
-	-fno-builtin \
-	-march=rv64imafdc -mabi=lp64d -mfma
+CFLAGS= -std=iso9899:1999 \
+	-march=rv64imafdc -mabi=lp64d \
+	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O3 \
+	-Wno-reserved-identifier -Wno-unsafe-buffer-usage
 
 include common.mk

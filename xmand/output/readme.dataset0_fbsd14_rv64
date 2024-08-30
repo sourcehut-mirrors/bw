@@ -1,0 +1,139 @@
+
+enceladus$ 
+enceladus$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = enceladus
+                     release = 14.1-RELEASE
+                     version = FreeBSD 14.1-RELEASE releng/14.1-n267679-10e31f0946d8 GENERIC
+                     machine = riscv
+                   page size = 4096
+               system memory = 17114742784
+                             = 16713616 kB
+                             = 16321 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    0 day    1 hour    1 min   21 secs
+-------------------------------------------------------------------
+INFO : baseline tdelta =           1000 nsec
+INFO : magnify accepted as long long int
+
+    mand_bail = 256
+pthread_limit = 2
+    translate = ( -1.22589111328125000000000000e+00 , -1.77673339843750000000000000e-01 )
+      magnify = +1.28000000000000000000000000e+02
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +3.05175781250000000000000000e-05
+pixel_imag_h = +3.05175781250000000000000000e-05
+raw  [ 539  , 715  ]
+DBUG : sample space [ 528   , 321    ]
+     : vbox  [ 008 , 005 ]
+     : win_r = +3.22265625000000000000000000e-02
+     : win_j = -3.72070312500000000000000000e-01
+     : after translation
+     : r_trn   = -1.22589111328125000000000000e+00
+     : j_trn   = -1.77673339843750000000000000e-01
+     : x_prime = -1.22538757324218750000000000e+00
+     : y_prime = -1.83486938476562500000000000e-01
+     : bailout = 256               
+     : magnify = 1.280000000000e+02
+[mand] =    69704745991 nsec   6.970475e+01 sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.24150085449218750000000000e+00
+     : j[ 0][ 0][ 0][ 0] = -1.93283081054687500000000000e-01
+     :       mand_height =        13
+     : r[ 7][ 7][63][63] = -1.22590637207031250000000000e+00
+     : j[ 7][ 7][63][63] = -1.77688598632812500000000000e-01
+     :       mand_height =       104
+     : r[ 8][ 8][ 0][ 0] = -1.22587585449218750000000000e+00
+     : j[ 8][ 8][ 0][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        69
+     : r[ 8][ 8][ 1][ 0] = -1.22584533691406250000000000e+00
+     : j[ 8][ 8][ 1][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        65
+     : r[ 8][ 8][32][32] = -1.22489929199218750000000000e+00
+     : j[ 8][ 8][32][32] = -1.76681518554687500000000000e-01
+     :       mand_height =       256
+     : r[ 3][12][44][21] = -1.23429870605468750000000000e+00
+     : j[ 3][12][44][21] = -1.69204711914062500000000000e-01
+     :       mand_height =        45
+     : r[15][15][63][63] = -1.21028137207031250000000000e+00
+     : j[15][15][63][63] = -1.62063598632812500000000000e-01
+     :       mand_height =       256
+--------------------------- full plot done -----------------------------
+click at 538 713 
+raw  [ 1391 , 891  ]
+INFO : dumper_flag = 1
+click at 1390 889 
+raw  [ 1391 , 891  ]
+INFO : file /var/tmp/dclarke/20240830022255 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =      256
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.28000000000000000000000000e+02
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.22589111328125000000000000e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = -1.77673339843750000000000000e-01
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20240830022255 closed.
+INFO : dumper_flag = 0
+click at 1390 889 
+raw  [ 835  , 731  ]
+right click
+click at 834 729 
+raw  [ 835  , 731  ]
+right click
+
+
+
+enceladus$ 
+enceladus$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240830022255
+0000000    00  00  10  00  00  01  00  00  00  00  00  00  00  00  60  40
+0000010    00  00  00  00  40  9d  f3  bf  00  00  00  00  00  be  c6  bf
+0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
+0000030    00  00  00  00  30  dd  f3  bf  00  00  00  00  80  bd  c8  bf
+0000040    0d  00  00  00  00  00  00  00  10  dd  f3  bf  00  00  00  00
+0000050    80  bd  c8  bf  0d  00  00  00  00  00  00  00  f0  dc  f3  bf
+0000060    00  00  00  00  80  bd  c8  bf  0d  00  00  00  00  00  00  00
+0000070    d0  dc  f3  bf  00  00  00  00  80  bd  c8  bf  0d  00  00  00
+0000080
+enceladus$ 
+enceladus$ openssl dgst -sha256 -r /var/tmp/dclarke/20240830022255 
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20240830022255
+enceladus$ 
