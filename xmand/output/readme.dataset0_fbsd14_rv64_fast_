@@ -1,23 +1,15 @@
-rv64$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
+
+enceladus$ 
+enceladus$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
 -------------------------------------------------------------------
                  system name = FreeBSD
-                   node name = ump.daveg.ca
-                     release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #3 main-n260421-17c8213559cd-dirty: Thu Feb  2 12:54:22 EST 2023     root@ump.daveg.ca:/usr/obj/usr/src/riscv.riscv64/sys/GENERIC
+                   node name = enceladus
+                     release = 14.1-RELEASE
+                     version = FreeBSD 14.1-RELEASE releng/14.1-n267679-10e31f0946d8 GENERIC
                      machine = riscv
                    page size = 4096
-               system memory = 17114402816
-                             = 16713284 kB
-rv64$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
--------------------------------------------------------------------
-                 system name = FreeBSD
-                   node name = ump.daveg.ca
-                     release = 14.0-CURRENT
-                     version = FreeBSD 14.0-CURRENT #3 main-n260421-17c8213559cd-dirty: Thu Feb  2 12:54:22 EST 2023     root@ump.daveg.ca:/usr/obj/usr/src/riscv.riscv64/sys/GENERIC
-                     machine = riscv
-                   page size = 4096
-               system memory = 17114402816
-                             = 16713284 kB
+               system memory = 17114763264
+                             = 16713636 kB
                              = 16321 MB
                  avail pages = unknown
                 avail memory = unknown
@@ -31,11 +23,11 @@ rv64$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
           _POSIX_TZNAME_MAX  = 6
                       endian = little endian
        sizeof(unsigned long) = 8
-  sizeof(unsigned long long) = 8
+                sizeof(long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime   39 days    3 hours   19 mins   31 secs
+           system uptime    0 day    0 hour   11 mins   11 secs
 -------------------------------------------------------------------
 INFO : baseline tdelta =           1000 nsec
 INFO : magnify accepted as long long int
@@ -57,19 +49,19 @@ pthread_limit = 2
 --------------------------------------------
 pixel_real_w = +3.05175781250000000000000000e-05
 pixel_imag_h = +3.05175781250000000000000000e-05
-raw  [ 523  , 524  ]
-DBUG : sample space [ 512   , 512    ]
-     : vbox  [ 008 , 008 ]
-     : win_r = +9.76562500000000000000000000e-04
-     : win_j = +9.76562500000000000000000000e-04
+raw  [ 846  , 681  ]
+DBUG : sample space [ 835   , 355    ]
+     : vbox  [ 013 , 005 ]
+     : win_r = +6.31835937500000000000000000e-01
+     : win_j = -3.05664062500000000000000000e-01
      : after translation
      : r_trn   = -1.22589111328125000000000000e+00
      : j_trn   = -1.77673339843750000000000000e-01
-     : x_prime = -1.22587585449218750000000000e+00
-     : y_prime = -1.77658081054687500000000000e-01
+     : x_prime = -1.21601867675781250000000000e+00
+     : y_prime = -1.82449340820312500000000000e-01
      : bailout = 256               
      : magnify = 1.280000000000e+02
-[mand] =    71825232912 nsec   7.182523e+01 sec
+[mand] =     4014094690 nsec   4.014095e+00 sec
 
 
 raw data values -------------------------------------------------------
@@ -95,12 +87,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -1.62063598632812500000000000e-01
      :       mand_height =       256
 --------------------------- full plot done -----------------------------
-click at 522 522 
-raw  [ 1399 , 890  ]
+click at 845 679 
+raw  [ 1395 , 893  ]
 INFO : dumper_flag = 1
-click at 1398 888 
-raw  [ 1399 , 890  ]
-INFO : file /var/tmp/dclarke/20230329020430 dump begins.
+click at 1394 891 
+raw  [ 1395 , 893  ]
+INFO : file /var/tmp/dclarke/20240831004653 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -119,18 +111,30 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20230329020430 closed.
+INFO : file /var/tmp/dclarke/20240831004653 closed.
 INFO : dumper_flag = 0
-click at 1398 888 
+click at 1394 891 
+raw  [ 893  , 785  ]
+right click
+click at 892 783 
+raw  [ 893  , 785  ]
+right click
 
-rv64$ od -Ax -t x1 -v -N 96 /var/tmp/dclarke/20230329020430
+
+
+enceladus$ 
+enceladus$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240831004653 
 0000000    00  00  10  00  00  01  00  00  00  00  00  00  00  00  60  40
 0000010    00  00  00  00  40  9d  f3  bf  00  00  00  00  00  be  c6  bf
 0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
 0000030    00  00  00  00  30  dd  f3  bf  00  00  00  00  80  bd  c8  bf
 0000040    0d  00  00  00  00  00  00  00  10  dd  f3  bf  00  00  00  00
 0000050    80  bd  c8  bf  0d  00  00  00  00  00  00  00  f0  dc  f3  bf
-0000060
-rv64$ openssl dgst -sha256 -r /var/tmp/dclarke/20230329020430
-a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20230329020430
-rv64$ 
+0000060    00  00  00  00  80  bd  c8  bf  0d  00  00  00  00  00  00  00
+0000070    d0  dc  f3  bf  00  00  00  00  80  bd  c8  bf  0d  00  00  00
+0000080
+enceladus$ 
+enceladus$ openssl dgst -sha256 -r /var/tmp/dclarke/20240831004653 
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20240831004653
+enceladus$ 
+
