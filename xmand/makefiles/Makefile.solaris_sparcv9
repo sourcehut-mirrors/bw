@@ -1,35 +1,34 @@
 
-CC=/opt/developerstudio12.6/bin/cc
+CC=/opt/developerstudio12.6/bin/c99
 
-CFLAGS= -std=iso9899:1999 -m64 -xarch=sparc -g -xO0 -mc -xs \
+CFLAGS= -Xc -m64 -xarch=sparc -g -xO0 -mc -xs \
 	-errfmt=error -erroff=%none -errshort=full -errtags=yes \
 	-errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff \
 	-xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s \
 	-xnolibmil -xunroll=1 -xdepend -xregs=no%appl \
 	-xdebugformat=dwarf
 
-LIBS=-lX11 -lrt -lm -lpthread
-LDIR=/opt/bw/lib
-IDIR=/opt/bw/include
-RPATH=/opt/bw/lib
+CPPFLAGS= -D_TS_ERRNO -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS= -lX11 -lrt -lm -lpthread
+LDIR= /opt/bw/lib
+IDIR= /opt/bw/include
 
 # custom built libX11 stuff
-LD_OPTIONS=-R/opt/bw/lib -L/opt/bw/lib
-LD_RUN_PATH=/opt/bw/lib
+LD_OPTIONS= -R/opt/bw/lib -L/opt/bw/lib
+LD_RUN_PATH= /opt/bw/lib
 
-CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_TS_ERRNO -D_XOPEN_SOURCE=600
-
-OBJS=		mandel_col.o linear_inter.o mbrot.o \
-			mbrot_fma.o \
-			mbrot_vbox_pthread.o \
-			fp_region.o fp_translate.o fp_vbox.o \
-			array_offset.o swap_four.o swap_eight.o \
-			../xwin/x_error_handler.o \
-			../xwin/create_gc.o \
-			../xwin/create_borderless_topwin.o \
-			../time_and_date/timediff.o \
-			../sysinfo/sysinfo.o
+OBJS= mandel_col.o linear_inter.o mbrot.o \
+	mbrot_fma.o \
+	mbrot_vbox_pthread.o \
+	fp_region.o fp_translate.o fp_vbox.o \
+	array_offset.o swap_four.o swap_eight.o \
+	../xwin/x_error_handler.o \
+	../xwin/create_gc.o \
+	../xwin/create_borderless_topwin.o \
+	../time_and_date/timediff.o \
+	../sysinfo/sysinfo.o
 
 .PHONY: all
 all: xmand
@@ -43,3 +42,4 @@ xmand: xmand.o $(OBJS)
 .PHONY: clean
 clean:
 	rm -f $(OBJS) xmand.o xmand
+

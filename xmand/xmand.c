@@ -2128,7 +2128,11 @@ replot:
             XSetForeground(dsp, gc, yellow.pixel);
             clock_gettime(CLOCK_REALTIME, &soln_t1 );
             t_delta = timediff( soln_t0, soln_t1 );
-            sprintf(buf,"[mand] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
+
+            /* would be nice to have human readable time in secs first */
+            sprintf(buf,"[mand] = %14" PRIu64 " nsec   %-12.6f sec",
+                t_delta, ((double)t_delta)/1000000000.0);
+
             fprintf(stderr,"%s\n\n",buf);
             XSetForeground(dsp, gc2, red.pixel);
             XDrawImageString( dsp, win2, gc2, 10, 310, buf, (int)strlen(buf));

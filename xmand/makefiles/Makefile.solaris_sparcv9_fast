@@ -1,17 +1,40 @@
 
-CC=/opt/developerstudio12.6/bin/c99
+CC=/opt/developerstudio12.6/bin/cc
 
-CFLAGS= -Xc -xmemalign=8s -m64 -xcode=pic32 \
-	-xregs=no%appl -xlibmieee -mc -xs -xO3 -fast \
-	-fma=fused
+CFLAGS= -fast -m64
 
-LIBS=-lX11 -lrt -lm -lpthread
-LDIR=/opt/bw/lib
-IDIR=/opt/bw/include
-RPATH=/opt/bw/lib
+CPPFLAGS= -D_TS_ERRNO -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS= -lX11 -lrt -lm -lpthread
+LDIR= /opt/bw/lib
+IDIR= /opt/bw/include
 
 # custom built libX11 stuff
-LD_OPTIONS=-R/opt/bw/lib -L/opt/bw/lib
-LD_RUN_PATH=/opt/bw/lib
+LD_OPTIONS= -R/opt/bw/lib -L/opt/bw/lib
+LD_RUN_PATH= /opt/bw/lib
 
-include common.mk
+OBJS= mandel_col.o linear_inter.o mbrot.o \
+	mbrot_fma.o \
+	mbrot_vbox_pthread.o \
+	fp_region.o fp_translate.o fp_vbox.o \
+	array_offset.o swap_four.o swap_eight.o \
+	../xwin/x_error_handler.o \
+	../xwin/create_gc.o \
+	../xwin/create_borderless_topwin.o \
+	../time_and_date/timediff.o \
+	../sysinfo/sysinfo.o
+
+.PHONY: all
+all: xmand
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+
+xmand: xmand.o $(OBJS)
+	$(CC) -o xmand xmand.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) xmand.o xmand
+
