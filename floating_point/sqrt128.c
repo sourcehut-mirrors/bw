@@ -1,0 +1,42 @@
+#define _XOPEN_SOURCE 600
+#include <math.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <stdio.h>
+int
+main ( int argc, char **argv )
+{
+
+    /* In theory we should have data in memory that looks like
+     * the following ... on little endian
+0x3fffffe990:   0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x00
+0x3fffffe998:   0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x40
+(gdb) x/16xb 0x3fffffe980
+0x3fffffe980:   0x95    0xea    0x66    0x13    0xfb    0xb2    0x08    0xc9
+0x3fffffe988:   0xbc    0xf3    0x67    0xe6    0x09    0x6a    0xff    0x3f
+
+     * we may see bizarre data on IBM POWER9 where the IBM weird floating
+     * point thingie is being used. Ya know? The weird double double fp64
+     * slam stuff together format ... like so :
+(gdb) x/16xb 0x7ffffffff320
+0x7ffffffff320: 0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x40
+0x7ffffffff328: 0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x00
+(gdb) x/16xb 0x7ffffffff330
+0x7ffffffff330: 0xcd    0x3b    0x7f    0x66    0x9e    0xa0    0xf6    0x3f
+0x7ffffffff338: 0x56    0x64    0xb2    0x13    0x34    0xdd    0x9b    0xbc
+    */
+
+    long double two = 2.0L;
+    long double sqrt_two;
+
+    printf("\n-----\n hey there you we can do sqrt of two\n\n");
+    printf("INFO : the sizeof(long double) is %zu\n", sizeof(long double));
+    printf("     : input number is a perfect power of two 2^1 = %-36.22Le\n", two);
+
+    sqrt_two = sqrtl(two);
+
+    printf("     : sqrt(two) = %-44.38Le\n", sqrt_two);
+
+    return EXIT_SUCCESS;
+
+}
