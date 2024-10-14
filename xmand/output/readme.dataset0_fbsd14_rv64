@@ -4,18 +4,18 @@ enceladus$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
 -------------------------------------------------------------------
                  system name = FreeBSD
                    node name = enceladus
-                     release = 14.1-RELEASE
-                     version = FreeBSD 14.1-RELEASE releng/14.1-n267679-10e31f0946d8 GENERIC
+                     release = 15.0-CURRENT
+                     version = FreeBSD 15.0-CURRENT #0 main-n271918-d7c87526b1c3-dirty: Mon Sep  2 09:55:54 UTC 2024     root@enceladus:/usr/obj/usr/src/riscv.riscv64/sys/GENERIC
                      machine = riscv
                    page size = 4096
-               system memory = 17114742784
-                             = 16713616 kB
-                             = 16321 MB
+               system memory = 17112649728
+                             = 16711572 kB
+                             = 16319 MB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 128
              threads support = 200112
-               POSIX Version = 200112
+               POSIX Version = 200809
           _POSIX_CHILD_MAX   = 25
           _POSIX_NGROUPS_MAX = 8
           _POSIX_OPEN_MAX    = 20
@@ -27,7 +27,7 @@ enceladus$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    0 day    1 hour    1 min   21 secs
+           system uptime   10 days    2 hours    8 mins    3 secs
 -------------------------------------------------------------------
 INFO : baseline tdelta =           1000 nsec
 INFO : magnify accepted as long long int
@@ -49,19 +49,19 @@ pthread_limit = 2
 --------------------------------------------
 pixel_real_w = +3.05175781250000000000000000e-05
 pixel_imag_h = +3.05175781250000000000000000e-05
-raw  [ 539  , 715  ]
-DBUG : sample space [ 528   , 321    ]
-     : vbox  [ 008 , 005 ]
-     : win_r = +3.22265625000000000000000000e-02
-     : win_j = -3.72070312500000000000000000e-01
+raw  [ 740  , 655  ]
+DBUG : sample space [ 729   , 381    ]
+     : vbox  [ 011 , 005 ]
+     : win_r = +4.24804687500000000000000000e-01
+     : win_j = -2.54882812500000000000000000e-01
      : after translation
      : r_trn   = -1.22589111328125000000000000e+00
      : j_trn   = -1.77673339843750000000000000e-01
-     : x_prime = -1.22538757324218750000000000e+00
-     : y_prime = -1.83486938476562500000000000e-01
+     : x_prime = -1.21925354003906250000000000e+00
+     : y_prime = -1.81655883789062500000000000e-01
      : bailout = 256               
      : magnify = 1.280000000000e+02
-[mand] =    69704745991 nsec   6.970475e+01 sec
+[mand] =    72296786300 nsec   72.296786    sec
 
 
 raw data values -------------------------------------------------------
@@ -87,12 +87,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -1.62063598632812500000000000e-01
      :       mand_height =       256
 --------------------------- full plot done -----------------------------
-click at 538 713 
-raw  [ 1391 , 891  ]
+click at 739 653 
+raw  [ 1385 , 891  ]
 INFO : dumper_flag = 1
-click at 1390 889 
-raw  [ 1391 , 891  ]
-INFO : file /var/tmp/dclarke/20240830022255 dump begins.
+click at 1384 889 
+raw  [ 1385 , 891  ]
+INFO : file /var/tmp/dclarke/20240922221818 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -111,19 +111,18 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20240830022255 closed.
+INFO : file /var/tmp/dclarke/20240922221818 closed.
 INFO : dumper_flag = 0
-click at 1390 889 
-raw  [ 835  , 731  ]
+click at 1384 889 
+raw  [ 807  , 732  ]
 right click
-click at 834 729 
-raw  [ 835  , 731  ]
+click at 806 730 
+raw  [ 807  , 732  ]
 right click
 
 
 
-enceladus$ 
-enceladus$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240830022255
+enceladus$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240922221818 
 0000000    00  00  10  00  00  01  00  00  00  00  00  00  00  00  60  40
 0000010    00  00  00  00  40  9d  f3  bf  00  00  00  00  00  be  c6  bf
 0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
@@ -134,6 +133,7 @@ enceladus$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240830022255
 0000070    d0  dc  f3  bf  00  00  00  00  80  bd  c8  bf  0d  00  00  00
 0000080
 enceladus$ 
-enceladus$ openssl dgst -sha256 -r /var/tmp/dclarke/20240830022255 
-a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20240830022255
+enceladus$ openssl dgst -sha256 -r /var/tmp/dclarke/20240922221818
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20240922221818
 enceladus$ 
+

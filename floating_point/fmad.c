@@ -31,6 +31,8 @@
  *
  *********************************************************************/
 
+#pragma STDC FENV_ACCESS ON
+#pragma STDC FP_CONTRACT ON
 #define _XOPEN_SOURCE 600
 
 #include <stdio.h>
