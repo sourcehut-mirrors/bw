@@ -1,0 +1,15 @@
+
+CC?= /usr/bin/cc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors \
+	-march=rv64imafdc -mabi=lp64d -m64 -g -O0 \
+	-fno-fast-math -fno-builtin \
+	-Weverything \
+	-Wno-reserved-id-macro -Wno-missing-prototypes
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS= -D_LARGEFILE54_SOURCE -D_XOPEN_SOURCE=600
+
+LIBS= -lm
+
+include common.mk
