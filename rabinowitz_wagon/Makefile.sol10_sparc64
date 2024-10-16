@@ -7,6 +7,7 @@ CFLAGS= -I$(IDIR) -Xc -g -errfmt=error -erroff=%none -xmemalign=8s -errshort=ful
 	-xdebugformat=dwarf -xunroll=1
 
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+		-D_TS_ERRNO -D_FILE_OFFSET_BITS=64 \
 	-D_XOPEN_SOURCE=600
 
 LIBS = -lm -lgmp
