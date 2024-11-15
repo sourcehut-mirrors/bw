@@ -1,3 +1,14 @@
+
+
+Quick kick at the C90 timediff code : 
+
+  $CC -std=iso9899:1990 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -fno-fast-math -malign-double -mstackrealign -mpreferred-stack-boundary=8 -mno-mmx -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -c -o tdiff.o tdiff.c 
+
+  $CC -std=iso9899:1990 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -fno-fast-math -malign-double -mstackrealign -mpreferred-stack-boundary=8 -mno-mmx -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -c -o test_tdiff.o test_tdiff.c 
+
+  $CC -std=iso9899:1990 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -fno-fast-math -malign-double -mstackrealign -mpreferred-stack-boundary=8 -mno-mmx -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -o test_tdiff test_tdiff.o tdiff.o 
+
+-------------------------------------------------
 Wed Aug 14 21:46:01 GMT 2019
 
 we play around with the leap year problem and 

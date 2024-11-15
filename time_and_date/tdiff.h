@@ -46,6 +46,11 @@
 typedef struct tdiff {
     long   sec;
     long   nsec;
+    /* A 64 bit floating point data type will not
+     * be able to represent the time delta.
+     * It is close enough to the microsec at best.
+     */
+    double delta;
 } tdiff_type;
 
 int tdiff( tdiff_type *diff,

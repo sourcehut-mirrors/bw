@@ -47,6 +47,9 @@ main ( int argc, char **argv )
     int sleep_time;
     int collatz, current_val, loop_count, altitude, bail_out=100;
 
+    double billion = 1000000000.0;
+    double fp64_delta;
+
     /* we may or may not have CLOCK_MONOTONIC implemented */
     clockid_t clock_flag;
 
@@ -55,23 +58,41 @@ main ( int argc, char **argv )
     /* we can begin with the case examples in the tdiff.c
      * sources
      *
+     * Case (1) where t0 sec > t1 sec
+     *
      *        tn_0                    tn_1
      * (1.1)  108.925                 102.655
      * (1.2)  277.186                 192.186
      * (1.3)  126.587                 104.816
+     *
+     * Case (2) where t0 sec == t1 sec
+     *
+     *        tn_0                    tn_1
      * (2.1)  1718602045.843710014    1718602045.714047011
      * (2.2)  1718666491.595164076    1718666491.595164076
      * (2.3)  1718604178.149045751    1718604178.457419106
+     *
+     * Case (3) where t0 sec < t1 sec
+     *
+     *        tn_0                    tn_1
      * (3.1)  54387.390145701         68712.127084199
      * (3.2)  1718604178.123456789    1718604192.123456789
      * (3.3)  1718604178.047684173    1718607011.094571341
+     *
+     *
+     * In all circumstances we need a delta report that seems to
+     * be a resonable number. Simply using sec = 0 and nsec = -23
+     * is of little value. 
+     *
+     * Perhaps a double would not be a terrible idea. At the very
+     * least one should have a usable numerical result.
      *
      * */
 
     /*
      *        tn_0                    tn_1
      * (1.1)  108.925                 102.655
-     *             delta = -6.27
+     *             delta = -6.27 secs
      */
     tn_0.tv_sec = 108;            tn_0.tv_nsec = 925000000;
     tn_1.tv_sec = 102;            tn_1.tv_nsec = 655000000;
@@ -83,8 +104,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
-    printf("            delta = %10ld    %9ld\n\n",
+    printf("   expected delta = -6.27\n");
+    printf("            delta = %10ld    %9ld\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -101,8 +125,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
-    printf("            delta = %10ld    %9ld\n\n",
+    printf("   expected delta = -85.0\n");
+    printf("            delta = %10ld    %9ld\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -119,13 +146,21 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = -21.771\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
 
-    /*
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
+
+    /* section ( 2 )
+     *
      *        tn_0                    tn_1
      * (2.1)  1718602045.843710014    1718602045.714047011
      *             delta = -0.129663003
+     *
+     *   +-------------------------------------+
+     *   | Here we need a better output format |
+     *   +-------------------------------------+
      */
     tn_0.tv_sec = 1718602045;     tn_0.tv_nsec = 843710014;
     tn_1.tv_sec = 1718602045;     tn_1.tv_nsec = 714047011;
@@ -137,8 +172,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = -0.129663003\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -155,8 +193,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = 0.0\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -173,8 +214,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = 0.308373355\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -191,8 +235,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = 14324.736938498\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -209,8 +256,11 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = 14.0\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
+
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
 
     /*
      *        tn_0                    tn_1
@@ -227,10 +277,16 @@ main ( int argc, char **argv )
 
     tdiff( &delta_time, tn_0, tn_1);
 
+    printf("   expected delta = 2833.046887168\n");
     printf("            delta = %10ld    %9ld\n\n",
                              delta_time.sec, delta_time.nsec);
 
-    printf("\n\n---------------------------------------\n\n");
+    printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
+
+    return EXIT_SUCCESS;
+
+
+    printf("\n\n\n\n---------------------------------------\n\n");
     printf(" A small slice of collatz conjecture.\n");
     printf("---------------------------------------\n");
 
@@ -266,13 +322,12 @@ main ( int argc, char **argv )
         }
     }
 
+    /* wtf?
     sin_num = fileno(stdin);
     out_num = fileno(stdout);
     err_num = fileno(stderr);
+    */
 
-    printf("\n\n---------------------------------------\n\n");
-    printf(" A small slice of collatz conjecture.\n");
-    printf("---------------------------------------\n");
 
     /* slam in some collatz conjecture madness to chew up
      * a bit of time ... */

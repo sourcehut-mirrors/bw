@@ -2,24 +2,54 @@
 /*
  * pollard_rho_minimal.c   A baseline Pollard Rho Algorithm which does
  *                         need libgmp and libmpfr but not much else.
- *                         Tested on a SPARCStation 20 and Solaris 8.
- * Copyright (C) Dennis Clarke 2019
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * For the Pollard Rho factorization algorithm please
+ * see page 976 of the "CLRS" Algorithms textbook.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * For a test try 189062773499962839573884702666722005472141132697
+ * which should factor nicely in about 15 secs or less.
  *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
+
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
+#define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <stdio.h>
@@ -39,9 +69,9 @@
 
 #define PREC 113 /* lowest reasonable precision */
 
-size_t gmp_mpfr_ver(int *mpfr_flags);
-int mpfr_check_flags(int status, int debug_flag);
-int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in);
+int mpfr_check_flags(int mpfr_status, int debug_flag);
+int gcd_mpfr(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in);
+int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
 int main (int argc, char *argv[])
 {
@@ -57,7 +87,9 @@ int main (int argc, char *argv[])
     int width, chars_formatted;
     int input_attempt_loop = 0;
 
+    int gmp_mpfr_ver_ret = 0;
     int mpfr_flags = 0;
+    int status = 0;
     size_t mpfr_precision_size = 0;
 
     mpfr_t number_m, x_m, x_fixed_m, size_m;
@@ -84,9 +116,25 @@ int main (int argc, char *argv[])
     }
 
 
-    mpfr_precision_size = gmp_mpfr_ver(&mpfr_flags);
+    gmp_mpfr_ver_ret = gmp_mpfr_ver(&status, &mpfr_flags);
 
-    printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n\n", mpfr_flags);
+
+    /* TODO : interpret the status and flags */
+    printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n", mpfr_flags);
+    printf("     :                            status = %02x\n", status);
+    printf("     :                  gmp_mpfr_ver_ret = %02x\n\n", gmp_mpfr_ver_ret);
+
+    
+    mpfr_precision_size = sizeof(mpfr_prec_t);
+    printf("            : sizeof(mpfr_prec_t) = %zu\n", mpfr_precision_size);
+
+    /* if the gmp_mpfr_ver_ret differs from mpfr_precision_size then
+     * we likely have a problem somewhere.  Good luck. */
+    if ( gmp_mpfr_ver_ret != ( (int) mpfr_precision_size ) ) {
+        fprintf(stderr,"FAIL : gmp_mpfr_ver_ret != mpfr_precision_size\n");
+        return EXIT_FAILURE;
+    }
+
 
     /* check if a debug flag was on command line */
     if (argc>3){
@@ -336,7 +384,7 @@ do_square:
             inex = mpfr_fmod(x_m, x_m, number_m, MPFR_RNDN);
             inex = mpfr_sub(gcd_test_m, x_m, x_fixed_m, MPFR_RNDN);
             inex = mpfr_abs(gcd_test_m, gcd_test_m, MPFR_RNDN);
-            inex = gcd_m(&number_m, &gcd_test_m, &factor_m);
+            inex = gcd_mpfr(&number_m, &gcd_test_m, &factor_m);
         }
         inex = mpfr_mul_si(size_m,size_m,(long)2,MPFR_RNDN);
         inex = mpfr_set(x_fixed_m, x_m, MPFR_RNDN);
@@ -359,155 +407,5 @@ do_square:
 
     return EXIT_SUCCESS;
 
-}
-
-int mpfr_check_flags(int mpfr_status, int debug_flag)
-{
-    /* some mpfr call resulted in a mpfr_status value
-     * so lets check the flags and determine if the
-     * status should be cleared to zero or not */
-
-    int mpfr_underflow_flag, mpfr_overflow_flag, mpfr_divby0_flag,
-        mpfr_nanflag_flag, mpfr_inexflag_flag, mpfr_erangeflag_flag;
-
-    mpfr_underflow_flag = mpfr_underflow_p();
-    if ( mpfr_underflow_flag != 0 ){
-        printf ("INFO : mpfr_underflow_flag is set.\n" );
-        /* treat underflow as an error situation */
-        mpfr_status = -1;
-    }
-
-    mpfr_overflow_flag = mpfr_overflow_p();
-    if ( mpfr_overflow_flag != 0 ){
-        printf ("INFO : mpfr_overflow_flag is set.\n" );
-        /* treat overflow as an error situation */
-        mpfr_status = -1;
-    }
-
-    mpfr_divby0_flag = mpfr_divby0_p();
-    if ( mpfr_divby0_flag != 0 ){
-        printf ("INFO : mpfr_divby0_flag is set.\n" );
-        /* divide by zero is definately an error */
-        mpfr_status = -1;
-    }
-
-    mpfr_nanflag_flag = mpfr_nanflag_p();
-    if ( mpfr_nanflag_flag != 0 ){
-        printf ("INFO : mpfr_nanflag_flag is set.\n" );
-        /* a NaN may not be an error condition */
-        mpfr_status = 0;
-    }
-
-    mpfr_inexflag_flag = mpfr_inexflag_p();
-    if ( mpfr_inexflag_flag != 0 ){
-        /* a computation was not exact */
-        if (debug_flag) fprintf (stderr,"WARN : mpfr_inexflag_flag is set.\n");
-        mpfr_status = -1;
-    }
-
-    mpfr_erangeflag_flag = mpfr_erangeflag_p();
-    if ( mpfr_erangeflag_flag != 0 ){
-        printf ("INFO : mpfr_erangeflag_flag is set.\n" );
-        /* treat a range error as a valid error */
-        mpfr_status = -1;
-    }
-
-    return mpfr_status;
-
-}
-
-size_t gmp_mpfr_ver(int *mpfr_flags)
-{
-
-    size_t ret_val;
-
-    printf("GMP  library version : %d.%d.%d\n",
-            __GNU_MP_VERSION,
-            __GNU_MP_VERSION_MINOR,
-            __GNU_MP_VERSION_PATCHLEVEL );
-
-    printf("MPFR library: %-12s\n", mpfr_get_version ());
-    printf("MPFR header : %s (based on %d.%d.%d)\n",
-            MPFR_VERSION_STRING,
-            MPFR_VERSION_MAJOR,
-            MPFR_VERSION_MINOR,
-            MPFR_VERSION_PATCHLEVEL);
-
-    errno = 0;
-    if (mpfr_flags == NULL) {
-        mpfr_flags = calloc(1, sizeof(int));
-
-        if ( mpfr_flags == NULL ) {
-            /* really? possible ENOMEM? */
-            if ( errno == ENOMEM ) {
-                fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
-                         __FILE__, __LINE__ );
-            } else {
-                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
-                   __FILE__, __LINE__ );
-            }
-            perror("FAIL ");
-            /* NOTE : it is very nasty to bail out this way
-             *        but why bother to continue ?
-             */
-            exit (EXIT_FAILURE);
-        }
-
-    } else {
-        *mpfr_flags = 0;
-    }
-
-    if (mpfr_buildopt_tls_p()!=0) {
-        printf("            : compiled as thread safe using TLS\n");
-        *mpfr_flags += 1;
-    }
-
-    if (mpfr_buildopt_float128_p()!=0) {
-        printf("            : __float128 support enabled\n");
-        *mpfr_flags += 2;
-    }
-
-    if (mpfr_buildopt_decimal_p()!=0) {
-        printf("            : decimal float support enabled\n");
-        *mpfr_flags += 4;
-    }
-
-    if (mpfr_buildopt_gmpinternals_p()!=0) {
-        printf("            : compiled with GMP internals\n");
-        *mpfr_flags += 8;
-    }
-
-    if (mpfr_buildopt_sharedcache_p()!=0) {
-        printf("            : threads share cache per MPFR const\n");
-        *mpfr_flags += 16;
-    }
-
-    ret_val = sizeof(mpfr_prec_t);
-    printf("            : sizeof(mpfr_prec_t) = %zu\n", ret_val);
-
-    printf("MPFR thresholds file used at compile time : %s\n\n",
-                                      mpfr_buildopt_tune_case ());
-
-
-    return ret_val;
-
-}
-
-int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in)
-{
-    int inex, loop = 0;
-    mpfr_t rem_m, a, b, g; /* remainder */
-    mpfr_inits(rem_m, a, b, g, (mpfr_ptr) NULL);
-    inex = mpfr_set(a, *a_in, MPFR_RNDN);
-    inex = mpfr_set(b, *b_in, MPFR_RNDN);
-    inex = mpfr_set(g, *g_in, MPFR_RNDN);
-    while ( mpfr_zero_p(b) == 0 ) {
-        inex = mpfr_fmod(rem_m, a, b, MPFR_RNDN);
-        inex = mpfr_set(a, b, MPFR_RNDN);
-        inex = mpfr_set(b, rem_m, MPFR_RNDN);
-    }
-    inex = mpfr_set(*g_in, a, MPFR_RNDN);
-    mpfr_clears (rem_m, a, b, g, (mpfr_ptr) 0);
-    return EXIT_SUCCESS;
 }
 

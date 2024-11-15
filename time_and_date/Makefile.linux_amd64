@@ -1,0 +1,23 @@
+
+CC?= /usr/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float \
+	-fno-fast-math -malign-double -m128bit-long-double \
+	-mstackrealign -mpreferred-stack-boundary=8 -mno-mmx 
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=500
+
+SRCS = tdiff.c test_tdiff.c print_date.c valid_date.c
+
+OBJS = tdiff.o test_tdiff.o print_date.o valid_date.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+test_tdiff: $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) test_tdiff date_list

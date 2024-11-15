@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include "tdiff.h"
 
-int tdiff( tdiff_type *delta,
+int tdiff( tdiff_type *dt,
            struct timespec start_time,
            struct timespec end_time )
 {
@@ -257,27 +257,38 @@ int tdiff( tdiff_type *delta,
 
     struct timespec temp;
     long seconds, nanosecs;
+    double fp64;
 
     if ( start_time.tv_sec > end_time.tv_sec ) {
+
         if ( start_time.tv_nsec > end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = -1 * ( end_time.tv_nsec - start_time.tv_nsec );
+            fp64 = (double)temp.tv_sec 
+                        - ( (double)temp.tv_nsec / 1000000000.0 );
         }
+
         if ( start_time.tv_nsec == end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = 0;
+            fp64 = (double)temp.tv_sec;
         }
+
         if ( start_time.tv_nsec < end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec + 1;
             temp.tv_nsec = -1 * ( end_time.tv_nsec
                                 - start_time.tv_nsec
                                 - 1000000000 );
+            fp64 = (double)temp.tv_sec
+                        - ( (double)temp.tv_nsec / 1000000000.0 );
         }
+
     }
 
     if ( start_time.tv_sec == end_time.tv_sec ) {
         temp.tv_sec = 0;
         temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+        fp64 = ( (double)temp.tv_nsec / 1000000000.0 );
     } 
 
     if ( start_time.tv_sec < end_time.tv_sec ) {
@@ -285,20 +296,26 @@ int tdiff( tdiff_type *delta,
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec - 1;
             temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec
                               + 1000000000;
+            fp64 = (double)temp.tv_sec
+                        + ( (double)temp.tv_nsec / 1000000000.0 );
         }
         if ( start_time.tv_nsec == end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = 0;
+            fp64 = (double)temp.tv_sec;
         }
         if ( start_time.tv_nsec < end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+            fp64 = (double)temp.tv_sec
+                        + ( (double)temp.tv_nsec / 1000000000.0 );
         }
 
     }
 
-    delta->sec = temp.tv_sec;
-    delta->nsec = temp.tv_nsec;
+    dt->sec = temp.tv_sec;
+    dt->nsec = temp.tv_nsec;
+    dt->delta = fp64;
     
     return EXIT_SUCCESS;
 

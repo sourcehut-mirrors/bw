@@ -26,6 +26,8 @@
  *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ------------------------------------------------------------------
+ *
+ * NOTE: should be C90 clean
  */
 
 #define _XOPEN_SOURCE 500
@@ -57,21 +59,14 @@ int main(int argc, char *argv[])
     if ( argc > 1 ) {
         printf ("\nINFO : You suggest a locale of %s\n", argv[1]);
         buf = setlocale ( LC_ALL, argv[1] );
-    } else {
-        buf = setlocale ( LC_ALL, "POSIX" );
-    }
-
-    if ( argc == 4 ) {
-        start_year = atoi(argv[2]);
-        end_year = atoi(argv[3]);
-        printf ("\nINFO : You provide start year = %i\n", start_year);
-        printf ("     :       with an end year = %i\n", end_year);
-        if ( ( start_year < 1700 ) || ( end_year > 2038 ) ) {
-            printf ("     : good luck.\n");
+        /* The return value is NULL if the request can not be done */
+        if ( buf == NULL ) {
+            fprintf(stderr,"WARN : locale request failed.\n");
+            buf = setlocale ( LC_ALL, "POSIX" );
+            fprintf(stderr,"     : locale POSIX should just work.\n");
         }
     } else {
-        printf ("\nINFO : start year = %i and end year = %i\n",
-                start_year, end_year);
+        buf = setlocale ( LC_ALL, "POSIX" );
     }
 
     if ( buf == NULL ) {
@@ -79,11 +74,28 @@ int main(int argc, char *argv[])
         return(EXIT_FAILURE);
     }
 
+    if ( argc == 4 ) {
+        start_year = atoi(argv[2]);
+        end_year = atoi(argv[3]);
+        printf ("\nINFO : You provide start year = %i\n", start_year);
+        printf ("     :       with an end year = %i\n", end_year);
+        if ( ( start_year < 1752 ) || ( end_year > 2038 ) ) {
+            printf ("     : good luck.\n");
+        }
+    } else {
+        printf ("\nINFO : start year = %i and end year = %i\n",
+                start_year, end_year);
+    }
+
     for ( year = start_year; year < ( end_year + 1 ); year++ ) {
         for ( month = 1; month < 13; month++ ) {
             for ( day = 1; day < 32; day++ ) {
 
-                /* does this date exist ? */
+                if ( valid_date( day, month, year ) ) {
+                        print_date( day, month, year );
+                }
+
+                /* this would not work in the year 1752 *************
                 if ( day < 29 ) {
 
                     print_date( day, month, year );
@@ -103,6 +115,8 @@ int main(int argc, char *argv[])
                     }
 
                 }
+                *****************************************************/
+
             } /* day */
         } /* month */
     } /* year */

@@ -28,6 +28,9 @@
  *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ------------------------------------------------------------------
+ *
+ * NOTE : should be C90 clean.
+ *
  */
 
 #define _XOPEN_SOURCE 500
@@ -35,12 +38,10 @@
 int valid_date ( int day, int month, int year )
 {
 
-    /* just create a trivial array of the usual days
-     * in a month. */
+    /* trivial array of the not leap year days in a month. */
     int days_in_month[12] = { 31, 28, 31, 30, 31, 30,
                               31, 31, 30, 31, 30, 31 };
 
-    /* check for bad data */
     if ( ( day < 1 ) || ( day > 31 ) ) {
         return 0;
     }
@@ -49,6 +50,9 @@ int valid_date ( int day, int month, int year )
         return 0;
     }
 
+    /* If you want anything previous to 1752 then good luck.
+     * The 2038 problem is not what it once was, or will be.
+     */
     if ( ( year < 1752 ) || ( year > 2038 ) ) {
         return 0;
     }
@@ -61,7 +65,6 @@ int valid_date ( int day, int month, int year )
      * by 100 (for example, 1900) is a leap year only if it
      * is also evenly divisible by 400.
      */
-
     if ( month == 2 ) {
         if (    ( ( year%4 == 0 ) && ( ( year%100 ) > 0 ) )
              || ( year%400 == 0 ) ) {
@@ -70,12 +73,11 @@ int valid_date ( int day, int month, int year )
             days_in_month[1] = 29;
 
         }
-    }
-
-    /* we may still have bad data for February */
-    if ( day > days_in_month[month-1] ) {
-        /* I really do not recall how this can happen */
-        return 0;
+        /* do we need to check February again? */
+        if ( day > 29 ) {
+            /* I really do not recall how this can happen */
+            return 0;
+        }
     }
 
     /* For the sake of being really pedantic there exists
@@ -87,6 +89,9 @@ int valid_date ( int day, int month, int year )
      *                    1  2 14 15 16 17
      *                18 19 20 21 22 23 24
      *                25 26 27 28 29 30
+     *
+     * Feel free to research how no one was born between
+     * September the 3rd and the 13th of the year 1752.
      */
     if ( ( year == 1752 ) && ( month == 9 )
            && ( day > 2 ) && ( day < 14 ) ) {

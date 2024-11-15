@@ -175,7 +175,7 @@ gmp_mpfr_ver(int *status, int *mpfr_flags)
         *mpfr_flags += 16;
     }
 
-    ret_val = sizeof(mpfr_prec_t);
+    ret_val = (int)sizeof(mpfr_prec_t);
 
     printf("            : sizeof(mpfr_prec_t) = %i\n", ret_val);
 

@@ -26,6 +26,7 @@
  *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ------------------------------------------------------------------
+ * NOTE : should be C90 clean
  */
 
 #define _XOPEN_SOURCE 500
