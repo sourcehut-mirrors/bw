@@ -1,0 +1,88 @@
+
+sedna$ uname -a 
+Linux sedna 6.11.7-genunix #1 SMP PREEMPT_DYNAMIC Thu Nov 14 10:51:11 GMT 2024 x86_64 GNU/Linux
+
+sedna$ grep 'nvidia' /proc/modules 
+nvidia_uvm 1445888 0 - Live 0x0000000000000000 (PO)
+nvidia_drm 77824 0 - Live 0x0000000000000000 (PO)
+nvidia_modeset 1212416 1 nvidia_drm, Live 0x0000000000000000 (PO)
+nvidia 35667968 2 nvidia_uvm,nvidia_modeset, Live 0x0000000000000000 (PO)
+drm_kms_helper 249856 1 nvidia_drm, Live 0x0000000000000000
+drm 770048 4 nvidia_drm,nvidia,drm_kms_helper, Live 0x0000000000000000
+video 81920 1 nvidia_modeset, Live 0x0000000000000000
+
+sedna$ nvidia-smi 
+Fri Nov 15 14:25:34 2024       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 470.256.02   Driver Version: 470.256.02   CUDA Version: 11.4     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  Quadro K6000        Off  | 00000000:00:08.0 Off |                  Off |
+|  0%   45C    P0    34W / 225W |      0MiB / 12206MiB |      1%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+sedna$ 
+
+
+
+sedna$ PATH=/usr/local/cuda-11.8/bin:$PATH
+sedna$ export PATH
+
+sedna$ echo $PATH
+/usr/local/cuda-11.8/bin:/opt/genunix/bin:/opt/genunix/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/schily/bin
+
+sedna$ NVCC=/usr/local/cuda-11.8/bin/nvcc
+sedna$ export NVCC
+
+sedna$ CXX=/usr/bin/g++-12
+sedna$ export CXX
+
+sedna$ $NVCC -ccbin $CXX -I../include -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_50,code=sm_50 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
+sedna$ 
+sedna$ $NVCC -ccbin $CXX -m64 \
+> -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_50,code=sm_50 \
+> -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> -o dev_info dev_info.o
+sedna$ 
+
+sedna$ file dev_info
+dev_info: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=fa18c8ed3ae03d2a563e8fe4eb30d2c8da66b058, for GNU/Linux 3.2.0, not stripped
+sedna$ 
+
+
+sedna$ which nvprof
+/usr/local/cuda-11.8/bin/nvprof
+
+sedna$ nvprof ./dev_info
+======== Warning: CUDA device error, GPU profiling skipped
+
+ *** CUDA Device Query (Runtime API) ***
+INFO : CUDART_VERSION defined as 11080
+INFO : we may be using CUDART static linking
+INFO : NPP_VERSION_MAJOR defined as 11
+INFO : NPP_VERSION_MINOR defined as 8
+     : (NPP_VERSION_MAJOR << 12) + (NPP_VERSION_MINOR << 4) >= 0x6000
+     : signal and image processing functions are available.
+FAIL : cudaGetDeviceCount 101
+-> invalid device ordinal
+======== Error: Application returned non-zero code 1
+sedna$ 
+
