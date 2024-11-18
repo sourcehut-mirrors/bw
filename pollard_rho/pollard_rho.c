@@ -3,6 +3,9 @@
  * pollard_rho_minimal.c   A baseline Pollard Rho Algorithm which does
  *                         need libgmp and libmpfr but not much else.
  *
+ *                 NOTE : This will resize the bit width of parameters
+ *                        if needed. Also will verify the input for a
+ *                        given bit width.
  *
  * For the Pollard Rho factorization algorithm please
  * see page 976 of the "CLRS" Algorithms textbook.
@@ -60,6 +63,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <strings.h>
+#include <time.h>
 #include <locale.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
@@ -67,7 +71,9 @@
 #include <gmp.h>
 #include <mpfr.h>
 
-#define PREC 113 /* lowest reasonable precision */
+#include "tdiff.h"
+
+#define PREC 113
 
 int mpfr_check_flags(int mpfr_status, int debug_flag);
 int gcd_mpfr(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in);
@@ -80,7 +86,9 @@ int main (int argc, char *argv[])
 
     long bit_prec = PREC;
     long delta_bit_prec; /* used to increase precision if needed */
-    char *endptr, *str;
+    char *endptr, *str, *masprintf_buf;
+
+    struct timespec tn_0, tn_1;
 
     /* buffer to compare what we receive to what was actually input */
     char *buf;
@@ -89,8 +97,8 @@ int main (int argc, char *argv[])
 
     int gmp_mpfr_ver_ret = 0;
     int mpfr_flags = 0;
-    int status = 0;
-    size_t mpfr_precision_size = 0;
+    int err_clock, status = 0;
+    size_t masprintf_buf_len, mpfr_precision_size = 0;
 
     mpfr_t number_m, x_m, x_fixed_m, size_m;
     mpfr_t factor_m, gcd_test_m, one_m, four_m, input_m;
@@ -104,6 +112,44 @@ int main (int argc, char *argv[])
     int inex; /* mpfr retval */
     int debug = 0;
 
+    /* determine if we have access to a system clock */
+#if ! defined (CLOCK_MONOTONIC)
+fprintf(stderr,"\nWARN : CLOCK_MONOTONIC not defined.\n");
+#endif
+
+    clockid_t clock_flag = CLOCK_MONOTONIC;
+    tdiff_type delta_time;
+
+    errno = 0;
+    err_clock = clock_gettime(clock_flag, &tn_0);
+    if ( err_clock != 0 ) {
+        fprintf(stderr,"FAIL : ");
+        if ( errno == ENOSYS ) {
+            fprintf(stderr,"clock_gettime() not supported\n");
+            return EXIT_FAILURE;
+        }
+
+        if ( errno == EINVAL ) {
+            fprintf(stderr,"CLOCK_MONOTONIC not known\n");
+            errno = 0;
+            clock_flag = CLOCK_REALTIME;
+            err_clock = clock_gettime(clock_flag, &tn_0);
+
+            if ( err_clock != 0 ) {
+                if ( errno == EINVAL ) {
+                    /* Not very likely to ever happen as CLOCK_REALTIME
+                     * shall always be implemented if the clock_gettime()
+                     * function exists. */
+                    fprintf(stderr,"FAIL : CLOCK_REALTIME not supported\n");
+                    fprintf(stderr,"     : is your machine an IBM System 370?\n");
+                    return EXIT_FAILURE;
+                }
+                fprintf(stderr,"FAIL : Bizarre clock error. Good luck.\n");
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
     /* C or POSIX locale */
     if ( setlocale( LC_ALL, "POSIX" ) == NULL ) {
         fprintf(stderr,"FAIL : could not set LC_ALL=\"POSIX\"\n");
@@ -115,15 +161,25 @@ int main (int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    if ( setlocale( LC_TIME, "C" ) == NULL ) {
+        fprintf(stderr,"FAIL : could not set LC_TIME=\"C\"\n");
+        return EXIT_FAILURE;
+    }
+
 
     gmp_mpfr_ver_ret = gmp_mpfr_ver(&status, &mpfr_flags);
 
 
     /* TODO : interpret the status and flags */
     printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n", mpfr_flags);
+    /* would be nice to dig into those flags a bit */
+
     printf("     :                            status = %02x\n", status);
     printf("     :                  gmp_mpfr_ver_ret = %02x\n\n", gmp_mpfr_ver_ret);
 
+    /* set the default rounding mode to round to nearest, with the even
+     * rounding rule (roundTiesToEven in IEEE 754) */
+    mpfr_set_default_rounding_mode (MPFR_RNDN);
     
     mpfr_precision_size = sizeof(mpfr_prec_t);
     printf("            : sizeof(mpfr_prec_t) = %zu\n", mpfr_precision_size);
@@ -135,23 +191,9 @@ int main (int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-
-    /* check if a debug flag was on command line */
-    if (argc>3){
-        fprintf(stderr,"INFO : will assume debug is requested.\n");
-        debug = 1;
-    }
-
-    /* check if a test integer was on the command line */
-    if (argc<3){
-        fprintf(stderr,"FAIL : test number and bit precision?\n");
-        fprintf(stderr,"FAIL : %s <integer> <bit precision>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
-
     /* check if a bit precision parameter was on the command line */
-    if (argc>2){
-        errno = 0; /* To distinguish success/failure after call */
+    if (argc>2) {
+        errno = 0;
         str = argv[2];
         bit_prec = strtol(str, &endptr, 10);
 
@@ -186,10 +228,25 @@ int main (int argc, char *argv[])
         bit_prec = PREC;
     }
     delta_bit_prec = bit_prec / 2;
+
+    /* check if a test integer was on the command line */
+    if (argc<3){
+        fprintf(stderr,"FAIL : test number and bit precision?\n");
+        fprintf(stderr,"FAIL : %s <integer> <bit precision>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
     printf("\nWe shall use %li bits of precision.\n", bit_prec);
+
     mpfr_set_default_prec((mpfr_prec_t)bit_prec);
     mpfr_init2 (input_m, (mpfr_prec_t) bit_prec);
     mpfr_init2 (four_m, (mpfr_prec_t) bit_prec);
+
+    /* check if a debug flag was on command line */
+    if (argc>3){
+        fprintf(stderr,"INFO : will assume debug is requested.\n");
+        debug = 1;
+    }
 
 input_try:
     if (argc>1){
@@ -265,6 +322,36 @@ input_try:
     printf("\nWe shall find a factor of ");
     mpfr_printf("%22.Rf\n", input_m);
 
+
+    /* give a test of this to see what we get 
+     *
+     * Function: int mpfr_asprintf (char **str, const char *template, …)
+     * Write their output as a null terminated string in a block of 
+     * memory allocated using the allocation function (see Memory Handling). 
+     * A pointer to the block is stored in str. The block of memory must 
+     * be freed using mpfr_free_str. The return value is the number of 
+     * characters written in the string, excluding the null-terminator, or 
+     * a negative value if an error occurred, in which case the contents 
+     * of str are undefined.
+     *
+     *           ("%.8RNg", x)  
+     *
+     *           is the same as 
+     *
+     *           ("%.8R*g", MPFR_RNDN, x)  
+     *
+     */
+
+    inex = mpfr_asprintf ( &masprintf_buf, "%.8ZNg", input_m);
+    if ( inex < 0 ) {
+        fprintf(stderr,"WARN : some sort of error from mpfr_asprintf\n");
+        /* TODO determine what may have happened with the buff */
+    } else {
+        masprintf_buf_len = strlen( masprintf_buf );
+        fprintf(stderr,"INFO : %zu chars into masprintf_buf\n", masprintf_buf_len);
+    }
+
+
     /* provide a width field doesn't seem to work
      *   mpfr_printf("%*.Rf\n", width, input_m);
      */
@@ -293,6 +380,10 @@ input_try:
     printf("Pollard Rho shall proceed with ");
     printf("%i bits of precision.\n", (int)actual_prec);
     printf("------------------------------------------------------\n");
+
+    /* We already checked the error status above so this is just
+     * a timestamp. */
+    err_clock = clock_gettime(clock_flag, &tn_0);
 
     while ( mpfr_cmp( factor_m, one_m) == 0 ) {
         printf("loop %6"PRIu64"    ", loop);
@@ -390,7 +481,32 @@ do_square:
         inex = mpfr_set(x_fixed_m, x_m, MPFR_RNDN);
         printf("count = %12"PRIu64" ", count);
         if(debug){
-            mpfr_printf("  x = %26.Rf   factor = %.Rf", x_m, factor_m);
+            /* do not report a factor of 1 and perhaps a time delta
+             * would be more useful here */
+
+            err_clock = clock_gettime(clock_flag, &tn_1);
+
+            /*
+             * tdiff( &delta_time, tn_0, tn_1);
+             *
+             * printf("            delta = %10ld    %9ld\n",
+             *                 delta_time.sec, delta_time.nsec);
+             *
+             * printf("             fp64 = %-+20.10g\n\n", delta_time.delta);
+             *
+             * we need to check the factor via one_m mpfr data
+             *
+             * why the hell is there a %26 in the format string ??
+             */
+            if ( mpfr_cmp(factor_m, one_m) == 0 ) {
+                /* output the current value for x and a timestamp */
+                mpfr_printf("  x = %26.Rf   t_delta = ", x_m);
+                tdiff( &delta_time, tn_0, tn_1);
+                printf("%-+20.10g", delta_time.delta);
+            } else {
+                mpfr_printf("  x = %26.Rf    factor = %.Rf", x_m, factor_m);
+            }
+
         }
         printf("\n");
         loop = loop + 1;
@@ -399,7 +515,7 @@ do_square:
     printf("DONE : used %i bits of precision.\n", (int)actual_prec);
     mpfr_printf("     : factor of %.Rf is %.Rf\n", number_m, factor_m);
 
-    /* TODO : check the result */
+    /* TODO : gather another timestamp and also verify the result */
 
     mpfr_clears (number_m, x_m, x_fixed_m, size_m, factor_m, gcd_test_m,
                  one_m, (mpfr_ptr) 0);

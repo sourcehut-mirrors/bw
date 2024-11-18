@@ -1,6 +1,6 @@
 
-LOCALBASE!=	if [ -d /opt/bw ]; then     \
-			echo "/opt/bw";    \
+LOCALBASE!=	if [ -d /opt/genunix ]; then     \
+			echo "/opt/genunix";    \
 		else                        \
 			echo "/usr/local"; \
 		fi
@@ -13,19 +13,22 @@ CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LIBS=		-lm -lgmp -lmpfr
 
-OBJS =	pr_mpfr_quiet.o ../gmp_mpfr/gmp_mpfr_ver.o \
+OBJS =	pollard_rho.o ../gmp_mpfr/gmp_mpfr_ver.o \
+	../gmp_mpfr/mpfr_check_flags.o \
+	../gmp_mpfr/gcd_mpfr.o \
 	../sysinfo/sysinfo.o \
+	../time_and_date/tdiff.o \
 	../time_and_date/timediff.o
 
 .PHONY: all
-all: pr_mpfr_quiet
+all: pollard_rho
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR) -I../time_and_date
 
-pr_mpfr_quiet: $(OBJS)
-	$(CC) -o pr_mpfr_quiet $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+pollard_rho: $(OBJS)
+	$(CC) -o pollard_rho $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) pr_mpfr_quiet
+	rm -f $(OBJS) pollard_rho

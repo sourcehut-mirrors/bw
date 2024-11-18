@@ -1,0 +1,16 @@
+$CC $CFLAGS $CPPFLAGS -c -o ../time_and_date/timediff.o ../time_and_date/timediff.c
+
+$CC $CFLAGS $CPPFLAGS -c -o ../time_and_date/tdiff.o ../time_and_date/tdiff.c
+
+$CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+
+$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -c -o ../gmp_mpfr/gcd_mpfr.o ../gmp_mpfr/gcd_mpfr.c
+
+$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -c -o ../gmp_mpfr/mpfr_check_flags.o ../gmp_mpfr/mpfr_check_flags.c
+
+$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -c -o ../gmp_mpfr/gmp_mpfr_ver.o ../gmp_mpfr/gmp_mpfr_ver.c
+
+$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -I../time_and_date -c -o pollard_rho.o pollard_rho.c
+
+$CC $CFLAGS $CPPFLAGS -L/opt/genunix/lib -o pollard_rho pollard_rho.o ../gmp_mpfr/gmp_mpfr_ver.o ../gmp_mpfr/mpfr_check_flags.o ../gmp_mpfr/gcd_mpfr.o ../sysinfo/sysinfo.o ../time_and_date/tdiff.o ../time_and_date/timediff.o -lm -lgmp -lmpfr
+
