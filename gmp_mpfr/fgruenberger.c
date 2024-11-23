@@ -1,6 +1,6 @@
 
 /*
- * fgruenberger.c    An implementation of the Fred Ggruenberger
+ * fgruenberger.c    An implementation of the Fred Gruenberger
  *                   loop as presented in 1984 :
  *
  *            JOURNAL ARTICLE : COMPUTER RECREATIONS
@@ -17,10 +17,11 @@
  * on each loop. We know that the final result should be in the
  * vicinity of 674530.470741084559 and as near as I can compute
  * we need a LOT of digits to correctly represent the final loop
- * value.
+ * value. Roughly 939524102 digits and you need room for all the
+ * intermediate values also. A very big problem in 1984.
  *
  * ------------------------------------------------------------------
- * Copyright (c) 2024 Dennis Clarke
+ * Copyright (c) 2019 Dennis Clarke
  *
  *    Permission is hereby granted, free of charge, to any person
  *    obtaining a copy of this software and associated documentation
@@ -151,6 +152,7 @@ main ( int argc, char **argv )
 
     err_clock = tdiff( &delta_time, tn_begin, tn_1);
     printf ("\n\nTotal time  %7i secs %9i nsecs\n", delta_time.sec, delta_time.nsec);
+    printf ("Which may be %-+20.10g secs\n", delta_time.delta);
 
     EXIT_SUCCESS;
 
