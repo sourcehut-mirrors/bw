@@ -1,5 +1,11 @@
 
-vesta$ bc -lq
+************************** NOTE **************************
+This is a work in progress and I still do not have all the
+intermediate values in the correct order. Worth looking at
+but the code rump.c is far better.
+**********************************************************
+
+$ bc -lq
 scale=90
 a=77617
 b=33096
@@ -11,7 +17,77 @@ f= f1 + f2 + f3 + f4
 f
 -.827396059946821368141165095479816291999033115784384819917814841672\
 709693014261542180323907
-vesta$ 
+$ 
+
+
+It may be of value to look at those intermediate values f1, f2, f3, f4 : 
+
+e$ bc -lq
+scale=90
+a=77617
+b=33096
+f1=333.75*( b^6 )
+f1
+438605750846393161930703831040.00
+f2=a^2 * ( 11 * a^2 * b^2 - b^6 - 121 * b^4 - 2 )
+f2
+-7917111779274712207494296632228773890
+f3=5.5*b^8
+f3
+7917111340668961361101134701524942848.0
+f4=a/(2*b)
+f4
+1.172603940053178631858834904520183708000966884215615180082185158327\
+290306985738457819676093
+f= f1 + f2 + f3 + f4
+f
+-.827396059946821368141165095479816291999033115784384819917814841672\
+709693014261542180323907
+^D
+e$ 
+
+However an attempt with dc provided in FreeBSD will be a disaster : 
+
+e$ echo '90k 77617 2^  11   77617 2^ *    33096 2^ *   33096 6^ -  121  33096 4^ * -  2 - *pq' | dc
+-7917111779274712207494296632228773890
+
+$ echo '  5.5   33096 8^ *   77617  2 33096 * / + pq' | dc
+7917111340668961361101134701524942849.0
+
+We need a lot more digits for intermediate values :
+
+$ echo '48k  5.5   33096 8^ *   77617  2 33096 * / + pq' | dc
+7917111340668961361101134701524942849.172603940053178631858834904520\
+183708000966884215
+$ 
+$ echo '48k  333.75   33096 6^ *   77617 2^   11   77617 2^ *    33096 2^ *   33096
+ 6^ -  121  33096 4^ * -  2 -   *   5.5   33096 8^ *   77617  2 33096 * / +  + pq' | dc 
+-438605750846393161930703831040.827396059946821368141165095479816291\
+999033115785
+$ 
+
+We can even break the computation down into four distinct parts and then
+perform the summation : 
+
+e$ 
+e$ echo '90k 333.75  33096 6^ * pq' | dc
+438605750846393161930703831040.00
+e$ 
+e$ echo '90k 77617 2^  11   77617 2^ *    33096 2^ *   33096 6^ -  121  33096 4^ * -  2 - * pq' | dc
+-7917111779274712207494296632228773890
+e$ 
+e$ echo '90k 5.5  77617 8^ * pq' | dc
+7244651700981098796122530009268609517125.5
+e$ 
+e$ echo '90k 77617  33096 2 *  / pq' | dc
+1.172603940053178631858834904520183708000966884215615180082185158327\
+290306985738457819676093
+e$ 
+e$ echo '90k  438605750846393161930703831040.00  _7917111779274712207494296632228773890  7244651700981098796122530009268609517125.5  1.172603940053178631858834904520183708000966884215615180082185158327290306985738457819676093  +++ pq' | dc
+7236734589640429834761428874567084574276.672603940053178631858834904\
+520183708000966884215615180082185158327290306985738457819676093
+e$ 
+
 
 
 Possible problem with rump.c
@@ -39,6 +115,7 @@ If we go to line 338 where tmp[5] is used:
 If you used the original positive value it would
 calculate tmp[1] with the number 
 in tmp[5] as -145173518207904485374.
+
 That last digit error is not so good.
 
 I think that I'd modify line 302 as:
@@ -52,19 +129,17 @@ and line 338 as:
 Obviously it would alter the calculation and the number that is
 printed at line 395.
 
-(I'm kinda bias towards that if you used say a __float128 data type
+(I am biased towards that if you used say a __float128 data type
 to store the intermediate calculations, it would probably start to
 fail at line 374 where we have to calculate and store a 37 significant
-digit number.  I'm not quite sure we have enough bits to cleanly
+digit decimal number.  I'm not quite sure we have enough bits to cleanly
 store it(?) Maybe a > __float141 data type...)
 
-Regardless there is a bit of code called rump_mpfr.c which can be
-compiled thus : 
+Regardless there is a bit of code called rump_mpfr.c which will use the
+very wonderful GMP and MPFR math libraries. You may have those libs all
+built and available in /usr/local or somewhere else :
 
-enceladus$ 
-enceladus$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -L/opt/bw/lib -Wl,-rpath=/opt/bw/lib,--enable-new-dtags -o rump_mpfr  rump_mpfr.c  -lgmp -lmpfr 
-enceladus$ 
-
+$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -L/opt/bw/lib -Wl,-rpath=/opt/bw/lib,--enable-new-dtags -o rump_mpfr  rump_mpfr.c  -lgmp -lmpfr 
 
 Running that with anything less than 128 bits of precision will just 
 automatically jump to the 128 bits : 
@@ -105,8 +180,7 @@ a/(b*2)   = 1.172603940053178631858834904520183708000e+00
 
     final = -8.273960599468213681411650954798162919996e-01
   correct = -8.2739605994682136814116509547981629199903311578438481991781e-01
-enceladus$ 
-enceladus$ 
+$ 
 
 However feel free to ask for 256 bits or more.
 
@@ -144,5 +218,5 @@ a/(b*2)   = 1.172603940053178631858834904520183708000966884215615180082185158327
 
     final = -8.273960599468213681411650954798162919990331157843848199178148416727096930142628e-01
   correct = -8.2739605994682136814116509547981629199903311578438481991781e-01
-enceladus$ 
+
 

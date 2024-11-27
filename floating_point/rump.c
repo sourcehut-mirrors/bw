@@ -1,4 +1,70 @@
 
+/*
+ * rump.c  A brief and naive look at the old problem proposed by Rump
+ *         in 1988. 
+ *
+ *    see S.M. Rump, Algorithms for verified inclusions: theory and
+ *        practice. In "Reliability in Computing, Perspectives in
+ *        Computing", pages 109 - 126, 1988.
+ *
+ *        A. Cuyt, B. Verdonk, S. Becuwe, and P. Kuterna. 
+ *        A remarkable example of catestrophic cancellation unraveled.
+ *        "Computing", vol 66: pages 309 - 320, 2001.
+ *
+ *        E. Loh and G. W. Walster. Rump's example revisited.
+ *        "Reliable Computing", vol 8(3), pages 245 - 248, 2002
+ *
+ *        T. Ogita, S. M. Rump, and S. Oishi.  Accurate sum and dot
+ *        product. SIAM Journal on Scientific Computing, vol 26(6),
+ *        pages 1955 - 1988, 2005.
+ *
+ * Simply stated one may compute :
+ *
+ *        f( a, b ) = 333.75 * b^6
+ *
+ *                  + a^2 * ( 11 * a^2 * b^2 - b^6 - 121 * b^4 - 2 )
+ *
+ *                  + 5.5 * b^8
+ *
+ *                  + a / ( 2 * b )  where a=77617 and b=33096.
+ *               
+ * All the coefficients and exponents are perfect binary numbers. The
+ * decimal number 333.75 is 101001101.11 in binary. However on an IBM
+ * System 370 mainframe the results obtained by Rump were : 
+ *
+ *       single-precision   1.172603 
+ *       double-precision   1.1726039400531
+ *       extended-precision 1.172603940053178
+ *
+ * The correct result is close to -0.8273960599... with a very great
+ * many digits required for the actual result. Possibly infinite.
+ *
+ * -------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -18,36 +84,19 @@
 #include <math.h>
 #include <fenv.h>
 #pragma STDC FENV_ACCESS ON
+#pragma STDC FP_CONTRACT ON
 #include <float.h>
 
-
-/* this looks like a cool attempt to squeeze some 
- * precision out of the dark matter of the universe
- * but really ya just can not do that. Sorry. */
-long double fp( long double a, long double b)
-{
-    long double big_num;
-
-    big_num = 333.75L * powl(b, 6.0L)
-               + powl(a, 2.0L)
-                   * ( 11.0L * powl(a, 2.0L) * powl(b, 2.0L)
-                           - powl(b, 6.0L)
-                           - 121.0L * powl(b, 4.0L) - 2.0L )
-               + 5.5L * powl(b, 8.0L)
-               + (a / (2.0L * b ) );
-
-    return big_num;
-
-}
+long double fp( long double a, long double b);
 
 int main(int argc, char **argv)
 {
 
-    /* see page 13 of The Handbook of Floating Point Arithmetic
+    /* See page 13 of "The Handbook of Floating Point Arithmetic", 2nd Ed.
      *
-     * where we see that the actual result should be 
+     * The actual result should be :
      *
-     * vesta$ bc -l
+     * $ bc -l
      * scale=48
      * a = 77617
      * b = 33096
@@ -56,15 +105,36 @@ int main(int argc, char **argv)
      * 
      * -0.827396059946821368141165095479816291999033115785
      * 
-     *  we will most likely see some other result from IEEE-754 2008 
-     *  type floating point math. 
+     * We will most likely see some other result from IEEE-754 2008 
+     * floating point math. 
      *
+     * One may attempt the computation with ye olde UNIX dc where the
+     * intermediate values may be :
+     *
+     * e$ echo '48k 333.75  33096 6^ * pq' | dc
+     * 438605750846393161930703831040.00
+     * 
+     * e$ echo '48k 77617 2^  11  77617 2^ * 33096 2^ *  33096 6^
+     * >                - 121 33096 4^ * - 2 - * pq' | dc
+     * -7917111779274712207494296632228773890
+     * 
+     * e$ echo '48k 5.5  33096 8^ * pq' | dc
+     * 7917111340668961361101134701524942848.0
+     * 
+     * e$ echo '48k 77617  2 33096 * / pq' | dc
+     * 1.172603940053178631858834904520183708000966884215
+     * 
+     * 
+     * e$ echo '48k 438605750846393161930703831040.00
+     * >           _7917111779274712207494296632228773890
+     * >            7917111340668961361101134701524942848.0
+     * >            1.172603940053178631858834904520183708000966884215
+     * >      + + + pq' | dc 
+     * -.827396059946821368141165095479816291999033115785
+     *
+     * Seems to work well.
+     * 
      */
-
-
-    /* fp func test */
-    printf( "\n     : fp test = %-+32.26e\n\n",
-                                     fp( 77617.0, 33096.0 ) );
 
     long double a, b, f, tmp[12];
     int fp_status, fp_round_mode, fpe_raised;
@@ -107,6 +177,27 @@ int main(int argc, char **argv)
 
     a = 77617.0L;
     b = 33096.0L;
+
+    /* fp func test */
+    printf( "\nINFO : fp test = %-+32.26Le\n\n", fp( a, b) );
+    fpe_raised = fetestexcept(FE_ALL_EXCEPT);
+    if (fpe_raised!=0){
+        printf("INFO : FP Exception raised is");
+        if ( fpe_raised & FE_INEXACT ) printf(" FE_INEXACT");
+        if ( fpe_raised & FE_DIVBYZERO ) printf(" FE_DIVBYZERO");
+        if ( fpe_raised & FE_UNDERFLOW ) printf(" FE_UNDERFLOW");
+        if ( fpe_raised & FE_OVERFLOW ) printf(" FE_OVERFLOW");
+        if ( fpe_raised & FE_INVALID ) printf(" FE_INVALID");
+        printf("\n");
+    }
+    if ( feclearexcept(FE_ALL_EXCEPT) == 0 ) {
+        printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
+    } else {
+        printf("\nFAIL : feclearexcept(FE_ALL_EXCEPT) fails\n");
+        return EXIT_FAILURE;
+    }
+    printf("\n");
+
 
     /* f= 333.75 * b^6 + a^2 * ( 11 * a^2 * b^2 - b^6 - 121 * b^4 - 2 )
      *      + 5.5 * b^8 + ( a / ( 2 * b ) ) */
@@ -402,8 +493,6 @@ int main(int argc, char **argv)
      * with a 128 bit floating point data type on the right
      * sort of hardware.  We need more bits of precision! */
 
-
-
     if ( feclearexcept(FE_ALL_EXCEPT) == 0 ) {
         printf("     : feclearexcept(FE_ALL_EXCEPT) done\n");
     } else {
@@ -592,6 +681,28 @@ int main(int argc, char **argv)
 
 
     return EXIT_SUCCESS;
+
+}
+
+/* this looks like a cool attempt to squeeze some 
+ * precision out of the dark matter of the universe
+ * but really ya just can not do that. Sorry. */
+long double fp( long double a, long double b)
+{
+    long double big_num;
+
+    big_num = 333.75L * powl(b, 6.0L)
+
+               + powl(a, 2.0L)
+                   * ( 11.0L * powl(a, 2.0L) * powl(b, 2.0L)
+                           - powl(b, 6.0L)
+                           - 121.0L * powl(b, 4.0L) - 2.0L )
+
+               + 5.5L * powl(b, 8.0L)
+
+               + (a / (2.0L * b ) );
+
+    return big_num;
 
 }
 

@@ -1,4 +1,47 @@
+
+/*
+ * sqrt128.c  Trivial compute square root of two and hope the results
+ *            make sense somewhere. No promise.
+ *
+ * -------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
 #define _XOPEN_SOURCE 600
+
 #include <math.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -9,61 +52,45 @@ main ( int argc, char **argv )
 
     /* In theory we should have data in memory that looks like
      * the following ... on little endian
-0x3fffffe990:   0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x00
-0x3fffffe998:   0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x40
-(gdb) x/16xb 0x3fffffe980
-0x3fffffe980:   0x95    0xea    0x66    0x13    0xfb    0xb2    0x08    0xc9
-0x3fffffe988:   0xbc    0xf3    0x67    0xe6    0x09    0x6a    0xff    0x3f
-
-       On RISC-V rv64imafdc running FreeBSD 15.0-CURRENT we see :
-
-(gdb) x/16xb 0x3fffffe7e0
-0x3fffffe7e0:   0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x00
-0x3fffffe7e8:   0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x40
-(gdb) x/16xb 0x3fffffe7d0
-0x3fffffe7d0:   0x95    0xea    0x66    0x13    0xfb    0xb2    0x08    0xc9
-0x3fffffe7d8:   0xbc    0xf3    0x67    0xe6    0x09    0x6a    0xff    0x3f
-
-
-       On big endian old Fujitsu SPARC64 we will see : 
-
-(dbx) x 0xffffffff7ffff550/8x 
-0xffffffff7ffff550:      0x4000 0x0000 0x0000 0x0000 0x0000 0x0000 0x0000 0x0000
-(dbx) x 0xffffffff7ffff540/8x 
-0xffffffff7ffff540:      0x3fff 0x6a09 0xe667 0xf3bc 0xc908 0xb2fb 0x1366 0xea95
-
-     * we may see bizarre data on IBM POWER9 where the IBM weird floating
-     * point thingie is being used. Ya know? The weird double double fp64
-     * slam stuff together format ... like so :   looks wrong also
-(gdb) x/16xb 0x7ffffffff320
-0x7ffffffff320: 0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x40
-0x7ffffffff328: 0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x00
-(gdb) x/16xb 0x7ffffffff330
-0x7ffffffff330: 0xcd    0x3b    0x7f    0x66    0x9e    0xa0    0xf6    0x3f
-0x7ffffffff338: 0x56    0x64    0xb2    0x13    0x34    0xdd    0x9b    0xbc
-
-On a real sweet IBM POWER9 server with a big-endian mem arch config
-we see the sweetness in memory :   looks wrong 
-
-(gdb) x/16xb 0x7fffffffee30
-0x7fffffffee30: 0x3f    0xf6    0xa0    0x9e    0x66    0x7f    0x3b    0xcd
-0x7fffffffee38: 0xbc    0x9b    0xdd    0x34    0x13    0xb2    0x64    0x56
-(gdb) x/16xb 0x7fffffffee20
-0x7fffffffee20: 0x40    0x00    0x00    0x00    0x00    0x00    0x00    0x00
-0x7fffffffee28: 0x00    0x00    0x00    0x00    0x00    0x00    0x00    0x00
-
-    */
+     *
+     * This is the value for 2 which is a perfect trivial number
+     * in binary :
+     *
+     *   0x00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40
+     *                    exponent and sign bit -----+
+     *
+     * On the rare big-endian system you will see something that
+     * looks almost sane to most humans :
+     *
+     *   0x40 00 00 .... etc etc etc 00 00
+     *
+     * For the value of sqrt(2) we only get the positive value
+     * which on RISC-V rv64imafdc running FreeBSD 15 we see :
+     *
+     *   0x95 ea 66 13 fb b2 08 c9 bc f3 67 e6 09 6a ff 3f
+     *
+     *  On big endian old Fujitsu SPARC64 we will see : 
+     *
+     *   0x3f ff 6a 09 e6 67 f3 bc c9 08 b2 fb 13 66 ea 95
+     *
+     *  Most x86_64 and AMD64 hardware will be unable to produce
+     *  that result due to severly limited hardware where no more
+     *  than 80 bits are used for a long double IEEE754 datatype.
+     *  Good luck with libquadmath.h and its nefarious friends.
+     */
 
     long double two = 2.0L;
     long double sqrt_two;
 
-    printf("\n-----\n hey there you we can do sqrt of two\n\n");
-    printf("INFO : the sizeof(long double) is %zu\n", sizeof(long double));
-    printf("     : input number is a perfect power of two 2^1 = %-36.22Le\n", two);
+    printf("\n-----\nHey there you, we can do the square root of two.\n\n");
+    printf("INFO : the sizeof(long double) is %zu bytes.\n", sizeof(long double));
 
     sqrt_two = sqrtl(two);
 
-    printf("     : sqrt(two) = %-44.38Le\n", sqrt_two);
+    printf("     : sqrt(two) = %-44.38Lg\n", sqrt_two);
+
+    printf("     :     actual  1.414213562373095048801688724209698078569671875...\n");
+    printf("     :     also   -1.414213562373095048801688724209698078569671875...\n");
 
     return EXIT_SUCCESS;
 
