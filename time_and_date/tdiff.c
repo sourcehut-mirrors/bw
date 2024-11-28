@@ -29,7 +29,9 @@
  * ------------------------------------------------------------------
  */
 
-#define _XOPEN_SOURCE 500
+#if ! defined (_XOPEN_SOURCE)
+#define _XOPEN_SOURCE 600
+#endif
 
 #include <time.h>
 #include <stdlib.h>
