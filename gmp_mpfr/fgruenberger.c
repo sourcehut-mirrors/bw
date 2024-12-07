@@ -77,6 +77,13 @@ main ( int argc, char **argv )
         fprintf(stderr,"WARN : we may not have valid system info.\n");
     }
 
+    printf("GMP  library: %d.%d.%d\n",
+            __GNU_MP_VERSION,
+            __GNU_MP_VERSION_MINOR,
+            __GNU_MP_VERSION_PATCHLEVEL );
+    printf("-------------------------------------------------------------------\n");
+
+
     /* we may or may not have CLOCK_MONOTONIC implemented */
     clockid_t clock_flag;
 
@@ -118,7 +125,7 @@ main ( int argc, char **argv )
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ) {
             fprintf(stderr,"WARN : loop limit not understood\n");
             perror("     ");
-            printf("     : we shall assume 12 loops.\n");
+            fprintf(stderr,"     : we shall assume 12 loops.\n");
             loop_limit = 12;
         }
 
@@ -132,9 +139,10 @@ main ( int argc, char **argv )
 
     } else {
         fprintf(stderr,"WARN : no loop limit entered\n");
-        printf("     : we shall assume 12 loops\n");
+        fprintf(stderr,"     : we shall assume 12 loops\n");
         loop_limit = 12;
     }
+    fprintf(stderr,"\n");
 
     mpz_inits ( g0, g1, NULL);
     mpz_set_ui ( g0, 10000001);

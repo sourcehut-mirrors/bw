@@ -1,5 +1,6 @@
+
 /*
- * hacked at by Dennis Clarke
+ * addition of two arrays of 32-bit floating point
  */
 
 #include <stdlib.h>
@@ -20,9 +21,13 @@
 
 #include "dat.h"
 
-int sysinfo(void);
-uint64_t system_memory();
-uint64_t timediff(struct timespec st, struct timespec en);
+#define VERBOSE 1
+#define SYSINFO_FAIL 127
+int sysinfo(int verbose);
+
+uint64_t timediff( struct timespec start_time,
+                   struct timespec end_time );
+
 
 /**
  * CUDA Kernel Device code
@@ -51,8 +56,7 @@ int main(int argc, char *argv[])
     /* pick a GPU device and keep track of the device number */
     int device_id = -1;
 
-    /* epsilon of 2^(-21) may work well.
-     */
+    /* epsilon of 2^(-21) may work well.  */
     float epsilon = powf(2.0, -21.0); 
 
     struct timespec t_start, t_end, t0, t1;
@@ -69,7 +73,9 @@ int main(int argc, char *argv[])
     int user_select = 0;
 
     setlocale(LC_ALL, "C");
-    sysinfo();
+    if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
+        fprintf(stderr,"\nWARN : system info may be incomplete.\n\n");    
+    }
 
     /* Get the CLOCK_REALTIME time in a timespec struct */
     if ( clock_gettime( CLOCK_REALTIME, &t_start ) == -1 ) {
@@ -157,6 +163,7 @@ int main(int argc, char *argv[])
     uint64_t gpu_min_memory = 103079215104;
     int gpu_unit_max_number = -1;
     int gpu_unit_min_number = -1;
+    int managed_mem = 0;
 
     for (j = 0; j < num_gpus; j++) {
 
@@ -239,6 +246,9 @@ int main(int argc, char *argv[])
     } else {
     
         printf("     : selected %s\n", (dprop+device_id)->name);
+
+        /* we need to check for cudaDevAttrManagedMemory */
+        managed_mem = (dprop+device_id)->managedMemory ;
     
     }
     
@@ -316,7 +326,11 @@ int main(int argc, char *argv[])
 
     /* Allocate the device input vectors */
     float *d_A = NULL;
-    cuda_err = cudaMalloc((void **)&d_A, size);
+    if ( managed_mem == 0 ) {
+        cuda_err = cudaMalloc((void **)&d_A, size);
+    } else {
+        cuda_err = cudaMallocManaged((void **)&d_A, size);
+    }
     if (cuda_err != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector A\n");
@@ -333,12 +347,18 @@ int main(int argc, char *argv[])
                                tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
     float *d_B = NULL;
-    if (cudaMalloc((void **)&d_B, size) != cudaSuccess) {
+    if ( managed_mem == 0 ) {
+        cuda_err = cudaMalloc((void **)&d_B, size);
+    } else {
+        cuda_err = cudaMallocManaged((void **)&d_B, size);
+    }
+    if (cuda_err != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector B\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
         return EXIT_FAILURE;
     }
+
     clock_gettime( CLOCK_REALTIME, &t1 );
     tdelta_nsec = timediff( t0, t1);
     printf("     : Wallclock cudaMalloc(B) %10" PRIu64 " nsecs  %9.7g secs\n",
@@ -346,19 +366,18 @@ int main(int argc, char *argv[])
 
 
     float *d_C = NULL;
-    if (cudaMalloc((void **)&d_C, size) != cudaSuccess) {
+    if ( managed_mem == 0 ) {
+        cuda_err = cudaMalloc((void **)&d_C, size);
+    } else {
+        cuda_err = cudaMallocManaged((void **)&d_C, size);
+    }
+    if (cuda_err != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to allocate vector C\n");
         fprintf(stderr, "FAIL : error %s\n", cudaGetErrorString(cuda_err));
-
-        if ( cuda_err == cudaErrorMemoryAllocation ) {
-            fprintf(stderr, "     : cuda_err = cudaErrorMemoryAllocation\n");
-        } else {
-            fprintf(stderr, "     : cuda_err = something strange?? Good Luck.\n");
-        }
-
         return EXIT_FAILURE;
     }
+
     clock_gettime( CLOCK_REALTIME, &t0 );
     tdelta_nsec = timediff( t1, t0);
     printf("     : Wallclock cudaMalloc(C) %10" PRIu64 " nsecs  %9.7g secs\n",
@@ -563,87 +582,6 @@ int main(int argc, char *argv[])
             tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
     return exit_status;
-
-}
-
-uint64_t timediff( struct timespec st, struct timespec en )
-{
-    /* return the delta time as a 64-bit positive number of
-     * nanoseconds.  Regardless of the time direction between
-     * start and end we always get a positive result. */
-
-    struct timespec temp;
-    uint64_t s, n;
-
-    if ( ( en.tv_nsec - st.tv_nsec ) < 0 ) {
-        /* make a full second adjustment to tv_sec */
-        temp.tv_sec = en.tv_sec - st.tv_sec - 1;
-        /* we have to add a full second to temp.tv_nsec */
-        temp.tv_nsec = 1000000000 + en.tv_nsec - st.tv_nsec;
-    } else {
-        temp.tv_sec = en.tv_sec - st.tv_sec;
-        temp.tv_nsec = en.tv_nsec - st.tv_nsec;
-    }
-    s = (uint64_t) temp.tv_sec;
-    n = (uint64_t) temp.tv_nsec;
-    return ( s * (uint64_t)1000000000 + n );
-}
-
-uint64_t system_memory()
-{
-    /* should return the amount of memory available in bytes */
-    long en;
-    uint64_t pages, page_size;
-
-    en = sysconf(_SC_PHYS_PAGES);
-    if ( en < 0 ){
-        perror("sysconf(_SC_PHYS_PAGES) : ");
-        exit(EXIT_FAILURE);
-    }
-    pages = (uint64_t) en;
-
-    page_size = (uint64_t)sysconf(_SC_PAGE_SIZE);
-    return ( pages * page_size );
-}
-
-int sysinfo(void) {
-
-    struct utsname uname_data;
-
-    uint64_t sysmem = system_memory();
-    uint64_t pagesize = (uint64_t)sysconf(_SC_PAGESIZE);
-
-    setlocale( LC_MESSAGES, "C" );
-    if ( uname( &uname_data ) < 0 ) {
-        fprintf ( stderr,
-                 "WARNING : Could not attain system uname data.\n" );
-        perror ( "uname" );
-    } else {
-        printf ( "-------------------------------" );
-        printf ( "------------------------------\n" );
-        printf ( "        system name = %s\n", uname_data.sysname );
-        printf ( "          node name = %s\n", uname_data.nodename );
-        printf ( "            release = %s\n", uname_data.release );
-        printf ( "            version = %s\n", uname_data.version );
-        printf ( "            machine = %s\n", uname_data.machine );
-        printf ( "          page size = %" PRIu64 "\n", pagesize );
-        printf ( "       avail memory = %" PRIu64 "\n", sysmem );
-        printf ( "                    = %" PRIu64 " kB\n", sysmem/1024 );
-        printf ( "                    = %" PRIu64 " MB\n", sysmem/1048576 );
-        /*
-         *  this doesn't really work for memory size near GB boundaries
-         *
-         *  if ( sysmem > ( 1024 * 1048576 ) ) {
-         *      printf ( "                    = %" PRIu64 " GB\n",
-         *              sysmem/( 1024 * 1048576 ) );
-         *  }
-        */
-        printf ( "-------------------------------" );
-        printf ( "------------------------------" );
-    }
-    printf ("\n");
-
-    return ( EXIT_SUCCESS );
 
 }
 

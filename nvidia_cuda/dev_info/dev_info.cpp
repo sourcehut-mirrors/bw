@@ -126,6 +126,8 @@ int main(int argc, char **argv)
      * 
      *  Some of the above may even be true.
      *
+     *  For further entertainment we can check for managedMemory?
+     *
      ****************************************************************/
 
     for (dev = 0; dev < dev_count; ++dev) {
@@ -148,6 +150,9 @@ int main(int argc, char **argv)
 
         printf("     : CUDA Capability Major/Minor version %d.%d\n",
                                        dev_prop.major, dev_prop.minor);
+
+
+        printf("     : managedMemory claims %i\n", dev_prop.managedMemory );
 
 
         printf("     : Total global memory: %llu bytes\n",

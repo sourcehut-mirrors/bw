@@ -1,9 +1,10 @@
 
 CC?=/usr/bin/gcc
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g \
-	-O0 -march=k8 -mtune=k8 -Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
-   	-fno-builtin -malign-double -mpc80
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g \
+	-O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float \
+	-fno-fast-math -mno-fancy-math-387 -m128bit-long-double -mstackrealign \
+	-mpreferred-stack-boundary=8
 
 LIBS=	-lpthread -lrt -lm
 

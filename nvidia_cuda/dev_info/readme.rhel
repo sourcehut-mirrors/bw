@@ -1,0 +1,12 @@
+
+triton$ $NVCC -x cu -ccbin $CXX -I../include -m64 -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets \
+> -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
+
+
+triton$ $NVCC -ccbin $CXX -m64 -gencode arch=compute_35,code=sm_35 \
+> -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 \
+> -Wno-deprecated-gpu-targets -o dev_info dev_info.o
+triton$ 
+
