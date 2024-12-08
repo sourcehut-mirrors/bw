@@ -73,11 +73,10 @@ int valid_date ( int day, int month, int year )
             days_in_month[1] = 29;
 
         }
-        /* do we need to check February again? */
-        if ( day > 29 ) {
-            /* I really do not recall how this can happen */
-            return 0;
-        }
+    }
+
+    if ( day > days_in_month[month-1] ) {
+        return 0;
     }
 
     /* For the sake of being really pedantic there exists

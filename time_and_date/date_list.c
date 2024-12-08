@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
     }
 
     if ( argc == 4 ) {
+        /* TODO : verify the data is valid */
         start_year = atoi(argv[2]);
         end_year = atoi(argv[3]);
         printf ("\nINFO : You provide start year = %i\n", start_year);
@@ -94,28 +95,6 @@ int main(int argc, char *argv[])
                 if ( valid_date( day, month, year ) ) {
                         print_date( day, month, year );
                 }
-
-                /* this would not work in the year 1752 *************
-                if ( day < 29 ) {
-
-                    print_date( day, month, year );
-
-                } else {
-
-                    if ( valid_date( day, month, year ) == 1 ) {
-
-                        print_date( day, month, year );
-
-                    } else {
-
-                        fprintf (stderr, "WARN : invalid date ");
-                        fprintf (stderr, "y = %4i  m = %2i  d = %2i\n",
-                                                      year, month, day);
-
-                    }
-
-                }
-                *****************************************************/
 
             } /* day */
         } /* month */
