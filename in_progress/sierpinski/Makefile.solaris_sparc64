@@ -1,0 +1,25 @@
+
+CC?=		/opt/developerstudio12.6/bin/c99
+
+CFLAGS=		-Xc -errtags=yes -errwarn=%none -m64 -xarch=sparc -xO0 \
+		-g -xs -errfmt=error -erroff=%none -errshort=full \
+		-xstrconst -xildoff -xmemalign=8s -xnolibmil \
+		-xcode=pic32 -xregs=no%appl -xlibmieee -mc -ftrap=%none \
+		-xbuiltin=%none -xunroll=1 -Qy -xdebugformat=dwarf
+
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+		-D_TS_ERRNO -D_POSIX_PTHREAD_SEMANTICS
+
+LIBS=		-lm
+
+OBJS=		sierpinski.o
+
+.PHONY: all
+all: sierpinski
+
+sierpinski: $(OBJS)
+	$(CC) -o sierpinski $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) sierpinski

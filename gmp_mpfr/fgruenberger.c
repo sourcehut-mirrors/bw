@@ -161,12 +161,14 @@ main ( int argc, char **argv )
         printf ("\n%3i    ", j+2);
         num_bytes = mpz_out_str(stdout, 10, g1);
         printf ("\n    %14i digits\n", (int)num_bytes);
-        printf ("t0  %7i secs %9i nsec\n", tn_0.tv_sec, tn_0.tv_nsec);
-        printf ("t1  %7i secs %9i nsec\n", tn_1.tv_sec, tn_1.tv_nsec);
+        printf ("       t0  %7i secs %9i nsec\n", tn_0.tv_sec, tn_0.tv_nsec);
+        printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+                                tn_1.tv_sec, tn_1.tv_nsec, delta_time.delta);
+
         err_clock = clock_gettime(clock_flag, &tn_1);
         err_clock = tdiff( &delta_time, tn_0, tn_1);
-        printf ("now %7i secs %9i nsec\n", tn_1.tv_sec, tn_1.tv_nsec);
-        printf ("dt  %7i secs %9i nsecs\n", delta_time.sec, delta_time.nsec);
+        printf ("       out %7i secs %9i nsec     output dt = %-+20.10g\n",
+                                tn_1.tv_sec, tn_1.tv_nsec, delta_time.delta);
 
         mpz_set (g0, g1);
 
@@ -176,7 +178,8 @@ main ( int argc, char **argv )
 
     err_clock = tdiff( &delta_time, tn_begin, tn_1);
     printf ("\n\nTotal computation time %-+20.10g secs\n", total_time);
-    printf ("\nWith stdout %7i secs %9i nsecs\n", delta_time.sec, delta_time.nsec);
+    printf ("\nWith stdout %7i secs %9i nsecs\n",
+                                           delta_time.sec, delta_time.nsec);
 
     EXIT_SUCCESS;
 
