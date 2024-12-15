@@ -1,5 +1,6 @@
 
-/* tn.c    originally written on some ancient Apollo DN1000 type
+/*
+ * tn.c    originally written on some ancient Apollo DN1000 type
  *         workstation that was running AEGIS operating system.
  *         That was just a glorified BSD4.x of some flavour and
  *         likely first used in 1986 or so. Thereafter ported over
@@ -29,9 +30,10 @@
  *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ------------------------------------------------------------------
+ *
  */
 
-/*********************************************************************
+/*
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
  *
@@ -41,7 +43,7 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *
- *********************************************************************/
+ */
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
 #endif
@@ -53,7 +55,7 @@
 #include <string.h>
 #include <time.h>
 
-/***********************************************************************
+/*
  *      tn : trivial UNIX time output
  *
  *  Output : current UNIX time expressed in seven bit ASCII chars 0 - 9
@@ -96,7 +98,7 @@
  * minor note here is that LLVM/Clang has a fit with the email
  * address format. So you figure it out yourself. Thanks.
  *
- ***********************************************************************/
+ */
 
 int
 main( int argc, char *argv[] )

@@ -1,0 +1,25 @@
+
+CC?=/opt/csw/gcc4/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors \
+	-m32 -g -O0 -fno-builtin -mno-app-regs \
+	-mhard-float -mno-faster-structs -mstd-struct-return \
+	-mcpu=v7 -mno-v8plus -mno-vis
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=500
+
+LIBS=-lrt
+
+SRCS = tn.c
+OBJS = tn.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+tn: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) tn
+
