@@ -1,14 +1,14 @@
 
 CC?=/usr/bin/cc
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
+CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
 	-pedantic -pedantic-errors \
 	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
 	-fno-fast-math -malign-double \
 	-m128bit-long-double \
-	-mstackrealign -mpreferred-stack-boundary=8 -mno-mmx \
+	-mstackrealign -mpreferred-stack-boundary=8
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+			-D_XOPEN_SOURCE=600
 
 include common.mk

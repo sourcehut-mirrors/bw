@@ -4,12 +4,12 @@ CC=/usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -m64 -O0 -g -fno-builtin \
 	-pedantic -pedantic-errors \
-	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
 	-fno-fast-math -malign-double -mno-mmx \
-	-m128bit-long-double -mlong-double-80 \
+	-m128bit-long-double \
 	-mstackrealign -mpreferred-stack-boundary=4
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
 
 LIBS= -lm
