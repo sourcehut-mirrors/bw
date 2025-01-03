@@ -9,8 +9,111 @@ see https://developer.nvidia.com/cuda-gpus
 
 Where I need 3.5 and 5.0 and also 6.0
 
-C_titan$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
-C_titan$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets -o dev_info dev_info.o 
-C_titan$ 
+$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 \
+-gencode arch=compute_35,code=sm_35 \
+-gencode arch=compute_50,code=sm_50 \
+-gencode arch=compute_60,code=sm_60 \
+-Wno-deprecated-gpu-targets \
+-lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
 
+$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 \
+-gencode arch=compute_35,code=sm_35 \
+-gencode arch=compute_50,code=sm_50 \
+-gencode arch=compute_60,code=sm_60 \
+-Wno-deprecated-gpu-targets -o dev_info dev_info.o 
+$ 
+
+
+------------------------------------------------------
+
+It is difficult to navigate the CUDA docs to find out
+what really exists in the device props struct. There are
+conflicting pages. The key issue is managed memory and
+perhaps the data exists ... or not .. as a trivial integer
+flag.
+
+See https://docs.nvidia.com/cuda/archive/11.8.0/cuda-runtime-api/structcudaDeviceProp.html#structcudaDeviceProp
+
+Public Variables
+
+int  ECCEnabled
+int  accessPolicyMaxWindowSize
+int  asyncEngineCount
+int  canMapHostMemory
+int  canUseHostPointerForRegisteredMem
+int  clockRate
+int  computeMode
+int  computePreemptionSupported
+int  concurrentKernels
+int  concurrentManagedAccess
+int  cooperativeLaunch
+int  cooperativeMultiDeviceLaunch
+int  deviceOverlap
+int  directManagedMemAccessFromHost
+int  globalL1CacheSupported
+int  hostNativeAtomicSupported
+int  integrated
+int  isMultiGpuBoard
+int  kernelExecTimeoutEnabled
+int  l2CacheSize
+int  localL1CacheSupported
+char  luid[8]
+unsigned int  luidDeviceNodeMask
+int  major
+int  managedMemory
+int  maxBlocksPerMultiProcessor
+int  maxGridSize[3]
+int  maxSurface1D
+int  maxSurface1DLayered[2]
+int  maxSurface2D[2]
+int  maxSurface2DLayered[3]
+int  maxSurface3D[3]
+int  maxSurfaceCubemap
+int  maxSurfaceCubemapLayered[2]
+int  maxTexture1D
+int  maxTexture1DLayered[2]
+int  maxTexture1DLinear
+int  maxTexture1DMipmap
+int  maxTexture2D[2]
+int  maxTexture2DGather[2]
+int  maxTexture2DLayered[3]
+int  maxTexture2DLinear[3]
+int  maxTexture2DMipmap[2]
+int  maxTexture3D[3]
+int  maxTexture3DAlt[3]
+int  maxTextureCubemap
+int  maxTextureCubemapLayered[2]
+int  maxThreadsDim[3]
+int  maxThreadsPerBlock
+int  maxThreadsPerMultiProcessor
+size_t  memPitch
+int  memoryBusWidth
+int  memoryClockRate
+int  minor
+int  multiGpuBoardGroupID
+int  multiProcessorCount
+char  name[256]
+int  pageableMemoryAccess
+int  pageableMemoryAccessUsesHostPageTables
+int  pciBusID
+int  pciDeviceID
+int  pciDomainID
+int  persistingL2CacheMaxSize
+int  regsPerBlock
+int  regsPerMultiprocessor
+size_t  reservedSharedMemPerBlock
+size_t  sharedMemPerBlock
+size_t  sharedMemPerBlockOptin
+size_t  sharedMemPerMultiprocessor
+int  singleToDoublePrecisionPerfRatio
+int  streamPrioritiesSupported
+size_t  surfaceAlignment
+int  tccDriver
+size_t  textureAlignment
+size_t  texturePitchAlignment
+size_t  totalConstMem
+size_t  totalGlobalMem
+int  unifiedAddressing
+cudaUUID_t  uuid
+int  warpSize 
 

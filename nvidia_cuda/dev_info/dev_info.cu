@@ -102,6 +102,9 @@ int main(int argc, char **argv)
      *  Pulled this directly out of the man page and we may as well
      *  dig into the struct for all its worth.
      *
+     *         H O W E V E R    T H E    D O C S    A R E    C R A P
+     *
+     *
      *  __cudart_builtin__ cudaError_t cudaGetDeviceProperties
      *                       (struct cudaDeviceProp * prop,
      *                       int device)
@@ -112,21 +115,29 @@ int main(int argc, char **argv)
      *  if cudaSuccess then *prop contains the properties
      *  of device dev.
      *
-     *  the cudaDeviceProp structure is defined as:
-     *
-     *     struct cudaDeviceProp {
-     *         char name[256];
-     *         size_t totalGlobalMem;
-     *         .
-     *         .
-     *         .
-     *         int pageableMemoryAccessUsesHostPageTables;
-     *         int directManagedMemAccessFromHost;
-     *     }
-     * 
      *  Some of the above may even be true.
      *
      *  For further entertainment we can check for managedMemory?
+     *
+     * these next two things seems to be of no value unless we
+     * are running on Windows ?
+
+          char cudaDeviceProp::luid[8] [inherited]
+
+          8-byte locally unique identifier.
+          Value is undefined on TCC and non-Windows platforms
+
+          unsigned int cudaDeviceProp::luidDeviceNodeMask [inherited]
+
+          LUID device node mask.
+          Value is undefined on TCC and non-Windows platforms
+
+
+cudaUUID_t cudaDeviceProp::uuid [inherited]
+
+    16-byte unique identifier
+
+
      *
      ****************************************************************/
 
@@ -152,7 +163,125 @@ int main(int argc, char **argv)
                                        dev_prop.major, dev_prop.minor);
 
 
+
+
+        /* these are barely documented */
         printf("     : managedMemory claims %i\n", dev_prop.managedMemory );
+
+        printf("     : ECCEnabled claims %i\n", dev_prop.ECCEnabled );
+
+        printf("     : canMapHostMemory claims %i\n", dev_prop.canMapHostMemory );
+
+
+        printf("     : accessPolicyMaxWindowSize = %i\n", dev_prop.accessPolicyMaxWindowSize );
+        printf("     : asyncEngineCount = %i\n", dev_prop.asyncEngineCount );
+        printf("     : canMapHostMemory = %i\n", dev_prop.canMapHostMemory );
+        printf("     : canUseHostPointerForRegisteredMem = %i\n", dev_prop.canUseHostPointerForRegisteredMem );
+        printf("     : clockRate = %i\n", dev_prop.clockRate );
+        printf("     : computeMode = %i\n", dev_prop.computeMode );
+        printf("     : computePreemptionSupported = %i\n", dev_prop.computePreemptionSupported );
+        printf("     : concurrentKernels = %i\n", dev_prop.concurrentKernels );
+        printf("     : concurrentManagedAccess = %i\n", dev_prop.concurrentManagedAccess );
+        printf("     : cooperativeLaunch = %i\n", dev_prop.cooperativeLaunch );
+        printf("     : cooperativeMultiDeviceLaunch = %i\n", dev_prop.cooperativeMultiDeviceLaunch );
+        printf("     : deviceOverlap = %i\n", dev_prop.deviceOverlap );
+        printf("     : directManagedMemAccessFromHost = %i\n", dev_prop.directManagedMemAccessFromHost );
+        printf("     : ECCEnabled = %i\n", dev_prop.ECCEnabled );
+        printf("     : globalL1CacheSupported = %i\n", dev_prop.globalL1CacheSupported );
+        printf("     : hostNativeAtomicSupported = %i\n", dev_prop.hostNativeAtomicSupported );
+        printf("     : integrated = %i\n", dev_prop.integrated );
+        printf("     : isMultiGpuBoard = %i\n", dev_prop.isMultiGpuBoard );
+        printf("     : kernelExecTimeoutEnabled = %i\n", dev_prop.kernelExecTimeoutEnabled );
+        printf("     : l2CacheSize = %i\n", dev_prop.l2CacheSize );
+        printf("     : localL1CacheSupported = %i\n", dev_prop.localL1CacheSupported );
+        printf("     : major = %i\n", dev_prop.major );
+        printf("     : managedMemory = %i\n", dev_prop.managedMemory );
+        printf("     : maxBlocksPerMultiProcessor = %i\n", dev_prop.maxBlocksPerMultiProcessor );
+
+        printf("     : maxGridSize[0] = %i\n", dev_prop.maxGridSize[0] );
+        printf("     : maxGridSize[1] = %i\n", dev_prop.maxGridSize[1] );
+        printf("     : maxGridSize[2] = %i\n", dev_prop.maxGridSize[2] );
+
+        printf("     : maxSurface1D = %i\n", dev_prop.maxSurface1D );
+        printf("     : maxSurface1DLayered[0] = %i\n", dev_prop.maxSurface1DLayered[0] );
+        printf("     : maxSurface1DLayered[1] = %i\n", dev_prop.maxSurface1DLayered[1] );
+
+        printf("     : maxSurface2D[0] = %i\n", dev_prop.maxSurface2D[0] );
+        printf("     : maxSurface2D[1] = %i\n", dev_prop.maxSurface2D[1] );
+
+        printf("     : maxSurface2DLayered[0] = %i\n", dev_prop.maxSurface2DLayered[0] );
+        printf("     : maxSurface2DLayered[1] = %i\n", dev_prop.maxSurface2DLayered[1] );
+        printf("     : maxSurface2DLayered[2] = %i\n", dev_prop.maxSurface2DLayered[2] );
+
+        printf("     : maxSurface3D[0] = %i\n", dev_prop.maxSurface3D[0] );
+        printf("     : maxSurface3D[1] = %i\n", dev_prop.maxSurface3D[1] );
+        printf("     : maxSurface3D[2] = %i\n", dev_prop.maxSurface3D[2] );
+
+        printf("     : maxSurfaceCubemap = %i\n", dev_prop.maxSurfaceCubemap );
+        printf("     : maxSurfaceCubemapLayered[0] = %i\n", dev_prop.maxSurfaceCubemapLayered[0] );
+        printf("     : maxSurfaceCubemapLayered[1] = %i\n", dev_prop.maxSurfaceCubemapLayered[1] );
+
+        printf("     : maxTexture1D = %i\n", dev_prop.maxTexture1D );
+        printf("     : maxTexture1DLayered[0] = %i\n", dev_prop.maxTexture1DLayered[0] );
+        printf("     : maxTexture1DLayered[1] = %i\n", dev_prop.maxTexture1DLayered[1] );
+
+        printf("     : maxTexture1DLinear = %i\n", dev_prop.maxTexture1DLinear );
+        printf("     : maxTexture1DMipmap = %i\n", dev_prop.maxTexture1DMipmap );
+
+        printf("     : maxTexture2D[0] = %i\n", dev_prop.maxTexture2D[0] );
+        printf("     : maxTexture2D[1] = %i\n", dev_prop.maxTexture2D[1] );
+
+        printf("     : maxTexture2DGather[0] = %i\n", dev_prop.maxTexture2DGather[0] );
+        printf("     : maxTexture2DGather[1] = %i\n", dev_prop.maxTexture2DGather[1] );
+
+        printf("     : maxTexture2DLayered[0] = %i\n", dev_prop.maxTexture2DLayered[0] );
+        printf("     : maxTexture2DLayered[1] = %i\n", dev_prop.maxTexture2DLayered[1] );
+        printf("     : maxTexture2DLayered[2] = %i\n", dev_prop.maxTexture2DLayered[2] );
+
+        printf("     : maxTexture2DLinear[0] = %i\n", dev_prop.maxTexture2DLinear[0] );
+        printf("     : maxTexture2DLinear[1] = %i\n", dev_prop.maxTexture2DLinear[1] );
+        printf("     : maxTexture2DLinear[2] = %i\n", dev_prop.maxTexture2DLinear[2] );
+
+        printf("     : maxTexture2DMipmap[0] = %i\n", dev_prop.maxTexture2DMipmap[0] );
+        printf("     : maxTexture2DMipmap[1] = %i\n", dev_prop.maxTexture2DMipmap[1] );
+
+        printf("     : maxTexture3D[0] = %i\n", dev_prop.maxTexture3D[0] );
+        printf("     : maxTexture3D[1] = %i\n", dev_prop.maxTexture3D[1] );
+        printf("     : maxTexture3D[2] = %i\n", dev_prop.maxTexture3D[2] );
+
+        printf("     : maxTexture3DAlt[0] = %i\n", dev_prop.maxTexture3DAlt[0] );
+        printf("     : maxTexture3DAlt[1] = %i\n", dev_prop.maxTexture3DAlt[1] );
+        printf("     : maxTexture3DAlt[2] = %i\n", dev_prop.maxTexture3DAlt[2] );
+
+        printf("     : maxTextureCubemap = %i\n", dev_prop.maxTextureCubemap );
+
+        printf("     : maxTextureCubemapLayered[0] = %i\n", dev_prop.maxTextureCubemapLayered[0] );
+        printf("     : maxTextureCubemapLayered[1] = %i\n", dev_prop.maxTextureCubemapLayered[1] );
+
+        printf("     : maxThreadsDim[0] = %i\n", dev_prop.maxThreadsDim[0] );
+        printf("     : maxThreadsDim[1] = %i\n", dev_prop.maxThreadsDim[1] );
+        printf("     : maxThreadsDim[2] = %i\n", dev_prop.maxThreadsDim[2] );
+
+        printf("     : maxThreadsPerBlock = %i\n", dev_prop.maxThreadsPerBlock );
+        printf("     : maxThreadsPerMultiProcessor = %i\n", dev_prop.maxThreadsPerMultiProcessor );
+        printf("     : memoryBusWidth = %i\n", dev_prop.memoryBusWidth );
+        printf("     : memoryClockRate = %i\n", dev_prop.memoryClockRate );
+        printf("     : minor = %i\n", dev_prop.minor );
+        printf("     : multiGpuBoardGroupID = %i\n", dev_prop.multiGpuBoardGroupID );
+        printf("     : multiProcessorCount = %i\n", dev_prop.multiProcessorCount );
+        printf("     : pageableMemoryAccess = %i\n", dev_prop.pageableMemoryAccess );
+        printf("     : pageableMemoryAccessUsesHostPageTables = %i\n", dev_prop.pageableMemoryAccessUsesHostPageTables );
+        printf("     : pciBusID = %i\n", dev_prop.pciBusID );
+        printf("     : pciDeviceID = %i\n", dev_prop.pciDeviceID );
+        printf("     : pciDomainID = %i\n", dev_prop.pciDomainID );
+        printf("     : persistingL2CacheMaxSize = %i\n", dev_prop.persistingL2CacheMaxSize );
+        printf("     : regsPerBlock = %i\n", dev_prop.regsPerBlock );
+        printf("     : regsPerMultiprocessor = %i\n", dev_prop.regsPerMultiprocessor );
+        printf("     : singleToDoublePrecisionPerfRatio = %i\n", dev_prop.singleToDoublePrecisionPerfRatio );
+        printf("     : streamPrioritiesSupported = %i\n", dev_prop.streamPrioritiesSupported );
+        printf("     : tccDriver = %i\n", dev_prop.tccDriver );
+        printf("     : unifiedAddressing = %i\n", dev_prop.unifiedAddressing );
+        printf("     : warpSize = %i\n", dev_prop.warpSize );
 
 
         printf("     : Total global memory: %llu bytes\n",
@@ -208,8 +337,14 @@ int main(int argc, char **argv)
                                        dev_prop.maxTexture2DLayered[1],
                                       dev_prop.maxTexture2DLayered[2]);
 
+        printf("     : shared memory per Multiprocessor: %lu bytes\n",
+                                           dev_prop.sharedMemPerMultiprocessor);
+
         printf("     : shared memory per block: %lu bytes\n",
                                            dev_prop.sharedMemPerBlock);
+
+        printf("     : shared memory per block Optin : %lu bytes\n",
+                                           dev_prop.sharedMemPerBlockOptin);
 
         printf("     : registers available per block: %d\n",
                                                 dev_prop.regsPerBlock);
@@ -221,6 +356,9 @@ int main(int argc, char **argv)
 
         printf("     : max numb of threads per block: %d\n",
                                           dev_prop.maxThreadsPerBlock);
+
+        printf("     : reserved shared mem per block: %llu\n",
+                                          dev_prop.reservedSharedMemPerBlock);
 
         printf("     : max dimension size of a thread block (x,y,z)");
         printf(" = (%d, %d, %d)\n", dev_prop.maxThreadsDim[0],
@@ -237,6 +375,9 @@ int main(int argc, char **argv)
 
         printf("     : texture alignment = %lu bytes\n",
                                             dev_prop.textureAlignment);
+
+        printf("     : texture pitch alignment = %llu bytes\n",
+                                            dev_prop.texturePitchAlignment);
 
         printf("     : concurrent copy ability = %s\n",
                               (dev_prop.deviceOverlap ? "Yes" : "No"));
