@@ -182,7 +182,8 @@ int sysinfo(int verbose) {
 
     }
 
-    /* guess the architecture endianess */
+    /* TODO : use memcpy soon. type punning is bad bad node demons 
+     * guess the architecture endianess */
     endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
 
     setlocale( LC_MESSAGES, "C" );
@@ -228,7 +229,6 @@ int sysinfo(int verbose) {
          */
 
 #ifdef HAVE_PAGE_INFO
-
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
 
         printf ( "                   page size = %" PRIu64 "\n",
@@ -383,6 +383,34 @@ int sysinfo(int verbose) {
         }
 #endif
 
+#if defined(__ISO_C_VISIBLE)
+        printf("INFO : __ISO_C_VISIBLE id defined\n");
+#endif
+
+#ifdef FLT_EVAL_METHOD
+        printf("INFO : FLT_EVAL_METHOD == %d\n", FLT_EVAL_METHOD);
+#endif
+
+#ifdef DECIMAL_DIG
+        printf("INFO : DECIMAL_DIG == %d\n", DECIMAL_DIG);
+#endif
+
+#ifdef FLT_DECIMAL_DIG
+        printf("INFO : FLT_DECIMAL_DIG == %d\n", FLT_DECIMAL_DIG);
+#endif
+
+#ifdef DBL_DECIMAL_DIG
+        printf("INFO : DBL_DECIMAL_DIG == %d\n", DBL_DECIMAL_DIG);
+#endif
+
+#ifdef LDBL_DECIMAL_DIG
+        printf("INFO : LDBL_DECIMAL_DIG == %d\n", LDBL_DECIMAL_DIG);
+#endif
+
+#ifdef LDBL_DIG
+        printf("INFO : LDBL_DIG == %d\n", LDBL_DIG);
+#endif
+
 /* The situation with IBM MVS systems is that you only get the things
  * that are in the POSIX specs if you really really do need them. So
  * you can forget all about the clock idea. There may be clock data
@@ -440,10 +468,6 @@ int sysinfo(int verbose) {
             perror("WAT : ");
         }
 #endif
-#endif
-
-#ifdef FLT_EVAL_METHOD
-        printf("          FLT_EVAL_METHOD    = %i\n", FLT_EVAL_METHOD);
 #endif
 
         printf ( "----------------------------------" );

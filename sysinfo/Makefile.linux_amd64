@@ -1,0 +1,23 @@
+
+CC?=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-fno-builtin -g -march=k8 -mtune=k8 \
+   	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+LIBS = -lm
+
+SRCS = report.c sysinfo.c
+
+OBJS = report.o sysinfo.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: report.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report
