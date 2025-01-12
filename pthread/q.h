@@ -14,6 +14,7 @@
 
 #define ELEMENT_COUNT_LIMIT 1073741824
 #define THREAD_LIMIT 256
+#define FIB_LIMIT 30
 
 #include <pthread.h>
 
