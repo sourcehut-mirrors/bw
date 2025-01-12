@@ -22,6 +22,7 @@
 #include "q.h"
 #include "do_work.h"
 
+/* this is in q.h as extern */
 pthread_t worker_thread[THREAD_LIMIT];
 
 /********** not needed at this time **************
@@ -34,6 +35,7 @@ void *do_some_array_thing ( void *work_q ) {
 
     int j, k;
     int thread_id = 0;
+    int found_thread_id_flag = 0;
     int work_counter = 0;
     char tbuf[32] = "";
     char fbuf[64] = "";
@@ -44,23 +46,37 @@ void *do_some_array_thing ( void *work_q ) {
 
     thread_parm_t *foo = NULL;
 
-    /* What thread id is this ?
+    /* Walk the worker_thread[k] array to find this thread id.
      *
-     * Walk the entire thread collection to find this
-     * thread id which is of datatype pthread_t this_thread_id
+     * This number should be the same as foo->id
+     *
+     * We do this because there is no way to really know
+     * this thread id number unless we actually search
+     * for it. We use pthread_self(void) to get a hint.
+     *
+     *     pthread_t pthread_self(void);
+     *
+     *     DESCRIPTION
+     *         The pthread_self() function returns the thread
+     *         ID of the calling thread.
+     *
+     * Then check if that makes sense in the worker_thread[k] array.
      */
+    this_thread_id = pthread_self();
+    found_thread_id_flag = 0;
     for ( k = 0; k < THREAD_LIMIT; k++ ) {
-        this_thread_id = pthread_self();
-        if ( pthread_equal( worker_thread[k], this_thread_id ) ) {
-            /* okay we found our thread id number */
+        if ( pthread_equal(worker_thread[k], this_thread_id) ) {
+            found_thread_id_flag = 1;
             thread_id = k;
-
-            sprintf( tbuf, "INFO : this thread_id = %3i\n", thread_id );
-
-            puts( tbuf );
-
         }
     }
+    /* did that search actually work ? */
+    if ( found_thread_id_flag == 1 ) {
+        sprintf(tbuf, "INFO : this thread_id = %3i\n", thread_id );
+    } else {
+        sprintf(tbuf, "INFO : this thread_id unknown\n");
+    }
+    puts( tbuf );
 
     /* given that the queue is a blocking type of list
      * where no thread can work until something exists
@@ -97,28 +113,28 @@ void *do_some_array_thing ( void *work_q ) {
 
     /* why release the mutex lock here ? */
     pthread_mutex_unlock ( the_q->mutex );
-    /****************************************************************
-     *                                                              *
-     *        d a n g e r     d a n g e r     d a n g e r           *
-     *                                                              *
-     *        We just released the mutex lock on the queue and      *
-     *        thus some other thread could consume the job in       *
-     *        the queue and again we stall on the condition var     *
-     *                                                              *
-     ****************************************************************/
+    /***********************************************************
+     *                                                         *
+     *   d a n g e r     d a n g e r     d a n g e r           *
+     *                                                         *
+     *   We just released the mutex lock on the queue and      *
+     *   thus some other thread could consume the job in       *
+     *   the queue and again we stall on the condition var     *
+     *                                                         *
+     ***********************************************************/
     foo = (thread_parm_t *)dequeue( (q_type *)work_q );
 
     while ( foo ) {
 
         work_counter = work_counter + 1;
 
-        /* we need a thread safe way to say hello */
-        k = sprintf( tbuf, "thr %3i : work %3i q_item %3i\n",
-                              thread_id, work_counter, foo->work_num );
+        k = sprintf( tbuf, "thr %3i : work %3i q_item %3i = f( %3i )\n",
+                              foo->id, work_counter,
+                              foo->work_num, foo->fibber );
 
-        puts( tbuf );
+        puts(tbuf);
 
-        /* lets calloc foo->array_cnt uint64_t elements in big_array */
+        /* thrash heap with calloc foo->array_cnt uint64_t elements */
         foo->big_array = calloc( foo->array_cnt,
                                  (size_t)sizeof(uint64_t));
 
@@ -143,13 +159,12 @@ void *do_some_array_thing ( void *work_q ) {
                                   + (uint64_t)foo->fibber;
         }
 
-        k = sprintf( fbuf,
-               "thr %3i : fib(%-3" PRIu8 ") = %12" PRIu64 "\n",
-                             thread_id, foo->fibber, fib(foo->fibber));
+        k = sprintf(fbuf,"thr %3i : fib(%-3" PRIu8 ") = %12" PRIu64 "\n",
+                          thread_id, foo->fibber, fib(foo->fibber));
 
-        puts( fbuf );
+        puts(fbuf);
 
-        /* throw away that array */
+        /* throw away that big array */
         free(foo->big_array);
         foo->big_array = NULL;
         free(foo);

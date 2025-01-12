@@ -181,6 +181,10 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
+        make_work->id = j;
+
+        /* keep track of how many times this thread will go back
+         * to the work queue to do more work */
         make_work->work_num = (uint32_t)j;
 
         /* Create a random fibonacci number to compute from 32 upwards

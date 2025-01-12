@@ -20,5 +20,6 @@ typedef struct {
   uint64_t *big_array; /* do some work and put data here */
   uint8_t   fibber;    /* horrific fibonacci number computation */
   size_t    array_cnt; /* number of elements to malloc/calloc */
+  int       id;        /* thread id number */
 } thread_parm_t;
 
