@@ -37,8 +37,8 @@ void *do_some_array_thing ( void *work_q ) {
     int thread_id = 0;
     int found_thread_id_flag = 0;
     int work_counter = 0;
-    char tbuf[32] = "";
-    char fbuf[64] = "";
+    char tbuf[128] = "";
+    char fbuf[128] = "";
 
     q_type *the_q = (q_type *)work_q;
 
@@ -108,29 +108,20 @@ void *do_some_array_thing ( void *work_q ) {
 
         /* the queue is empty and thus we bail out */
         pthread_mutex_unlock ( the_q->mutex );
-        return ( NULL );
+        return NULL;
     }
 
-    /* why release the mutex lock here ? */
-    pthread_mutex_unlock ( the_q->mutex );
-    /***********************************************************
-     *                                                         *
-     *   d a n g e r     d a n g e r     d a n g e r           *
-     *                                                         *
-     *   We just released the mutex lock on the queue and      *
-     *   thus some other thread could consume the job in       *
-     *   the queue and again we stall on the condition var     *
-     *                                                         *
-     ***********************************************************/
     foo = (thread_parm_t *)dequeue( (q_type *)work_q );
+
+    pthread_mutex_unlock ( the_q->mutex );
 
     while ( foo ) {
 
-        work_counter = work_counter + 1;
+        foo->work_num = foo->work_num + 1; /* do +=1 on your own time */
 
-        k = sprintf( tbuf, "thr %3i : work %3i q_item %3i = f( %3i )\n",
-                              foo->id, work_counter,
-                              foo->work_num, foo->fibber );
+        k = sprintf( tbuf, "thr %3i : work %3i  f( %3i )\n",
+                              foo->id, foo->work_num,
+                              foo->fibber );
 
         puts(tbuf);
 
@@ -170,13 +161,6 @@ void *do_some_array_thing ( void *work_q ) {
         free(foo);
         foo = NULL;
 
-        /* a mutex lock is not needed to read a single value
-         *
-         * regardless we are not using this anyways ... yet 
-         *
-         *    if ( work_flag[thread_id] == 0 ) goto bail_out;
-         */
-
         /* check again if the queue is empty */
         pthread_mutex_lock ( the_q->mutex );
         if (  ( the_q->length == 0 )
@@ -188,8 +172,12 @@ void *do_some_array_thing ( void *work_q ) {
             return ( NULL );
 
         }
-        pthread_mutex_unlock ( the_q->mutex );
         foo = (thread_parm_t *)dequeue( (q_type *)work_q );
+        pthread_mutex_unlock ( the_q->mutex );
+
+        k = sprintf( tbuf, "maybe thr %3i : work %3i  f( %3i )\\n",
+        foo->id, foo->work_num,foo->fibber );
+        puts(tbuf);
     }
 
     return (NULL);

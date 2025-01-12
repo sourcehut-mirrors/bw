@@ -1,9 +1,11 @@
 
-CC=/opt/bw/gcc13/bin/gcc
+CC=/opt/ibm/xlC/16.1.1/bin/xlc
 
-CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
-	-g -O0 -fno-builtin -m64 \
-	-mregnames -mno-recip \
-	-fno-unsafe-math-optimizations -Wall
+CFLAGS = -qlanglvl=stdc99 -O0 -g
+
+CPPFLAGS?= -D_LARGEFILE64_SOURCE \
+			-D_XOPEN_SOURCE=600 -D_REENTRANT \
+			-D_FILE_OFFSET_BITS=64
+
 
 include common.mk

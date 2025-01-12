@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
                 fprintf(stderr,"     : we shall assume 16777216 elements and proceed.\n");
                 req_element_num = 16777216;
             }
-            fprintf(stderr,"INFO : req_element_num is %i\n", req_element_num );
+            fprintf(stderr,"INFO : req_element_num is %zu\n", req_element_num );
         }
     }
 
@@ -183,11 +183,12 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
+        /* this is, for all intents and purposes, the thread id num */
         make_work->id = j;
 
         /* keep track of how many times this thread will go back
          * to the work queue to do more work */
-        make_work->work_num = (uint32_t)j;
+        make_work->work_num = 0;
 
         /* Create a random fibonacci number to compute.
          * Please see comment in fib.c and do not

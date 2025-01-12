@@ -16,7 +16,7 @@
 
 /* struct to pass params to a POSIX thread */
 typedef struct {
-  uint32_t  work_num;  /* this is some arbitrary work order number */
+  uint32_t  work_num;  /* work order number for a given thread */
   uint64_t *big_array; /* do some work and put data here */
   uint8_t   fibber;    /* horrific fibonacci number computation */
   size_t    array_cnt; /* number of elements to malloc/calloc */
