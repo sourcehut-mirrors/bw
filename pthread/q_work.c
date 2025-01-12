@@ -69,6 +69,9 @@ int main(int argc, char **argv) {
     /* how many elements to calloc into the arrays? */
     size_t req_element_num;
     struct timespec now_time;
+    pthread_attr_t *attr;
+    q_type *my_q;
+    thread_parm_t *make_work;
 
     setlocale( LC_ALL, "C" );
     sysinfo(VERBOSE);
@@ -134,7 +137,7 @@ int main(int argc, char **argv) {
     }
 
     /* we will need to specifiy the thread attributes */
-    pthread_attr_t *attr = calloc( (size_t) 1, (size_t)sizeof(pthread_attr_t) );
+    attr = calloc( (size_t) 1, (size_t)sizeof(pthread_attr_t) );
     if ( attr == NULL ) {
         /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {
@@ -150,9 +153,8 @@ int main(int argc, char **argv) {
 
     /* create our custom queue for holding task information
      * TODO check that we actually did get a valid my_q pointer */
-    q_type *my_q = q_create();
+    my_q = q_create();
 
-    thread_parm_t *make_work;
     /* make plenty of work where the queue has more work elements
      * than consumer threads.
      *           * * *   N O T E   * * *

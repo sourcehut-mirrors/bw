@@ -39,7 +39,7 @@
 #include <pthread.h>
 #include "q.h"
 
-q_type *q_create() {
+q_type *q_create(void) {
 
     int err_trap_flag = 0;
 
