@@ -1,4 +1,34 @@
 
+/*
+ * do_work.c  The actual POSIX thread execution code that will fetch
+ *            work data from a queue and then perform some baloney
+ *
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -36,7 +66,12 @@ void *do_some_array_thing ( void *work_q ) {
     int j, k;
     int thread_id = 0;
     int found_thread_id_flag = 0;
+
+    /* track how many times this thread
+     * fetches work instruction data
+     */
     int work_counter = 0;
+
     char tbuf[128] = "";
     char fbuf[128] = "";
 
@@ -72,11 +107,11 @@ void *do_some_array_thing ( void *work_q ) {
     }
     /* did that search actually work ? */
     if ( found_thread_id_flag == 1 ) {
-        sprintf(tbuf, "INFO : this thread_id = %3i\n", thread_id );
+        sprintf(tbuf, "INFO : this thread_id = %3i", thread_id );
     } else {
-        sprintf(tbuf, "INFO : this thread_id unknown\n");
+        sprintf(tbuf, "INFO : this thread_id unknown");
     }
-    puts( tbuf );
+    puts(tbuf);
 
     /* given that the queue is a blocking type of list
      * where no thread can work until something exists
@@ -93,13 +128,6 @@ void *do_some_array_thing ( void *work_q ) {
      * check the work_flag for this thread and see if if
      * is set to 0 in which case we bail out cleanly. */
 
-    /* a mutex lock is not needed to read a single value
-     *
-     * we are not using this anyways ... yet 
-     *
-     *    if ( work_flag[thread_id] == 0 ) goto bail_out;
-     */
-
     /* check if the queue is empty */
     pthread_mutex_lock ( the_q->mutex );
     if (  ( the_q->length == 0 )
@@ -111,19 +139,31 @@ void *do_some_array_thing ( void *work_q ) {
         return NULL;
     }
 
+    /* get some work instruction data from the queue */
     foo = (thread_parm_t *)dequeue( (q_type *)work_q );
+    work_counter = work_counter + 1;
 
+    if ( foo ) {
+
+        foo->work_num = work_counter;
+
+        k = sprintf(tbuf, "thr %3i : work  %-3i  f( %3i )",
+                           foo->id, work_counter, foo->fibber );
+
+        puts(tbuf);
+
+    } else {
+
+        /* this should never happen given that we used a mutex
+         * lock to check if the queue was empty */
+        k = sprintf( tbuf, "WARN : no foo to process, queue empty!?\n");
+        puts(tbuf);
+        return NULL;
+
+    }
     pthread_mutex_unlock ( the_q->mutex );
 
     while ( foo ) {
-
-        foo->work_num = foo->work_num + 1; /* do +=1 on your own time */
-
-        k = sprintf( tbuf, "thr %3i : work %3i  f( %3i )\n",
-                              foo->id, foo->work_num,
-                              foo->fibber );
-
-        puts(tbuf);
 
         /* thrash heap with calloc foo->array_cnt uint64_t elements */
         foo->big_array = calloc( foo->array_cnt,
@@ -150,14 +190,20 @@ void *do_some_array_thing ( void *work_q ) {
                                   + (uint64_t)foo->fibber;
         }
 
-        k = sprintf(fbuf,"thr %3i : fib(%-3" PRIu8 ") = %12" PRIu64 "\n",
-                          thread_id, foo->fibber, fib(foo->fibber));
+        /* actually do the call into the recursive and abusive fib() */
+        k = sprintf(fbuf,"thr %3i : work  %-3i  fib(%-3" PRIu8 ") = %12" PRIu64,
+                          thread_id, foo->work_num,
+                          foo->fibber, fib(foo->fibber));
 
         puts(fbuf);
 
         /* throw away that big array */
         free(foo->big_array);
         foo->big_array = NULL;
+
+        /* We have consumed the work element and may now set it
+         * to a NULL pointer. Be aware that this pointer resides
+         * inside the queue. It remains there as a NULL. */
         free(foo);
         foo = NULL;
 
@@ -169,15 +215,39 @@ void *do_some_array_thing ( void *work_q ) {
 
             /* the queue is empty and thus we bail out */
             pthread_mutex_unlock ( the_q->mutex );
-            return ( NULL );
+            return NULL;
 
         }
+
+        /* fetch a new work element pointer from the queue */
         foo = (thread_parm_t *)dequeue( (q_type *)work_q );
+
+        if ( foo ) {
+
+            /* How many times has this thread gone back to the
+             * queue to get work element data? 
+             */
+            work_counter = work_counter + 1;
+
+            foo->work_num = work_counter;
+
+            k = sprintf(tbuf,"thr %3i : work  %-3i  fib(%-3" PRIu8 ")",
+                          thread_id, work_counter, foo->fibber);
+
+            puts(tbuf);
+
+        } else {
+
+            /* This should never happen given that we used a mutex
+             * lock to check if the queue was empty.
+             */
+            k = sprintf( tbuf, "\nWARN : no foo to process, queue empty!?\n");
+            puts(tbuf);
+            return NULL;
+
+        }
         pthread_mutex_unlock ( the_q->mutex );
 
-        k = sprintf( tbuf, "maybe thr %3i : work %3i  f( %3i )\\n",
-        foo->id, foo->work_num,foo->fibber );
-        puts(tbuf);
     }
 
     return (NULL);

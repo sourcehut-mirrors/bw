@@ -2,22 +2,31 @@
 /*
  * q_work.c   create a job queue as described in the readme and also
  *            toss in some testing baloney work to do
- * Copyright (C) Dennis Clarke 2019
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
 
@@ -68,10 +77,19 @@ int main(int argc, char **argv) {
 
     /* how many elements to calloc into the arrays? */
     size_t req_element_num;
+
     struct timespec now_time;
     pthread_attr_t *attr;
     q_type *my_q;
-    thread_parm_t *make_work;
+
+    /* this is the work data to go into the queue */
+    thread_parm_t *make_work_foo;
+
+    /* what is the total number of work elements to be created? */
+    int count_work_limit;
+
+    /* how many work elements have actually been created? */
+    int count_work_elements = 0;
 
     setlocale( LC_ALL, "C" );
     sysinfo(VERBOSE);
@@ -151,20 +169,28 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    /* create our custom queue for holding task information
-     * TODO check that we actually did get a valid my_q pointer */
+    /* create our queue */
     my_q = q_create();
 
     /* make plenty of work where the queue has more work elements
      * than consumer threads.
-     *           * * *   N O T E   * * *
-     * So here we use twice as many make_work things as there are
-     * threads and then we add on three more just for testing fun
+     *
+     *  * * *    N O T E    A    L O T    M O R E    W O R K    * * *
+     *
+     * So here we use five times as many make_work_foo things as there
+     * are threads. Then we add on three more just for TESTING fun
      */
-    for ( j = 0; j < ( 2 * num_pthreads + 3 ); j++ ) {
+
+    count_work_limit = ( 5 * num_pthreads + 3 );
+
+    printf ("INFO : will begin enqueue() of %i work elements\n",
+                     count_work_limit );
+    printf ("     : .");
+
+    for ( j = 0; j < count_work_limit; j++ ) {
         errno = 0;
-        make_work = calloc( (size_t) 1, (size_t)sizeof(thread_parm_t) );
-        if ( make_work == NULL ) {
+        make_work_foo = calloc( (size_t) 1, (size_t)sizeof(thread_parm_t) );
+        if ( make_work_foo == NULL ) {
             /* really? possible ENOMEM? */
             if ( errno == ENOMEM ) {
                 fprintf(stderr,"FAIL : calloc returns ENOMEM at %s:%d\n",
@@ -174,7 +200,9 @@ int main(int argc, char **argv) {
                         __FILE__, __LINE__ );
             }
             perror("FAIL ");
-            /* TODO we need a smooth fail if j>0
+            /************************** N O T E ***********************
+             *
+             * TODO we need a smooth fail if j>0
              *
              * If we do get a calloc() error and j>0 then we have some
              * elements in our queue my_q. Those now need to be cleanly
@@ -183,30 +211,54 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
-        /* this is, for all intents and purposes, the thread id num */
-        make_work->id = j;
+        /* only for now, at the moment, this is the same as j and there
+         * is no promise things stay this way in the future */
+        count_work_elements = count_work_elements + 1;
 
-        /* keep track of how many times this thread will go back
-         * to the work queue to do more work */
-        make_work->work_num = 0;
+        /* this is, for all intents and purposes, the work element number */
+        make_work_foo->id = j;
+
+        /* Eventually, if all goes well, this piece of work data will
+         * be fetched from the queue by a thread. It may be nice to
+         * know if this is the first or second or Nth piece of work
+         * that the thread was processing.
+         */
+        make_work_foo->work_num = 0;
+
+
+        /* TODO : we may need to recycle work elements back into the
+         *        queue someday. We can construct a flag "recycle"
+         *        which will signal to a thread that the work may be
+         *        returned back into the queue.
+         */
+
 
         /* Create a random fibonacci number to compute.
-         * Please see comment in fib.c and do not
-         * mess with this too much. Note that drand48() will never 
-         * return a value of one and thus the integer limit in this
-         * addition is 10 + FIB_LIMIT.
+         *
+         * NOTE : we all agree this is a silly thing to compute
+         *
+         * Please see comment in fib.c and do not mess with this
+         * too much. Note that drand48() will never return a value
+         * of one and thus the integer limit in this addition
+         * is ( 11 - 1 ) + FIB_LIMIT == 10 + FIB_LIMIT.
          */
-        make_work->fibber = (uint8_t)( drand48() * 11 )
-                          + (uint8_t)FIB_LIMIT;
+        make_work_foo->fibber = (uint8_t)( drand48() * 11 )
+                              + (uint8_t)FIB_LIMIT;
 
         /* number of the uint64_t elements in the thread big_array */
-        make_work->array_cnt = req_element_num;
+        make_work_foo->array_cnt = req_element_num;
 
-        enqueue( my_q, (void *)make_work );
-        printf ( "INFO : q_push(make_work) done\n" );
-        printf ( "     : my_q->length = %i\n", my_q->length );
+        enqueue( my_q, (void *)make_work_foo );
+
+        if ( count_work_elements%64 ) {
+            printf(".");
+        } else {
+            printf("\n     : .");
+        }
 
     }
+    printf("\nINFO : enqueue() done\n" );
+    printf("     : my_q->length = %i\n", my_q->length );
 
     /* initialize attr with default attributes */
     errno = 0;
@@ -242,10 +294,17 @@ int main(int argc, char **argv) {
     if ( pthread_err == EINVAL ) {
         fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
         perror("FAIL : Invalid value for attr");
+
+        /* we should clean up the heap */
+
+
         return EXIT_FAILURE;
+
+
+
     } else if ( pthread_err == ENOTSUP ) {
-        fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
-        perror("FAIL : Invalid or unsupported value");
+        fprintf(stderr,"WARN : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
+        perror("WARN : Invalid or unsupported value");
         /* could be we are trying to run on Linux which does not support
          * PTHREAD_SCOPE_PROCESS thus : 
          *
@@ -262,7 +321,12 @@ int main(int argc, char **argv) {
             /* bork bork bork and just give up */
             fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
             perror("FAIL : can not set pthread contention scope at all");
+
+            /* again here we should clean up the heap */
+
             return EXIT_FAILURE;
+
+
         } 
         fprintf(stderr,"INFO : PTHREAD_SCOPE_SYSTEM works here\n");
     }
@@ -282,6 +346,9 @@ int main(int argc, char **argv) {
     if ( pthread_attr_setdetachstate( attr, PTHREAD_CREATE_JOINABLE ) == EINVAL) {
         fprintf(stderr,"FAIL : pthread_attr_setdetachstate\n");
         perror("FAIL : EINVAL");
+
+        /* again here we should clean up the heap */
+
         return EXIT_FAILURE;
     }
 
