@@ -120,22 +120,21 @@ void *do_some_array_thing ( void *work_q ) {
      * wait for actual work to be in the queue due to
      * a pthread condition variable that we put into the
      * queue.
-     *
-     * At some point in the future we may check the
-     * work_flag. Not at this time. 
-     *
-     * Before we get into a blocking situation we
-     * check the work_flag for this thread and see if if
-     * is set to 0 in which case we bail out cleanly. */
+     */
 
-    /* check if the queue is empty */
-    pthread_mutex_lock ( the_q->mutex );
+
+
+
+
+
+
+    /* check if the queue is empty ******************/
+    /* pthread_mutex_lock ( the_q->mutex ); */
     if (  ( the_q->length == 0 )
          && ( the_q->head == NULL )
          && ( the_q->tail == NULL ) ) {
 
-        /* the queue is empty and thus we bail out */
-        pthread_mutex_unlock ( the_q->mutex );
+        /* pthread_mutex_unlock ( the_q->mutex ); */
         return NULL;
     }
 
@@ -161,7 +160,6 @@ void *do_some_array_thing ( void *work_q ) {
         return NULL;
 
     }
-    pthread_mutex_unlock ( the_q->mutex );
 
     while ( foo ) {
 
@@ -207,16 +205,12 @@ void *do_some_array_thing ( void *work_q ) {
         free(foo);
         foo = NULL;
 
-        /* check again if the queue is empty */
-        pthread_mutex_lock ( the_q->mutex );
+        /* check if the queue is empty **************/
         if (  ( the_q->length == 0 )
              && ( the_q->head == NULL )
              && ( the_q->tail == NULL ) ) {
 
-            /* the queue is empty and thus we bail out */
-            pthread_mutex_unlock ( the_q->mutex );
             return NULL;
-
         }
 
         /* fetch a new work element pointer from the queue */
@@ -246,11 +240,10 @@ void *do_some_array_thing ( void *work_q ) {
             return NULL;
 
         }
-        pthread_mutex_unlock ( the_q->mutex );
 
     }
 
-    return (NULL);
+    return NULL;
 
 }
 
