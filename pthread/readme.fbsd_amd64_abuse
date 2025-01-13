@@ -1,0 +1,1717 @@
+hydra$ ./q_work 128 33554432
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = hydra
+                     release = 14.2-RELEASE
+                     version = FreeBSD 14.2-RELEASE releng/14.2-n269506-c8918d6c7412 GENERIC
+                     machine = amd64
+                   page size = 4096
+               system memory = 17003057152
+                             = 16604548 kB
+                             = 16215 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+INFO : __ISO_C_VISIBLE id defined
+           system uptime   38 days    5 hours   38 mins   13 secs
+-------------------------------------------------------------------
+INFO : num_pthreads is 128
+INFO : req_element_num is 33554432
+INFO : will begin enqueue() of 643 work elements
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ................................................................
+     : ....
+INFO : enqueue() done
+     : my_q->length = 643
+INFO : this thread_id =   3
+INFO : this thread_id =   1
+thr   0 : work  1    f(  39 )
+thr   1 : work  1    f(  32 )
+calling for join on thread 0
+INFO : this thread_id =   0
+thr   2 : work  1    f(  39 )
+INFO : this thread_id =   4
+thr   3 : work  1    f(  39 )
+INFO : this thread_id =   2
+thr   4 : work  1    f(  35 )
+INFO : this thread_id =   5
+thr   5 : work  1    f(  38 )
+INFO : this thread_id =   6
+thr   6 : work  1    f(  31 )
+INFO : this thread_id =   8
+thr   7 : work  1    f(  39 )
+INFO : this thread_id =  10
+thr   8 : work  1    f(  35 )
+INFO : this thread_id =  14
+thr   9 : work  1    f(  32 )
+INFO : this thread_id =  16
+thr  10 : work  1    f(  35 )
+INFO : this thread_id =  20
+thr  11 : work  1    f(  40 )
+INFO : this thread_id =  22
+thr  12 : work  1    f(  36 )
+INFO : this thread_id =  26
+thr  13 : work  1    f(  40 )
+INFO : this thread_id =  28
+thr  14 : work  1    f(  30 )
+INFO : this thread_id =  30
+thr  15 : work  1    f(  31 )
+INFO : this thread_id =  34
+thr  16 : work  1    f(  37 )
+INFO : this thread_id =  12
+thr  17 : work  1    f(  30 )
+INFO : this thread_id =  18
+thr  18 : work  1    f(  32 )
+INFO : this thread_id =  24
+thr  19 : work  1    f(  37 )
+INFO : this thread_id =  32
+thr  20 : work  1    f(  35 )
+INFO : this thread_id =  40
+thr  21 : work  1    f(  34 )
+INFO : this thread_id =  48
+thr  22 : work  1    f(  32 )
+INFO : this thread_id =  54
+thr  23 : work  1    f(  32 )
+INFO : this thread_id =  56
+INFO : this thread_id =  38
+INFO : this thread_id =  62
+INFO : this thread_id =  42
+thr  26 : work  1    f(  39 )
+thr  27 : work  1    f(  34 )
+INFO : this thread_id =  44
+thr  28 : work  1    f(  39 )
+INFO : this thread_id =  64
+thr  29 : work  1    f(  34 )
+INFO : this thread_id =  46
+thr  30 : work  1    f(  35 )
+INFO : this thread_id =  66
+thr  31 : work  1    f(  40 )
+INFO : this thread_id =  50
+thr  32 : work  1    f(  32 )
+INFO : this thread_id =  70
+thr  33 : work  1    f(  38 )
+INFO : this thread_id =  52
+thr  34 : work  1    f(  39 )
+INFO : this thread_id =  72
+thr  35 : work  1    f(  33 )
+INFO : this thread_id =  60
+thr  36 : work  1    f(  30 )
+INFO : this thread_id =  74
+thr  37 : work  1    f(  38 )
+INFO : this thread_id =  68
+thr  38 : work  1    f(  35 )
+INFO : this thread_id =  76
+thr  39 : work  1    f(  37 )
+INFO : this thread_id =  78
+thr  40 : work  1    f(  33 )
+INFO : this thread_id =  82
+thr  41 : work  1    f(  37 )
+INFO : this thread_id =  80
+INFO : this thread_id =  90
+INFO : this thread_id =  84
+INFO : this thread_id =  94
+INFO : this thread_id =  92
+INFO : this thread_id =  98
+INFO : this thread_id =  96
+thr  47 : work  1    f(  33 )
+thr  48 : work  1    f(  31 )
+INFO : this thread_id = 100
+thr  49 : work  1    f(  34 )
+INFO : this thread_id = 104
+thr  50 : work  1    f(  38 )
+INFO : this thread_id = 106
+thr  51 : work  1    f(  34 )
+INFO : this thread_id = 110
+thr  52 : work  1    f(  38 )
+INFO : this thread_id = 108
+thr  53 : work  1    f(  35 )
+INFO : this thread_id = 112
+thr  54 : work  1    f(  35 )
+INFO : this thread_id = 114
+thr  55 : work  1    f(  37 )
+INFO : this thread_id = 118
+thr  56 : work  1    f(  34 )
+INFO : this thread_id = 116
+thr  57 : work  1    f(  34 )
+INFO : this thread_id = 120
+thr  58 : work  1    f(  30 )
+INFO : this thread_id = 122
+thr  59 : work  1    f(  31 )
+INFO : this thread_id = 126
+thr  60 : work  1    f(  31 )
+INFO : this thread_id = 124
+thr  61 : work  1    f(  36 )
+INFO : this thread_id =   7
+thr  62 : work  1    f(  32 )
+INFO : this thread_id =   9
+thr  63 : work  1    f(  38 )
+INFO : this thread_id =  11
+thr  64 : work  1    f(  37 )
+INFO : this thread_id =  13
+thr  65 : work  1    f(  34 )
+INFO : this thread_id =  15
+thr  66 : work  1    f(  34 )
+INFO : this thread_id =  17
+thr  67 : work  1    f(  35 )
+INFO : this thread_id =  19
+thr  68 : work  1    f(  39 )
+INFO : this thread_id =  23
+thr  69 : work  1    f(  30 )
+INFO : this thread_id =  31
+thr  70 : work  1    f(  36 )
+INFO : this thread_id =  25
+thr  71 : work  1    f(  31 )
+INFO : this thread_id =  33
+thr  72 : work  1    f(  33 )
+INFO : this thread_id =  29
+thr  73 : work  1    f(  37 )
+INFO : this thread_id =  35
+thr  74 : work  1    f(  32 )
+INFO : this thread_id =  37
+thr  75 : work  1    f(  31 )
+INFO : this thread_id =  39
+thr  76 : work  1    f(  40 )
+INFO : this thread_id =  41
+thr  77 : work  1    f(  32 )
+INFO : this thread_id =  43
+thr  78 : work  1    f(  35 )
+INFO : this thread_id =  47
+thr  79 : work  1    f(  36 )
+INFO : this thread_id =  45
+thr  80 : work  1    f(  35 )
+INFO : this thread_id =  51
+thr  81 : work  1    f(  33 )
+INFO : this thread_id =  49
+thr  82 : work  1    f(  30 )
+INFO : this thread_id =  55
+thr  83 : work  1    f(  38 )
+INFO : this thread_id =  53
+thr  84 : work  1    f(  35 )
+INFO : this thread_id =  59
+thr  85 : work  1    f(  39 )
+INFO : this thread_id =  57
+thr  86 : work  1    f(  38 )
+INFO : this thread_id =  61
+thr  87 : work  1    f(  38 )
+INFO : this thread_id =  63
+thr  88 : work  1    f(  31 )
+INFO : this thread_id =  67
+thr  89 : work  1    f(  37 )
+INFO : this thread_id =  65
+thr  90 : work  1    f(  31 )
+INFO : this thread_id =  75
+thr  91 : work  1    f(  32 )
+INFO : this thread_id =  71
+thr  92 : work  1    f(  32 )
+INFO : this thread_id =  77
+thr  93 : work  1    f(  32 )
+INFO : this thread_id =  73
+thr  94 : work  1    f(  37 )
+INFO : this thread_id =  83
+thr  95 : work  1    f(  32 )
+INFO : this thread_id =  79
+thr  96 : work  1    f(  33 )
+INFO : this thread_id =  85
+thr  97 : work  1    f(  37 )
+INFO : this thread_id =  81
+thr  98 : work  1    f(  33 )
+INFO : this thread_id =  91
+thr  99 : work  1    f(  33 )
+INFO : this thread_id =  87
+thr 100 : work  1    f(  32 )
+INFO : this thread_id =  93
+thr 101 : work  1    f(  31 )
+INFO : this thread_id =  89
+thr 102 : work  1    f(  30 )
+INFO : this thread_id =  95
+thr 103 : work  1    f(  30 )
+thr  24 : work  1    f(  38 )
+INFO : this thread_id =  99
+thr 104 : work  1    f(  33 )
+thr  42 : work  1    f(  33 )
+thr  44 : work  1    f(  33 )
+INFO : this thread_id =  88
+INFO : this thread_id =  97
+thr 105 : work  1    f(  36 )
+thr 106 : work  1    f(  35 )
+INFO : this thread_id = 102
+INFO : this thread_id = 103
+INFO : this thread_id =  21
+INFO : this thread_id = 101
+INFO : this thread_id = 105
+thr 110 : work  1    f(  34 )
+thr 111 : work  1    f(  34 )
+INFO : this thread_id = 107
+thr 112 : work  1    f(  39 )
+INFO : this thread_id = 109
+INFO : this thread_id = 121
+INFO : this thread_id = 113
+thr 114 : work  1    f(  33 )
+thr 115 : work  1    f(  37 )
+INFO : this thread_id =  36
+INFO : this thread_id = 127
+thr  43 : work  1    f(  37 )
+INFO : this thread_id =  58
+thr 118 : work  1    f(  35 )
+thr  45 : work  1    f(  31 )
+thr  46 : work  1    f(  32 )
+INFO : this thread_id =  27
+thr 119 : work  1    f(  36 )
+INFO : this thread_id =  69
+INFO : this thread_id = 125
+INFO : this thread_id = 123
+thr 107 : work  1    f(  30 )
+thr  25 : work  1    f(  38 )
+thr 108 : work  1    f(  31 )
+thr 109 : work  1    f(  33 )
+INFO : this thread_id = 115
+thr 123 : work  1    f(  38 )
+INFO : this thread_id = 111
+thr 124 : work  1    f(  31 )
+INFO : this thread_id = 119
+thr 125 : work  1    f(  32 )
+INFO : this thread_id = 117
+thr 126 : work  1    f(  37 )
+thr 113 : work  1    f(  40 )
+thr 116 : work  1    f(  37 )
+INFO : this thread_id =  86
+thr 127 : work  1    f(  40 )
+thr 117 : work  1    f(  34 )
+thr 121 : work  1    f(  30 )
+thr 120 : work  1    f(  38 )
+thr 122 : work  1    f(  36 )
+thr   1 : work  1    fib(32 ) =      2178309
+thr   1 : work  2    fib(38 )
+thr   2 : work  1    fib(35 ) =      9227465
+thr  78 : work  1    fib(33 ) =      3524578
+thr  78 : work  2    fib(32 )
+thr  98 : work  1    fib(33 ) =      3524578
+thr 120 : work  1    fib(30 ) =       832040
+thr  76 : work  1    fib(37 ) =     24157817
+thr 120 : work  2    fib(35 )
+thr 110 : work  1    fib(38 ) =     39088169
+thr 110 : work  2    fib(38 )
+thr  76 : work  2    fib(39 )
+thr  82 : work  1    fib(37 ) =     24157817
+thr 106 : work  1    fib(34 ) =      5702887
+thr  82 : work  2    fib(39 )
+thr 104 : work  1    fib(38 ) =     39088169
+thr 106 : work  2    fib(40 )
+thr 100 : work  1    fib(34 ) =      5702887
+thr  98 : work  2    fib(33 )
+thr 104 : work  2    fib(35 )
+thr 100 : work  2    fib(36 )
+thr  96 : work  1    fib(31 ) =      1346269
+thr  14 : work  1    fib(32 ) =      2178309
+thr  14 : work  2    fib(31 )
+thr 116 : work  1    fib(34 ) =      5702887
+thr 116 : work  2    fib(40 )
+thr 122 : work  1    fib(31 ) =      1346269
+thr  50 : work  1    fib(32 ) =      2178309
+thr 122 : work  2    fib(31 )
+thr  10 : work  1    fib(35 ) =      9227465
+thr  10 : work  2    fib(32 )
+thr 126 : work  1    fib(31 ) =      1346269
+thr  13 : work  1    fib(34 ) =      5702887
+thr  13 : work  2    fib(38 )
+thr  96 : work  2    fib(30 )
+thr  60 : work  1    fib(30 ) =       832040
+thr 126 : work  2    fib(40 )
+thr 118 : work  1    fib(34 ) =      5702887
+thr  60 : work  2    fib(33 )
+thr 118 : work  2    fib(39 )
+thr  17 : work  1    fib(35 ) =      9227465
+thr  17 : work  2    fib(38 )
+thr 108 : work  1    fib(35 ) =      9227465
+thr 108 : work  2    fib(33 )
+thr  11 : work  1    fib(37 ) =     24157817
+thr  54 : work  1    fib(32 ) =      2178309
+thr  54 : work  2    fib(38 )
+thr  31 : work  1    fib(36 ) =     14930352
+thr  31 : work  2    fib(35 )
+thr  23 : work  1    fib(30 ) =       832040
+thr  23 : work  2    fib(30 )
+thr  37 : work  1    fib(31 ) =      1346269
+thr  37 : work  2    fib(33 )
+thr  25 : work  1    fib(31 ) =      1346269
+thr  25 : work  2    fib(32 )
+thr  50 : work  2    fib(40 )
+thr  12 : work  1    fib(30 ) =       832040
+thr  48 : work  1    fib(32 ) =      2178309
+thr  72 : work  1    fib(33 ) =      3524578
+thr  72 : work  2    fib(39 )
+thr  35 : work  1    fib(32 ) =      2178309
+thr  35 : work  2    fib(37 )
+thr 112 : work  1    fib(35 ) =      9227465
+thr 112 : work  2    fib(30 )
+thr  40 : work  1    fib(34 ) =      5702887
+thr  15 : work  1    fib(34 ) =      5702887
+thr  62 : work  1    fib(34 ) =      5702887
+thr  15 : work  2    fib(32 )
+thr  16 : work  1    fib(35 ) =      9227465
+thr   6 : work  1    fib(31 ) =      1346269
+thr   6 : work  2    fib(37 )
+thr  41 : work  1    fib(32 ) =      2178309
+thr  41 : work  2    fib(40 )
+thr  43 : work  1    fib(35 ) =      9227465
+thr  43 : work  2    fib(39 )
+thr 114 : work  1    fib(37 ) =     24157817
+thr   7 : work  1    fib(32 ) =      2178309
+thr   7 : work  2    fib(39 )
+thr  33 : work  1    fib(33 ) =      3524578
+thr  33 : work  2    fib(39 )
+thr  12 : work  2    fib(31 )
+thr  16 : work  2    fib(32 )
+thr 114 : work  2    fib(38 )
+thr  28 : work  1    fib(30 ) =       832040
+thr  28 : work  2    fib(34 )
+thr 124 : work  1    fib(36 ) =     14930352
+thr  48 : work  2    fib(30 )
+thr  46 : work  1    fib(35 ) =      9227465
+thr 124 : work  2    fib(36 )
+thr  32 : work  1    fib(35 ) =      9227465
+thr  46 : work  2    fib(36 )
+thr  40 : work  2    fib(30 )
+thr  64 : work  1    fib(34 ) =      5702887
+thr  64 : work  2    fib(32 )
+thr  75 : work  1    fib(32 ) =      2178309
+thr  75 : work  2    fib(33 )
+thr  68 : work  1    fib(35 ) =      9227465
+thr  18 : work  1    fib(32 ) =      2178309
+thr  51 : work  1    fib(33 ) =      3524578
+thr  51 : work  2    fib(40 )
+thr  45 : work  1    fib(35 ) =      9227465
+thr  45 : work  2    fib(39 )
+thr  53 : work  1    fib(35 ) =      9227465
+thr  53 : work  2    fib(40 )
+thr  63 : work  1    fib(31 ) =      1346269
+thr  63 : work  2    fib(31 )
+thr  32 : work  2    fib(30 )
+thr  71 : work  1    fib(32 ) =      2178309
+thr  68 : work  2    fib(37 )
+thr  18 : work  2    fib(40 )
+thr  49 : work  1    fib(30 ) =       832040
+thr  49 : work  2    fib(37 )
+thr  65 : work  1    fib(31 ) =      1346269
+thr  77 : work  1    fib(32 ) =      2178309
+thr  65 : work  2    fib(34 )
+thr  71 : work  2    fib(38 )
+thr  77 : work  2    fib(34 )
+thr  30 : work  1    fib(31 ) =      1346269
+thr  30 : work  2    fib(38 )
+thr 100 : work  2    fib(36 ) =     14930352
+thr  83 : work  1    fib(32 ) =      2178309
+thr  83 : work  2    fib(37 )
+thr  81 : work  1    fib(33 ) =      3524578
+thr  81 : work  2    fib(36 )
+thr  87 : work  1    fib(32 ) =      2178309
+thr  87 : work  2    fib(37 )
+thr  91 : work  1    fib(33 ) =      3524578
+thr  89 : work  1    fib(30 ) =       832040
+thr  89 : work  2    fib(31 )
+thr  95 : work  1    fib(30 ) =       832040
+thr  95 : work  2    fib(30 )
+thr  80 : work  1    fib(33 ) =      3524578
+thr  84 : work  1    fib(33 ) =      3524578
+thr  84 : work  2    fib(38 )
+thr  93 : work  1    fib(31 ) =      1346269
+thr  93 : work  2    fib(30 )
+thr  80 : work  2    fib(34 )
+thr  91 : work  2    fib(37 )
+thr  99 : work  1    fib(33 ) =      3524578
+thr  99 : work  2    fib(33 )
+thr  29 : work  1    fib(37 ) =     24157817
+thr  29 : work  2    fib(39 )
+thr  62 : work  2    fib(35 )
+thr 101 : work  1    fib(34 ) =      5702887
+thr 101 : work  2    fib(39 )
+thr 105 : work  1    fib(34 ) =      5702887
+thr 105 : work  2    fib(33 )
+thr 121 : work  1    fib(33 ) =      3524578
+thr  94 : work  1    fib(31 ) =      1346269
+thr  94 : work  2    fib(40 )
+thr  58 : work  1    fib(35 ) =      9227465
+thr 121 : work  2    fib(36 )
+thr  27 : work  1    fib(36 ) =     14930352
+thr  92 : work  1    fib(32 ) =      2178309
+thr  58 : work  2    fib(38 )
+thr  27 : work  2    fib(37 )
+thr  92 : work  2    fib(36 )
+thr 103 : work  1    fib(31 ) =      1346269
+thr 103 : work  2    fib(37 )
+thr  21 : work  1    fib(33 ) =      3524578
+thr  21 : work  2    fib(37 )
+thr 119 : work  1    fib(32 ) =      2178309
+thr 111 : work  1    fib(31 ) =      1346269
+thr 111 : work  2    fib(34 )
+thr 119 : work  2    fib(35 )
+thr 127 : work  1    fib(34 ) =      5702887
+thr 127 : work  2    fib(34 )
+thr 125 : work  1    fib(30 ) =       832040
+thr 125 : work  2    fib(36 )
+thr  85 : work  1    fib(37 ) =     24157817
+thr  85 : work  2    fib(37 )
+thr  88 : work  1    fib(36 ) =     14930352
+thr  73 : work  1    fib(37 ) =     24157817
+thr 123 : work  1    fib(36 ) =     14930352
+thr  88 : work  2    fib(40 )
+thr 120 : work  2    fib(35 ) =      9227465
+thr 105 : work  2    fib(33 ) =      3524578
+thr 120 : work  3    fib(40 )
+thr 105 : work  3    fib(34 )
+thr  90 : work  1    fib(37 ) =     24157817
+thr  36 : work  1    fib(37 ) =     24157817
+thr  36 : work  2    fib(31 )
+thr  92 : work  2    fib(36 ) =     14930352
+thr  92 : work  3    fib(30 )
+thr 100 : work  3    fib(33 )
+thr 123 : work  2    fib(33 )
+thr  78 : work  2    fib(32 ) =      2178309
+thr  78 : work  3    fib(31 )
+thr  14 : work  2    fib(31 ) =      1346269
+thr  14 : work  3    fib(38 )
+thr 122 : work  2    fib(31 ) =      1346269
+thr  67 : work  1    fib(37 ) =     24157817
+thr 122 : work  3    fib(37 )
+thr  73 : work  2    fib(30 )
+thr  98 : work  2    fib(33 ) =      3524578
+thr  98 : work  3    fib(30 )
+thr 113 : work  1    fib(37 ) =     24157817
+thr 113 : work  2    fib(30 )
+thr  90 : work  2    fib(30 )
+thr  65 : work  2    fib(34 ) =      5702887
+thr  65 : work  3    fib(38 )
+thr  60 : work  2    fib(33 ) =      3524578
+thr  60 : work  3    fib(38 )
+thr  97 : work  1    fib(35 ) =      9227465
+thr  97 : work  2    fib(30 )
+thr  67 : work  2    fib(36 )
+thr 108 : work  2    fib(33 ) =      3524578
+thr 108 : work  3    fib(32 )
+thr 123 : work  2    fib(33 ) =      3524578
+thr  23 : work  2    fib(30 ) =       832040
+thr  23 : work  3    fib(33 )
+thr  37 : work  2    fib(33 ) =      3524578
+thr  37 : work  3    fib(36 )
+thr  25 : work  2    fib(32 ) =      2178309
+thr  25 : work  3    fib(35 )
+thr  24 : work  1    fib(37 ) =     24157817
+thr  31 : work  2    fib(35 ) =      9227465
+thr  31 : work  3    fib(32 )
+thr  15 : work  2    fib(32 ) =      2178309
+thr  15 : work  3    fib(40 )
+thr 112 : work  2    fib(30 ) =       832040
+thr 112 : work  3    fib(37 )
+thr  61 : work  1    fib(38 ) =     39088169
+thr  61 : work  2    fib(35 )
+thr  24 : work  2    fib(34 )
+thr  47 : work  1    fib(36 ) =     14930352
+thr  22 : work  1    fib(36 ) =     14930352
+thr  22 : work  2    fib(34 )
+thr  12 : work  2    fib(31 ) =      1346269
+thr  12 : work  3    fib(35 )
+thr  28 : work  2    fib(34 ) =      5702887
+thr 123 : work  3    fib(37 )
+thr  28 : work  3    fib(31 )
+thr  56 : work  1    fib(38 ) =     39088169
+thr  56 : work  2    fib(38 )
+thr   9 : work  1    fib(38 ) =     39088169
+thr   9 : work  2    fib(39 )
+thr  48 : work  2    fib(30 ) =       832040
+thr  48 : work  3    fib(37 )
+thr 114 : work  2    fib(38 ) =     39088169
+thr  64 : work  2    fib(32 ) =      2178309
+thr  64 : work  3    fib(36 )
+thr  46 : work  2    fib(36 ) =     14930352
+thr  46 : work  3    fib(38 )
+thr  54 : work  2    fib(38 ) =     39088169
+thr  16 : work  2    fib(32 ) =      2178309
+thr  16 : work  3    fib(36 )
+thr  63 : work  2    fib(31 ) =      1346269
+thr  63 : work  3    fib(30 )
+thr  75 : work  2    fib(33 ) =      3524578
+thr  75 : work  3    fib(32 )
+thr 114 : work  3    fib(40 )
+thr  34 : work  1    fib(37 ) =     24157817
+thr  34 : work  2    fib(39 )
+thr 124 : work  2    fib(36 ) =     14930352
+thr 124 : work  3    fib(35 )
+thr  47 : work  2    fib(31 )
+thr 115 : work  1    fib(38 ) =     39088169
+thr 115 : work  2    fib(38 )
+thr  11 : work  2    fib(37 )
+thr  38 : work  1    fib(38 ) =     39088169
+thr  38 : work  2    fib(39 )
+thr  35 : work  2    fib(37 ) =     24157817
+thr  40 : work  2    fib(30 ) =       832040
+thr  35 : work  3    fib(40 )
+thr  32 : work  2    fib(30 ) =       832040
+thr  68 : work  2    fib(37 ) =     24157817
+thr  40 : work  3    fib(32 )
+thr  32 : work  3    fib(31 )
+thr  68 : work  3    fib(36 )
+thr  49 : work  2    fib(37 ) =     24157817
+thr  49 : work  3    fib(34 )
+thr  13 : work  2    fib(38 ) =     39088169
+thr  17 : work  2    fib(38 ) =     39088169
+thr  17 : work  3    fib(39 )
+thr  67 : work  2    fib(36 ) =     14930352
+thr  69 : work  1    fib(38 ) =     39088169
+thr  69 : work  2    fib(33 )
+thr  55 : work  1    fib(38 ) =     39088169
+thr  67 : work  3    fib(30 )
+thr  79 : work  1    fib(33 ) =      3524578
+thr  71 : work  2    fib(38 ) =     39088169
+thr  71 : work  3    fib(31 )
+thr  54 : work  3    fib(31 )
+thr  30 : work  2    fib(38 ) =     39088169
+thr  13 : work  3    fib(36 )
+thr  81 : work  2    fib(36 ) =     14930352
+thr  81 : work  3    fib(35 )
+thr  77 : work  2    fib(34 ) =      5702887
+thr  89 : work  2    fib(31 ) =      1346269
+thr  95 : work  2    fib(30 ) =       832040
+thr  93 : work  2    fib(30 ) =       832040
+thr  95 : work  3    fib(37 )
+thr  80 : work  2    fib(34 ) =      5702887
+thr  79 : work  2    fib(31 )
+thr  93 : work  3    fib(39 )
+thr  80 : work  3    fib(31 )
+thr  99 : work  2    fib(33 ) =      3524578
+thr  99 : work  3    fib(33 )
+thr 102 : work  1    fib(30 ) =       832040
+thr 102 : work  2    fib(39 )
+thr  89 : work  3    fib(36 )
+thr  87 : work  2    fib(37 ) =     24157817
+thr  87 : work  3    fib(38 )
+thr  91 : work  2    fib(37 ) =     24157817
+thr  91 : work  3    fib(34 )
+thr  83 : work  2    fib(37 ) =     24157817
+thr  83 : work  3    fib(37 )
+thr  62 : work  2    fib(35 ) =      9227465
+thr  77 : work  3    fib(39 )
+thr 121 : work  2    fib(36 ) =     14930352
+thr 121 : work  3    fib(34 )
+thr  62 : work  3    fib(33 )
+thr  27 : work  2    fib(37 ) =     24157817
+thr 127 : work  2    fib(34 ) =      5702887
+thr 111 : work  2    fib(34 ) =      5702887
+thr 127 : work  3    fib(32 )
+thr 119 : work  2    fib(35 ) =      9227465
+thr 119 : work  3    fib(40 )
+thr 127 : work  3    fib(32 ) =      2178309
+thr 127 : work  4    fib(38 )
+thr 111 : work  3    fib(32 )
+thr  27 : work  3    fib(39 )
+thr 105 : work  3    fib(34 ) =      5702887
+thr 105 : work  4    fib(38 )
+thr 125 : work  2    fib(36 ) =     14930352
+thr 103 : work  2    fib(37 ) =     24157817
+thr 125 : work  3    fib(39 )
+thr 103 : work  3    fib(32 )
+thr 117 : work  1    fib(37 ) =     24157817
+thr  92 : work  3    fib(30 ) =       832040
+thr  92 : work  4    fib(30 )
+thr 117 : work  2    fib(37 )
+thr  30 : work  3    fib(34 )
+thr  78 : work  3    fib(31 ) =      1346269
+thr  36 : work  2    fib(31 ) =      1346269
+thr  36 : work  3    fib(39 )
+thr  55 : work  2    fib(36 )
+thr  78 : work  4    fib(36 )
+thr  57 : work  1    fib(38 ) =     39088169
+thr  57 : work  2    fib(33 )
+thr  21 : work  2    fib(37 ) =     24157817
+thr  21 : work  3    fib(33 )
+thr  73 : work  2    fib(30 ) =       832040
+thr  73 : work  3    fib(35 )
+thr  14 : work  3    fib(38 ) =     39088169
+thr  98 : work  3    fib(30 ) =       832040
+thr  98 : work  4    fib(35 )
+thr 113 : work  2    fib(30 ) =       832040
+thr  90 : work  2    fib(30 ) =       832040
+thr 113 : work  3    fib(31 )
+thr  90 : work  3    fib(38 )
+thr  14 : work  4    fib(35 )
+thr  97 : work  2    fib(30 ) =       832040
+thr  97 : work  3    fib(36 )
+thr 110 : work  2    fib(38 ) =     39088169
+thr 110 : work  3    fib(34 )
+thr   6 : work  2    fib(37 ) =     24157817
+thr   6 : work  3    fib(30 )
+thr  84 : work  2    fib(38 ) =     39088169
+thr  96 : work  2    fib(30 ) =       832040
+thr  96 : work  3    fib(34 )
+thr  58 : work  2    fib(38 ) =     39088169
+thr  23 : work  3    fib(33 ) =      3524578
+thr  23 : work  4    fib(34 )
+thr 108 : work  3    fib(32 ) =      2178309
+thr 108 : work  4    fib(32 )
+thr  37 : work  3    fib(36 ) =     14930352
+thr  25 : work  3    fib(35 ) =      9227465
+thr  25 : work  4    fib(39 )
+thr  58 : work  3    fib(35 )
+thr 122 : work  3    fib(37 ) =     24157817
+thr 122 : work  4    fib(33 )
+thr  37 : work  4    fib(37 )
+thr  10 : work  2    fib(32 ) =      2178309
+thr  10 : work  3    fib(33 )
+thr  31 : work  3    fib(32 ) =      2178309
+thr  31 : work  4    fib(36 )
+thr  96 : work  3    fib(34 ) =      5702887
+thr  96 : work  4    fib(37 )
+thr  22 : work  2    fib(34 ) =      5702887
+thr  22 : work  3    fib(37 )
+thr  12 : work  3    fib(35 ) =      9227465
+thr  12 : work  4    fib(38 )
+thr  28 : work  3    fib(31 ) =      1346269
+thr  28 : work  4    fib(39 )
+thr  31 : work  4    fib(36 ) =     14930352
+thr 123 : work  3    fib(37 ) =     24157817
+thr 123 : work  4    fib(38 )
+thr  64 : work  3    fib(36 ) =     14930352
+thr  64 : work  4    fib(39 )
+thr  63 : work  3    fib(30 ) =       832040
+thr  63 : work  4    fib(37 )
+thr  31 : work  5    fib(35 )
+thr  16 : work  3    fib(36 ) =     14930352
+thr  16 : work  4    fib(33 )
+thr  48 : work  3    fib(37 ) =     24157817
+thr  48 : work  4    fib(32 )
+thr  75 : work  3    fib(32 ) =      2178309
+thr  75 : work  4    fib(36 )
+thr 124 : work  3    fib(35 ) =      9227465
+thr 124 : work  4    fib(34 )
+thr  47 : work  2    fib(31 ) =      1346269
+thr  47 : work  3    fib(32 )
+thr  11 : work  2    fib(37 ) =     24157817
+thr  11 : work  3    fib(32 )
+thr 112 : work  3    fib(37 ) =     24157817
+thr 112 : work  4    fib(40 )
+thr  65 : work  3    fib(38 ) =     39088169
+thr  65 : work  4    fib(32 )
+thr  32 : work  3    fib(31 ) =      1346269
+thr  32 : work  4    fib(31 )
+thr  40 : work  3    fib(32 ) =      2178309
+thr  40 : work  4    fib(34 )
+thr  84 : work  3    fib(30 )
+thr 115 : work  2    fib(38 ) =     39088169
+thr  49 : work  3    fib(34 ) =      5702887
+thr  49 : work  4    fib(36 )
+thr  56 : work  2    fib(38 ) =     39088169
+thr  69 : work  2    fib(33 ) =      3524578
+thr  69 : work  3    fib(30 )
+thr  67 : work  3    fib(30 ) =       832040
+thr  67 : work  4    fib(39 )
+thr  96 : work  4    fib(37 ) =     24157817
+thr  56 : work  3    fib(39 )
+thr 115 : work  3    fib(40 )
+thr  69 : work  3    fib(30 ) =       832040
+thr  69 : work  4    fib(38 )
+thr  96 : work  5    fib(38 )
+thr  13 : work  3    fib(36 ) =     14930352
+thr  81 : work  3    fib(35 ) =      9227465
+thr  81 : work  4    fib(35 )
+thr  32 : work  4    fib(31 ) =      1346269
+thr  32 : work  5    fib(32 )
+thr  79 : work  2    fib(31 ) =      1346269
+thr  79 : work  3    fib(30 )
+thr  80 : work  3    fib(31 ) =      1346269
+thr  80 : work  4    fib(38 )
+thr  99 : work  3    fib(33 ) =      3524578
+thr  99 : work  4    fib(38 )
+thr  13 : work  4    fib(33 )
+thr  89 : work  3    fib(36 ) =     14930352
+thr  89 : work  4    fib(39 )
+thr  85 : work  2    fib(37 ) =     24157817
+thr  95 : work  3    fib(37 ) =     24157817
+thr  91 : work  3    fib(34 ) =      5702887
+thr  91 : work  4    fib(37 )
+thr  95 : work  4    fib(40 )
+thr  13 : work  4    fib(33 ) =      3524578
+thr  13 : work  5    fib(36 )
+thr  62 : work  3    fib(33 ) =      3524578
+thr 121 : work  3    fib(34 ) =      5702887
+thr  62 : work  4    fib(30 )
+thr 121 : work  4    fib(40 )
+thr  83 : work  3    fib(37 ) =     24157817
+thr  83 : work  4    fib(34 )
+thr 111 : work  3    fib(32 ) =      2178309
+thr 111 : work  4    fib(35 )
+thr  74 : work  1    fib(38 ) =     39088169
+thr  74 : work  2    fib(33 )
+thr 105 : work  4    fib(38 ) =     39088169
+thr 103 : work  3    fib(32 ) =      2178309
+thr 103 : work  4    fib(34 )
+thr 105 : work  5    fib(35 )
+thr 118 : work  2    fib(39 ) =     63245986
+thr  76 : work  2    fib(39 ) =     63245986
+thr  34 : work  2    fib(39 ) =     63245986
+thr  85 : work  3    fib(30 )
+thr  59 : work  1    fib(39 ) =     63245986
+thr  92 : work  4    fib(30 ) =       832040
+thr  76 : work  3    fib(30 )
+thr  45 : work  2    fib(39 ) =     63245986
+thr  45 : work  3    fib(39 )
+thr  36 : work  3    fib(39 ) =     63245986
+thr 117 : work  2    fib(37 ) =     24157817
+thr 117 : work  3    fib(37 )
+thr  36 : work  4    fib(35 )
+thr  82 : work  2    fib(39 ) =     63245986
+thr  82 : work  3    fib(37 )
+thr  77 : work  3    fib(39 ) =     63245986
+thr  77 : work  4    fib(37 )
+thr 118 : work  3    fib(35 )
+thr   7 : work  2    fib(39 ) =     63245986
+thr   7 : work  3    fib(37 )
+thr  27 : work  3    fib(39 ) =     63245986
+thr 104 : work  2    fib(35 ) =      9227465
+thr 104 : work  3    fib(38 )
+thr  92 : work  5    fib(31 )
+thr  78 : work  4    fib(36 ) =     14930352
+thr  78 : work  5    fib(34 )
+thr  59 : work  2    fib(35 )
+thr  30 : work  3    fib(34 ) =      5702887
+thr  30 : work  4    fib(38 )
+thr 127 : work  4    fib(38 ) =     39088169
+thr 127 : work  5    fib(37 )
+thr  38 : work  2    fib(39 ) =     63245986
+thr  27 : work  4    fib(39 )
+thr  17 : work  3    fib(39 ) =     63245986
+thr  34 : work  3    fib(32 )
+thr  38 : work  3    fib(33 )
+thr  43 : work  2    fib(39 ) =     63245986
+thr  43 : work  3    fib(34 )
+thr  93 : work  3    fib(39 ) =     63245986
+thr  93 : work  4    fib(35 )
+thr 107 : work  1    fib(39 ) =     63245986
+thr  17 : work  4    fib(33 )
+thr  29 : work  2    fib(39 ) =     63245986
+thr  29 : work  3    fib(33 )
+thr  70 : work  1    fib(38 ) =     39088169
+thr 107 : work  2    fib(38 )
+thr  57 : work  2    fib(33 ) =      3524578
+thr  57 : work  3    fib(31 )
+thr  70 : work  2    fib(40 )
+thr 125 : work  3    fib(39 ) =     63245986
+thr 125 : work  4    fib(40 )
+thr  55 : work  2    fib(36 ) =     14930352
+thr  55 : work  3    fib(38 )
+thr 101 : work  2    fib(39 ) =     63245986
+thr 101 : work  3    fib(32 )
+thr  19 : work  1    fib(39 ) =     63245986
+thr  60 : work  3    fib(38 ) =     39088169
+thr  60 : work  4    fib(33 )
+thr  19 : work  2    fib(34 )
+thr  73 : work  3    fib(35 ) =      9227465
+thr  73 : work  4    fib(39 )
+thr 113 : work  3    fib(31 ) =      1346269
+thr 113 : work  4    fib(37 )
+thr  98 : work  4    fib(35 ) =      9227465
+thr  98 : work  5    fib(35 )
+thr 110 : work  3    fib(34 ) =      5702887
+thr 110 : work  4    fib(31 )
+thr   6 : work  3    fib(30 ) =       832040
+thr   6 : work  4    fib(33 )
+thr 108 : work  4    fib(32 ) =      2178309
+thr  23 : work  4    fib(34 ) =      5702887
+thr 108 : work  5    fib(34 )
+thr  23 : work  5    fib(36 )
+thr  58 : work  3    fib(35 ) =      9227465
+thr  58 : work  4    fib(32 )
+thr 108 : work  5    fib(34 ) =      5702887
+thr  10 : work  3    fib(33 ) =      3524578
+thr  10 : work  4    fib(33 )
+thr 122 : work  4    fib(33 ) =      3524578
+thr 122 : work  5    fib(33 )
+thr 108 : work  6    fib(33 )
+thr  97 : work  3    fib(36 ) =     14930352
+thr  31 : work  5    fib(35 ) =      9227465
+thr  31 : work  6    fib(40 )
+thr  97 : work  4    fib(39 )
+thr  10 : work  4    fib(33 ) =      3524578
+thr  10 : work  5    fib(39 )
+thr  58 : work  4    fib(32 ) =      2178309
+thr 124 : work  4    fib(34 ) =      5702887
+thr 124 : work  5    fib(33 )
+thr  47 : work  3    fib(32 ) =      2178309
+thr  47 : work  4    fib(36 )
+thr  11 : work  3    fib(32 ) =      2178309
+thr  11 : work  4    fib(31 )
+thr 100 : work  3    fib(33 ) =      3524578
+thr 100 : work  4    fib(32 )
+thr  40 : work  4    fib(34 ) =      5702887
+thr  40 : work  5    fib(32 )
+thr 100 : work  4    fib(32 ) =      2178309
+thr  63 : work  4    fib(37 ) =     24157817
+thr  58 : work  5    fib(32 )
+thr  54 : work  3    fib(31 ) =      1346269
+thr  54 : work  4    fib(36 )
+thr 122 : work  5    fib(33 ) =      3524578
+thr 122 : work  6    fib(30 )
+thr  37 : work  4    fib(37 ) =     24157817
+thr  22 : work  3    fib(37 ) =     24157817
+thr 100 : work  5    fib(37 )
+thr  37 : work  5    fib(40 )
+thr  63 : work  5    fib(40 )
+thr  11 : work  4    fib(31 ) =      1346269
+thr  22 : work  4    fib(33 )
+thr  40 : work  5    fib(32 ) =      2178309
+thr  40 : work  6    fib(34 )
+thr  11 : work  5    fib(34 )
+thr  90 : work  3    fib(38 ) =     39088169
+thr  90 : work  4    fib(39 )
+thr  12 : work  4    fib(38 ) =     39088169
+thr  12 : work  5    fib(38 )
+thr  69 : work  4    fib(38 ) =     39088169
+thr  69 : work  5    fib(40 )
+thr 123 : work  4    fib(38 ) =     39088169
+thr 123 : work  5    fib(36 )
+thr  49 : work  4    fib(36 ) =     14930352
+thr  49 : work  5    fib(39 )
+thr  46 : work  3    fib(38 ) =     39088169
+thr  79 : work  3    fib(30 ) =       832040
+thr  79 : work  4    fib(31 )
+thr  91 : work  4    fib(37 ) =     24157817
+thr  91 : work  5    fib(37 )
+thr  80 : work  4    fib(38 ) =     39088169
+thr  80 : work  5    fib(36 )
+thr  62 : work  4    fib(30 ) =       832040
+thr  62 : work  5    fib(33 )
+thr  58 : work  5    fib(32 ) =      2178309
+thr  58 : work  6    fib(38 )
+thr  96 : work  5    fib(38 ) =     39088169
+thr  96 : work  6    fib(30 )
+thr  87 : work  3    fib(38 ) =     39088169
+thr  87 : work  4    fib(40 )
+thr  99 : work  4    fib(38 ) =     39088169
+thr  99 : work  5    fib(31 )
+thr  46 : work  4    fib(35 )
+thr  56 : work  3    fib(39 ) =     63245986
+thr  83 : work  4    fib(34 ) =      5702887
+thr  83 : work  5    fib(38 )
+thr 103 : work  4    fib(34 ) =      5702887
+thr 111 : work  4    fib(35 ) =      9227465
+thr 111 : work  5    fib(37 )
+thr  74 : work  2    fib(33 ) =      3524578
+thr  74 : work  3    fib(31 )
+thr  85 : work  3    fib(30 ) =       832040
+thr 103 : work  5    fib(38 )
+thr  85 : work  4    fib(31 )
+thr 105 : work  5    fib(35 ) =      9227465
+thr 105 : work  6    fib(39 )
+thr 117 : work  3    fib(37 ) =     24157817
+thr 117 : work  4    fib(34 )
+thr  83 : work  5    fib(38 ) =     39088169
+thr  82 : work  3    fib(37 ) =     24157817
+thr  82 : work  4    fib(38 )
+thr  77 : work  4    fib(37 ) =     24157817
+thr 118 : work  3    fib(35 ) =      9227465
+thr  77 : work  5    fib(30 )
+thr 118 : work  4    fib(40 )
+thr  92 : work  5    fib(31 ) =      1346269
+thr  92 : work  6    fib(31 )
+thr  59 : work  2    fib(35 ) =      9227465
+thr  59 : work  3    fib(39 )
+thr  83 : work  6    fib(34 )
+thr 117 : work  4    fib(34 ) =      5702887
+thr  34 : work  3    fib(32 ) =      2178309
+thr  34 : work  4    fib(40 )
+thr 127 : work  5    fib(37 ) =     24157817
+thr 127 : work  6    fib(40 )
+thr 117 : work  5    fib(33 )
+thr  38 : work  3    fib(33 ) =      3524578
+thr  38 : work  4    fib(30 )
+thr 104 : work  3    fib(38 ) =     39088169
+thr  30 : work  4    fib(38 ) =     39088169
+thr 111 : work  5    fib(37 ) =     24157817
+thr 104 : work  4    fib(30 )
+thr  30 : work  5    fib(40 )
+thr 111 : work  6    fib(40 )
+thr  43 : work  3    fib(34 ) =      5702887
+thr  43 : work  4    fib(32 )
+thr  17 : work  4    fib(33 ) =      3524578
+thr  17 : work  5    fib(36 )
+thr  57 : work  3    fib(31 ) =      1346269
+thr  57 : work  4    fib(32 )
+thr  21 : work  3    fib(33 ) =      3524578
+thr  21 : work  4    fib(39 )
+thr  57 : work  4    fib(32 ) =      2178309
+thr  57 : work  5    fib(40 )
+thr 101 : work  3    fib(32 ) =      2178309
+thr 101 : work  4    fib(37 )
+thr  17 : work  5    fib(36 ) =     14930352
+thr  17 : work  6    fib(31 )
+thr  19 : work  2    fib(34 ) =      5702887
+thr  19 : work  3    fib(37 )
+thr  60 : work  4    fib(33 ) =      3524578
+thr  60 : work  5    fib(33 )
+thr  14 : work  4    fib(35 ) =      9227465
+thr  14 : work  5    fib(36 )
+thr  98 : work  5    fib(35 ) =      9227465
+thr  98 : work  6    fib(39 )
+thr 113 : work  4    fib(37 ) =     24157817
+thr 113 : work  5    fib(40 )
+thr  64 : work  4    fib(39 ) =     63245986
+thr 110 : work  4    fib(31 ) =      1346269
+thr   6 : work  4    fib(33 ) =      3524578
+thr   6 : work  5    fib(39 )
+thr  61 : work  2    fib(35 ) =      9227465
+thr  23 : work  5    fib(36 ) =     14930352
+thr  23 : work  6    fib(32 )
+thr 110 : work  5    fib(35 )
+thr  61 : work  3    fib(30 )
+thr  56 : work  4    fib(37 )
+thr  64 : work  5    fib(32 )
+thr  25 : work  4    fib(39 ) =     63245986
+thr  25 : work  5    fib(38 )
+thr  89 : work  4    fib(39 ) =     63245986
+thr 108 : work  6    fib(33 ) =      3524578
+thr  16 : work  4    fib(33 ) =      3524578
+thr  75 : work  4    fib(36 ) =     14930352
+thr  48 : work  4    fib(32 ) =      2178309
+thr 108 : work  7    fib(34 )
+thr  48 : work  5    fib(37 )
+thr  75 : work  5    fib(40 )
+thr  16 : work  5    fib(37 )
+thr  89 : work  5    fib(39 )
+thr 104 : work  4    fib(30 ) =       832040
+thr 104 : work  5    fib(32 )
+thr 124 : work  5    fib(33 ) =      3524578
+thr 124 : work  6    fib(37 )
+thr  47 : work  4    fib(36 ) =     14930352
+thr  47 : work  5    fib(34 )
+thr  65 : work  4    fib(32 ) =      2178309
+thr  65 : work  5    fib(31 )
+thr 122 : work  6    fib(30 ) =       832040
+thr 122 : work  7    fib(37 )
+thr  65 : work  5    fib(31 ) =      1346269
+thr  54 : work  4    fib(36 ) =     14930352
+thr  54 : work  5    fib(30 )
+thr  65 : work  6    fib(39 )
+thr 124 : work  6    fib(37 ) =     24157817
+thr 124 : work  7    fib(40 )
+thr 100 : work  5    fib(37 ) =     24157817
+thr 100 : work  6    fib(40 )
+thr  47 : work  5    fib(34 ) =      5702887
+thr  47 : work  6    fib(36 )
+thr 122 : work  7    fib(37 ) =     24157817
+thr 122 : work  8    fib(31 )
+thr  82 : work  4    fib(38 ) =     39088169
+thr  22 : work  4    fib(33 ) =      3524578
+thr  22 : work  5    fib(39 )
+thr  40 : work  6    fib(34 ) =      5702887
+thr  11 : work  5    fib(34 ) =      5702887
+thr  81 : work  4    fib(35 ) =      9227465
+thr  11 : work  6    fib(35 )
+thr  40 : work  7    fib(37 )
+thr  81 : work  5    fib(35 )
+thr  82 : work  5    fib(32 )
+thr  32 : work  5    fib(32 ) =      2178309
+thr 123 : work  5    fib(36 ) =     14930352
+thr  79 : work  4    fib(31 ) =      1346269
+thr  32 : work  6    fib(37 )
+thr  90 : work  4    fib(39 ) =     63245986
+thr  79 : work  5    fib(31 )
+thr  90 : work  5    fib(37 )
+thr  49 : work  5    fib(39 ) =     63245986
+thr  91 : work  5    fib(37 ) =     24157817
+thr 123 : work  6    fib(31 )
+thr  91 : work  6    fib(33 )
+thr  49 : work  6    fib(39 )
+thr 102 : work  2    fib(39 ) =     63245986
+thr  62 : work  5    fib(33 ) =      3524578
+thr  62 : work  6    fib(30 )
+thr  96 : work  6    fib(30 ) =       832040
+thr  80 : work  5    fib(36 ) =     14930352
+thr  96 : work  7    fib(37 )
+thr  99 : work  5    fib(31 ) =      1346269
+thr  80 : work  6    fib(36 )
+thr  99 : work  6    fib(31 )
+thr  13 : work  5    fib(36 ) =     14930352
+thr  13 : work  6    fib(38 )
+thr  46 : work  4    fib(35 ) =      9227465
+thr  46 : work  5    fib(40 )
+thr  12 : work  5    fib(38 ) =     39088169
+thr  76 : work  3    fib(30 ) =       832040
+thr  76 : work  4    fib(30 )
+thr  74 : work  3    fib(31 ) =      1346269
+thr  74 : work  4    fib(40 )
+thr 103 : work  5    fib(38 ) =     39088169
+thr 103 : work  6    fib(31 )
+thr   7 : work  3    fib(37 ) =     24157817
+thr   7 : work  4    fib(36 )
+thr  85 : work  4    fib(31 ) =      1346269
+thr  92 : work  6    fib(31 ) =      1346269
+thr  77 : work  5    fib(30 ) =       832040
+thr  77 : work  6    fib(34 )
+thr  92 : work  7    fib(33 )
+thr  85 : work  5    fib(33 )
+thr  78 : work  5    fib(34 ) =      5702887
+thr  78 : work  6    fib(32 )
+thr  78 : work  6    fib(32 ) =      2178309
+thr  78 : work  7    fib(35 )
+thr 117 : work  5    fib(33 ) =      3524578
+thr 117 : work  6    fib(31 )
+thr  38 : work  4    fib(30 ) =       832040
+thr  38 : work  5    fib(30 )
+thr  38 : work  5    fib(30 ) =       832040
+thr  38 : work  6    fib(33 )
+thr  43 : work  4    fib(32 ) =      2178309
+thr  43 : work  5    fib(34 )
+thr  43 : work  5    fib(34 ) =      5702887
+thr  43 : work  6    fib(32 )
+thr  43 : work  6    fib(32 ) =      2178309
+thr  43 : work  7    fib(37 )
+thr  67 : work  4    fib(39 ) =     63245986
+thr  27 : work  4    fib(39 ) =     63245986
+thr  27 : work  5    fib(38 )
+thr  28 : work  4    fib(39 ) =     63245986
+thr  67 : work  5    fib(35 )
+thr  55 : work  3    fib(38 ) =     39088169
+thr  55 : work  4    fib(40 )
+thr  60 : work  5    fib(33 ) =      3524578
+thr  60 : work  6    fib(32 )
+thr  12 : work  6    fib(36 )
+thr  42 : work  1    fib(39 ) =     63245986
+thr  14 : work  5    fib(36 ) =     14930352
+thr  14 : work  6    fib(38 )
+thr  42 : work  2    fib(38 )
+thr  44 : work  1    fib(39 ) =     63245986
+thr  17 : work  6    fib(31 ) =      1346269
+thr  17 : work  7    fib(38 )
+thr  44 : work  2    fib(35 )
+thr  19 : work  3    fib(37 ) =     24157817
+thr  19 : work  4    fib(35 )
+thr  33 : work  2    fib(39 ) =     63245986
+thr  52 : work  1    fib(39 ) =     63245986
+thr  52 : work  2    fib(39 )
+thr  72 : work  2    fib(39 ) =     63245986
+thr  72 : work  3    fib(38 )
+thr  33 : work  3    fib(33 )
+thr   9 : work  2    fib(39 ) =     63245986
+thr   9 : work  3    fib(39 )
+thr  36 : work  4    fib(35 ) =      9227465
+thr  23 : work  6    fib(32 ) =      2178309
+thr  61 : work  3    fib(30 ) =       832040
+thr  61 : work  4    fib(35 )
+thr  23 : work  7    fib(33 )
+thr 110 : work  5    fib(35 ) =      9227465
+thr 110 : work  6    fib(37 )
+thr  36 : work  5    fib(39 )
+thr  64 : work  5    fib(32 ) =      2178309
+thr  64 : work  6    fib(37 )
+thr  64 : work  6    fib(37 ) =     24157817
+thr  64 : work  7    fib(37 )
+thr 108 : work  7    fib(34 ) =      5702887
+thr 108 : work  8    fib(31 )
+thr  48 : work  5    fib(37 ) =     24157817
+thr  48 : work  6    fib(38 )
+thr  56 : work  4    fib(37 ) =     24157817
+thr  56 : work  5    fib(36 )
+thr  16 : work  5    fib(37 ) =     24157817
+thr 104 : work  5    fib(32 ) =      2178309
+thr 104 : work  6    fib(34 )
+thr  24 : work  2    fib(34 ) =      5702887
+thr  24 : work  3    fib(34 )
+thr  68 : work  3    fib(36 ) =     14930352
+thr  68 : work  4    fib(36 )
+thr  16 : work  6    fib(30 )
+thr  24 : work  3    fib(34 ) =      5702887
+thr  24 : work  4    fib(34 )
+thr 102 : work  3    fib(31 )
+thr 105 : work  6    fib(39 ) =     63245986
+thr 105 : work  7    fib(38 )
+thr  68 : work  4    fib(36 ) =     14930352
+thr  68 : work  5    fib(40 )
+thr  71 : work  3    fib(31 ) =      1346269
+thr  59 : work  3    fib(39 ) =     63245986
+thr  71 : work  4    fib(39 )
+thr 107 : work  2    fib(38 ) =     39088169
+thr 107 : work  3    fib(35 )
+thr  58 : work  6    fib(38 ) =     39088169
+thr 122 : work  8    fib(31 ) =      1346269
+thr 122 : work  9    fib(40 )
+thr  21 : work  4    fib(39 ) =     63245986
+thr  21 : work  5    fib(39 )
+thr  28 : work  5    fib(40 )
+thr  10 : work  5    fib(39 ) =     63245986
+thr  10 : work  6    fib(32 )
+thr  97 : work  4    fib(39 ) =     63245986
+thr  97 : work  5    fib(32 )
+thr  37 : work  5    fib(40 ) =    102334155
+thr  11 : work  6    fib(35 ) =      9227465
+thr  22 : work  5    fib(39 ) =     63245986
+thr  81 : work  5    fib(35 ) =      9227465
+thr  11 : work  7    fib(35 )
+thr  81 : work  6    fib(32 )
+thr  22 : work  6    fib(31 )
+thr  65 : work  6    fib(39 ) =     63245986
+thr  65 : work  7    fib(39 )
+thr  32 : work  6    fib(37 ) =     24157817
+thr  32 : work  7    fib(34 )
+thr  71 : work  4    fib(39 ) =     63245986
+thr  71 : work  5    fib(30 )
+thr  96 : work  7    fib(37 ) =     24157817
+thr  79 : work  5    fib(31 ) =      1346269
+thr  79 : work  6    fib(34 )
+thr  39 : work  1    fib(40 ) =    102334155
+thr  96 : work  8    fib(31 )
+thr  40 : work  7    fib(37 ) =     24157817
+thr 123 : work  6    fib(31 ) =      1346269
+thr  40 : work  8    fib(35 )
+thr  90 : work  5    fib(37 ) =     24157817
+thr  91 : work  6    fib(33 ) =      3524578
+thr  90 : work  6    fib(33 )
+thr   6 : work  5    fib(39 ) =     63245986
+thr  49 : work  6    fib(39 ) =     63245986
+thr  49 : work  7    fib(40 )
+thr  37 : work  6    fib(38 )
+thr  32 : work  7    fib(34 ) =      5702887
+thr  62 : work  6    fib(30 ) =       832040
+thr   6 : work  6    fib(37 )
+thr  59 : work  4    fib(31 )
+thr  39 : work  2    fib(33 )
+thr 123 : work  7    fib(32 )
+thr  91 : work  7    fib(30 )
+thr  62 : work  7    fib(33 )
+thr  32 : work  8    fib(32 )
+thr  80 : work  6    fib(36 ) =     14930352
+thr  80 : work  7    fib(34 )
+thr 127 : work  6    fib(40 ) =    102334155
+thr 127 : work  7    fib(39 )
+thr 115 : work  3    fib(40 ) =    102334155
+thr 115 : work  4    fib(40 )
+thr  58 : work  7    fib(38 )
+thr  99 : work  6    fib(31 ) =      1346269
+thr  99 : work  7    fib(38 )
+thr  76 : work  4    fib(30 ) =       832040
+thr  76 : work  5    fib(32 )
+thr  76 : work  5    fib(32 ) =      2178309
+thr  76 : work  6    fib(36 )
+thr  77 : work  6    fib(34 ) =      5702887
+thr  77 : work  7    fib(38 )
+thr  92 : work  7    fib(33 ) =      3524578
+thr  92 : work  8    fib(30 )
+thr  85 : work  5    fib(33 ) =      3524578
+thr  85 : work  6    fib(36 )
+thr  85 : work  6    fib(36 ) =     14930352
+thr  85 : work  7    fib(33 )
+thr 117 : work  6    fib(31 ) =      1346269
+thr 117 : work  7    fib(32 )
+thr   7 : work  4    fib(36 ) =     14930352
+thr   7 : work  5    fib(33 )
+thr 117 : work  7    fib(32 ) =      2178309
+thr 117 : work  8    fib(32 )
+thr 117 : work  8    fib(32 ) =      2178309
+thr 117 : work  9    fib(36 )
+thr   7 : work  5    fib(33 ) =      3524578
+thr   7 : work  6    fib(35 )
+thr  13 : work  6    fib(38 ) =     39088169
+thr  13 : work  7    fib(31 )
+thr  60 : work  6    fib(32 ) =      2178309
+thr  60 : work  7    fib(36 )
+thr  12 : work  6    fib(36 ) =     14930352
+thr  12 : work  7    fib(37 )
+thr 101 : work  4    fib(37 ) =     24157817
+thr  19 : work  4    fib(35 ) =      9227465
+thr  19 : work  5    fib(36 )
+thr 101 : work  5    fib(36 )
+thr  44 : work  2    fib(35 ) =      9227465
+thr  93 : work  4    fib(35 ) =      9227465
+thr  93 : work  5    fib(31 )
+thr  44 : work  3    fib(34 )
+thr   7 : work  6    fib(35 ) =      9227465
+thr  60 : work  7    fib(36 ) =     14930352
+thr  60 : work  8    fib(39 )
+thr   7 : work  7    fib(40 )
+thr  14 : work  6    fib(38 ) =     39088169
+thr  33 : work  3    fib(33 ) =      3524578
+thr  33 : work  4    fib(37 )
+thr  17 : work  7    fib(38 ) =     39088169
+thr  17 : work  8    fib(32 )
+thr  77 : work  7    fib(38 ) =     39088169
+thr  77 : work  8    fib(39 )
+thr  61 : work  4    fib(35 ) =      9227465
+thr  61 : work  5    fib(34 )
+thr  23 : work  7    fib(33 ) =      3524578
+thr  23 : work  8    fib(36 )
+thr  13 : work  7    fib(31 ) =      1346269
+thr  14 : work  7    fib(33 )
+thr 101 : work  5    fib(36 ) =     14930352
+thr 108 : work  8    fib(31 ) =      1346269
+thr 108 : work  9    fib(38 )
+thr  64 : work  7    fib(37 ) =     24157817
+thr  64 : work  8    fib(33 )
+thr 117 : work  9    fib(36 ) =     14930352
+thr 104 : work  6    fib(34 ) =      5702887
+thr 104 : work  7    fib(33 )
+thr  61 : work  5    fib(34 ) =      5702887
+thr  54 : work  5    fib(30 ) =       832040
+thr  54 : work  6    fib(36 )
+thr  25 : work  5    fib(38 ) =     39088169
+thr  84 : work  3    fib(30 ) =       832040
+thr  84 : work  4    fib(40 )
+thr  16 : work  6    fib(30 ) =       832040
+thr  16 : work  7    fib(40 )
+thr 108 : work  9    fib(38 ) =     39088169
+thr  61 : work  6    fib(31 )
+thr 108 : work  10   fib(35 )
+thr  25 : work  6    fib(32 )
+thr 117 : work  10   fib(31 )
+thr  64 : work  8    fib(33 ) =      3524578
+thr  64 : work  9    fib(38 )
+thr  13 : work  8    fib(40 )
+thr  36 : work  5    fib(39 ) =     63245986
+thr  36 : work  6    fib(37 )
+thr 105 : work  7    fib(38 ) =     39088169
+thr 105 : work  8    fib(30 )
+thr  47 : work  6    fib(36 ) =     14930352
+thr  47 : work  7    fib(35 )
+thr 101 : work  6    fib(31 )
+thr  25 : work  6    fib(32 ) =      2178309
+thr  25 : work  7    fib(34 )
+thr 105 : work  8    fib(30 ) =       832040
+thr  10 : work  6    fib(32 ) =      2178309
+thr 105 : work  9    fib(32 )
+thr  10 : work  7    fib(39 )
+thr  11 : work  7    fib(35 ) =      9227465
+thr  11 : work  8    fib(32 )
+thr  81 : work  6    fib(32 ) =      2178309
+thr  81 : work  7    fib(38 )
+thr  11 : work  8    fib(32 ) =      2178309
+thr  11 : work  9    fib(36 )
+thr 107 : work  3    fib(35 ) =      9227465
+thr 107 : work  4    fib(34 )
+thr  79 : work  6    fib(34 ) =      5702887
+thr  79 : work  7    fib(35 )
+thr  21 : work  5    fib(39 ) =     63245986
+thr  21 : work  6    fib(40 )
+thr  96 : work  8    fib(31 ) =      1346269
+thr  96 : work  9    fib(36 )
+thr 107 : work  4    fib(34 ) =      5702887
+thr 107 : work  5    fib(35 )
+thr  73 : work  4    fib(39 ) =     63245986
+thr  73 : work  5    fib(38 )
+thr  59 : work  4    fib(31 ) =      1346269
+thr  59 : work  5    fib(36 )
+thr 123 : work  7    fib(32 ) =      2178309
+thr 123 : work  8    fib(38 )
+thr  91 : work  7    fib(30 ) =       832040
+thr  91 : work  8    fib(31 )
+thr  91 : work  8    fib(31 ) =      1346269
+thr  91 : work  9    fib(35 )
+thr  62 : work  7    fib(33 ) =      3524578
+thr  62 : work  8    fib(39 )
+thr  32 : work  8    fib(32 ) =      2178309
+thr  32 : work  9    fib(38 )
+thr 123 : work  8    fib(38 ) =     39088169
+thr  80 : work  7    fib(34 ) =      5702887
+thr  80 : work  8    fib(39 )
+thr 123 : work  9    fib(33 )
+thr  37 : work  6    fib(38 ) =     39088169
+thr  37 : work  7    fib(34 )
+thr  15 : work  3    fib(40 ) =    102334155
+thr  98 : work  6    fib(39 ) =     63245986
+thr  48 : work  6    fib(38 ) =     39088169
+thr  67 : work  5    fib(35 ) =      9227465
+thr  92 : work  8    fib(30 ) =       832040
+thr  99 : work  7    fib(38 ) =     39088169
+thr  76 : work  6    fib(36 ) =     14930352
+thr  85 : work  7    fib(33 ) =      3524578
+thr 103 : work  6    fib(31 ) =      1346269
+thr  83 : work  6    fib(34 ) =      5702887
+thr  78 : work  7    fib(35 ) =      9227465
+thr  12 : work  7    fib(37 ) =     24157817
+thr  19 : work  5    fib(36 ) =     14930352
+thr  11 : work  9    fib(36 ) =     14930352
+thr  38 : work  6    fib(33 ) =      3524578
+thr  65 : work  7    fib(39 ) =     63245986
+thr  72 : work  3    fib(38 ) =     39088169
+thr  93 : work  5    fib(31 ) =      1346269
+thr  42 : work  2    fib(38 ) =     39088169
+thr  44 : work  3    fib(34 ) =      5702887
+thr  52 : work  2    fib(39 ) =     63245986
+thr  17 : work  8    fib(32 ) =      2178309
+thr  60 : work  8    fib(39 ) =     63245986
+thr  33 : work  4    fib(37 ) =     24157817
+thr 123 : work  9    fib(33 ) =      3524578
+thr  23 : work  8    fib(36 ) =     14930352
+thr  14 : work  7    fib(33 ) =      3524578
+thr 110 : work  6    fib(37 ) =     24157817
+thr 104 : work  7    fib(33 ) =      3524578
+thr  56 : work  5    fib(36 ) =     14930352
+thr  54 : work  6    fib(36 ) =     14930352
+thr  24 : work  4    fib(34 ) =      5702887
+thr  61 : work  6    fib(31 ) =      1346269
+thr 108 : work  10   fib(35 ) =      9227465
+thr  89 : work  5    fib(39 ) =     63245986
+thr 102 : work  3    fib(31 ) =      1346269
+thr 117 : work  10   fib(31 ) =      1346269
+thr  36 : work  6    fib(37 ) =     24157817
+thr  64 : work  9    fib(38 ) =     39088169
+thr  47 : work  7    fib(35 ) =      9227465
+thr  29 : work  3    fib(33 ) =      3524578
+thr  25 : work  7    fib(34 ) =      5702887
+thr  77 : work  8    fib(39 ) =     63245986
+thr  45 : work  3    fib(39 ) =     63245986
+thr 105 : work  9    fib(32 ) =      2178309
+thr 101 : work  6    fib(31 ) =      1346269
+thr  10 : work  7    fib(39 ) =     63245986
+thr  22 : work  6    fib(31 ) =      1346269
+thr  79 : work  7    fib(35 ) =      9227465
+thr  96 : work  9    fib(36 ) =     14930352
+thr  40 : work  8    fib(35 ) =      9227465
+thr  90 : work  6    fib(33 ) =      3524578
+thr  81 : work  7    fib(38 ) =     39088169
+thr 107 : work  5    fib(35 ) =      9227465
+thr  97 : work  5    fib(32 ) =      2178309
+thr  59 : work  5    fib(36 ) =     14930352
+thr  91 : work  9    fib(35 ) =      9227465
+thr   6 : work  6    fib(37 ) =     24157817
+thr  39 : work  2    fib(33 ) =      3524578
+thr  37 : work  7    fib(34 ) =      5702887
+thr  80 : work  8    fib(39 ) =     63245986
+thr  82 : work  5    fib(32 ) =      2178309
+thr  32 : work  9    fib(38 ) =     39088169
+thr  58 : work  7    fib(38 ) =     39088169
+thr  43 : work  7    fib(37 ) =     24157817
+thr  62 : work  8    fib(39 ) =     63245986
+thr  71 : work  5    fib(30 ) =       832040
+thr 122 : work  9    fib(40 ) =    102334155
+thr 119 : work  3    fib(40 ) =    102334155
+thr   8 : work  1    fib(39 ) =     63245986
+thr 127 : work  7    fib(39 ) =     63245986
+thr  70 : work  2    fib(40 ) =    102334155
+thr  34 : work  4    fib(40 ) =    102334155
+thr  57 : work  5    fib(40 ) =    102334155
+thr  87 : work  4    fib(40 ) =    102334155
+thr  49 : work  7    fib(40 ) =    102334155
+thr  74 : work  4    fib(40 ) =    102334155
+thr 112 : work  4    fib(40 ) =    102334155
+thr  35 : work  3    fib(40 ) =    102334155
+thr 111 : work  6    fib(40 ) =    102334155
+thr 106 : work  2    fib(40 ) =    102334155
+thr 125 : work  4    fib(40 ) =    102334155
+thr  68 : work  5    fib(40 ) =    102334155
+thr  46 : work  5    fib(40 ) =    102334155
+thr  41 : work  2    fib(40 ) =    102334155
+thr  63 : work  5    fib(40 ) =    102334155
+thr 113 : work  5    fib(40 ) =    102334155
+thr 100 : work  6    fib(40 ) =    102334155
+thr  53 : work  2    fib(40 ) =    102334155
+thr  28 : work  5    fib(40 ) =    102334155
+thr  86 : work  1    fib(40 ) =    102334155
+thr 114 : work  3    fib(40 ) =    102334155
+thr   9 : work  3    fib(39 ) =     63245986
+thr 126 : work  2    fib(40 ) =    102334155
+thr  94 : work  2    fib(40 ) =    102334155
+thr  55 : work  4    fib(40 ) =    102334155
+thr  18 : work  2    fib(40 ) =    102334155
+thr  31 : work  6    fib(40 ) =    102334155
+thr 124 : work  7    fib(40 ) =    102334155
+thr 109 : work  1    fib(40 ) =    102334155
+thr  16 : work  7    fib(40 ) =    102334155
+thr  51 : work  2    fib(40 ) =    102334155
+thr  73 : work  5    fib(38 ) =     39088169
+thr  30 : work  5    fib(40 ) =    102334155
+thr  95 : work  4    fib(40 ) =    102334155
+thr 116 : work  2    fib(40 ) =    102334155
+thr  27 : work  5    fib(38 ) =     39088169
+thr 120 : work  3    fib(40 ) =    102334155
+thr 121 : work  4    fib(40 ) =    102334155
+thr 118 : work  4    fib(40 ) =    102334155
+thr  50 : work  2    fib(40 ) =    102334155
+thr  75 : work  5    fib(40 ) =    102334155
+thr  88 : work  2    fib(40 ) =    102334155
+thr 115 : work  4    fib(40 ) =    102334155
+thr  20 : work  1    fib(40 ) =    102334155
+thr  66 : work  1    fib(40 ) =    102334155
+thr   7 : work  7    fib(40 ) =    102334155
+thr  26 : work  1    fib(40 ) =    102334155
+thr  84 : work  4    fib(40 ) =    102334155
+thr  13 : work  8    fib(40 ) =    102334155
+thr  69 : work  5    fib(40 ) =    102334155
+thr   1 : work  2    fib(38 ) =     39088169
+thr   4 : work  1    fib(39 ) =     63245986
+thr  21 : work  6    fib(40 ) =    102334155
+thr   5 : work  1    fib(38 ) =     39088169
+thr   0 : work  1    fib(39 ) =     63245986
+join of thread 0 is now complete
+calling for join on thread 1
+join of thread 1 is now complete
+calling for join on thread 2
+join of thread 2 is now complete
+calling for join on thread 3
+thr   3 : work  1    fib(39 ) =     63245986
+join of thread 3 is now complete
+calling for join on thread 4
+join of thread 4 is now complete
+calling for join on thread 5
+join of thread 5 is now complete
+calling for join on thread 6
+join of thread 6 is now complete
+calling for join on thread 7
+join of thread 7 is now complete
+calling for join on thread 8
+join of thread 8 is now complete
+calling for join on thread 9
+join of thread 9 is now complete
+calling for join on thread 10
+join of thread 10 is now complete
+calling for join on thread 11
+join of thread 11 is now complete
+calling for join on thread 12
+join of thread 12 is now complete
+calling for join on thread 13
+join of thread 13 is now complete
+calling for join on thread 14
+join of thread 14 is now complete
+calling for join on thread 15
+join of thread 15 is now complete
+calling for join on thread 16
+join of thread 16 is now complete
+calling for join on thread 17
+join of thread 17 is now complete
+calling for join on thread 18
+join of thread 18 is now complete
+calling for join on thread 19
+join of thread 19 is now complete
+calling for join on thread 20
+join of thread 20 is now complete
+calling for join on thread 21
+join of thread 21 is now complete
+calling for join on thread 22
+join of thread 22 is now complete
+calling for join on thread 23
+join of thread 23 is now complete
+calling for join on thread 24
+join of thread 24 is now complete
+calling for join on thread 25
+join of thread 25 is now complete
+calling for join on thread 26
+join of thread 26 is now complete
+calling for join on thread 27
+join of thread 27 is now complete
+calling for join on thread 28
+join of thread 28 is now complete
+calling for join on thread 29
+join of thread 29 is now complete
+calling for join on thread 30
+join of thread 30 is now complete
+calling for join on thread 31
+join of thread 31 is now complete
+calling for join on thread 32
+join of thread 32 is now complete
+calling for join on thread 33
+join of thread 33 is now complete
+calling for join on thread 34
+join of thread 34 is now complete
+calling for join on thread 35
+join of thread 35 is now complete
+calling for join on thread 36
+join of thread 36 is now complete
+calling for join on thread 37
+join of thread 37 is now complete
+calling for join on thread 38
+join of thread 38 is now complete
+calling for join on thread 39
+join of thread 39 is now complete
+calling for join on thread 40
+join of thread 40 is now complete
+calling for join on thread 41
+join of thread 41 is now complete
+calling for join on thread 42
+join of thread 42 is now complete
+calling for join on thread 43
+join of thread 43 is now complete
+calling for join on thread 44
+join of thread 44 is now complete
+calling for join on thread 45
+join of thread 45 is now complete
+calling for join on thread 46
+join of thread 46 is now complete
+calling for join on thread 47
+join of thread 47 is now complete
+calling for join on thread 48
+join of thread 48 is now complete
+calling for join on thread 49
+join of thread 49 is now complete
+calling for join on thread 50
+join of thread 50 is now complete
+calling for join on thread 51
+join of thread 51 is now complete
+calling for join on thread 52
+join of thread 52 is now complete
+calling for join on thread 53
+join of thread 53 is now complete
+calling for join on thread 54
+join of thread 54 is now complete
+calling for join on thread 55
+join of thread 55 is now complete
+calling for join on thread 56
+join of thread 56 is now complete
+calling for join on thread 57
+join of thread 57 is now complete
+calling for join on thread 58
+join of thread 58 is now complete
+calling for join on thread 59
+join of thread 59 is now complete
+calling for join on thread 60
+join of thread 60 is now complete
+calling for join on thread 61
+join of thread 61 is now complete
+calling for join on thread 62
+join of thread 62 is now complete
+calling for join on thread 63
+join of thread 63 is now complete
+calling for join on thread 64
+join of thread 64 is now complete
+calling for join on thread 65
+join of thread 65 is now complete
+calling for join on thread 66
+join of thread 66 is now complete
+calling for join on thread 67
+join of thread 67 is now complete
+calling for join on thread 68
+join of thread 68 is now complete
+calling for join on thread 69
+join of thread 69 is now complete
+calling for join on thread 70
+join of thread 70 is now complete
+calling for join on thread 71
+join of thread 71 is now complete
+calling for join on thread 72
+join of thread 72 is now complete
+calling for join on thread 73
+join of thread 73 is now complete
+calling for join on thread 74
+join of thread 74 is now complete
+calling for join on thread 75
+join of thread 75 is now complete
+calling for join on thread 76
+join of thread 76 is now complete
+calling for join on thread 77
+join of thread 77 is now complete
+calling for join on thread 78
+join of thread 78 is now complete
+calling for join on thread 79
+join of thread 79 is now complete
+calling for join on thread 80
+join of thread 80 is now complete
+calling for join on thread 81
+join of thread 81 is now complete
+calling for join on thread 82
+join of thread 82 is now complete
+calling for join on thread 83
+join of thread 83 is now complete
+calling for join on thread 84
+join of thread 84 is now complete
+calling for join on thread 85
+join of thread 85 is now complete
+calling for join on thread 86
+join of thread 86 is now complete
+calling for join on thread 87
+join of thread 87 is now complete
+calling for join on thread 88
+join of thread 88 is now complete
+calling for join on thread 89
+join of thread 89 is now complete
+calling for join on thread 90
+join of thread 90 is now complete
+calling for join on thread 91
+join of thread 91 is now complete
+calling for join on thread 92
+join of thread 92 is now complete
+calling for join on thread 93
+join of thread 93 is now complete
+calling for join on thread 94
+join of thread 94 is now complete
+calling for join on thread 95
+join of thread 95 is now complete
+calling for join on thread 96
+join of thread 96 is now complete
+calling for join on thread 97
+join of thread 97 is now complete
+calling for join on thread 98
+join of thread 98 is now complete
+calling for join on thread 99
+join of thread 99 is now complete
+calling for join on thread 100
+join of thread 100 is now complete
+calling for join on thread 101
+join of thread 101 is now complete
+calling for join on thread 102
+join of thread 102 is now complete
+calling for join on thread 103
+join of thread 103 is now complete
+calling for join on thread 104
+join of thread 104 is now complete
+calling for join on thread 105
+join of thread 105 is now complete
+calling for join on thread 106
+join of thread 106 is now complete
+calling for join on thread 107
+join of thread 107 is now complete
+calling for join on thread 108
+join of thread 108 is now complete
+calling for join on thread 109
+join of thread 109 is now complete
+calling for join on thread 110
+join of thread 110 is now complete
+calling for join on thread 111
+join of thread 111 is now complete
+calling for join on thread 112
+join of thread 112 is now complete
+calling for join on thread 113
+join of thread 113 is now complete
+calling for join on thread 114
+join of thread 114 is now complete
+calling for join on thread 115
+join of thread 115 is now complete
+calling for join on thread 116
+join of thread 116 is now complete
+calling for join on thread 117
+join of thread 117 is now complete
+calling for join on thread 118
+join of thread 118 is now complete
+calling for join on thread 119
+join of thread 119 is now complete
+calling for join on thread 120
+join of thread 120 is now complete
+calling for join on thread 121
+join of thread 121 is now complete
+calling for join on thread 122
+join of thread 122 is now complete
+calling for join on thread 123
+join of thread 123 is now complete
+calling for join on thread 124
+join of thread 124 is now complete
+calling for join on thread 125
+join of thread 125 is now complete
+calling for join on thread 126
+join of thread 126 is now complete
+calling for join on thread 127
+join of thread 127 is now complete
+     : q_destroy(my_q) says 0 items were thrown away
