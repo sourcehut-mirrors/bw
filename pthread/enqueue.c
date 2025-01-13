@@ -33,19 +33,37 @@
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include "q.h"
 
 void enqueue ( q_type *q, void *p ) {
 
+    struct q_item *new_item;
+
     /* set the mutex as locked */
     pthread_mutex_lock ( q->mutex );
 
     /* we need to create a new queue item and put
      * the payload into it */
-    struct q_item *new_item = calloc((size_t) 1, (size_t)sizeof(struct q_item));
-    /* TODO check that the calloc actually worked */
+    new_item = calloc((size_t) 1, (size_t)sizeof(struct q_item));
+
+    if ( new_item == NULL ) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            /* TODO : this is not a thread safe way to output */
+            fprintf(stderr,"FAIL : calloc ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        /* this is horrible and here we bail out */
+        exit ( EXIT_FAILURE );
+    }
 
     new_item->payload = p;
 

@@ -39,6 +39,7 @@
 
 void *dequeue( q_type *q ) {
 
+    q_item *tmp = NULL;
     void *return_payload = NULL;
 
     /* We only care about the first item in the queue and
@@ -100,7 +101,7 @@ void *dequeue( q_type *q ) {
     /* redirect the head of the queue to point to whatever
      * was the next item, HOWEVER we need to save the
      * current pointer data to free() the memory later */
-    q_item *tmp=q->head;
+    tmp=q->head;
     q->head = tmp->next;
     q->length -= 1;
 
