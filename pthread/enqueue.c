@@ -2,22 +2,30 @@
 /*
  * enqueue.c  put something onto the tail of the job queue as
  *            described in readme
- * Copyright (C) Dennis Clarke 2019
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
 /*********************************************************************
@@ -39,12 +47,125 @@
 #include <pthread.h>
 #include "q.h"
 
-void enqueue ( q_type *q, void *p ) {
+int enqueue ( q_type *q, void *p ) {
 
+    int mutex_type;
+    int mutex_err_flag = 0;
+    char buf[128] = "";
+    int trylock_count;
+    struct timespec ns_request, ns_remainder;
+    int nanosleep_err_flag = 0;
     struct q_item *new_item;
 
-    /* set the mutex as locked */
-    pthread_mutex_lock ( q->mutex );
+    /*
+     * Determine what sort of a mutex we are using in q->mutex
+     * where it may be PTHREAD_MUTEX_NORMAL or perhaps even a
+     * more useful PTHREAD_MUTEX_ERRORCHECK. Hope that we never
+     * ever see PTHREAD_MUTEX_RECURSIVE. The only other possible
+     * mutex type is the default PTHREAD_MUTEX_DEFAULT which may
+     * be mapped to any or the three others. So don't do that.
+     *
+     * Possible ERRORS for pthread_mutexattr_gettype() :
+     *
+     *     EINVAL  The value type is invalid.
+     *     EINVAL  The value specified by attr is invalid.
+     *
+     * Same error value returned if either parameter is borked.
+     *
+     * The mutex attr parameter must be of type :
+     *
+     *      const pthread_mutexattr_t *restrict attr
+     *
+     */
+    mutex_err_flag = pthread_mutexattr_gettype(q->mutex_attr,&mutex_type);
+    if ( mutex_err_flag == EINVAL ) {
+
+        /* We have no safe way to enqueue the data and may as well
+         * utter an error message and return an error status.
+         */
+        sprintf(buf, "FAIL : enqueue() fail on pthread_mutexattr_gettype");
+        puts(buf);
+        return ENQUEUE_ERROR;
+
+    }
+
+    /*
+     * Set the mutex as locked and check for errors if we are using
+     * an ERRORCHECK type mutex.
+     *
+     *     The pthread_mutex_trylock() function is identical to
+     *     pthread_mutex_lock() except that if the mutex object
+     *     referenced by mutex is currently locked (by any thread,
+     *     including the current thread), the call fails immediately
+     *     with EBUSY.
+     */
+    if ( mutex_type == PTHREAD_MUTEX_ERRORCHECK ) {
+
+        ns_request.tv_sec = 0;
+        ns_request.tv_nsec = NANOSLEEP_MS * 1000000;
+        ns_remainder.tv_sec = 0;
+        ns_remainder.tv_nsec = 0;
+        trylock_count = 0;
+
+        while ( ( pthread_mutex_trylock( q->mutex ) == EBUSY )
+             && ( trylock_count < MUTEX_TRY_LOCK_LIMIT ) ) {
+
+            trylock_count += 1;
+
+            sprintf(buf,"INFO : enqueue() mutex returns EBUSY");
+            puts(buf);
+
+            if ( nanosleep(&ns_request, &ns_remainder) < 0 ) {
+
+                /* The nanosleep() function will fail if:
+                 *
+                 *     EINTR   nanosleep was interrupted by a signal.
+                 *     EINVAL  ns_request is invalid
+                 *     ENOSYS  nanosleep is not supported
+                 *
+                 * Be sure to check errno.
+                 */
+                if ( errno == ENOSYS ) {
+                    /* TODO : check this situation elsewhere and not
+                     *          on every call to pthread_mutex_trylock
+                     */
+                    sprintf(buf, "FAIL : nanosleep is not supported");
+                    puts(buf);
+                    exit (ENQUEUE_ERROR);
+                }
+
+                if ( errno == EINTR ) {
+                    /* cool, we were interrupted ? how much ? */
+                    sprintf(buf, "INFO : nanosleep returns %10ld ns",
+                                               ns_remainder.tv_nsec);
+                    puts(buf);
+                }
+
+            }
+
+        }
+
+        if ( trylock_count == MUTEX_TRY_LOCK_LIMIT ) {
+            sprintf(buf, "FAIL : enqueue() fail on MUTEX_TRY_LOCK_LIMIT");
+            puts(buf);
+            return ENQUEUE_ERROR;
+        }
+
+        /* if the mutex trylock is non-zero then we care to know */
+        if ( trylock_count != 0 ) {
+            sprintf(buf, "INFO : enqueue() trylock_count = %i", trylock_count);
+            puts(buf);
+        }
+
+    } else {
+        /* This is merely a decision wherein we agree that the
+         * mutex lock must support error checking. Otherwise
+         * this is all nose demons or worse. Good luck.
+         */
+        sprintf(buf, "FAIL : enqueue() fail due to no error support mutex");
+        puts(buf);
+        return ENQUEUE_ERROR;
+    }
 
     /* we need to create a new queue item and put
      * the payload into it */
@@ -61,18 +182,18 @@ void enqueue ( q_type *q, void *p ) {
                         __FILE__, __LINE__ );
         }
         perror("FAIL ");
-        /* this is horrible and here we bail out */
+        /* this is HORRIBLE and here we bail out */
         exit ( EXIT_FAILURE );
     }
 
+    /* place the payload data into new_item and then
+     * ensure the "next" pointer is NULL.
+     */
     new_item->payload = p;
-
-    /* we used calloc to give us clear memory but to be
-     * clear this item points to nowhere at the moment */
     new_item->next = NULL;
 
     /* Is the queue list empty? Check if head and tail
-     * point nowhere OR even check if length is zero.
+     * point nowhere and check if length is zero.
      *
      * To be clear the queue itself is NOT a linked
      * list but rather the items inside it are linked.
@@ -81,13 +202,14 @@ void enqueue ( q_type *q, void *p ) {
      * nowhere as well as the tail. The length will
      * also be zero.  If there is only a single item
      * in the queue then the head and tail both point
-     * to that single item. */
+     * to that single item.
+     */
 
     if ( ( (q->length) == 0 )
         && ( (q->head) == NULL )
         && ( (q->tail) == NULL ) ) {
 
-        /* the queue is indeed empty.
+        /* The queue is empty.
          *
          * Just place the new_item on the head and
          * the tail and set length to one.
@@ -153,8 +275,20 @@ void enqueue ( q_type *q, void *p ) {
 
     }
 
-    /* unlock the mutex */
-    pthread_mutex_unlock ( q->mutex );
+    /* 
+     * The pthread_mutex_unlock() function shall fail if:
+     *
+     *     EPERM  The mutex type is PTHREAD_MUTEX_ERRORCHECK
+     *            or PTHREAD_MUTEX_RECURSIVE, or the mutex is
+     *            a robust mutex, and the current thread does
+     *            not own the mutex. 
+     */
+    if ( pthread_mutex_unlock ( q->mutex ) == EPERM ) {
+        /* This should be impossible. */
+        sprintf(buf, "FAIL : pthread_mutex_unlock EPERM !");
+        puts(buf);
+        exit (ENQUEUE_ERROR);
+    }
 
     /* send out a signal to at least one thread consumer
      * which may be waiting. No promise anything is actually
@@ -165,11 +299,12 @@ void enqueue ( q_type *q, void *p ) {
      *
      *    The pthread_cond_signal() call unblocks at least one
      *    of the threads that are blocked on the specified
-     *    condition variable condition. This is if any threads
-     *    are blocked on cond.
+     *    condition variable.
      *
      */
     pthread_cond_signal( &( q->alive ) );
+
+    return ENQUEUE_SUCCESS;
 
 }
 

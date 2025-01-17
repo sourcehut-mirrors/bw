@@ -1,4 +1,32 @@
 
+/*
+ * q.h  See the readme related to this POSIX thread work queue.
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -15,6 +43,14 @@
 #define ELEMENT_COUNT_LIMIT 1073741824
 #define THREAD_LIMIT 256
 #define FIB_LIMIT 30
+
+/* If we are going to use pthread_mutex_trylock */
+#define MUTEX_TRY_LOCK_LIMIT 16
+#define NANOSLEEP_MS 10
+
+/* The enqueue function may return an error */
+#define ENQUEUE_ERROR 41
+#define ENQUEUE_SUCCESS 0
 
 #include <pthread.h>
 
@@ -69,6 +105,6 @@ typedef struct q_item {
 
 q_type *q_create(void);
 int q_destroy(q_type *q);
-void enqueue ( q_type *q, void *p );
-void *dequeue( q_type *q );
+int enqueue(q_type *q, void *p);
+void *dequeue(q_type *q);
 

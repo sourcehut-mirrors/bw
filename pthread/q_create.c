@@ -162,8 +162,24 @@ q_type *q_create(void) {
         exit ( EXIT_FAILURE );
     }
 
+    /* It is worth having a look at :
+     * https://pubs.opengroup.org/onlinepubs/9799919799/functions/pthread_mutex_lock.html
+     *
+     * From the manpage for pthread_mutexattr_settype(3C) :
+     *
+     *     PTHREAD_MUTEX_ERRORCHECK   This type of mutex provides error
+     *     checking. A thread attempting to relock this mutex without
+     *     first unlocking it will return with an error.  A thread
+     *     attempting to unlock a mutex that another thread has locked
+     *     will return with an error. A thread attempting to unlock an
+     *     unlocked mutex will return with an error.
+     */
+
     err_trap_flag = 0;
-    err_trap_flag = pthread_mutexattr_settype( q->mutex_attr, PTHREAD_MUTEX_ERRORCHECK);
+
+    err_trap_flag = pthread_mutexattr_settype( q->mutex_attr,
+                                               PTHREAD_MUTEX_ERRORCHECK);
+
     if ( err_trap_flag == EINVAL ) {
         fprintf(stderr,"FAIL : pthread_mutexattr_settype at %s:%d\n",
                 __FILE__, __LINE__ );
@@ -193,7 +209,7 @@ q_type *q_create(void) {
         exit ( EXIT_FAILURE );
     }
 
-    /* setup the alive condition as a POSIX thread "condition"
+    /* Setup the alive condition as a POSIX thread "condition"
      * type thing. */
     q->alive = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
 

@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
         perror("FAIL : Invalid value for attr");
 
-        /* we should clean up the heap */
+        /* TODO : we should clean up the heap */
 
 
         return EXIT_FAILURE;
@@ -322,7 +322,7 @@ int main(int argc, char **argv) {
             fprintf(stderr,"FAIL : pthread_attr_setscope %s:%d\n", __FILE__, __LINE__);
             perror("FAIL : can not set pthread contention scope at all");
 
-            /* again here we should clean up the heap */
+            /* TODO : again here we should clean up the heap */
 
             return EXIT_FAILURE;
 
@@ -374,6 +374,7 @@ int main(int argc, char **argv) {
         if ( pthread_err == EAGAIN ) {
             fprintf(stderr,"FAIL : EAGAIN system lacked resources\n");
             perror("FAIL : EAGAIN");
+            /* TODO : we can do a better bail out please ? */
             return EXIT_FAILURE;
         } else if ( pthread_err == EINVAL ) {
             fprintf(stderr,"FAIL : EINVAL attr is invalid\n");
