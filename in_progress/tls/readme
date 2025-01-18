@@ -87,7 +87,78 @@ hydra$ TERM=dumb LD_LIBRARY_PATH=`pwd` ./foo
 Segmentation fault (core dumped)
 hydra$ 
 
-I will take a look on 15-CURRENT also.
+
+[2] 15-CURRENT on AMD64 : 
+
+titan$ uname -apKU
+FreeBSD titan 15.0-CURRENT FreeBSD 15.0-CURRENT #5 main-n274856-488660360a71: Sat Jan 18 17:03:26 GMT 2025     root@titan:/usr/obj/usr/src/amd64.amd64/sys/GENERIC-NODEBUG amd64 amd64 1500030 1500030
+titan$ 
+titan$ CC=/usr/bin/cc
+titan$ export CC
+titan$ 
+titan$ $CC --version
+FreeBSD clang version 19.1.7 (https://github.com/llvm/llvm-project.git llvmorg-19.1.7-0-gcd708029e0b2)
+Target: x86_64-unknown-freebsd15.0
+Thread model: posix
+InstalledDir: /usr/bin
+Build config: +assertions
+titan$ 
+titan$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o t1.so -fPIC t1.c
+titan$ cc -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o foo t2.c t1.so
+titan$ 
+titan$ file foo
+foo: ELF 64-bit LSB shared object, x86-64, version 1 (FreeBSD), dynamically linked, for FreeBSD 15.0 (1500030), with debug_info, not stripped
+titan$ 
+titan$ 
+titan$ readelf -delV foo | grep -E 'NEED|NAME|PATH'
+ 0x0000000000000001 NEEDED               Shared library: [t1.so]
+ 0x0000000000000001 NEEDED               Shared library: [libc.so.7]
+ 0x000000006ffffffe VERNEED              0x340
+ 0x000000006fffffff VERNEEDNUM           1
+titan$ 
+titan$ ./foo
+Segmentation fault (core dumped)
+titan$ 
+titan$ LD_LIBRARY_PATH=`pwd` ./foo
+Segmentation fault (core dumped)
+titan$ 
+titan$ TERM=dumb LD_LIBRARY_PATH=`pwd` gdb ./foo
+GNU gdb (GDB) 15.1 [GDB v15.1 for FreeBSD]
+Copyright (C) 2024 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-portbld-freebsd15.0".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./foo...
+(gdb) run
+Starting program: /home/dclarke/pgm/bw/in_progress/tls/foo 
+
+Program received signal SIGSEGV, Segmentation fault.
+Invalid permissions for mapped object.
+0x0000000001021000 in ?? ()
+(gdb) where
+#0  0x0000000001021000 in ?? ()
+#1  0x0000000000000001 in ?? ()
+#2  0x00007fffffffec70 in ?? ()
+#3  0x0000000000000000 in ?? ()
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 5060] will be killed.
+
+Quit anyway? (y or n) y
+titan$ 
+
+
 
 
 For the same of a comparison I will change the return value to 42 and
@@ -218,7 +289,4 @@ dax$ LD_LIBRARY_PATH=`pwd` ./foo
 dax$ echo $?
 42
 dax$ 
-
-I will do a test on 15-CURRENT also.
-
 
