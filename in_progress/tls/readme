@@ -1,0 +1,224 @@
+
+
+see https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751
+
+
+Seems yes on AMD64 and also on IBM POWER9 ppc64le.
+
+[1] test on AMD64 with FreeBSD 14.2-RELEASE
+
+hydra$ uname -apKU 
+FreeBSD hydra 14.2-RELEASE FreeBSD 14.2-RELEASE releng/14.2-n269506-c8918d6c7412 GENERIC amd64 amd64 1402000 1402000
+hydra$ freebsd-version -kru 
+14.2-RELEASE
+14.2-RELEASE
+14.2-RELEASE
+
+hydra$ which cc
+/usr/bin/cc
+hydra$ CC=/usr/bin/cc
+hydra$ export CC
+
+hydra$ $CC --version
+FreeBSD clang version 18.1.6 (https://github.com/llvm/llvm-project.git llvmorg-18.1.6-0-g1118c2e05e67)
+Target: x86_64-unknown-freebsd14.2
+Thread model: posix
+InstalledDir: /usr/bin
+
+hydra$ cc -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o t1.so -fPIC t1.c
+hydra$ echo $?
+0
+
+hydra$ cc -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o foo t2.c t1.so
+
+hydra$ file foo
+foo: ELF 64-bit LSB shared object, x86-64, version 1 (FreeBSD), dynamically linked, for FreeBSD 14.2, with debug_info, not stripped
+
+hydra$ readelf -delV foo | grep -E 'NEED|NAME|PATH'
+ 0x0000000000000001 NEEDED               Shared library: [t1.so]
+ 0x0000000000000001 NEEDED               Shared library: [libc.so.7]
+ 0x000000006ffffffe VERNEED              0x340
+ 0x000000006fffffff VERNEEDNUM           1
+hydra$ 
+hydra$ ./foo
+Segmentation fault (core dumped)
+hydra$ 
+hydra$ LD_LIBRARY_PATH=`pwd` ./foo
+Segmentation fault (core dumped)
+hydra$ 
+
+
+hydra$ TERM=dumb LD_LIBRARY_PATH=`pwd` gdb ./foo
+GNU gdb (GDB) 15.1 [GDB v15.1 for FreeBSD]
+Copyright (C) 2024 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-portbld-freebsd14.1".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./foo...
+(gdb) run
+Starting program: /home/dclarke/tls/foo 
+
+Program received signal SIGSEGV, Segmentation fault.
+Invalid permissions for mapped object.
+0x0000000001021000 in ?? ()
+(gdb) where
+#0  0x0000000001021000 in ?? ()
+#1  0x0000000000000000 in ?? ()
+(gdb) quit
+A debugging session is active.
+
+        Inferior 1 [process 14818] will be killed.
+
+Quit anyway? (y or n) y
+
+With or without the debugger we still get a SIGSEGV :
+
+hydra$ TERM=dumb LD_LIBRARY_PATH=`pwd` ./foo
+Segmentation fault (core dumped)
+hydra$ 
+
+I will take a look on 15-CURRENT also.
+
+
+For the same of a comparison I will change the return value to 42 and
+do the same test on a Solaris 10 SPARCv9 Fujitsu server using an entirely
+different set of tools : 
+
+
+hubble $ 
+hubble $ uname -a 
+SunOS hubble 5.10 Generic_150400-67 sun4u sparc SUNW,SPARC-Enterprise
+hubble $ 
+hubble $ echo $CC
+/opt/developerstudio12.6/bin/cc
+hubble $ 
+hubble $ $CC -V
+cc: Studio 12.6 Sun C 5.15 SunOS_sparc 2017/05/30
+hubble $ 
+hubble $ cat t2.c
+
+
+/* as seen at
+ * https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751
+ */
+
+struct s_t {
+    int (*func)(int);
+};
+
+extern struct s_t __thread x;
+
+int main(int argc, const char *argv[]) {
+    return (*x.func)(argc+41);
+}
+
+hubble $ 
+hubble $ 
+hubble $ echo $CFLAGS
+-m64 -xarch=sparc -g -xO0 -mc -xs -errfmt=error -erroff=%none -errshort=full -errtags=yes -errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff -xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s -xnolibmil -xunroll=1 -xdepend -xregs=no%appl -xdebugformat=dwarf
+hubble $ 
+hubble $ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_POSIX_PTHREAD_SEMANTICS -D_TS_ERRNO
+hubble $ 
+hubble $ $CC $CFLAGS -G $CPPFLAGS -D_REENTRANT -o t1.so -h t1.so t1.c
+hubble $ file t1.so
+t1.so: ELF 64-bit MSB dynamic lib SPARCV9 Version 1, dynamically linked, not stripped
+hubble $ 
+hubble $ $CC $CFLAGS $CPPFLAGS -D_REENTRANT -o foo t2.c t1.so
+hubble $ 
+hubble $ elfdump -delv foo | grep -E 'NEED|NAME|PATH'
+       [0]  NEEDED            0xe3                t1.so
+       [1]  NEEDED            0xd0                libc.so.1
+       [4]  RUNPATH           0xe9                /opt/bw/lib
+       [5]  RPATH             0xe9                /opt/bw/lib
+      [12]  VERNEED           0x1000007a8         
+      [13]  VERNEEDNUM        0x1                 
+hubble $ 
+hubble $ ldd foo
+        t1.so =>         (file not found)
+        libc.so.1 =>     /lib/64/libc.so.1
+        libm.so.2 =>     /lib/64/libm.so.2
+        /lib/sparcv9/../libm/sparcv9/libm_hwcap1.so.2
+        /platform/SUNW,SPARC-Enterprise/lib/sparcv9/libc_psr.so.1
+hubble $ 
+hubble $ LD_LIBRARY_PATH=`pwd` ./foo
+hubble $ echo $?
+42
+hubble $ 
+
+So that seems to work.
+
+
+
+Here is an IBM POWER9 server with the IBM XLC compiler : 
+
+dax$ uname -a 
+Linux dax 6.1.118-mrw1 #1 SMP Sun Nov 17 22:40:36 PST 2024 ppc64le GNU/Linux
+dax$ 
+dax$ CC=/opt/ibm/xlC/16.1.1/bin/xlc
+dax$ export CC
+dax$ 
+dax$ CFLAGS='-qlanglvl=stdc99 -O0 -g'
+dax$ export CFLAGS
+dax$ 
+dax$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600'
+dax$ export CPPFLAGS
+dax$ 
+dax$ ed t2.c
+223
+,nl
+1       $
+2       $
+3       /* as seen at$
+4        * https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751$
+5        */$
+6       $
+7       struct s_t {$
+8           int (*func)(int);$
+9       };$
+10      $
+11      extern struct s_t __thread x;$
+12      $
+13      int main(int argc, const char *argv[]) {$
+14          return (*x.func)(argc);$
+15      }$
+16      $
+14s/argc/argc+41/p
+    return (*x.func)(argc+41);
+f
+t2.c
+w
+226
+q
+dax$ 
+dax$ $CC $CFLAGS $CPPFLAGS -D_REENTRANT -shared -fPIC -o t1.so t1.c
+dax$ file t1.so 
+t1.so: ELF 64-bit LSB shared object, 64-bit PowerPC or cisco 7500, OpenPOWER ELF V2 ABI, version 1 (SYSV), dynamically linked, with debug_info, not stripped
+dax$ 
+dax$ $CC $CFLAGS $CPPFLAGS -D_REENTRANT -o foo t2.c t1.so 
+dax$ ldd foo
+        linux-vdso64.so.1 (0x00007fff83650000)
+        t1.so => not found
+        libgcc_s.so.1 => /lib/powerpc64le-linux-gnu/libgcc_s.so.1 (0x00007fff835e0000)
+        libm.so.6 => /lib/powerpc64le-linux-gnu/libm.so.6 (0x00007fff834b0000)
+        libc.so.6 => /lib/powerpc64le-linux-gnu/libc.so.6 (0x00007fff83200000)
+        /lib64/ld64.so.2 (0x00007fff83660000)
+dax$ 
+dax$ LD_LIBRARY_PATH=`pwd` ./foo
+dax$ echo $?
+42
+dax$ 
+
+I will do a test on 15-CURRENT also.
+
+

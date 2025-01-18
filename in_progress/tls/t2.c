@@ -11,6 +11,6 @@ struct s_t {
 extern struct s_t __thread x;
 
 int main(int argc, const char *argv[]) {
-    return (*x.func)(argc);
+    return (*x.func)(argc+41);
 }
 

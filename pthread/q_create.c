@@ -209,8 +209,7 @@ q_type *q_create(void) {
         exit ( EXIT_FAILURE );
     }
 
-    /* Setup the alive condition as a POSIX thread "condition"
-     * type thing. */
+    /* Set alive condition */
     q->alive = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
 
     return q;
