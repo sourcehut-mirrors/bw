@@ -5,6 +5,7 @@ see https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751
 
 Seems yes on AMD64 and also on IBM POWER9 ppc64le.
 
+******************* tests **************************
 [1] test on AMD64 with FreeBSD 14.2-RELEASE
 
 hydra$ uname -apKU 
@@ -88,7 +89,8 @@ Segmentation fault (core dumped)
 hydra$ 
 
 
-[2] 15-CURRENT on AMD64 : 
+**************************************
+[2] 15.0-CURRENT on AMD64 : 
 
 titan$ uname -apKU
 FreeBSD titan 15.0-CURRENT FreeBSD 15.0-CURRENT #5 main-n274856-488660360a71: Sat Jan 18 17:03:26 GMT 2025     root@titan:/usr/obj/usr/src/amd64.amd64/sys/GENERIC-NODEBUG amd64 amd64 1500030 1500030
@@ -104,7 +106,7 @@ InstalledDir: /usr/bin
 Build config: +assertions
 titan$ 
 titan$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o t1.so -fPIC t1.c
-titan$ cc -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o foo t2.c t1.so
+titan$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o foo t2.c t1.so
 titan$ 
 titan$ file foo
 foo: ELF 64-bit LSB shared object, x86-64, version 1 (FreeBSD), dynamically linked, for FreeBSD 15.0 (1500030), with debug_info, not stripped
@@ -158,15 +160,51 @@ A debugging session is active.
 Quit anyway? (y or n) y
 titan$ 
 
+***********************************************************
+[3] 14.2-RELEASE FreeBSD on powerpc64le
+
+scotty$ 
+scotty$ uname -apKU
+FreeBSD scotty 14.2-RELEASE FreeBSD 14.2-RELEASE releng/14.2-n269506-c8918d6c7412 GENERIC powerpc powerpc64le 1402000 1402000
+scotty$ 
+scotty$ sysctl hw.model
+hw.model: IBM POWER9
+scotty$ 
+scotty$ CC=/usr/bin/cc
+scotty$ export CC
+scotty$ 
+scotty$ $CC --version
+FreeBSD clang version 18.1.6 (https://github.com/llvm/llvm-project.git llvmorg-18.1.6-0-g1118c2e05e67)
+Target: powerpc64le-unknown-freebsd14.2
+Thread model: posix
+InstalledDir: /usr/bin
+scotty$ 
+scotty$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o t1.so -fPIC t1.c
+scotty$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o foo t2.c t1.so
+scotty$ file foo
+foo: ELF 64-bit LSB shared object, 64-bit PowerPC or cisco 7500, OpenPOWER ELF V2 ABI, version 1 (FreeBSD), dynamically linked, for FreeBSD 14.2, with debug_info, not stripped
+scotty$ 
+scotty$ readelf -delV foo | grep -E 'NEED|NAME|PATH'
+ 0x0000000000000001 NEEDED               Shared library: [t1.so]
+ 0x0000000000000001 NEEDED               Shared library: [libc.so.7]
+ 0x000000006ffffffe VERNEED              0x340
+ 0x000000006fffffff VERNEEDNUM           1
+scotty$ 
+scotty$ ./foo
+Segmentation fault (core dumped)
+scotty$ 
 
 
+***********************************************
+      other systems and compiler tools
+***********************************************
 
-For the same of a comparison I will change the return value to 42 and
+
+For the sake of a comparison I will change the return value to 42 and
 do the same test on a Solaris 10 SPARCv9 Fujitsu server using an entirely
 different set of tools : 
 
 
-hubble $ 
 hubble $ uname -a 
 SunOS hubble 5.10 Generic_150400-67 sun4u sparc SUNW,SPARC-Enterprise
 hubble $ 
@@ -193,7 +231,6 @@ int main(int argc, const char *argv[]) {
     return (*x.func)(argc+41);
 }
 
-hubble $ 
 hubble $ 
 hubble $ echo $CFLAGS
 -m64 -xarch=sparc -g -xO0 -mc -xs -errfmt=error -erroff=%none -errshort=full -errtags=yes -errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff -xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s -xnolibmil -xunroll=1 -xdepend -xregs=no%appl -xdebugformat=dwarf
@@ -227,9 +264,7 @@ hubble $ echo $?
 42
 hubble $ 
 
-So that seems to work.
-
-
+So that seems to work there.
 
 Here is an IBM POWER9 server with the IBM XLC compiler : 
 
@@ -244,33 +279,6 @@ dax$ export CFLAGS
 dax$ 
 dax$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600'
 dax$ export CPPFLAGS
-dax$ 
-dax$ ed t2.c
-223
-,nl
-1       $
-2       $
-3       /* as seen at$
-4        * https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751$
-5        */$
-6       $
-7       struct s_t {$
-8           int (*func)(int);$
-9       };$
-10      $
-11      extern struct s_t __thread x;$
-12      $
-13      int main(int argc, const char *argv[]) {$
-14          return (*x.func)(argc);$
-15      }$
-16      $
-14s/argc/argc+41/p
-    return (*x.func)(argc+41);
-f
-t2.c
-w
-226
-q
 dax$ 
 dax$ $CC $CFLAGS $CPPFLAGS -D_REENTRANT -shared -fPIC -o t1.so t1.c
 dax$ file t1.so 
@@ -289,4 +297,7 @@ dax$ LD_LIBRARY_PATH=`pwd` ./foo
 dax$ echo $?
 42
 dax$ 
+
+I have not bothered to look on RISC-V yet.
+
 
