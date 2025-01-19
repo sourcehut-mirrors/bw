@@ -1,4 +1,88 @@
 
+This may be entirely PEBKAC : 
+
+io$ uname -a 
+Linux io.bw.genunix.com 6.12.8-0-lts #1-Alpine SMP PREEMPT_DYNAMIC 2025-01-02 12:14:41 x86_64 Linux
+io$ 
+io$ echo $CC
+/usr/bin/clang
+io$ 
+io$ $CC --version 
+Alpine clang version 19.1.7
+Target: x86_64-alpine-linux-musl
+Thread model: posix
+InstalledDir: /usr/lib/llvm19/bin
+Configuration file: /etc/clang19/x86_64-alpine-linux-musl.cfg
+io$ 
+io$ ldd --version
+musl libc (x86_64)
+Version 1.2.5
+Dynamic Program Loader
+Usage: /lib/ld-musl-x86_64.so.1 [options] [--] pathname
+io$ 
+io$ cat t1.c
+
+/* as seen at
+ * https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751
+ */
+
+int f(int x) {
+    return x;
+}
+
+struct s_t {
+    int (*func)(int);
+};
+
+struct s_t __thread x = { f };
+
+io$ 
+io$ cat t2.c 
+
+
+/* as seen at
+ * https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751
+ */
+
+struct s_t {
+    int (*func)(int);
+};
+
+extern struct s_t __thread x;
+
+int main(int argc, const char *argv[]) {
+    int ret = (*x.func)(argc+41);
+    return ret;
+}
+
+io$ 
+io$ 
+io$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -shared -D_LARGEFI
+LE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o t1.so -fPIC t1.c
+io$ 
+io$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -D_LARGEFILE64_SOU
+RCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -o foo t2.c t1.so
+io$ 
+io$ ls foo
+foo
+io$ 
+io$ readelf -delV foo | grep -E 'NEED|NAME|PATH'
+ 0x0000000000000001 (NEEDED)             Shared library: [t1.so]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.musl-x86_64.so.1]
+io$ 
+io$ LD_LIBRARY_PATH=`pwd` ./foo
+io$ echo $?
+42
+io$ 
+io$ $CC -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -D_LARGEFILE64_SOU
+RCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -D_REENTRANT -shared -o foo t2.c t1.so
+io$ 
+io$ LD_LIBRARY_PATH=`pwd` ./foo
+Segmentation fault
+io$ 
+
+*****************************************
+
 
 see https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=235751
 
