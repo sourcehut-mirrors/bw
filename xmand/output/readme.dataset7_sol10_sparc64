@@ -1,5 +1,5 @@
 
-hubble $ ./xmand 16384 16384 -7.499656677246e-01  -1.210403442383e-02 32
+hubble$ ./xmand 16384 16384 -7.499656677246e-01  -1.210403442383e-02 8
 -------------------------------------------------------------------
                  system name = SunOS
                    node name = hubble
@@ -36,7 +36,7 @@ INFO : FP Exception raised is FE_INEXACT
 imag : Perfectly safe to ignore FE_INEXACT
 
     mand_bail = 16384
-pthread_limit = 32
+pthread_limit = 8
     translate = ( -7.49965667724600049126593149e-01 , -1.21040344238300002360775309e-02 )
       magnify = +1.63840000000000000000000000e+04
 
@@ -52,21 +52,19 @@ pthread_limit = 32
 --------------------------------------------
 pixel_real_w = +2.38418579101562500000000000e-07
 pixel_imag_h = +2.38418579101562500000000000e-07
-raw  [ 1393 , 863  ]
-click at 1392 861 
-raw  [ 535  , 802  ]
-DBUG : sample space [ 524   , 234    ]
-     : vbox  [ 008 , 003 ]
-     : win_r = +2.44140625000000000000000000e-02
-     : win_j = -5.41992187500000000000000000e-01
+raw  [ 408  , 681  ]
+DBUG : sample space [ 397   , 355    ]
+     : vbox  [ 006 , 005 ]
+     : win_r = -2.23632812500000000000000000e-01
+     : win_j = -3.05664062500000000000000000e-01
      : after translation
      : r_trn   = -7.49965667724600049126593149e-01
      : j_trn   = -1.21040344238300002360775309e-02
-     : x_prime = -7.49962687492361279595343149e-01
-     : y_prime = -1.21701955795306838298275309e-02
+     : x_prime = -7.49992966651907178032843149e-01
+     : y_prime = -1.21413469314593947673275309e-02
      : bailout = 16384             
      : magnify = 1.638400000000e+04
-[mand] =   210762090400 nsec   210.762090   sec
+[mand] =   209896178000 nsec   209.896178   sec
 
 
 raw data values -------------------------------------------------------
@@ -92,12 +90,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -1.19820833206195510173275309e-02
      :       mand_height =     16384
 --------------------------- full plot done -----------------------------
-click at 534 800 
-raw  [ 1403 , 891  ]
+click at 407 679 
+raw  [ 1402 , 887  ]
 INFO : dumper_flag = 1
-click at 1402 889 
-raw  [ 1403 , 891  ]
-INFO : file /var/tmp/dclarke/20240902023509 dump begins.
+click at 1401 885 
+raw  [ 1402 , 887  ]
+INFO : file /var/tmp/dclarke/20250208222003 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -116,18 +114,18 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20240902023509 closed.
+INFO : file /var/tmp/dclarke/20250208222003 closed.
 INFO : dumper_flag = 0
-click at 1402 889 
-raw  [ 894  , 785  ]
+click at 1401 885 
+raw  [ 872  , 732  ]
 right click
-click at 893 783 
-raw  [ 894  , 785  ]
+click at 871 730 
+raw  [ 872  , 732  ]
 right click
 
 
 
-hubble $ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240902023509
+hubble$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20250208222003
 0000000 00 00 10 00 00 40 00 00 00 00 00 00 00 00 d0 40
 0000010 ac ff ff ff b7 ff e7 bf 39 04 00 00 00 ca 88 bf
 0000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
@@ -137,8 +135,8 @@ hubble $ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240902023509
 0000060 39 04 00 00 f0 09 89 bf 00 01 00 00 ac ff ff 3f
 0000070 b6 00 e8 bf 39 04 00 00 f0 09 89 bf 00 01 00 00
 0000080
-hubble $ 
-hubble $ sha256 /var/tmp/dclarke/20240902023509
-2a1cf7976c725e152f5e2def4e08f8256e346c1310a4e51369ee1ac5a99c5709  /var/tmp/dclarke/20240902023509
-hubble $ 
+hubble$ 
+hubble$ /opt/bw/bin/openssl dgst -sha256 -r /var/tmp/dclarke/20250208222003
+2a1cf7976c725e152f5e2def4e08f8256e346c1310a4e51369ee1ac5a99c5709 */var/tmp/dclarke/20250208222003
+hubble$ 
 
