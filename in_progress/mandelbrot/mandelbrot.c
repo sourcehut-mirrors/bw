@@ -2,6 +2,7 @@
 /*
  * mandelbrot.c  An attempt to compute the mandelbrot fractal data
  *               with a fully threaded work queue approach.
+ *
  * Copyright (C) Dennis Clarke 2019
  *
  * This program is free software: you can redistribute it and/or modify
@@ -64,6 +65,7 @@ main(int argc, char **argv)
     struct timespec now_time;
 
     int candidate_int, pthread_limit, status, file_data_flag;
+    int endian;
     double *test_dbl;
 
     struct f_item *mandelbrot_file;
@@ -83,7 +85,7 @@ main(int argc, char **argv)
     /* seed srand48() with the sub-second time data */
     srand48( (long) now_time.tv_nsec );
 
-    sysinfo(VERBOSE);
+    endian = sysinfo(VERBOSE);
 
     errno = 0;
     dir_buffer = calloc(LOCAL_PATH_MAX+1,sizeof(unsigned char));
