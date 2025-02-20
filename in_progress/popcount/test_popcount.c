@@ -97,7 +97,7 @@ int main( int argc, char **argv )
         j = j >> 1;    /* shift left */
         p += 1;        /* keep track of the bit position */
     }
-    printf("INFO : shifting counted %i\n", k);
+    printf("INFO : shifting counted %i within %i bits\n", k, p);
 
     count = popcount( test );
     printf("     : popcount returns %i\n", count);
