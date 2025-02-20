@@ -54,7 +54,7 @@
 int main( int argc, char **argv )
 {
     unsigned long long j, test;
-    int k, p, in, count = -1;
+    int j, k, p, in, count = -1;
 
     if ( argc > 1 ) {
 
@@ -67,8 +67,7 @@ int main( int argc, char **argv )
         }
 
         if ( in < 0 ) {
-            fprintf(stderr,"WARN : input is negative?\n");
-            fprintf(stderr,"     : good luck.\n");
+            goto looper;
         }
 
         test = (unsigned long long)in;
@@ -103,6 +102,22 @@ int main( int argc, char **argv )
     printf("     : popcount returns %i\n", count);
 
     return EXIT_SUCCESS;
+
+looper:
+
+
+    /*
+     * run a loop on all 16 bit numbers and check if
+     * our bit-shifter makes sense
+     */
+     for ( j = 0 ; j < 65536 ; j++ ) {
+
+
+
+    }
+
+
+
 
 }
 
