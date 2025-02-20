@@ -1,0 +1,15 @@
+
+CC=/opt/developerstudio12.6/bin/c99
+
+CFLAGS= -Xa -m64 -xarch=sparc -g -xO0 -mc -xs \
+	-errfmt=error -erroff=%none -errshort=full -errtags=yes \
+	-errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff \
+	-xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s \
+	-xnolibmil -xunroll=1 -xdepend -xregs=no%appl \
+	-xdebugformat=dwarf
+
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_TS_ERRNO -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+
+include common.mk
+
