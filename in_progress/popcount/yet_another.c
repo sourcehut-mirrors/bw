@@ -4,8 +4,9 @@
 
 #include <inttypes.h>
 
-int popcount(uint32_t x) {
-	int c = 0;
+uint8_t
+popcount(uint32_t x) {
+	uint8_t c = 0;
 	for(; x; c++) x = x & (x - 1);
 	return c;
 }

@@ -24,9 +24,7 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
-#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
-#endif
 
 #include <inttypes.h>
 
@@ -36,6 +34,7 @@ popcount(uint64_t a)
 {
     /* try to make sense of the bullshit redef crap in the LLVM
      * header lib/builtins/int_types.h fer fucks sake */
+    uint8_t ret;
     uint64_t x2, tmp0, tmp1, tmp2;
     uint32_t x;
 
@@ -112,7 +111,9 @@ popcount(uint64_t a)
     tmp1 = x + tmp0;
     tmp2 = tmp1 & 0x0000007F;
 
-    return (uint8_t) tmp2;
+    ret = (uint8_t) tmp2;
+
+    return ret;
 
 }
 

@@ -51,11 +51,18 @@
 
 #include "popcount.h"
 
+int sysinfo(int verbose);
+#define VERBOSE 1
+
 int main( int argc, char **argv )
 {
-    unsigned long long j, test;
-    int j, k, p, in, count = -1;
+    uint32_t j;
+    uint64_t test;
+    int32_t k, p, in, count = -1;
+    int endian;
 
+    endian = sysinfo(VERBOSE);
+ 
     if ( argc > 1 ) {
 
         in = (int)strtol(argv[1], (char **)NULL, 10);
@@ -67,10 +74,11 @@ int main( int argc, char **argv )
         }
 
         if ( in < 0 ) {
+            /* this is a cheap bail out to test all 2^16 */
             goto looper;
         }
 
-        test = (unsigned long long)in;
+        test = (uint64_t)in;
 
     } else {
         fprintf(stderr,"USAGE : %s an_integer\n", argv[0]);
@@ -97,6 +105,7 @@ int main( int argc, char **argv )
         p += 1;        /* keep track of the bit position */
     }
     printf("INFO : shifting counted %i within %i bits\n", k, p);
+    printf("     : shifter(%llu) returns %i\n", test, shifter(test));
 
     count = popcount( test );
     printf("     : popcount returns %i\n", count);
@@ -105,19 +114,18 @@ int main( int argc, char **argv )
 
 looper:
 
-
     /*
      * run a loop on all 16 bit numbers and check if
      * our bit-shifter makes sense
      */
-     for ( j = 0 ; j < 65536 ; j++ ) {
-
+    for ( j = 0 ; j < 65536 ; j++ ) {
+        /* abandon all hope ye who jump to here */
+        fprintf(stderr,"enter the loop\n");
 
 
     }
 
-
-
+    return EXIT_SUCCESS;
 
 }
 

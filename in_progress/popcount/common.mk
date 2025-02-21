@@ -3,7 +3,7 @@ CC?=	/usr/bin/cc
 
 CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
 
-OBJS=		./popcount.o
+OBJS=		./popcount.o ./shifter.o ../../sysinfo/sysinfo.o
 
 .PHONY: all
 all: test_popcount

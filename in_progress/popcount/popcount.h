@@ -46,4 +46,6 @@
 #include <inttypes.h>
 
 int popcount(unsigned long long tester);
+int shifter ( int foo );
+
 
