@@ -1,0 +1,8 @@
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -g -O0 \
+	-march=armv8-a -mabi=lp64 \
+	-mno-low-precision-recip-sqrt \
+	-mno-low-precision-sqrt \
+	-mno-low-precision-div \
+	-fno-fast-math -fno-builtin
+
+include common.mk

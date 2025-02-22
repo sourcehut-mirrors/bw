@@ -1832,6 +1832,9 @@ int main(int argc, char*argv[])
                      *
                      * the mouse location is inside the ASTRO flag button
                      * window area.
+                     *
+                     * Generally this is done before any computation is in
+                     * progress. Does this effect the timing data?
                      */
 
                     if ( astro_flag == 0 ) {
@@ -2065,6 +2068,8 @@ replot:
                                     }
 
                                     if ( astro_flag == 1 ) {
+
+                                        /* see https://arxiv.org/abs/1108.5083 */
 
                                         if ( invert_colour == 0 ) {
                                             t_param = pow( (double)mand_height/(double)mand_bail,
