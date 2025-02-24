@@ -39,35 +39,75 @@
 #include <stdint.h>
 #include <math.h>
 
-static int endian( void );
+int endian( void );
+
+static int hex_dump( void *foo, size_t n, int endian_flag);
 
 int main(int argc, char **argv)
 {
 
-    /* For a brief explanation and also bad numerical results see :
+    /*
+     * NAME
+     *   fma, fmaf, fmal - floating-point multiply-add
+     *  
+     * SYNOPSIS
+     *   c99 [ flag... ] file... -lm [ library... ]
+     *   #include <math.h>
+     *  
+     *   double fma(double x, double y, double z);
+     *  
+     *   float fmaf(float x, float y, float z);
+     *  
+     *   long double fmal(long double x, long double y, long double z);
+     *  
+     * DESCRIPTION
+     *   These functions compute (x * y) + z, rounded as one ternary
+     *   operation. They compute the value (as if) to infinite
+     *   precision and round once to the result format, according to
+     *   the rounding mode characterized by the value of FLT_ROUNDS.
+     *  
      *
-     * https://docs.nvidia.com/cuda/floating-point/index.html#comparison
+     * Data to use for this test in two small arrays :
      *
-     * However we shall use the fused multiply add example data.
+     *   a[4] = {  1.907607f,  -0.7862027f, 1.147311f,  0.9604002f };
+     *   b[4] = { -0.9355000f, -0.6915108f, 1.724470f, -0.7097529f };
      *
-     * ARMv8 claims the following
+     * Then perform a dot product of the two arrays :
+     *
+     *   dot_ab = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
+     *
+     * One may perform the computation in a trivial manner or we may
+     * take advantage of fused multiply add hardware to achieve better
+     * precision. However the data involved may not show any change in
+     * a computation with 128-bit floating point elements.
+     *
+     * A Fujitsu SPARC64 server running Solaris 10 provides
+     * the usual dc calculator to the command line :
+     *
+     * $ echo '40k 1.907607 _0.9355000 * _0.7862027 _0.6915108 *
+     *             1.147311  1.724470  *  0.9604002 _0.7097529 *
+     *             + + + pq' | dc
+     * $ .05595788259858
+     *
+     * This is the result that we hope to see on all systems with
+     * the fma hardware implementation.
+     *
+     * A Raspberry Pi4 ARMv8 claims the following 64-bit double :
      *
      *    0.055957882598579763
-     *    0x3faca682f76db9b9
+     *    0x3faca682f76db9b9 with the final 8 bits =  10111001
      *
-     * Note the binary 10111001 at the ULP end
+     * Whereas SPARC64 Fujitsu hardware claims :
      *
-     * Whereas SPARC VII+ Fujitsu stuff claims
+     *    0x3faca682f76db9c0 where the final 8 bits = 11000000 
      *
-     *    0x3faca682f76db9c0
+     * NOTE that the ARMv8 actually uses FMAD and thanks to
+     *      Nico Sonack for the tests.  The Raspberry Pi4
+     *      was running FreeBSD UNIX.
      *
-     * See the 1100 0000 at the ULP
-     *
-     *    NOTE that the armv8 actually uses FMAD
-     *        thanks to Nico Sonack for the tests.
-     *
-     * Also here "ULP" means unit of least precision.
-     * Please see Handbook for Floating Point Mathematics,
+     * So at this point we know that at least two machines will
+     * differ in the "ULP" bits where ULP means the unit of least
+     * precision. Please see Handbook for Floating Point Mathematics,
      * 2nd Edition.
      *
      * The IBM Power systems and IBM MainFrame systems will
@@ -76,9 +116,19 @@ int main(int argc, char **argv)
      * of two FP64 double types. We must use the _float128 style
      * datatype to get the real thing in compliance with the
      * IEEE754-2008 specifications. This is a hack to ensure that
-     * the IBM systems have backwards compatibility.
+     * the IBM systems have backwards compatibility. It should be
+     * clearly said that the IBM POWER9 and POWER10 servers have
+     * hardware implementation for the IEEE-754 2008 datatypes
+     * with opcodes for fused multiply add. The compilers from IBM
+     * require some obscure flags to achieve these opcodes. Linux
+     * running on the IBM POWER9 or POWER10 hardware will not be
+     * able to printf() format the 128-bit long double and this is
+     * due to a fault in GLibC. This is true even in 2025.
      *
      */
+
+    unsigned char byte[16];
+    int endian_flag;
 
     /* some 32 bit floating point numbers */
     volatile float a[4] = {  1.907607f,  -0.7862027f, 1.147311f,  0.9604002f };
@@ -91,33 +141,47 @@ int main(int argc, char **argv)
     /* Most systems do not implement the IEEE754-2008 datatype for
      * the 128-bit floating point operations. In fact, the x86 hardware
      * will fail entirely and only handle 80bits of data. Having said
-     * this we should point out that x86 hardware will allocate all
+     * this we should point out that x86 hardware may allocate all
      * 16bytes of memory for the data elements but only uses 10 bytes.
      * Thus x86 hardware throws away 32.5% of the memory used. */
+
+    volatile float       dotme_fp32;
+    volatile double      dotme_fp64;
+    volatile long double dotme_fp128;
+
     volatile long double a128[4] = {  1.907607L,  -0.7862027L, 1.147311L,  0.9604002L };
     volatile long double b128[4] = { -0.9355000L, -0.6915108L, 1.724470L, -0.7097529L };
 
-    /* places to drop results */
-    volatile float dotme_fp32;
-    volatile double dotme_fp64;
-    volatile long double dotme_fp128;
-
-    size_t j;
-
     printf("NOTE : this machine is a ");
-    if ( endian() ){
+
+    /*
+     * The elf.h header generally define these two values :
+     *
+     *     #define ELFDATA2LSB     1
+     *     #define ELFDATA2MSB     2
+     *
+     * Therefore a big endian architecture would be MSB and
+     * thus and endian check should return 2.
+     */
+
+    endian_flag = endian();
+    if ( endian_flag == 2 ){
         printf ("big");
     } else {
         printf ("little");
     }
     printf (" endian architecture.\n");
-    printf ("     : Be sure to adjust your brain accordingly.\n\n\n");
 
     printf("--------------- Maybe no FMA Calls ---------------\n\n");
 
-    /* first test is to try the trivial multiplication and addition as
+    /* First test is to try the trivial multiplication and addition as
      * separate operations. The compiler may choose to implement FMA
-     * opcodes with the right CFLAGS. */
+     * opcodes with certain CFLAGS. With GCC it may be necessary to
+     * use a mixture of things such as -fno-fast-math -fno-builtin and
+     * -ffp-contract=off to get output assembly without fused multiply
+     * opcodes. With LLVM/Clang we may need -mno-fma -ffp-contract=off
+     * as well as -fno-builtin. Compiler options and a real adventure.
+     */
     dotme_fp32 =
 
          a[0] * b[0]
@@ -135,13 +199,11 @@ int main(int argc, char **argv)
          a[3] * b[3];
 
 
-    printf("        fp32  = %-+24.18e\n", (double)dotme_fp32);
-    /* we can print out the hex bytes */
-    printf(" dotme_fp32  is ");
-    for (j=0; j<sizeof(float); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp32)[j] );
-    }
-    printf("\n\n");
+    printf("No FMA  fp32  = %-+24.18e\n", (double)dotme_fp32);
+
+    /* we can print out the hex bytes in a reasonable order */
+    printf("\nThe 32-bit float dotme_fp32 : \n");
+    hex_dump( (void*)&dotme_fp32, sizeof(dotme_fp32), endian_flag);
 
     /* A silly test to see what the cast to double
      * is doing. The data we get from a 32bit float :
@@ -313,10 +375,13 @@ int main(int argc, char **argv)
 
 }
 
-static int endian( void )
+static int hex_dump( void *foo, size_t n, int endian_flag)
 {
-    int eflag = 1; /* 0x00000001 big endian */
-    eflag = (*(uint8_t*)&eflag == 1) ? 0 : 1;
-    return eflag;
+    size_t j;
+
+    for (j=0; j<sizeof(long double); j++) {
+        printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
+    }
+
 }
 

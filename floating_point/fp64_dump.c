@@ -104,6 +104,16 @@ int fp64_dump ( double *some_fp64 )
      * ever be anything else than 64-bits ... and if it is
      * then the machine is borked. */
     size_t len_double = sizeof(double);
+
+    /*
+     * The elf.h header generally define these two values :
+     *
+     *     #define ELFDATA2LSB     1
+     *     #define ELFDATA2MSB     2
+     *
+     * Therefore a big endian architecture would be MSB and
+     * thus and endian check should return 2.
+     */
     int little_endian = endian();
 
     /* silly question .. would any machine ever implement
@@ -123,7 +133,7 @@ int fp64_dump ( double *some_fp64 )
          * where we know we have the sign bit s and then
          * eleven bits of exponent in the next four nibbles
          *
-         * a tad wide .. looks like 
+         * a tad wide .. looks like
          * 0 100 0000 0000 1001 0010 0001 1111 1011 0101 0100 0100 0100 0010 1101 0001 1000
          *
          */

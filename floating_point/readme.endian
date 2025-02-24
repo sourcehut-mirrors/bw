@@ -1,0 +1,24 @@
+
+
+static int endian( void )
+{
+    /* A little endian architecture machine such as x86_64 or AMD64
+     * or IBM POWER9 in ppc64le mode will store a four byte integer
+     * such as 0x01020304 into memory as 0x04030201h. A big endian
+     * architecture machine will store as 0x01020304h and thus we only
+     * need to test a single byte of the internal representation to
+     * determine the endian state of this machine. To keep this simple
+     * we can just use the value one which is 0x01000000h on a little
+     * endian machine. To be blunt, big endian order seems more natural
+     * for a human to read from a memory dump.
+     */
+    unsigned char byte[4];
+
+    /* We always specify literal values as big endian */
+    int testdata = 0x00000001;
+    memcpy( &byte,  &eflag, sizeof(int));
+    return (int)byte[0];
+
+}
+
+
