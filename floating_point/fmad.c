@@ -41,7 +41,7 @@
 
 int endian( void );
 
-static int hex_dump( void *foo, size_t n, int endian_flag);
+int hex_dump( void *foo, size_t n);
 
 int main(int argc, char **argv)
 {
@@ -129,6 +129,7 @@ int main(int argc, char **argv)
 
     unsigned char byte[16];
     int endian_flag;
+    size_t j;
 
     /* some 32 bit floating point numbers */
     volatile float a[4] = {  1.907607f,  -0.7862027f, 1.147311f,  0.9604002f };
@@ -203,7 +204,7 @@ int main(int argc, char **argv)
 
     /* we can print out the hex bytes in a reasonable order */
     printf("\nThe 32-bit float dotme_fp32 : \n");
-    hex_dump( (void*)&dotme_fp32, sizeof(dotme_fp32), endian_flag);
+    hex_dump( (void*)&dotme_fp32, sizeof(dotme_fp32));
 
     /* A silly test to see what the cast to double
      * is doing. The data we get from a 32bit float :
@@ -372,16 +373,6 @@ int main(int argc, char **argv)
     printf ("\nNOTE : IBM Power systems may report strange fp128 hex values\n");
 
     return 42;
-
-}
-
-static int hex_dump( void *foo, size_t n, int endian_flag)
-{
-    size_t j;
-
-    for (j=0; j<sizeof(long double); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
-    }
 
 }
 
