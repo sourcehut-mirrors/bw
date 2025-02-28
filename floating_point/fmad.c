@@ -35,12 +35,15 @@
 #pragma STDC FP_CONTRACT ON
 #define _XOPEN_SOURCE 600
 
+/* strictly for the sysinfo() call */
+#define VERBOSE 1
+
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
 
+int sysinfo(int verbose);
 int endian( void );
-
 int hex_dump( void *foo, size_t n);
 
 int main(int argc, char **argv)
@@ -153,7 +156,9 @@ int main(int argc, char **argv)
     volatile long double a128[4] = {  1.907607L,  -0.7862027L, 1.147311L,  0.9604002L };
     volatile long double b128[4] = { -0.9355000L, -0.6915108L, 1.724470L, -0.7097529L };
 
-    printf("NOTE : this machine is a ");
+    endian_flag = sysinfo(VERBOSE);
+
+    printf("\n\nINFO : this machine is a ");
 
     /*
      * The elf.h header generally define these two values :
@@ -171,7 +176,9 @@ int main(int argc, char **argv)
     } else {
         printf ("little");
     }
-    printf (" endian architecture.\n");
+    printf (" endian architecture.\n\n");
+
+
 
     printf("--------------- Maybe no FMA Calls ---------------\n\n");
 
@@ -205,6 +212,7 @@ int main(int argc, char **argv)
     /* we can print out the hex bytes in a reasonable order */
     printf("\nThe 32-bit float dotme_fp32 : \n");
     hex_dump( (void*)&dotme_fp32, sizeof(dotme_fp32));
+    printf("\n\n");
 
     /* A silly test to see what the cast to double
      * is doing. The data we get from a 32bit float :
@@ -230,17 +238,15 @@ int main(int argc, char **argv)
      *       0011 1111 1010 1100 1010 0110 0111 1110 0000000....
      *       seee eeee eeee 1100 1010 0110 0111 1110  perfect match
      *
-     *
-    dotme_fp64 = (double)dotme_fp32;
-    printf("\n-------------- gack ------------\n");
-    printf(" dotme_fp32 casted is (double)dotme_fp32\ndotme_fp64  is ");
-    for (j=0; j<sizeof(double); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
-    }
-    printf("\n");
-    printf("\n-------------- gack ------------\n");
-    */
+     */
 
+    printf("\n\nCast the 32-bit FP data into 64-bit FP\n\n");
+    dotme_fp64 = (double)dotme_fp32;
+    printf("\n---------- cast to FP64  ------------\n");
+    printf(" dotme_fp32 casted to (double)dotme_fp64\ndotme_fp64  is \n\n");
+    hex_dump( (void*)&dotme_fp64, sizeof(double));
+    printf("\n");
+    printf("\n-------------------------------------\n");
 
     /* next test is to use the very well implemented 64-bit datatype.
      *
@@ -248,6 +254,9 @@ int main(int argc, char **argv)
      *           disabled or severly crippled at the factory.
      *           The only reasonable GPU options seem to be Quadro
      *           branded and only on very select and expensive cards.
+     *
+     * BEWARE :  NVidia sells shit to the gamers and they suck that
+     *           up like morons.
      */
 
     dotme_fp64 =
@@ -266,11 +275,9 @@ int main(int argc, char **argv)
 
          a64[3] * b64[3];
 
-    printf("        fp64  = %-+24.18e\n", dotme_fp64);
-    printf(" dotme_fp64  is ");
-    for (j=0; j<sizeof(double); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
-    }
+    printf("\n        fp64  = %-+30.24e\n", dotme_fp64);
+    printf(" dotme_fp64  is \n");
+    hex_dump( (void*)&dotme_fp64, sizeof(double));
     printf("\n\n");
 
     /* For the sake of the test we shall attempt to use the 128-bit
@@ -278,6 +285,8 @@ int main(int argc, char **argv)
      * related operations in hardware would be the IBM POWER9 and
      * IBM POWER10 and IBM MainFrame systems. All others seem to
      * emit software traps and software emulation.
+     *
+     * Phasers on stun and good luck, unless you are in a red shirt.
      *
      * see https://git.sr.ht/~racingmars/pi_fp_test/tree/master/item/README
      *
@@ -298,15 +307,13 @@ int main(int argc, char **argv)
 
          a128[3] * b128[3];
 
-    printf("        fp128 = %-+24.18Le\n", dotme_fp128);
-    printf(" dotme_fp128 is ");
-    for (j=0; j<sizeof(long double); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
-    }
+    printf("\n        fp128 = %-+46.38Le\n", dotme_fp128);
+    printf(" dotme_fp128 is \n");
+    hex_dump( (void*)&dotme_fp128, sizeof(long double));
     printf("\n\n\n\n");
 
     printf("-------------------- FMA Calls -------------------\n\n");
-    /* From the NVidia documentation noted above we see
+    /* From the NVidia documentation noted above we see :
      *
      *     FMA Method to Compute Vector Dot Product. The FMA method
      *     uses a simple loop with fused multiply-adds to compute the
@@ -323,48 +330,67 @@ int main(int argc, char **argv)
      * These are the fma calls to use with C99 : 
      *
      *       float       fmaf(float x, float y, float z);
-     *       double       fma(double x, double y, double z);
+     *       double      fma(double x, double y, double z);
      *       long double fmal(long double x, long double y, long double z);
      *
      */
 
-    dotme_fp32 = fmaf( a[3], b[3], fmaf( a[2], b[2], fmaf( a[1], b[1], fmaf( a[0], b[0], 0.0f ))));
+    dotme_fp32 = fmaf( a[3], b[3],
+                       fmaf( a[2], b[2],
+                             fmaf( a[1], b[1],
+                                   fmaf( a[0], b[0], 0.0f )
+                                 )
+                           )
+                      );
 
-    printf("  fmaf fp32   = %-+24.18e\n", (double)dotme_fp32);
-    /* we can print out the hex bytes */
-    printf(" dotme_fp32  is ");
-    for (j=0; j<sizeof(float); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp32)[j] );
-    }
+    /* Note the very old school indent above for clarity. */
+
+
+    printf("\n  fmaf fp32   = %-+30.24e\n", dotme_fp32);
+    hex_dump( (void*)&dotme_fp32, sizeof(float));
     printf("\n\n");
 
 
+    /* Once again we shall indent this in the oldschool manner */
+    dotme_fp64 = fma( a64[3], b64[3],
+                      fma( a64[2], b64[2],
+                           fma( a64[1], b64[1],
+                                fma( a64[0], b64[0], 0.0 )
+                              )
+                         )
+                    );
 
-    dotme_fp64 = fma( a64[3], b64[3], fma( a64[2], b64[2], fma( a64[1], b64[1], fma( a64[0], b64[0], 0.0 ))));
-
-    printf("  fma  fp64   = %-+24.18e\n", dotme_fp64);
-    printf(" dotme_fp64  is ");
-    for (j=0; j<sizeof(double); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp64)[j] );
-    }
+    printf("  fma  fp64   = %-+30.24e\n", dotme_fp64);
+    printf(" dotme_fp64  is \n");
+    hex_dump( (void*)&dotme_fp64, sizeof(double));
     printf("\n\n");
 
 
+    /* Good luck with your hardware. If you only have x86 then
+     * you are screwed blued and tattooed to a wall with a fucked
+     * up 80-bit data type and there is no way around that. Unless
+     * you embrace the _Float128() datatype extension from GCC and
+     * the GNU wonks who can not get x86 to work. Which, of course,
+     * can not work. Designed to fail from the beginning.
+     */
 
-    dotme_fp128 = fmal( a128[3], b128[3], fmal( a128[2], b128[2], fmal( a128[1], b128[1], fmal( a128[0], b128[0], 0.0L ))));
+    dotme_fp128 = fmal( a128[3], b128[3],
+                        fmal( a128[2], b128[2],
+                              fmal( a128[1], b128[1],
+                                    fmal( a128[0], b128[0], 0.0L )
+                                  )
+                            )
+                      );
 
-    printf("  fmal fp128  = %-+24.18Le\n", dotme_fp128);
-    printf(" dotme_fp128 is ");
-    for (j=0; j<sizeof(long double); j++) {
-        printf("0x%02x ", ((uint8_t *)&dotme_fp128)[j] );
-    }
+    printf("\n  fmal fp128  = %-+46.38Le\n", dotme_fp128);
+    hex_dump( (void*)&dotme_fp128, sizeof(long double));
     printf("\n\n\n");
 
     printf("--------------------------------------------------\n\n");
 
 
     /* this is just reference data stuff */
-    printf("\nCorrect result is +5.595788259858e-02\n");
+    printf("\n\nCorrect result is +5.595788259858e-02\n");
     printf("or this    0x3faca682f76db9b9 from ARMv8\n");
     printf("or maybe   0x3faca682f76db9b9 on Fujitsu SPARC VII+\n");
     printf("Same thing on Intel Core i5-7300U K8-class CPU\n");

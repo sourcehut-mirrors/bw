@@ -31,58 +31,15 @@ int main ( int argc, char **argv )
      * once we know what this machine "thinks" and integer
      * really is. */
     int bmp_width;
-
-    /* this is a test integer data value where we want to
-     * know where is the one bit that is turned "on". Is
-     * it a four byte integer where the memory for a value
-     * of 1 looks like   0x01000000h or is it the more 
-     * normal looking    0x00000001h which is big endian
-     * byte order? */
-    int j = 1;
+    int endian_flag;
 
     /* lets stick to a trivial C or POSIX locale */
     setlocale( LC_ALL, "C" );
 
     /* output some basic information about this machine */
-    sysinfo();
+    endian_flag = sysinfo();
 
-    int little_endian = (*(uint8_t*)&j == 1) ? 1 : 0;
-
-    /* We need to be aware that we can violate the C standards 
-     * in that section 6.3.2.3 number 6 states : 
-     *
-     *     "A pointer to an object type may be converted
-     *      to a pointer to a different object type. If
-     *      the resulting pointer is not correctly aligned
-     *      for the referenced type, the behavior is
-     *      undefined."
-     *
-     * In the case of little endian machine we could do 
-     *
-     *     foo =     (data[0]<<0) 
-     *             | (data[1]<<8) 
-     *             | (data[2]<<16)
-     *             | (data[3]<<24) );
-     *
-     * with the big endian approach being similar 
-     *
-     *     foo =     (data[3]<<0) 
-     *             | (data[2]<<8) 
-     *             | (data[1]<<16)
-     *             | (data[0]<<24) );
-     *
-     * where "data" elements must be simple 8-bit byte objects
-     * such as uint8_t primitive types.
-     *
-     *
-     * The casting of pointers from one type to another type
-     * may be dangerous and thus this should be avoided :
-     *
-     *    bmp_width = *( (uint32_t *) &bar );
-     *
-     */
-
-    if ( little_endian ) {
+    if ( endian_flag ) {
 
         printf ("This is a little endian machine.\n");
 
