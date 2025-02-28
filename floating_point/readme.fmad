@@ -88,3 +88,121 @@ dotme_fp64  is
 --------------------------------------------------
 
 
+
+==================  IBM POWER9 or 10 will report weird 128bit data 
+
+dax$ 
+dax$ echo $CC
+/opt/ibm/xlC/16.1.1/bin/xlc
+dax$ 
+dax$ echo $CFLAGS 
+-qlanglvl=stdc99 -O0 -g
+dax$ 
+dax$ echo $CPPFLAGS 
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+dax$ 
+dax$ $CC $CFLAGS $CPPFLAGS -c -o fmad.o fmad.c
+fmad.c:34:14: warning: pragma STDC FENV_ACCESS ON is not supported, ignoring pragma
+      [-Wunknown-pragmas]
+#pragma STDC FENV_ACCESS ON
+             ^
+1 warning generated.
+dax$ 
+dax$ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+dax$ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/endian.o ../sysinfo/endian.c
+dax$ $CC $CFLAGS $CPPFLAGS -c -o ../ascii/hex_dump.o ../ascii/hex_dump.c
+dax$ $CC $CFLAGS $CPPFLAGS -o fmad fmad.o ../sysinfo/sysinfo.o ../sysinfo/endian.o ../ascii/hex_dump.o -lm 
+dax$ 
+dax$ ./fmad 
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = dax
+                     release = 6.1.127-mrw1
+                     version = #1 SMP Fri Jan 31 14:38:26 PST 2025
+                     machine = ppc64le
+                   page size = 65536
+               system memory = 274226610176
+                             = 267799424 kB
+                             = 261522 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+
+
+INFO : this machine is a little endian architecture.
+
+--------------- Maybe no FMA Calls ---------------
+
+No FMA  fp32  = +5.595775693655014038e-02
+
+The 32-bit float dotme_fp32 : 
+0xf6 0x33 0x65 0x3d 
+
+
+
+Cast the 32-bit FP data into 64-bit FP
+
+
+---------- cast to FP64  ------------
+ dotme_fp32 casted to (double)dotme_fp64
+dotme_fp64  is 
+
+0x00 0x00 0x00 0xc0 0x7e 0xa6 0xac 0x3f 
+
+-------------------------------------
+
+        fp64  = +5.595788259857998464541495e-02
+ dotme_fp64  is 
+0xd9 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 
+
+
+        fp128 = +5.59578825985800000000000000000208430415e-02 
+ dotme_fp128 is 
+0xdb 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 0x00 0x76 0x0b 0x50 0xfa 0x3d 0x3b 0x3c 
+
+
+
+-------------------- FMA Calls -------------------
+
+
+  fmaf fp32   = +5.595775693655014038085938e-02
+0xf6 0x33 0x65 0x3d 
+
+  fma  fp64   = +5.595788259857976260081003e-02
+ dotme_fp64  is 
+0xb9 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 
+
+
+  fmal fp128  = +5.59578825985800000000000000000162208096e-02 
+0xdb 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 0xe9 0x75 0x0b 0x50 0xfa 0x3d 0x3b 0x3c 
+
+
+--------------------------------------------------
+
+
+
+Correct result is +5.595788259858e-02
+or this    0x3faca682f76db9b9 from ARMv8
+or maybe   0x3faca682f76db9b9 on Fujitsu SPARC VII+
+Same thing on Intel Core i5-7300U K8-class CPU
+also fp128 0x3ffaca682f76db9db367bf4a016eb28a
+
+NOTE : IBM Power systems may report strange fp128 hex values
+dax$ 
+
+
+
