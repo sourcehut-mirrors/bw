@@ -1,0 +1,131 @@
+
+
+
+hermes$ echo $CC
+/usr/bin/gcc
+hermes$ 
+hermes$ $CC --version 
+gcc (Alpine 14.2.0) 14.2.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+hermes$ 
+hermes$ head /proc/cpuinfo 
+processor       : 0
+BogoMIPS        : 108.00
+Features        : fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer : 0x41
+CPU architecture: 8
+CPU variant     : 0x4
+CPU part        : 0xd0b
+CPU revision    : 1
+
+processor       : 1
+hermes$ 
+hermes$ echo $CPPFLAGS 
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+hermes$ 
+hermes$ 
+hermes$ CFLAGS='-std=iso9899:1999 -march=armv8.2-a -mtune=cortex-a76 -g -O0'
+hermes$ export CFLAGS 
+hermes$ 
+hermes$ 
+hermes$ $CC $CFLAGS $CPPFLAGS -c -o fmad.o fmad.c
+hermes$ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+hermes$ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/endian.o ../sysinfo/endian.c
+hermes$ $CC $CFLAGS $CPPFLAGS -c -o ../ascii/hex_dump.o ../ascii/hex_dump.c
+hermes$ $CC $CFLAGS $CPPFLAGS -o fmad fmad.o ../sysinfo/sysinfo.o  \
+> ../sysinfo/endian.o ../ascii/hex_dump.o -lm 
+hermes$ 
+hermes$ ./fmad 
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = hermes.bw.genunix.com
+                     release = 6.12.13-0-rpi
+                     version = #1-Alpine SMP PREEMPT Thu Feb 13 22:15:47 UTC 2025
+                     machine = aarch64
+                   page size = 4096
+               system memory = 8326967296
+                             = 8131804 kB
+                             = 7941 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+
+
+INFO : this machine is a little endian architecture.
+
+--------------- Maybe no FMA Calls ---------------
+
+No FMA  fp32  = +5.595773458480834961e-02
+
+The 32-bit float dotme_fp32 : 
+0xf0 0x33 0x65 0x3d 
+
+
+
+Cast the 32-bit FP data into 64-bit FP
+
+
+---------- cast to FP64  ------------
+ dotme_fp32 casted to (double)dotme_fp64
+dotme_fp64  is 
+
+0x00 0x00 0x00 0x00 0x7e 0xa6 0xac 0x3f 
+
+-------------------------------------
+
+        fp64  = +5.595788259857981117306736e-02
+ dotme_fp64  is 
+0xc0 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 
+
+
+        fp128 = +5.59578825985800000000000000000000429981e-02 
+ dotme_fp128 is 
+0x80 0xb2 0x6e 0x01 0x4a 0xbf 0x67 0xb3 0x9d 0xdb 0x76 0x2f 0x68 0xca 0xfa 0x3f 
+
+
+
+-------------------- FMA Calls -------------------
+
+
+  fmaf fp32   = +5.595775693655014038085938e-02
+0xf6 0x33 0x65 0x3d 
+
+  fma  fp64   = +5.595788259857976260081003e-02
+ dotme_fp64  is 
+0xb9 0xb9 0x6d 0xf7 0x82 0xa6 0xac 0x3f 
+
+
+  fmal fp128  = +5.59578825985800000000000000000001031834e-02 
+0x8a 0xb2 0x6e 0x01 0x4a 0xbf 0x67 0xb3 0x9d 0xdb 0x76 0x2f 0x68 0xca 0xfa 0x3f 
+
+
+--------------------------------------------------
+
+
+
+Correct result is +5.595788259858e-02
+or this    0x3faca682f76db9b9 from ARMv8
+or maybe   0x3faca682f76db9b9 on Fujitsu SPARC VII+
+Same thing on Intel Core i5-7300U K8-class CPU
+also fp128 0x3ffaca682f76db9db367bf4a016eb28a
+
+NOTE : IBM Power systems may report strange fp128 hex values
+hermes$ 
+
