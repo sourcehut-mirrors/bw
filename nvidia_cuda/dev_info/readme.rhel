@@ -1,12 +1,42 @@
+------------ a few details help here -----------
 
+triton$ 
+triton$ echo $PATH
+/usr/local/cuda-11.8/bin:/usr/bin:/bin:/usr/sbin:/sbin
+triton$ 
+triton$ echo $NVCC
+/usr/local/cuda-11.8/bin/nvcc
+triton$ 
+triton$ echo $CUDA_HOME 
+/usr/local/cuda-11.8
+triton$ 
+triton$ echo $CXX
+/usr/bin/g++
+triton$ 
+triton$ uname -a 
+Linux triton 5.14.0-503.15.1.el9_5.x86_64 #1 SMP PREEMPT_DYNAMIC Thu Nov 14 15:45:31 EST 2024 x86_64 x86_64 x86_64 GNU/Linux
+triton$ 
 triton$ $NVCC -x cu -ccbin $CXX -I../include -m64 -gencode arch=compute_35,code=sm_35 \
 > -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 \
-> -Wno-deprecated-gpu-targets \
-> -lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
+> -Wno-deprecated-gpu-targets -lnppi_static -lculibos \
+> -c -o dev_info.o dev_info.cu
+dev_info.cu(145): warning #177-D: variable "buff" was declared but never referenced
 
+dev_info.cu(472): warning #177-D: variable "cTemp" was declared but never referenced
 
+dev_info.cu(145): warning #177-D: variable "buff" was declared but never referenced
+
+dev_info.cu(472): warning #177-D: variable "cTemp" was declared but never referenced
+
+dev_info.cu(145): warning #177-D: variable "buff" was declared but never referenced
+
+dev_info.cu(472): warning #177-D: variable "cTemp" was declared but never referenced
+
+triton$ 
+triton$ 
 triton$ $NVCC -ccbin $CXX -m64 -gencode arch=compute_35,code=sm_35 \
 > -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 \
-> -Wno-deprecated-gpu-targets -o dev_info dev_info.o
+> -Wno-deprecated-gpu-targets \
+> -o dev_info dev_info.o
 triton$ 
 
