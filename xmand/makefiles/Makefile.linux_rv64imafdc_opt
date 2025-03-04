@@ -1,0 +1,9 @@
+CC=/usr/bin/gcc
+
+CFLAGS = -std=iso9899:1999 -O3 -march=rv64imafdc -mabi=lp64d
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+LIBS = -lX11 -lrt -lm
+
+include common.mk
