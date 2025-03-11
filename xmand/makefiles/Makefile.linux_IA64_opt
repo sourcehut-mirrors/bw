@@ -1,0 +1,8 @@
+
+CC = /usr/bin/gcc
+
+CFLAGS = -std=iso9899:1999 -g -O3 -mtune=itanium2 \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+
+include common.mk
+
