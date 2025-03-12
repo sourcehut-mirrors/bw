@@ -1,0 +1,131 @@
+
+t$ 
+t$ ./xmand 67108864 137438953472 -1.94153728488889210091 -0.0000597622039112954972495 16
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = triton
+                     release = 6.1.128-genunix
+                     version = #1 SMP Sun Mar  9 19:44:14 UTC 2025
+                     machine = x86_64
+                   page size = 4096
+               system memory = 405610516480
+                             = 396104020 kB
+                             = 386820 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little endian
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+INFO : baseline tdelta =             45 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 67108864
+pthread_limit = 16
+    translate = ( -1.94153728488889210090917459e+00 , -5.97622039112954972495117545e-05 )
+      magnify = +1.37438953472000000000000000e+11
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +2.84217094304040074348449707e-14
+pixel_imag_h = +2.84217094304040074348449707e-14
+raw  [ 637  , 543  ]
+DBUG : sample space [ 626   , 493    ]
+     : vbox  [ 009 , 007 ]
+     : win_r = +2.23632812500000000000000000e-01
+     : win_j = -3.61328125000000000000000000e-02
+     : after translation
+     : r_trn   = -1.94153728488889210090917459e+00
+     : j_trn   = -5.97622039112954972495117545e-05
+     : x_prime = -1.94153728488563781517939333e+00
+     : y_prime = -5.97622044370971217119858920e-05
+     : bailout = 67108864          
+     : magnify = 1.374389534720e+11
+[mand] =    17592412516 nsec   17.592413    sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.94153728490342980528282624e+00
+     : j[ 0][ 0][ 0][ 0] = -5.97622184489998709011615574e-05
+     :       mand_height =      1057
+     : r[ 7][ 7][63][63] = -1.94153728488890631176388979e+00
+     : j[ 7][ 7][63][63] = -5.97622039255063519647137582e-05
+     :       mand_height =      1065
+     : r[ 8][ 8][ 0][ 0] = -1.94153728488887789005445939e+00
+     : j[ 8][ 8][ 0][ 0] = -5.97622038970846425343097508e-05
+     :       mand_height =      1066
+     : r[ 8][ 8][ 1][ 0] = -1.94153728488884946834502898e+00
+     : j[ 8][ 8][ 1][ 0] = -5.97622038970846425343097508e-05
+     :       mand_height =      1072
+     : r[ 8][ 8][32][32] = -1.94153728488796839535268646e+00
+     : j[ 8][ 8][32][32] = -5.97622029875899407613815129e-05
+     :       mand_height =      1074
+     : r[ 3][12][44][21] = -1.94153728489672228185725089e+00
+     : j[ 3][12][44][21] = -5.97621960242711303123996913e-05
+     :       mand_height =      1057
+     : r[15][15][63][63] = -1.94153728487435439653552294e+00
+     : j[15][15][63][63] = -5.97621893735911235978619516e-05
+     :       mand_height =      1058
+--------------------------- full plot done -----------------------------
+click at 636 541 
+raw  [ 1393 , 889  ]
+INFO : dumper_flag = 1
+click at 1392 887 
+raw  [ 1393 , 889  ]
+INFO : file /var/tmp/dclarke/20250312034752 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail = 67108864
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.37438953472000000000000000e+11
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.94153728488889210090917459e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = -5.97622039112954972495117545e-05
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20250312034752 closed.
+INFO : dumper_flag = 0
+click at 1392 887 
+raw  [ 764  , 702  ]
+right click
+click at 763 700 
+raw  [ 764  , 702  ]
+right click
+
+
+
+t$ sha256 /var/tmp/dclarke/20250312034752
+b0de9c445fdb2cc66d7c54a02c18589004af793294b0a470f51a9740a6e0f0b8  /var/tmp/dclarke/20250312034752
+t$ 
+
