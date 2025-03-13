@@ -1,4 +1,5 @@
 
+NOTE: this is the original 32-bit ASUS Tinkerboard with 2GB of memory
 io$ 
 io$ uname -a 
 Linux io 4.4.194 #52 SMP Tue Oct 26 08:35:58 UTC 2021 armv7l GNU/Linux

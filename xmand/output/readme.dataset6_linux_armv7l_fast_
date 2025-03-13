@@ -1,4 +1,6 @@
 
+NOTE: this is the original 32-bit ASUS Tinkerboard with 2GB of memory
+
 io$ ./xmand 16777216 8589934592 -1.99998588122252840549 -0.0000000000236468622460961341858 8
 -------------------------------------------------------------------
                  system name = Linux

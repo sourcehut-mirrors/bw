@@ -1,0 +1,18 @@
+
+
+On a linux system it would be nice to get some info
+such as : 
+
+t$ grep -E '^vendor_id|^model|^cpu family|^physical|^core|^cpu' /proc/cpuinfo | sort -u | grep -v 'MHz' | grep -v 'core id' 
+cpu cores       : 16
+cpu family      : 6
+cpuid level     : 15
+model           : 63
+model name      : Intel(R) Xeon(R) CPU E5-2698 v3 @ 2.30GHz
+physical id     : 0
+physical id     : 1
+vendor_id       : GenuineIntel
+
+Whereas on FreeBSD UNIX there exists the sysctl calls :
+
+
