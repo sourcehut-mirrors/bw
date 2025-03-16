@@ -17,8 +17,8 @@ LD_RUN_PATH = /opt/bw/lib
 
 LIBS = -lm -lgmp -lmpfr -lrt
 
-SRC = mpfr_ver.c ../time_and_date/timediff.c ../sysinfo/sysinfo.c
-OBJ = mpfr_ver.o ../time_and_date/timediff.o ../sysinfo/sysinfo.o
+SRC = gmp_mpfr_ver.c ../time_and_date/timediff.c ../sysinfo/sysinfo.c
+OBJ = gmp_mpfr_ver.o ../time_and_date/timediff.o ../sysinfo/sysinfo.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
