@@ -85,7 +85,7 @@
 #define VERBOSE 1
 #define MPFR_VERSION_ERROR 999
 
-/* int sysinfo(int verbose); */
+int sysinfo(int verbose);
 uint64_t timediff( struct timespec st, struct timespec en );
 int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     uint64_t delta_t;
 
     setlocale( LC_ALL, "C" );
-    /* sysinfo(VERBOSE); */
+    sysinfo(VERBOSE);
 
     mpfr_prec_size = gmp_mpfr_ver(&status, &mpfr_flags);
     if ( mpfr_prec_size == MPFR_VERSION_ERROR ) {
