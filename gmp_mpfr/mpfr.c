@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 
     decimal_prec = mpfr_get_str_ndigits(10, prec);
     printf("INFO : using %li bits of precision ", (long)prec );
-    printf("and %i decimal digits.\n", decimal_prec);
+    printf("and %li decimal digits.\n", decimal_prec);
 
     /* Create MPFR format buffer string with the correct number
      * of decimal digits. NOTE there is not a newline char.
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
      *        to imply that we need to specify the rounding method
      *        thus :  mpfr_printf(format_buf, MPFR_RNDN, foo);
      */
-    sprintf(format_buf,"%%.%iR*f", decimal_prec);
+    sprintf(format_buf,"%%.%liR*f", decimal_prec);
 
     printf("------------------------------------------------------\n");
 
