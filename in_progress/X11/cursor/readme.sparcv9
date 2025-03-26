@@ -1,0 +1,43 @@
+
+New compiler I just bootstrapped and maybe it works ?
+
+hubble$ 
+hubble$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -I/usr/openwin/share/include -c -o cursor.o cursor.c
+hubble$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -I/usr/openwin/share/include -c \
+> -o ../../../xwin/x_error_handler.o ../../../xwin/x_error_handler.c
+hubble$ 
+hubble$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -I/usr/openwin/share/include -c \
+> -o ../../../xwin/create_gc.o ../../../xwin/create_gc.c
+hubble$ 
+hubble$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -I/usr/openwin/share/include -c \
+> -o ../../../xwin/create_borderless_topwin.o ../../../xwin/create_borderless_topwin.c
+hubble$ 
+hubble$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -c -o ../../../sysinfo/sysinfo.o ../../../sysinfo/sysinfo.c
+hubble$ 
+
+
+hubble$ 
+hubble$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -L/usr/openwin/lib/sparcv9 -R/usr/openwin/lib/sparcv9 \
+> -o cursor cursor.o ../../../xwin/x_error_handler.o ../../../xwin/create_gc.o \
+> ../../../xwin/create_borderless_topwin.o -lX11 -lm -lrt
+hubble$ 
+hubble$ ldd cursor 
+        libX11.so.4 =>   /usr/openwin/lib/sparcv9/libX11.so.4
+        libm.so.2 =>     /lib/64/libm.so.2
+        librt.so.1 =>    /lib/64/librt.so.1
+        libc.so.1 =>     /lib/64/libc.so.1
+        libsocket.so.1 =>        /lib/64/libsocket.so.1
+        libnsl.so.1 =>   /lib/64/libnsl.so.1
+        libXext.so.0 =>  /usr/openwin/lib/sparcv9/libXext.so.0
+        libaio.so.1 =>   /lib/64/libaio.so.1
+        libmd.so.1 =>    /lib/64/libmd.so.1
+        libmp.so.2 =>    /lib/64/libmp.so.2
+        libscf.so.1 =>   /lib/64/libscf.so.1
+        libdoor.so.1 =>  /lib/64/libdoor.so.1
+        libuutil.so.1 =>         /lib/64/libuutil.so.1
+        libgen.so.1 =>   /lib/64/libgen.so.1
+        /lib/sparcv9/../libm/sparcv9/libm_hwcap1.so.2
+        /platform/SUNW,SPARC-Enterprise/lib/sparcv9/libc_psr.so.1
+hubble$ 
+
+
