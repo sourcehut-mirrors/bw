@@ -1,0 +1,43 @@
+seen in the xorg maillist :
+
+    https://lists.x.org/archives/xorg/2025-March/061930.html
+
+Hello
+
+I wanted to write a simple X application that shows me the currently
+focused window on twm. But this always returns the root window (0x1).
+
+The code is below. I have simplified the code to this, still not able to
+get the currently focused window. I would think, when I run this code in a
+terminal, that terminal window will be the window that has the focus.
+
+I was wondering why I could not get the focused window? Anybody have an
+idea?
+
+Regards
+
+Code
+-------
+
+ 1
+ 2 #include <X11/Xlib.h>
+ 3 #include <X11/Xutil.h>
+ 4 #include <X11/Xatom.h>
+ 5
+ 6 #include <stdio.h>
+ 7 #include <stdlib.h>
+ 8
+ 9 int main(int argc, char **argv) {
+10     Display *dpy;
+11     Window current;
+12     int revert_to;
+13
+14     if ( (dpy = XOpenDisplay(NULL)) == NULL)
+15         return 1;
+16
+17     XGetInputFocus(dpy, &current, &revert_to);
+18     printf("current: %p\n", (void *)current);
+19
+20     return 0;
+21 }
+
