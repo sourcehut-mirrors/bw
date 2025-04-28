@@ -1,5 +1,5 @@
 These are merely used to check if a GCC compiler is working in
-both 32-bit and 64-bit more and can locate the required libs : 
+both 32-bit and 64-bit mode and can locate the required libs : 
 
 $h uname -a
 SunOS hubble 5.10 Generic_150400-67 sun4u sparc SUNW,SPARC-Enterprise
