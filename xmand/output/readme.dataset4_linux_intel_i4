@@ -1,16 +1,17 @@
 
-oberon$ 
-oberon$ ./xmand 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
+
+mercury$ 
+mercury$ ./xmand 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
 -------------------------------------------------------------------
                  system name = Linux
-                   node name = oberon
-                     release = 6.6.68-genunix
-                     version = #1 SMP Sun Dec 29 06:44:43 GMT 2024
+                   node name = mercury
+                     release = 5.15.0-205.149.5.1.el9uek.x86_64
+                     version = #2 SMP Fri Apr 5 11:29:36 PDT 2024
                      machine = x86_64
                    page size = 4096
-               system memory = 135034261504
-                             = 131869396 kB
-                             = 128778 MB
+               system memory = 16028332032
+                             = 15652668 kB
+                             = 15285 MB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 100
@@ -28,7 +29,7 @@ oberon$ ./xmand 131072 2147483648 -0.166949745003876159899 1.0408523625537782209
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
 -------------------------------------------------------------------
-INFO : baseline tdelta =           1676 nsec
+INFO : baseline tdelta =            149 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -52,21 +53,25 @@ pthread_limit = 16
 --------------------------------------------
 pixel_real_w = +1.81898940354585647583007812e-12
 pixel_imag_h = +1.81898940354585647583007812e-12
-raw  [ 1414 , 858  ]
-click at 1413 856 
-raw  [ 536  , 586  ]
-DBUG : sample space [ 525   , 450    ]
-     : vbox  [ 008 , 007 ]
-     : win_r = +2.63671875000000000000000000e-02
-     : win_j = -1.20117187500000000000000000e-01
+raw  [ 1399 , 861  ]
+click at 1398 859 
+raw  [ 1399 , 861  ]
+click at 1398 859 
+raw  [ 1399 , 861  ]
+click at 1398 859 
+raw  [ 342  , 522  ]
+DBUG : sample space [ 331   , 514    ]
+     : vbox  [ 005 , 008 ]
+     : win_r = -3.52539062500000000000000000e-01
+     : win_j = +4.88281250000000000000000000e-03
      : after translation
      : r_trn   = -1.66949745003876159898936749e-01
      : j_trn   = +1.04085236255377822089940310e+00
-     : x_prime = -1.66949744979319802951067686e-01
-     : y_prime = +1.04085236244191037258133292e+00
+     : x_prime = -1.66949745332203747238963842e-01
+     : y_prime = +1.04085236255832569440826774e+00
      : bailout = 131072            
      : magnify = 2.147483648000e+09
-[mand] =   473371311412 nsec   473.371311   sec
+[mand] =   369247242351 nsec   3.692472e+02 sec
 
 
 raw data values -------------------------------------------------------
@@ -92,12 +97,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +1.04085236348419130081310868e+00
      :       mand_height =      4539
 --------------------------- full plot done -----------------------------
-click at 535 584 
-raw  [ 1404 , 888  ]
+click at 341 520 
+raw  [ 1387 , 895  ]
 INFO : dumper_flag = 1
-click at 1403 886 
-raw  [ 1404 , 888  ]
-INFO : file /var/tmp/dclarke/20250526195753 dump begins.
+click at 1386 893 
+raw  [ 1387 , 895  ]
+INFO : file /var/tmp/dclarke/20240828024638 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -116,18 +121,29 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20250526195753 closed.
+INFO : file /var/tmp/dclarke/20240828024638 closed.
 INFO : dumper_flag = 0
-click at 1403 886 
-raw  [ 883  , 785  ]
+click at 1386 893 
+raw  [ 903  , 797  ]
 right click
-click at 882 783 
-raw  [ 883  , 785  ]
+click at 902 795 
+raw  [ 903  , 797  ]
 right click
 
 
 
-oberon$ openssl dgst -sha256 -r /var/tmp/dclarke/20250526195753
-b6a3fa574df86047ef5b21b69b20853118f962fe48f4231f38b5cd3093986c0b */var/tmp/dclarke/20250526195753
-oberon$ 
-
+mercury$ 
+mercury$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240828024638
+000000 00 00 10 00 00 00 02 00 00 00 00 00 00 00 e0 41
+000010 00 00 6f f7 9b 5e c5 bf 00 20 92 ce 54 a7 f0 3f
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 00 80 6e f9 9b 5e c5 bf 00 30 52 ce 54 a7 f0 3f
+000040 3a 0f 00 00 00 80 6d f9 9b 5e c5 bf 00 30 52 ce
+000050 54 a7 f0 3f 44 0f 00 00 00 80 6c f9 9b 5e c5 bf
+000060 00 30 52 ce 54 a7 f0 3f 0a 0f 00 00 00 80 6b f9
+000070 9b 5e c5 bf 00 30 52 ce 54 a7 f0 3f 14 0f 00 00
+000080
+mercury$ 
+mercury$ openssl dgst -sha256 -r /var/tmp/dclarke/20240828024638
+b6a3fa574df86047ef5b21b69b20853118f962fe48f4231f38b5cd3093986c0b */var/tmp/dclarke/20240828024638
+mercury$ 

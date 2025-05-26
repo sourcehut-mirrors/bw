@@ -19,7 +19,7 @@ OBJS=		mandel_col.o linear_inter.o mbrot.o \
 			../xwin/create_gc.o \
 			../xwin/create_borderless_topwin.o \
 			../time_and_date/timediff.o \
-			../sysinfo/sysinfo.o
+			../sysinfo/sysinfo.o ../sysinfo/endian.o
 
 .PHONY: all
 all: xmand

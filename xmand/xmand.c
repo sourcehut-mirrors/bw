@@ -4,8 +4,6 @@
  *
  *     WARNING : this entire mess is a big long hack thrown
  *               together while streaming on twitch
- *     WARNING : usually with beer and whiskey, so, you have
- *               been advised.
  *
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
@@ -82,20 +80,34 @@ int main(int argc, char*argv[])
 
     /* our display and window and graphics context */
     Display *dsp;
+
+    /* there are three window areas to dump stuff onto
+     * where one of them is the big plot region and
+     * the other two are little things for technical
+     * data and even some form of trivial click with
+     * mouse input region */
     Window win, win2, win3;
     GC gc, gc2, gc3;
+
     Colormap screen_colormap;
     XEvent event;
+
+    /* fonts are always a nightmare and really we need to
+     * use the termingus font. That may work as terminus
+     * but really you want the good stuff and that is called
+     * termingus :
+     *
+     * See github.com:neutaaaaan/termingus.git
+     * */
     Font type_font;
 
-    /* a very few colours */
+    /* Some X11 colours */
     XColor red, green, blue, yellow, cyan, magenta;
     XColor cornflowerblue, royal_blue, very_dark_grey;
     XColor oldlace, mandlebrot;
 
-    /* the architecture endianess */
+    /* This system architecture endianess */
     int endian_flag;
-    int end_check = 1;
 
     /* pre-loaded 8-bit color map */
     unsigned long lsd_trippy[256];
@@ -354,9 +366,8 @@ int main(int argc, char*argv[])
     /* dump out the system info. if we can */
     endian_flag = sysinfo(VERBOSE);
     if ( endian_flag == SYSINFO_FAIL ) {
-        endian_flag = (*(uint8_t*)&end_check == 1) ? 1 : 0;
         fprintf(stderr,"WARN : sysinfo() returns SYSINFO_FAIL\n");
-        fprintf(stderr,"     : endian_flag = %i\n", endian_flag );
+        return(EXIT_FAILURE);
     }
 
     /* These two calls are silly and not of much value other than
@@ -1665,8 +1676,16 @@ int main(int argc, char*argv[])
                                         /* finally we know we have a file */
                                         fprintf (stderr,"INFO : file %s dump begins.\n",timestamp_filename);
 
-                                        /* header data is done separately */
-                                        if ( endian_flag == 0 ) {
+                                        /* The elf.h header files generally
+                                         * define these two values :
+                                         *
+                                         *         #define ELFDATA2LSB     1
+                                         *         #define ELFDATA2MSB     2
+                                         *
+                                         * Where ELFDATA2MSB is for a big endian
+                                         * machine and ELFDATA2LSB is little endian.
+                                         */
+                                        if ( endian_flag == 2 ) {
                                             rotated32 = swap_four(num_elements);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1676,8 +1695,7 @@ int main(int argc, char*argv[])
                                                     sizeof(uint32_t), num_written);
                                         printf("     : num_elements = %8i\n",num_elements);
 
-                                        /* this code is endian agnostic */
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated32 = swap_four(mand_bail);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1691,7 +1709,7 @@ int main(int argc, char*argv[])
                                          * and no one should look too closely at how this
                                          * hack is done. Ha. When in doubt just move the
                                          * bytes one at a time. Right?  */
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated64 = swap_eight(*((uint64_t *)&magnify));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
@@ -1702,7 +1720,7 @@ int main(int argc, char*argv[])
                                         printf("     :        magnify = %-+32.26e\n", magnify);
 
                                         /* yet another glorious 8-byte swap around */
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated64 = swap_eight(*((uint64_t *)&real_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
@@ -1712,7 +1730,7 @@ int main(int argc, char*argv[])
                                                 sizeof(double), num_written);
                                         printf("     : real_translate = %-+32.26e\n",real_translate);
 
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated64 = swap_eight(*((uint64_t *)&imag_translate));
                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
                                         } else {
@@ -1724,7 +1742,7 @@ int main(int argc, char*argv[])
 
                                         /* append the VBOX and SAMPLE structure data */
                                         temp32bit = VBOX_REAL_COUNT;
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1735,7 +1753,7 @@ int main(int argc, char*argv[])
                                         printf("     : VBOX_REAL_COUNT = %8i\n",VBOX_REAL_COUNT);
 
                                         temp32bit = VBOX_IMAG_COUNT;
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1747,7 +1765,7 @@ int main(int argc, char*argv[])
 
 
                                         temp32bit = VBOX_SAMPLE_REAL;
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1758,7 +1776,7 @@ int main(int argc, char*argv[])
                                         printf("     : VBOX_SAMPLE_REAL = %8i\n",VBOX_SAMPLE_REAL);
 
                                         temp32bit = VBOX_SAMPLE_IMAG;
-                                        if ( endian_flag == 0 ) {
+                                        if ( endian_flag == 2 ) {
                                             rotated32 = swap_four(temp32bit);
                                             num_written = fwrite(&rotated32, sizeof(uint32_t), 1, fp);
                                         } else {
@@ -1773,7 +1791,7 @@ int main(int argc, char*argv[])
                                             for ( vbox_r = 0; vbox_r < VBOX_REAL_COUNT; vbox_r++ ) {
                                                 for ( mand_y_pix = 0; mand_y_pix < vbox_h; mand_y_pix++ ) {
                                                     for ( mand_x_pix = 0; mand_x_pix < vbox_w; mand_x_pix++ ) {
-                                                        if ( endian_flag == 0 ) {
+                                                        if ( endian_flag == 2 ) {
                                                             /* dump data from big endian machines */
                                                             rotated64 = swap_eight(*((uint64_t *)(&coord_r[array_offset(vbox_r,vbox_j,mand_x_pix,mand_y_pix)])));
                                                             num_written = fwrite(&rotated64, sizeof(uint64_t), 1, fp);
