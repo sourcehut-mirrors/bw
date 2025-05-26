@@ -4,7 +4,7 @@
  *
  *           RETURN : this code will return the value 1 ( one ) if
  *                    the machine is little endian. Otherwise we
- *                    shall return the value 0 ( zero ) for a big
+ *                    shall return the value 2 ( two ) for a big
  *                    endian machine. If there is an error then we
  *                    return SYSINFO_FAIL which has a value 127.
  *
@@ -98,6 +98,10 @@
 #define SYSINFO_FAIL 127
 #define ONEGB 1073741824
 
+/* See comments in endian.c where it just says this is a
+ * C90 clean method to determine the system endianess */
+int endian(void);
+
 int sysinfo(int verbose) {
 
     long err_flag = 0;
@@ -113,13 +117,13 @@ int sysinfo(int verbose) {
     uint64_t threads = 0;
     uint64_t clock_ticks_sec = 0;
 
+    int return_endian = 0;
+
 #if defined(__FreeBSD__)
     size_t len;
 #endif
 
     int fp_round_mode;
-    int end_check = 1;
-    int endian;
 
 #ifdef HAVE_PAGE_INFO
     errno = 0;
@@ -181,10 +185,6 @@ int sysinfo(int verbose) {
 #endif
 
     }
-
-    /* TODO : use memcpy soon. type punning is bad bad node demons 
-     * guess the architecture endianess */
-    endian = (*(uint8_t*)&end_check == 1) ? 1 : 0;
 
     setlocale( LC_MESSAGES, "C" );
     if ( uname( &uname_data ) < 0 ) {
@@ -335,13 +335,14 @@ int sysinfo(int verbose) {
 
         }
 
+        return_endian = endian();
         printf ( "                      endian = ");
-        if ( endian ) {
+        if ( return_endian == 1 ) {
             printf ( "little");
         } else {
             printf ( "big");
         }
-        printf ( " endian\n" );
+        printf ( " endian %i\n", return_endian );
 
         /* If sizeof reports back an unsigned long integer as 64bit
          * the format string for printf should be %lu. However
@@ -475,7 +476,7 @@ int sysinfo(int verbose) {
     }
     printf ("\n");
 
-    return endian;
+    return return_endian;
 
 }
 
