@@ -64,11 +64,8 @@ int sysinfo(int verbose);
 int main(int argc, char **argv)
 {
 
-    int little_endian;
-
     setlocale( LC_ALL, "C" );
-    little_endian = sysinfo( VERBOSE );
-    if ( little_endian == SYSINFO_FAIL ) {
+    if ( sysinfo( VERBOSE ) == SYSINFO_FAIL ) {
         fprintf(stderr,"FAIL : sysinfo returns SYSINFO_FAIL\n");
         return EXIT_FAILURE;
     }

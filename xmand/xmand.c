@@ -133,6 +133,8 @@ int main(int argc, char*argv[])
      * A colour scheme for the display of astronomical intensity images
      * D. A. Green 25 Aug 2011 (v1), revised 30 Aug 2011
      *
+     * See page 292 for the computation that is implemented here.
+     *
      * I describe a colour scheme that is appropriate for the screen
      * display of intensity images. This -- unlike many currently
      * available schemes -- is designed to be monotonically increasing
@@ -578,7 +580,7 @@ int main(int argc, char*argv[])
 
     /* TODO perhaps use the terms real and imaginary for the
      * data axi and not just x and y. However x and y are nice
-     * and short */
+     * and short. As of 2025 this will never get done. */
     obs_real = default_real / magnify;
     obs_imag = default_imag / magnify;
 
@@ -1914,7 +1916,7 @@ int main(int argc, char*argv[])
         } else if ( button == Button2 ) {
 
 replot:
-            /* determine if we are inside the primary window plotting region */
+            /* are we inside the primary window plot region ? */
             if (    ( mouse_x >=  offset_x ) && ( mouse_y >= offset_y )
                  && ( mouse_x < ( eff_width + offset_x ) )
                  && ( mouse_y < ( eff_height + offset_y ) ) ) {
@@ -2073,7 +2075,7 @@ replot:
 
                                         /* the actual computation for (x_prime, y_prime) 
                                          * with Fused Multiply Add opcodes in the current
-                                         * architecture. Here we fukin need POWER10 baby! */
+                                         * architecture. POWER10 or POWER9 are great at this */
                                         mand_height = mbrot_fma(x_prime, y_prime, mand_bail);
 
                                         /* save that into the mandel_val array */
@@ -2087,7 +2089,7 @@ replot:
 
                                     if ( astro_flag == 1 ) {
 
-                                        /* see https://arxiv.org/abs/1108.5083 */
+                                        /* see page 292 of https://arxiv.org/abs/1108.5083 */
 
                                         if ( invert_colour == 0 ) {
                                             t_param = pow( (double)mand_height/(double)mand_bail,

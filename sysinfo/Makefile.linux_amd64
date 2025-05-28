@@ -9,9 +9,9 @@ CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LIBS = -lm
 
-SRCS = report.c sysinfo.c
+SRCS = report.c sysinfo.c endian.c
 
-OBJS = report.o sysinfo.o
+OBJS = report.o sysinfo.o endian.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
