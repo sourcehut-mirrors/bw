@@ -21,18 +21,11 @@
  * NOTE: what follows is just a strange test set. No idea yet.
  * This test is very strange as there are wildly different computation
  * times from the same hardware : 
- *  32768 268435456 0.399750960350502282381 0.205251797480741515756 
+ */
 #define BAIL_OUT 16777216
 #define MAGNIFY 8589934592
 #define REAL_COORD -1.99998588122252840549
 #define IMAG_COORD -0.0000000000236468622460961341858
-
- */
-
-#define BAIL_OUT 262144
-#define MAGNIFY 8796093022208
-#define REAL_COORD -0.717535637107084123265
-#define IMAG_COORD -0.284673221274577503692
 
 /* TODO read in the established data files */
 #define VBOX_REAL_COUNT 16
