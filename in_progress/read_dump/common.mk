@@ -14,7 +14,8 @@ OBJS=		./read_mbrot_data.o ./file_pointer.o \
 		../data_dump/rot4.o \
 		../data_dump/rot8.o \
 		../../sysinfo/sysinfo.o \
-		../../stat_test/file_stat_err.o
+			../../stat_test/file_stat_err.o \
+			../../sysinfo/endian.o
 
 .PHONY: all
 all: xmand_read

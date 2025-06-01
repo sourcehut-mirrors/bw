@@ -11,7 +11,7 @@ IDIR?=		/usr/local/include
 
 OBJS=		enqueue.o dequeue.o \
 			q_create.o q_destroy.o do_work.o fib.o \
-			../sysinfo/sysinfo.o
+			../sysinfo/sysinfo.o ../sysinfo/endian.o
 
 .PHONY: all
 all: q_work
