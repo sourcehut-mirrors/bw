@@ -1,5 +1,5 @@
 
-CFLAGS= -std=iso9899:1999 -O3 \
+CFLAGS= -std=iso9899:2017 -O3 \
 	-march=armv8.2-a -mtune=cortex-a76 -mabi=lp64
 
 include common.mk
