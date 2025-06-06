@@ -1999,8 +1999,14 @@ replot:
                          * and here we may set the conditional to a trivial
                          * "if ( 1 )" which will force us to grind the gears
                          * by entirely ignoring the vbox_flag array.
+                         *
                          * The conditional should be
-                         *       ( vbox_flag[vbox_r][vbox_j] == 0 ) */
+                         *       ( vbox_flag[vbox_r][vbox_j] == 0 )
+                         *
+                         * There we check of vbox_flag[][] has been set. If
+                         * it is a 1 then the data is done. No need to compute
+                         * anything.
+                         */
                         if ( vbox_flag[vbox_r][vbox_j] == 0 ) {
 
                             /* get a start time value */
@@ -2132,7 +2138,6 @@ replot:
                                         XSetForeground(dsp, gc, mandlebrot.pixel);
 
                                     } else {
-
                                         if ( mand_height == mand_bail ) {
                                             XSetForeground(dsp, gc, (unsigned long)0 );
                                         } else {

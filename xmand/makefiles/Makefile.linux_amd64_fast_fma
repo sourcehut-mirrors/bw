@@ -1,4 +1,6 @@
 
-CFLAGS= -std=iso9899:1999 -m64 -O3 -ffast-math -ffp-contract=on -mfma
+CFLAGS= -std=iso9899:1999 -m64 -O3 \
+	-ffast-math -ffp-contract=on -mfma \
+	-mno-avx -mno-avx2 -mno-sse4.1
 
 include common.mk
