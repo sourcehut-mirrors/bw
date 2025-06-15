@@ -2,7 +2,7 @@
 CC=/usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
-	-m64 -g -O0 \
+	-g -O0 \
 	-fno-fast-math -fno-builtin -fno-unsafe-math-optimizations
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
@@ -18,7 +18,7 @@ OBJS = src/main.o  src/player.o  src/util.o  src/wav.o
 
 .SUFFIXES: .c .o
 .c.o:
-	$(CC) -o ${.TARGET} -c ${.IMPSRC} $(CFLAGS) -I./include -I$(IDIR) $(CPPFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS) -I./include -I$(IDIR) $(CPPFLAGS)
 
 XOpenPlayer: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)

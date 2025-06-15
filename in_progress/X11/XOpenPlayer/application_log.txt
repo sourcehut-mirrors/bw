@@ -94,3 +94,48 @@
 [19:04:19] Event: Font unloaded
 [19:04:19] Event: Graphics context freed
 [19:04:19] Event: Cleaning up resources.
+[19:18:57] Event: X11 display opened
+[19:18:57] Event: X11 Window created
+[19:18:57] Event: Player initialized
+[19:18:57] Event: Player initialized.
+[19:18:57] Event: Tracks loaded.
+[19:18:57] Event: Window resized to 800x600.
+[19:18:57] Event: ConfigureNotify (resize) event
+[19:18:57] Event: Window resized to 800x600.
+[19:18:57] Event: ConfigureNotify (resize) event
+[19:18:57] Event: Window resized to 800x600.
+[19:18:57] Event: ConfigureNotify (resize) event
+[19:18:57] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:18:59] Event: Expose event
+[19:19:01] Event: Window resized to 800x600.
+[19:19:01] Event: ConfigureNotify (resize) event
+[19:19:08] Event: Playback started.
+[19:19:08] Event: ButtonPress event
+[19:19:09] Event: Playback paused.
+[19:19:09] Event: ButtonPress event
+[19:19:10] Event: Playback stopped.
+[19:19:10] Event: ButtonPress event
+[19:19:12] Event: ClientMessage received: Closing window
+[19:19:12] Event: Font unloaded
+[19:19:12] Event: Graphics context freed
+[19:19:12] Event: Cleaning up resources.
