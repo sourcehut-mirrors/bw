@@ -74,3 +74,23 @@
 [18:55:41] Event: Font unloaded
 [18:55:41] Event: Graphics context freed
 [18:55:41] Event: Cleaning up resources.
+[19:04:08] Event: X11 display opened
+[19:04:08] Event: X11 Window created
+[19:04:08] Event: Player initialized
+[19:04:08] Event: Player initialized.
+[19:04:08] Event: Tracks loaded.
+[19:04:08] Event: Window resized to 800x600.
+[19:04:08] Event: ConfigureNotify (resize) event
+[19:04:08] Event: Window resized to 800x600.
+[19:04:08] Event: ConfigureNotify (resize) event
+[19:04:08] Event: Window resized to 800x600.
+[19:04:08] Event: ConfigureNotify (resize) event
+[19:04:08] Event: Expose event
+[19:04:11] Event: Window resized to 800x600.
+[19:04:11] Event: ConfigureNotify (resize) event
+[19:04:18] Event: Playback stopped.
+[19:04:18] Event: ButtonPress event
+[19:04:19] Event: ClientMessage received: Closing window
+[19:04:19] Event: Font unloaded
+[19:04:19] Event: Graphics context freed
+[19:04:19] Event: Cleaning up resources.
