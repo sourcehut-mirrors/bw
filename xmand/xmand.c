@@ -224,10 +224,11 @@ int main(int argc, char*argv[])
     uint32_t num_elements =  VBOX_SAMPLE_REAL * VBOX_SAMPLE_IMAG
                            * VBOX_REAL_COUNT  * VBOX_IMAG_COUNT;
 
+    uint32_t *mandel_val;
     /* ensure we start with clear vbox flags */
     memset(&vbox_flag, 0x00, (size_t)(VBOX_REAL_COUNT*VBOX_IMAG_COUNT)*sizeof(int));
 
-    uint32_t *mandel_val = calloc((size_t)num_elements, sizeof(uint32_t));
+    mandel_val = calloc((size_t)num_elements, sizeof(uint32_t));
     if ( mandel_val == NULL ) {
         /* really? possible ENOMEM? */
         if ( errno == ENOMEM ) {

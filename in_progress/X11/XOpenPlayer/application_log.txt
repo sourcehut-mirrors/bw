@@ -1,0 +1,76 @@
+[18:53:42] Event: X11 display opened
+[18:53:42] Event: X11 Window created
+[18:53:42] Event: Player initialized
+[18:53:42] Event: Player initialized.
+[18:53:42] Event: Tracks loaded.
+[18:53:42] Event: Window resized to 800x600.
+[18:53:42] Event: ConfigureNotify (resize) event
+[18:53:42] Event: Window resized to 800x600.
+[18:53:42] Event: ConfigureNotify (resize) event
+[18:53:42] Event: Window resized to 800x600.
+[18:53:42] Event: ConfigureNotify (resize) event
+[18:53:42] Event: Expose event
+[18:53:47] Event: Window resized to 800x600.
+[18:53:47] Event: ConfigureNotify (resize) event
+[18:53:55] Event: Playback started.
+[18:53:55] Event: ButtonPress event
+[18:53:59] Event: Playback paused.
+[18:53:59] Event: ButtonPress event
+[18:54:01] Event: Playback stopped.
+[18:54:01] Event: ButtonPress event
+[18:54:10] Event: ClientMessage received: Closing window
+[18:54:10] Event: Font unloaded
+[18:54:10] Event: Graphics context freed
+[18:54:10] Event: Cleaning up resources.
+[18:54:50] Event: X11 display opened
+[18:54:50] Event: X11 Window created
+[18:54:50] Event: Player initialized
+[18:54:50] Event: Player initialized.
+[18:54:50] Event: Tracks loaded.
+[18:54:50] Event: Window resized to 800x600.
+[18:54:50] Event: ConfigureNotify (resize) event
+[18:54:50] Event: Window resized to 800x600.
+[18:54:50] Event: ConfigureNotify (resize) event
+[18:54:50] Event: Window resized to 800x600.
+[18:54:50] Event: ConfigureNotify (resize) event
+[18:54:50] Event: Expose event
+[18:54:54] Event: Window resized to 800x600.
+[18:54:54] Event: ConfigureNotify (resize) event
+[18:54:56] Event: ButtonPress event
+[18:54:57] Event: ButtonPress event
+[18:55:04] Event: ButtonPress event
+[18:55:05] Event: ButtonPress event
+[18:55:05] Event: ButtonPress event
+[18:55:06] Event: ButtonPress event
+[18:55:06] Event: ButtonPress event
+[18:55:07] Event: ButtonPress event
+[18:55:07] Event: ButtonPress event
+[18:55:07] Event: ButtonPress event
+[18:55:08] Event: ButtonPress event
+[18:55:08] Event: ButtonPress event
+[18:55:08] Event: ButtonPress event
+[18:55:10] Event: ButtonPress event
+[18:55:11] Event: ButtonPress event
+[18:55:16] Event: ButtonPress event
+[18:55:16] Event: ButtonPress event
+[18:55:16] Event: ButtonPress event
+[18:55:17] Event: ButtonPress event
+[18:55:17] Event: ButtonPress event
+[18:55:17] Event: ButtonPress event
+[18:55:18] Event: ButtonPress event
+[18:55:18] Event: ButtonPress event
+[18:55:23] Event: Playback stopped.
+[18:55:23] Event: ButtonPress event
+[18:55:26] Event: Playback started.
+[18:55:26] Event: ButtonPress event
+[18:55:31] Event: ButtonPress event
+[18:55:32] Event: ButtonPress event
+[18:55:33] Event: KeyPress event
+[18:55:34] Event: KeyPress event
+[18:55:35] Event: ButtonPress event
+[18:55:37] Event: KeyPress event
+[18:55:37] Event: KeyPress event
+[18:55:41] Event: ClientMessage received: Closing window
+[18:55:41] Event: Font unloaded
+[18:55:41] Event: Graphics context freed
+[18:55:41] Event: Cleaning up resources.

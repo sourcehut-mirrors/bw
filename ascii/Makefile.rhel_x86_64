@@ -16,8 +16,8 @@ LIBS= -lm
 LDIR=/usr/local/lib
 IDIR=/usr/local/include
 
-SRCS = argv_dump.c bin_printf.c ../sysinfo/sysinfo.c ../sysinfo/sysmem.c
-OBJS = argv_dump.o bin_printf.o ../sysinfo/sysinfo.o ../sysinfo/sysmem.o
+SRCS = argv_dump.c bin_printf.c ../sysinfo/sysinfo.c
+OBJS = argv_dump.o bin_printf.o ../sysinfo/sysinfo.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
