@@ -1,33 +1,34 @@
-hydra$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
+callisto$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
 -------------------------------------------------------------------
                  system name = FreeBSD
-                   node name = hydra
-                     release = 14.0-RELEASE-p6
-                     version = FreeBSD 14.0-RELEASE-p6 #0: Tue Mar 26 20:26:20 UTC 2024     root@amd64-builder.daemonology.net:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                   node name = callisto
+                     release = 15.0-CURRENT
+                     version = FreeBSD 15.0-CURRENT #1 main-n278022-6039cd1b45eb: Wed Jun 18 03:22:36 GMT 2025     root@callisto:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
                      machine = amd64
                    page size = 4096
-               system memory = 14693355520
-                             = 14348980 kB
-                             = 14012 MB
+               system memory = 4237295616
+                             = 4137984 kB
+                             = 4041 MB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 128
              threads support = 200112
-               POSIX Version = 200112
+               POSIX Version = 200809
           _POSIX_CHILD_MAX   = 25
           _POSIX_NGROUPS_MAX = 8
           _POSIX_OPEN_MAX    = 20
           _POSIX_PATH_MAX    = 256
           _POSIX_TZNAME_MAX  = 6
-                      endian = little endian
+                      endian = little endian 1
        sizeof(unsigned long) = 8
                 sizeof(long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
-           system uptime    4 days    5 hours   50 mins   33 secs
+INFO : __ISO_C_VISIBLE id defined
+           system uptime    5 days    3 hours   33 mins   45 secs
 -------------------------------------------------------------------
-INFO : baseline tdelta =            168 nsec
+INFO : baseline tdelta =            170 nsec
 INFO : magnify accepted as long long int
 
     mand_bail = 256
@@ -47,25 +48,19 @@ pthread_limit = 2
 --------------------------------------------
 pixel_real_w = +3.05175781250000000000000000e-05
 pixel_imag_h = +3.05175781250000000000000000e-05
-raw  [ 1410 , 863  ]
-click at 1409 861 
-raw  [ 1410 , 863  ]
-click at 1409 861 
-raw  [ 1410 , 863  ]
-click at 1409 861 
-raw  [ 523  , 524  ]
-DBUG : sample space [ 512   , 512    ]
-     : vbox  [ 008 , 008 ]
-     : win_r = +9.76562500000000000000000000e-04
-     : win_j = +9.76562500000000000000000000e-04
+raw  [ 428  , 665  ]
+DBUG : sample space [ 417   , 371    ]
+     : vbox  [ 006 , 005 ]
+     : win_r = -1.84570312500000000000000000e-01
+     : win_j = -2.74414062500000000000000000e-01
      : after translation
      : r_trn   = -1.22589111328125000000000000e+00
      : j_trn   = -1.77673339843750000000000000e-01
-     : x_prime = -1.22587585449218750000000000e+00
-     : y_prime = -1.77658081054687500000000000e-01
+     : x_prime = -1.22877502441406250000000000e+00
+     : y_prime = -1.81961059570312500000000000e-01
      : bailout = 256               
      : magnify = 1.280000000000e+02
-[mand] =    13306662706 nsec   1.330666e+01 sec
+[mand] =    19291927092 nsec   19.291927    sec
 
 
 raw data values -------------------------------------------------------
@@ -91,12 +86,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -1.62063598632812500000000000e-01
      :       mand_height =       256
 --------------------------- full plot done -----------------------------
-click at 522 522 
-raw  [ 1407 , 890  ]
+click at 427 663 
+raw  [ 1387 , 891  ]
 INFO : dumper_flag = 1
-click at 1406 888 
-raw  [ 1407 , 890  ]
-INFO : file /var/tmp/dclarke/20240408104320 dump begins.
+click at 1386 889 
+raw  [ 1387 , 891  ]
+INFO : file /var/tmp/dclarke/20250623171113 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -115,28 +110,21 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20240408104320 closed.
+INFO : file /var/tmp/dclarke/20250623171113 closed.
 INFO : dumper_flag = 0
-click at 1406 888 
-raw  [ 999  , 860  ]
+click at 1386 889 
+raw  [ 863  , 814  ]
 right click
-click at 998 858 
-raw  [ 999  , 860  ]
+click at 862 812 
+raw  [ 863  , 814  ]
+right click
+click at 862 812 
+raw  [ 863  , 814  ]
 right click
 
 
 
-hydra$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240408104320
-0000000    00  00  10  00  00  01  00  00  00  00  00  00  00  00  60  40
-0000010    00  00  00  00  40  9d  f3  bf  00  00  00  00  00  be  c6  bf
-0000020    10  00  00  00  10  00  00  00  40  00  00  00  40  00  00  00
-0000030    00  00  00  00  30  dd  f3  bf  00  00  00  00  80  bd  c8  bf
-0000040    0d  00  00  00  00  00  00  00  10  dd  f3  bf  00  00  00  00
-0000050    80  bd  c8  bf  0d  00  00  00  00  00  00  00  f0  dc  f3  bf
-0000060    00  00  00  00  80  bd  c8  bf  0d  00  00  00  00  00  00  00
-0000070    d0  dc  f3  bf  00  00  00  00  80  bd  c8  bf  0d  00  00  00
-0000080
-hydra$ 
-hydra$ openssl dgst -sha256 -r /var/tmp/dclarke/20240408104320
-a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20240408104320
-hydra$ 
+callisto$ openssl dgst -sha256 -r /var/tmp/dclarke/20250623171113
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20250623171113
+callisto$ 
+

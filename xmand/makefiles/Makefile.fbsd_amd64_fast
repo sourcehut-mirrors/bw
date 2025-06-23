@@ -1,3 +1,4 @@
-CFLAGS= -std=iso9899:1999 -O3
+
+CFLAGS= -std=iso9899:1999 -O3 -fno-color-diagnostics
 
 include common.mk

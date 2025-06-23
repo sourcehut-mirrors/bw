@@ -1,6 +1,7 @@
 
 CFLAGS= -std=iso9899:2011 -m32 -O3 -ffast-math \
 	-ffp-contract=on -march=native \
+	-fno-color-diagnostics \
 	-Wno-reserved-id-macro -Wno-missing-prototypes \
 	-Wno-reserved-identifier
 

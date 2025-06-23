@@ -2,11 +2,8 @@
 /*
  * xmand.c draw the mandelbrot set with libX11 calls and POSIX threads
  *
- *     WARNING : this entire mess is a big long hack thrown
- *               together while streaming on twitch
  *
- * ------------------------------------------------------------------
- * Copyright (c) 2019 Dennis Clarke
+ * Copyright Dennis M. Clarke 2019
  *
  *    Permission is hereby granted, free of charge, to any person
  *    obtaining a copy of this software and associated documentation
@@ -42,7 +39,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -63,13 +62,19 @@
 /* for a good read about fused multiply add operations please
  * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37845
  * Also https://reviews.llvm.org/D72675 */
+#if _XOPEN_SOURCE - 0 >= 600
+#define __XSI_VISIBLE           600
+#define __STDC_FORMAT_MACROS
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE         200112
+
 #include <fenv.h>
+
 #ifndef __FAST_MATH__
 #pragma STDC FENV_ACCESS ON
 #endif
 #pragma STDC FP_CONTRACT ON
-
-#define __STDC_FORMAT_MACROS
+#endif
 
 #include "mandelbrot.h"
 
@@ -108,6 +113,9 @@ int main(int argc, char*argv[])
 
     /* This system architecture endianess */
     int endian_flag;
+
+    /* general purpose error status return value */
+    int err_status = 0;
 
     /* pre-loaded 8-bit color map */
     unsigned long lsd_trippy[256];
@@ -179,7 +187,7 @@ int main(int argc, char*argv[])
     /* we may need to dump out a file */
     FILE *fp;
     size_t filename_len;
-    char *err_status;
+    char *err_status_char_ptr;
     int data_ready;
     size_t num_written;
     struct stat status_buffer;
@@ -285,7 +293,7 @@ int main(int argc, char*argv[])
     roll_dn = 0;
 
     int candidate_int = 0;
-    long long unsigned int candidate_magnify = 0;
+    uint64_t candidate_magnify = 0;
 
     /* the janky slider for magnify shall be a trivial
      * position that gets mapped to a binary logarithmic
@@ -337,21 +345,20 @@ int main(int argc, char*argv[])
 
     char *disp_name = NULL;
 
-    /* I am not checking the status of the setlocale call here
-     * because it had better be impossible to fail for a "C"
-     * or POSIX locale :
-     *
-     * RETURN VALUES
-     *     Upon successful completion, setlocale() returns the string
-     *     associated with the specified category for the requested
-     *     locale.  The setlocale() function returns NULL and fails
-     *     to change the locale if the given combination of category
-     *     and locale makes no sense.
-     */
-    setlocale(LC_ALL, "C");
+    err_status_char_ptr = setlocale(LC_ALL, "POSIX");
+    if ( err_status_char_ptr == NULL ) {
+        /* Upon successful completion, setlocale() returns the string
+         * associated with the specified category for the requested
+         * locale.  The setlocale() function returns NULL and fails
+         * to change the locale if the given combination of category
+         * and locale makes no sense.
+         */
+        fprintf (stderr,"FAIL : can not set locale \"POSIX\"\n");
+        return EXIT_FAILURE;
+    }
 
-    int status = setenv("TZ", "GMT0", 1);
-    if ( status < 0 ) {
+    err_status = setenv("TZ", "GMT0", 1);
+    if ( err_status < 0 ) {
         fprintf (stderr,"FAIL : can not set timezone TZ = GMT0\n");
         return EXIT_FAILURE;
     }
@@ -414,7 +421,8 @@ int main(int argc, char*argv[])
         }
 
         errno = 0;
-        if ( sscanf( argv[2], "%lld", &candidate_magnify ) == 0 ) {
+        err_status = sscanf(argv[2],"%" SCNu64, &candidate_magnify);
+        if ( err_status == 0 ) {
             fprintf(stderr,"INFO : magnify not understood as long long int\n");
             if ( errno != 0 ) perror("dBUG ");
 
@@ -1652,21 +1660,19 @@ int main(int argc, char*argv[])
                                                 __FILE__, __LINE__ );
                                     }
                                     perror("FAIL ");
-                                    /* NOTE : basty bail out
-                                     *        but why bother ?
-                                     *        Even Sartre would say fuk it. */
+                                    /* NOTE : nasty bail out */
                                     return EXIT_FAILURE;
                                 }
 
                                 filename_len = strftime(timestamp, 32, "%Y%m%d%H%M%S", ptm);
 
                                 /* at the moment we are not even using the error status return */
-                                err_status = strcat(timestamp_filename, tmpdir);
-                                err_status = strcat(timestamp_filename, "/");
-                                err_status = strcat(timestamp_filename, timestamp);
+                                err_status_char_ptr = strcat(timestamp_filename, tmpdir);
+                                err_status_char_ptr = strcat(timestamp_filename, "/");
+                                err_status_char_ptr = strcat(timestamp_filename, timestamp);
 
-                                status = stat(timestamp_filename, &status_buffer);
-                                if ( status == 0 ) {
+                                err_status = stat(timestamp_filename, &status_buffer);
+                                if ( err_status == 0 ) {
                                     fprintf (stderr,"FAIL : file %s can not be created.\n",timestamp_filename);
                                     dumper_flag = -1;
                                 } else {
