@@ -1,5 +1,7 @@
+
 CC?=		/usr/bin/cc
-CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+		-D_FILE_OFFSET_BITS=64
 
 LIBS?=		-lX11 -lm
 
@@ -9,7 +11,8 @@ IDIR?=		/usr/local/include
 OBJS=		../../../xwin/x_error_handler.o \
 		../../../xwin/create_gc.o \
 		../../../xwin/create_borderless_topwin.o \
-		../../../sysinfo/sysinfo.o
+		../../../sysinfo/sysinfo.o \
+		../../../sysinfo/endian.o
 
 .PHONY: all
 all: cursor
@@ -23,3 +26,4 @@ cursor: cursor.o $(OBJS)
 .PHONY: clean
 clean:
 	rm -f $(OBJS) cursor.o cursor
+
