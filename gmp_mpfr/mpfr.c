@@ -82,11 +82,12 @@
 #include <gmp.h>
 #include <mpfr.h>
 
+#include "tdiff.h"
+
 #define VERBOSE 1
 #define MPFR_VERSION_ERROR 999
 
 int sysinfo(int verbose);
-uint64_t timediff( struct timespec st, struct timespec en );
 int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
 int main(int argc, char **argv)
@@ -96,21 +97,27 @@ int main(int argc, char **argv)
     int j, inex, status, mpfr_flags, mpfr_prec_size;
     long candidate_input;
 
-    /* seems we may need to compute the precision in decimal
-     * digits for the binary pile we have. Thus we will need
-     * the ratio log(2)/log(10) .
+    struct timespec tn_begin, t0, t1;
+    tdiff_type delta_time;
+    double total_time = 0.0;
+
+
+    /********************** not needed *******************************
+     * Seems we may need to compute the precision in decimal
+     * digits for the binary data. Thus we will need the
+     * ratio log(2)/log(10) .
      *
      * double bits_per = 0.30102999566398119521373889472449;
      *
-     *                      Not needed. 
-     *
+     *****************************************************************
      * The MPFR library provides the call : 
      *
-     * size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)
+     *     size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)
      *
-     * Return the minimal integer m such that any number of p bits, when
-     * output with m digits in radix b with rounding to nearest, can be
-     * recovered exactly when read again, still with rounding to nearest.
+     *     Return the minimal integer m such that any number of
+     *     p bits, when output with m digits in radix b with
+     *     rounding to nearest, can be recovered exactly when
+     *     read again, still with rounding to nearest.
      */
     size_t decimal_prec;
     char format_buf[64] = "";
@@ -139,9 +146,6 @@ int main(int argc, char **argv)
 
     mpfr_t gruenberger_0, gruenberger_1;
     mpfr_t ten_million, one_ten_millionth;
-
-    struct timespec t0, t1;
-    uint64_t delta_t;
 
     setlocale( LC_ALL, "C" );
     sysinfo(VERBOSE);
@@ -212,17 +216,38 @@ int main(int argc, char **argv)
 
     printf("------------------------------------------------------\n");
 
+    /*
     mpfr_inits2( prec, pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
                  atan_pi4_mpfr, third_mpfr, half_mpfr,
                  atan_half_mpfr, atan_third_mpfr, delta_mpfr,
                  sum_mpfr, gruenberger_0, gruenberger_1,
                  ten_million, one_ten_millionth, (mpfr_ptr*)0 );
+    */
 
+    mpfr_init2 (one_mpfr, prec);
+
+    /* NOTE : what exactly does mpfr_set_flt() return as an integer ? */
     inex = mpfr_set_flt(one_mpfr, 1.0, MPFR_RNDN);
     if ( inex ) fprintf(stderr,"WARN : mpfr_set_flt() returns %i\n", inex);
 
+    /*****************************************************************
+     * We seem to not even care anymore about what these
+     * calls return ... good luck ... blind faith and who
+     * really knows?  Ask Vincent. He knows.
+     *
+     * Minor update : see section 4.4 
+     *              : https://www.mpfr.org/mpfr-current/mpfr.html
+     *
+     *****************************************************************/
+    mpfr_init2(half_mpfr, prec);
     inex = mpfr_div_si(half_mpfr, one_mpfr, 2, MPFR_RNDN);
+    if ( inex ) fprintf(stderr,"WARN : mpfr_div_si() returns %i\n", inex);
+
+    mpfr_init2(third_mpfr, prec);
     inex = mpfr_div_si(third_mpfr, one_mpfr, 3, MPFR_RNDN);
+    if ( inex ) fprintf(stderr,"WARN : mpfr_div_si() returns %i\n", inex);
+
+    /* NOTE : some CLOCK types do not exist ? good luck with the specs */
 
     /* Get the CLOCK_REALTIME time in a timespec struct */
     if ( clock_gettime(CLOCK_REALTIME, &t0 ) == -1 ) {
@@ -235,7 +260,10 @@ int main(int argc, char **argv)
      * again. However it is a waste of time. */
 
     /* compute atan(1) */
+    mpfr_init2(atan_pi4_mpfr, prec);
     inex = mpfr_atan(atan_pi4_mpfr, one_mpfr, MPFR_RNDN);
+    if ( inex ) fprintf(stderr,"WARN : mpfr_atan() returns %i\n", inex);
+
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
 
@@ -249,6 +277,7 @@ int main(int argc, char **argv)
 #endif
 
     /* compute atan(1/2) */
+    mpfr_init2(atan_half_mpfr, prec);
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_atan(atan_half_mpfr, half_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
@@ -264,6 +293,7 @@ int main(int argc, char **argv)
 #endif
 
     /* compute atan(1/3) */
+    mpfr_init2(atan_third_mpfr, prec);
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_atan(atan_third_mpfr, third_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
@@ -279,6 +309,7 @@ int main(int argc, char **argv)
 #endif
 
     /* sum atan(1/2) + atan(1/3) */
+    mpfr_init2(sum_mpfr, prec);
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_add(sum_mpfr, atan_half_mpfr, atan_third_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
@@ -293,6 +324,7 @@ int main(int argc, char **argv)
 #endif
 
     /* check delta on atan(1) and ( atan(1/2) + atan(1/3) ) */
+    mpfr_init2(delta_mpfr, prec);
     inex = mpfr_sub(delta_mpfr, sum_mpfr, atan_pi4_mpfr, MPFR_RNDN);
     if ( mpfr_zero_p(delta_mpfr) != 0 ) {
         printf("delta( atan(1) - atan(1/2) - atan(1/3) ) = 0 exactly.");
@@ -303,11 +335,12 @@ int main(int argc, char **argv)
     printf("\n\n");
 
     /* compute pi */
+    mpfr_init2(pi_mpfr, prec);
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_const_pi(pi_mpfr, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
-    printf ("pi may be ");
+    printf ("mpfr_const_pi() claims pi may be ");
     mpfr_printf(format_buf, MPFR_RNDN, pi_mpfr );
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
@@ -317,7 +350,9 @@ int main(int argc, char **argv)
 #endif
 
     /* Eulers Number e */
+    mpfr_init2(e_mpfr, prec);
     clock_gettime(CLOCK_REALTIME, &t0);
+    /* compute e^1 */
     inex = mpfr_exp(e_mpfr, one_mpfr, MPFR_RNDN);
     clock_gettime( CLOCK_REALTIME, &t1);
     delta_t = timediff(t0, t1);
@@ -331,6 +366,7 @@ int main(int argc, char **argv)
 #endif
 
     /* multiply atan(1) * 4 */
+    mpfr_init2(atan_pi_mpfr, prec);
     clock_gettime(CLOCK_REALTIME, &t0);
     inex = mpfr_mul_si(atan_pi_mpfr, atan_pi4_mpfr, 4, MPFR_RNDN);
     clock_gettime(CLOCK_REALTIME, &t1);
@@ -354,10 +390,8 @@ int main(int argc, char **argv)
      *
      * Function: int mpfr_regular_p (mpfr_t op)
      *
-     *    Return non-zero if op is respectively NaN, an infinity, an
-     *    ordinary number (i.e., neither NaN nor an infinity), zero,
-     *    or a regular number (i.e., neither NaN, nor an infinity
-     *    nor zero). Return zero otherwise. 
+     *    Return non-zero if op zero.
+     *    Return zero otherwise. 
      */
 
     if ( mpfr_zero_p(delta_mpfr) != 0 ) {
