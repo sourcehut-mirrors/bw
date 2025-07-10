@@ -19,9 +19,17 @@ $CC $CFLAGS $CPPFLAGS -I ../time_and_date    -c -o tdiff.o ../time_and_date/tdif
 
 $CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -I ../time_and_date -c -o fgruenberger.o fgruenberger.c 
 
-
-
-oberon$ 
 oberon$ $CC $CFLAGS $CPPFLAGS -L/opt/genunix/lib -o fgruenberger fgruenberger.o sysinfo.o endian.o tdiff.o -lgmp -lm
 oberon$ 
+
+
+the old mpfr.c test code can be handled with a decent RPATH : 
+
+$CC $CFLAGS $CPPFLAGS -I../time_and_date -I/opt/bw/include -c -o mpfr.o mpfr.c
+$CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
+$CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c 
+$CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c 
+$CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
+$CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o mpfr \
+mpfr.o sysinfo.o tdiff.o gmp_mpfr_ver.o endian.o -lgmp -lmpfr
 

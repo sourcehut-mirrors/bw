@@ -60,11 +60,10 @@ int endian( void )
     size_t len_int = sizeof(int);
     int j = 1;
     int endian_flag;
-    void *some_ptr;
     void *int_ptr = (void *)&j;
     void *dst_ptr = (void *)&eight_byte;
 
-    some_ptr = memcpy(dst_ptr, int_ptr, len_int);
+    memcpy(dst_ptr, int_ptr, len_int);
 
     /* If a byte value of 1 lands in eight_byte[0]
      * then we know the machine is little endian

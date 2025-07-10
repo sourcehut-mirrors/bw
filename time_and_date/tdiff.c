@@ -258,8 +258,7 @@ int tdiff( tdiff_type *dt,
      */
 
     struct timespec temp;
-    long seconds, nanosecs;
-    double fp64;
+    double fp64 = 0.0;
 
     if ( start_time.tv_sec > end_time.tv_sec ) {
 
