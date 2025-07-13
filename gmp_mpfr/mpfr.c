@@ -242,6 +242,7 @@ int main(int argc, char **argv)
     decimal_prec = mpfr_get_str_ndigits(10, prec);
     printf("INFO : using %li bits of precision ", (long)prec );
     printf("and %li decimal digits.\n", decimal_prec);
+    printf("     : useful info 3.32192809488736234789 bits per\n");
 
     /* Create MPFR format buffer string with the correct number
      * of decimal digits. NOTE there is not a newline char.
@@ -256,15 +257,15 @@ int main(int argc, char **argv)
 
     mpfr_init2(one_mpfr, prec);
     inex = mpfr_set_flt(one_mpfr, 1.0, MPFR_RNDN);
-    if ( inex ) fprintf(stderr,"WARN : mpfr_set_flt() returns %i\n", inex);
+    if ( inex ) fprintf(stderr,"WARN : mpfr_set_flt( 1.0 ) returns %i\n", inex);
 
     mpfr_init2(half_mpfr, prec);
     inex = mpfr_div_si(half_mpfr, one_mpfr, 2, MPFR_RNDN);
-    if ( inex ) fprintf(stderr,"\n\nWARN : mpfr_div_si() returns %i\n\n", inex);
+    if ( inex ) fprintf(stderr,"\n\nWARN : mpfr_div_si( 1/2 ) returns %i\n\n", inex);
 
     mpfr_init2(third_mpfr, prec);
     inex = mpfr_div_si(third_mpfr, one_mpfr, 3, MPFR_RNDN);
-    if ( inex ) fprintf(stderr,"\n\nWARN : mpfr_div_si() returns %i\n\n", inex);
+    if ( inex ) fprintf(stderr,"\n\nWARN : mpfr_div_si( 1/3 ) returns %i\n\n", inex);
 
     if ( clock_gettime(clock_flag, &t0 ) == -1 ) {
         /* We tested this situation above. Very unlikely that
@@ -276,7 +277,7 @@ int main(int argc, char **argv)
     /* compute atan(1) */
     mpfr_init2(atan_pi4_mpfr, prec);
     inex = mpfr_atan(atan_pi4_mpfr, one_mpfr, MPFR_RNDN);
-    if ( inex ) fprintf(stderr,"WARN : mpfr_atan() returns %i\n\n", inex);
+    if ( inex ) fprintf(stderr,"WARN : mpfr_atan(1) returns %i\n\n", inex);
 
     err_clock = clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
@@ -343,6 +344,7 @@ int main(int argc, char **argv)
     /* check delta on atan(1) and ( atan(1/2) + atan(1/3) ) */
     mpfr_init2(delta_mpfr, prec);
     inex = mpfr_sub(delta_mpfr, sum_mpfr, atan_pi4_mpfr, MPFR_RNDN);
+    if ( inex ) printf("\nINFO : mpfr_sub() returns %i\n", inex);
     if ( mpfr_zero_p(delta_mpfr) != 0 ) {
         printf("delta( atan(1) - atan(1/2) - atan(1/3) ) = 0 exactly.");
     } else {
@@ -356,6 +358,7 @@ int main(int argc, char **argv)
     mpfr_init2(pi_mpfr, prec);
     clock_gettime(clock_flag, &t0);
     inex = mpfr_const_pi(pi_mpfr, MPFR_RNDN);
+    if ( inex ) printf("\nINFO : mpfr_const_pi() returns %i\n", inex);
     clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
@@ -374,6 +377,7 @@ int main(int argc, char **argv)
     clock_gettime(clock_flag, &t0);
     /* compute e^1 */
     inex = mpfr_exp(e_mpfr, one_mpfr, MPFR_RNDN);
+    if ( inex ) printf("\nINFO : mpfr_exp(1) returns %i\n", inex);
     clock_gettime( clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
@@ -391,6 +395,7 @@ int main(int argc, char **argv)
     mpfr_init2(atan_pi_mpfr, prec);
     clock_gettime(clock_flag, &t0);
     inex = mpfr_mul_si(atan_pi_mpfr, atan_pi4_mpfr, 4, MPFR_RNDN);
+    if ( inex ) printf("\nINFO : mpfr_mul_si() returns %i\n", inex);
     clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
@@ -404,8 +409,10 @@ int main(int argc, char **argv)
     printf("\n\n");
 
     inex = mpfr_sub(delta_mpfr, pi_mpfr, atan_pi_mpfr, MPFR_RNDN);
+    if ( inex ) printf("\nINFO : mpfr_sub() returns %i\n", inex);
     /* do we really care about the absolute value here? */
     inex = mpfr_abs(delta_mpfr, delta_mpfr, MPFR_RNDN);
+    if ( inex ) printf("\nINFO : mpfr_abs() returns %i\n", inex);
 
     /* see https://www.mpfr.org/mpfr-current/mpfr.html
      *
@@ -460,7 +467,6 @@ int main(int argc, char **argv)
     printf("loop  0 : ");
     mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
     printf("\n\n");
-    printf("\n");
 
     /* free up some memory */
     mpfr_clears(one_mpfr, ten_million, one_ten_millionth,
@@ -477,11 +483,12 @@ int main(int argc, char **argv)
         printf("loop %2i : ",j+1);
         mpfr_printf(format_buf, MPFR_RNDN, gruenberger_1);
         printf("\n\n");
-        printf("\n");
 
         printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
         printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
+
+        printf("\n");
 
         mpfr_swap(gruenberger_1, gruenberger_0);
 
@@ -490,8 +497,7 @@ int main(int argc, char **argv)
 
     printf("final   : ");
     mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
-    printf("\n\n");
-    printf("\n");
+    printf("\n\n\n");
     printf("expected: ");
     printf("674530.47074108455938268917802974681284444414341\n\n");
 
