@@ -124,6 +124,10 @@ int main(int argc, char **argv)
     size_t decimal_prec;
     char format_buf[64] = "";
 
+    /* the idea of a data dump is for some other day
+    char format_hex[64] = "";
+    */
+
     mpfr_t pi_mpfr, e_mpfr, one_mpfr, atan_pi_mpfr,
            atan_pi4_mpfr, third_mpfr, half_mpfr,
            atan_half_mpfr, atan_third_mpfr, sum_mpfr,
@@ -247,11 +251,18 @@ int main(int argc, char **argv)
     /* Create MPFR format buffer string with the correct number
      * of decimal digits. NOTE there is not a newline char.
      *
+     * May be good to consider mpfr_sprintf (char *buf,
+     *                                       const char *template, …)
+     *
      * NOTE : the use of the asterisk inside the format string seems
      *        to imply that we need to specify the rounding method
      *        thus :  mpfr_printf(format_buf, MPFR_RNDN, foo);
      */
     sprintf(format_buf,"%%.%liR*f", decimal_prec);
+
+    /*  dumb idea
+    sprintf(format_hex,"%%.%liA*f", decimal_prec);
+    */
 
     printf("------------------------------------------------------\n");
 
@@ -283,13 +294,19 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
     printf("atan(1)   ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
     printf("\n\n");
+
+    /* this really is not helpful 
+    printf("    hex   ");
+    mpfr_printf(format_hex, MPFR_RNDN, atan_pi4_mpfr);
+    printf("\n\n");
+    */
 
 
     /* compute atan(1/2) */
@@ -300,8 +317,8 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
     printf("atan(1/2) ");
@@ -316,8 +333,8 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
 
@@ -333,8 +350,8 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
     printf("sum       ");
@@ -363,8 +380,8 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
     printf ("mpfr_const_pi() claims pi may be ");
@@ -382,8 +399,8 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
     printf("Eulers e  ");
@@ -400,8 +417,8 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
     printf("4*atan(1) ");
@@ -484,8 +501,8 @@ int main(int argc, char **argv)
         mpfr_printf(format_buf, MPFR_RNDN, gruenberger_1);
         printf("\n\n");
 
-        printf ("       t0  %7i secs %9i nsec\n", t0.tv_sec, t0.tv_nsec);
-        printf ("       t1  %7i secs %9i nsec    compute dt = %-+20.10g\n",
+        printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+        printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
                             t1.tv_sec, t1.tv_nsec, delta_time.delta);
 
         printf("\n");

@@ -118,3 +118,29 @@ RISC-V/SPARC/PPC/ARM/CISC
 UNIX and Linux spoken
 GreyBeard and suspenders optional
 
+
+----------- trivial OpenSSL calls for hash digests -------------
+
+callisto$ echo $CC
+/usr/bin/cc
+callisto$ echo $CFLAGS 
+-m64 -g -O0 -fno-fast-math -fno-builtin -fno-unsafe-math-optimizations -fno-color-diagnostics -Wl,-rpath=/opt/bw/lib
+callisto$ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+callisto$ 
+
+
+callisto$ 
+callisto$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o trivial_dgst.o trivial_dgst.c
+cc: warning: -Wl,-rpath=/opt/bw/lib: 'linker' input unused [-Wunused-command-line-argument]
+callisto$ $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o trivial_dgst trivial_dgst.o -lcrypto
+callisto$ 
+callisto$ ldd trivial_dgst
+trivial_dgst:
+        libcrypto.so.3 => /opt/bw/lib/libcrypto.so.3 (0x301237347000)
+        libc.so.7 => /lib/libc.so.7 (0x301238420000)
+        libthr.so.3 => /lib/libthr.so.3 (0x301238f1a000)
+        libsys.so.7 => /lib/libsys.so.7 (0x30123a15a000)
+        [vdso] (0x301236947000)
+callisto$ 
+

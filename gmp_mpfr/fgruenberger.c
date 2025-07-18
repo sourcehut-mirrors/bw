@@ -18,7 +18,8 @@
  * vicinity of 674530.470741084559 and as near as I can compute
  * we need a LOT of digits to correctly represent the final loop
  * value. Roughly 939524102 digits and you need room for all the
- * intermediate values also. A very big problem in 1984.
+ * intermediate values also. A very big problem in 1984. Good luck
+ * with floating point. One would need more than 3,121,031,510 bits.
  *
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
@@ -53,6 +54,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -66,12 +68,13 @@ main ( int argc, char **argv )
 {
 
     int j, loop_limit, err_clock;
-    size_t num_bytes;
+    size_t num_bytes, buf_len;
     long candidate_input;
     struct timespec tn_begin, tn_0, tn_1;
     tdiff_type delta_time;
     double total_time = 0.0;
     mpz_t g0, g1;
+    char *out_buf = NULL;
 
     if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
         fprintf(stderr,"WARN : we may not have valid system info.\n");
@@ -148,7 +151,20 @@ main ( int argc, char **argv )
     mpz_set_ui ( g0, 10000001);
 
     printf ("%3i    ", 1);
-    num_bytes = mpz_out_str (stdout, 10, g0);
+    num_bytes = mpz_out_str(stdout, 10, g0);
+
+    out_buf = mpz_get_str(out_buf, 10, g0);
+    if ( out_buf == NULL ) {
+        fprintf(stderr,"FAIL : mpz_get_str()\n");
+        return EXIT_FAILURE;
+    } else {
+        buf_len = strlen(out_buf);
+        /* this is where OpenSSL can be used to get a SHA512
+         * hash of the data */
+        fprintf(stderr,"INFO : mpz_get_str() returns %i bytes\n", buf_len);
+        free(out_buf);
+    }
+
     printf ("\n    %14i digits\n", (int)num_bytes);
 
     for ( j = 0; j < (loop_limit-1); j++ ) {
