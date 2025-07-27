@@ -3,8 +3,8 @@ CC?=/usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 	-m64 -g -O0 -fno-builtin -fno-fast-math -pedantic \
-	-fno-color-diagnostics \
-	-Wno-reserved-id-macro \
+	-fno-color-diagnostics -Wno-unused-variable \
+	-Wno-reserved-id-macro -Wno-unused-but-set-variable \
 	-Wno-double-promotion -Wno-implicit-float-conversion \
 	-Wno-missing-prototypes -Wno-reserved-identifier \
 	-Wno-documentation -Wno-unsafe-buffer-usage
