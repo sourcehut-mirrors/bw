@@ -33,7 +33,9 @@
  *
  */
 
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 500
+#endif
 
 int valid_date ( int day, int month, int year )
 {

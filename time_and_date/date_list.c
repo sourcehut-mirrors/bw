@@ -30,7 +30,9 @@
  * NOTE: should be C90 clean
  */
 
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 500
+#endif
 
 #include <errno.h>
 #include <locale.h>
