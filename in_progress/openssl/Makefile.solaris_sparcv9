@@ -22,15 +22,15 @@ LD_RUN_PATH= /opt/bw/lib
 OBJS= ../../sysinfo/sysinfo.o ../../sysinfo/endian.o
 
 .PHONY: all
-all: trivial_dgst
+all: dgst_test
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
 
-trivial_dgst: trivial_dgst.o $(OBJS)
-	$(CC) -o trivial_dgst trivial_dgst.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+dgst_test: dgst_test.o $(OBJS)
+	$(CC) -o dgst_test dgst_test.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) trivial_dgst.o trivial_dgst
+	rm -f $(OBJS) dgst_test.o dgst_test
 
