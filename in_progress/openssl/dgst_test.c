@@ -1,4 +1,40 @@
 
+/* dgst_test.c  Trivial sample code to call into the OpenSSL libraries
+ *              wherein we may perform hash functions on sample test
+ *              vector data.
+ *
+ *              This code is modified and will likely continue to be
+ *              hacked at by me.
+ *
+ * Copyright (C) Dennis Clarke 2022
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ *
+ * For information regarding the OpenSSL licenses please see :
+ *         https://www.openssl.org/source/license.html
+ * 
+ */
+
 /**********************************************************************
   LICENSE ISSUES
   ==============
@@ -124,21 +160,6 @@
  * [including the GNU Public Licence.]
  */
 
-
-/* dgst_test.c  Trivial sample code to call into the OpenSSL libraries
- *              wherein we may perform hash functions on sample test
- *              vector data.
- *
- *              This code is modified and will likely continue to be
- *              hacked at by me.
- *
- * Copyright (C) Dennis Clarke 2022
- *
- * For information regarding the OpenSSL licenses please see :
- *
- *         https://www.openssl.org/source/license.html
- */
-
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
@@ -148,20 +169,20 @@
  *    inclusion of any header. This is needed to enable the
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
- *
- *
- *********************************************************************
- * Special note here regarding OpenSSL which has a technical committee
- * and even a suggested C language standard to comply with. Good luck.
- * No promise at all that the OpenSSL code base complies with any sort
- * of a C language specification at all.
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <openssl/evp.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#define DEFAULT_PAGE_SIZE 8192
+
+#define VERBOSE 1
+int sysinfo(int verbosity);
 
 int main(int argc, char **argv)
 {
@@ -184,19 +205,52 @@ int main(int argc, char **argv)
 
     unsigned char   md_value[EVP_MAX_MD_SIZE];
     unsigned int    md_len, j;
+    int endian, page_align, message_len, pages;
+    uint64_t pagesize;
+    long err_flag = 0;
 
     if (argv[1] == NULL) {
         fprintf(stderr,"Usage: %s digest_algorithm_name\n", argv[0]);
         return EXIT_FAILURE;
     }
 
+    errno = 0;
+    err_flag = sysconf(_SC_PAGE_SIZE);
+    if ( err_flag < 0 ){
+        fprintf(stderr,"WARN : _SC_PAGE_SIZE is not defined?\n");
+
+        perror("sysconf(_SC_PAGE_SIZE) : ");
+
+        fprintf(stderr,"WARN : we assume memory page size %i\n",
+                DEFAULT_PAGE_SIZE);
+
+        pagesize = DEFAULT_PAGE_SIZE;
+    }
+    pagesize = (uint64_t)err_flag;
+
     if (argc > 2) {
-        message = calloc(strlen(argv[2])+1,sizeof(unsigned char));
+        /* For the sake of being pedantic we may allocate some
+         * heap memory that is aligned on the 8192 byte
+         * boundary. This covers most systems. However the IBM
+         * POWER servers and Fujitsu SPARC64 machines may want
+         * 64k or more as a single allocation. I will leave that
+         * problem to the implementions on those architectures.
+         */
+        message_len = strlen(argv[2]);
+        pages = (message_len + 1) / pagesize;
+
+        page_align = pagesize - (message_len + 1)%pagesize
+                     + message_len + 1;
+
+        message = calloc(page_align,sizeof(unsigned char));
         strncpy(message,argv[2],strlen(argv[2]));
     } else {
-        message = calloc(4,sizeof(unsigned char));
+        /* we only have the test vector "abc" */
+        message = calloc(pagesize,sizeof(unsigned char));
         strncpy(message,default_message,3);
     }
+
+    endian = sysinfo(VERBOSE);
 
     md = EVP_get_digestbyname(argv[1]);
     if (md == NULL) {
@@ -236,10 +290,33 @@ int main(int argc, char **argv)
 
     mdctx = EVP_MD_CTX_new();
     EVP_DigestInit_ex(mdctx, md, NULL);
+    if (mdctx == NULL) {
+        fprintf(stderr,"FAIL : EVP_MD_CTX_new()\n");
+        fprintf(stderr,"     : see line %i\n", __LINE__);
+        return EXIT_FAILURE;
+    }
 
-    EVP_DigestUpdate(mdctx, message, strlen(message));
+    if (!EVP_DigestInit_ex2(mdctx, md, NULL)) {
+        fprintf(stderr,"FAIL : EVP_DigestInit_ex2()\n");
+        fprintf(stderr,"     : see line %i\n", __LINE__);
+        EVP_MD_CTX_free(mdctx);
+        return EXIT_FAILURE;
+    }
 
-    EVP_DigestFinal_ex(mdctx, md_value, &md_len);
+    if (!EVP_DigestUpdate(mdctx, message, message_len)) {
+        fprintf(stderr,"FAIL : EVP_DigestUpdate()\n");
+        fprintf(stderr,"     : see line %i\n", __LINE__);
+        EVP_MD_CTX_free(mdctx);
+        return EXIT_FAILURE;
+    }
+
+    if (!EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
+        fprintf(stderr,"FAIL : EVP_DigestFinal_ex()\n");
+        fprintf(stderr,"     : see line %i\n", __LINE__);
+        EVP_MD_CTX_free(mdctx);
+        return EXIT_FAILURE;
+    }
+
     EVP_MD_CTX_free(mdctx);
 
     printf("Input is %i bytes : \"%s\"\n    ", strlen(message),message);

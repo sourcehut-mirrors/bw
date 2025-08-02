@@ -1,10 +1,11 @@
 CC?=		/usr/bin/cc
 CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-		-D_REENTRANT
+		-D_REENTRANT -D_XOPEN_SOURCE=600
 
-LIBS=		-lssl -lcrypto
+LIBS=		-lcrypto -lm
 
-OBJS=		dgst_test.o
+OBJS=		dgst_test.o ../../sysinfo/sysinfo.o \
+			../../sysinfo/endian.o
 
 .PHONY: all
 all: dgst_test
