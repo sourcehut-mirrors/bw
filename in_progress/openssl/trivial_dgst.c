@@ -23,14 +23,17 @@
  * Special note here regarding OpenSSL which has a technical committee
  * and even a suggested C language standard to comply with. Good luck.
  * No promise at all that the OpenSSL code base complies with any sort
- * of a C language specification at all.
+ * of a C language specification at all. Mostly C90. Sure. Right.
  *********************************************************************/
 #define _XOPEN_SOURCE 600
 
+#define VERBOSE 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <openssl/evp.h>
+
+int sysinfo(int verbosity);
 
 int main(int argc, char *argv[])
 {
@@ -43,12 +46,14 @@ int main(int argc, char *argv[])
 
     unsigned char md_value[EVP_MAX_MD_SIZE];
     unsigned int md_len;
-    int j;
+    int j, endian;
 
     if (argv[1] == NULL) {
         fprintf(stderr,"INFO : Usage: %s digestname\n", argv[0]);
         return EXIT_FAILURE;
     }
+
+    endian = sysinfo(VERBOSE);
 
     md = EVP_get_digestbyname(argv[1]);
     if (md == NULL) {
@@ -56,6 +61,8 @@ int main(int argc, char *argv[])
         fprintf(stderr,"     : see line %i\n", __LINE__);
         return EXIT_FAILURE;
     }
+
+    printf("\nMessage digest algorithm selected : %s\n", argv[1]);
 
     mdctx = EVP_MD_CTX_new();
     if (mdctx == NULL) {

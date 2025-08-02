@@ -1,0 +1,36 @@
+
+CC=/opt/developerstudio12.6/bin/c99
+
+CFLAGS= -Xc -m64 -xarch=sparc -g -xO0 -mc -xs \
+	-errfmt=error -erroff=%none -errshort=full -errtags=yes \
+	-errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff \
+	-xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s \
+	-xnolibmil -xunroll=1 -xdepend -xregs=no%appl \
+	-xdebugformat=dwarf
+
+CPPFLAGS= -D_TS_ERRNO -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS= -lcrypto -lm
+
+LDIR= /opt/bw/lib
+IDIR= /opt/bw/include
+
+LD_OPTIONS= -R/opt/bw/lib -L/opt/bw/lib
+LD_RUN_PATH= /opt/bw/lib
+
+OBJS= ../../sysinfo/sysinfo.o ../../sysinfo/endian.o
+
+.PHONY: all
+all: trivial_dgst
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+
+trivial_dgst: trivial_dgst.o $(OBJS)
+	$(CC) -o trivial_dgst trivial_dgst.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+.PHONY: clean
+clean:
+	rm -f $(OBJS) trivial_dgst.o trivial_dgst
+
