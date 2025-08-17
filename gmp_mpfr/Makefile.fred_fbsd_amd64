@@ -1,0 +1,13 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-fast-math -fno-builtin -fno-color-diagnostics \
+	-Weverything -Wno-reserved-id-macro -Wno-missing-prototypes \
+	-Wno-padded -Wno-disabled-macro-expansion -Wno-sign-conversion \
+	-Wno-reserved-identifier -Wno-extra-semi-stmt \
+	-Wno-unsafe-buffer-usage
+
+LIBS=	-lgmp -lmpfr -lm
+
+include fred_common.mk
