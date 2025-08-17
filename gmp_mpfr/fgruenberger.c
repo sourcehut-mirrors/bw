@@ -75,6 +75,8 @@ main ( int argc, char **argv )
     double total_time = 0.0;
     mpz_t g0, g1;
     char *out_buf = NULL;
+    char *null_ptr = NULL;
+    char *prn_buf = NULL;
 
     if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
         fprintf(stderr,"WARN : we may not have valid system info.\n");
@@ -150,7 +152,13 @@ main ( int argc, char **argv )
     mpz_inits ( g0, g1, NULL);
     mpz_set_ui ( g0, 10000001);
 
-    out_buf = mpz_get_str(out_buf, 10, g0);
+    prn_buf = calloc(80,sizeof(unsigned char));
+    if ( prn_buf == NULL ) {
+        fprintf(stderr,"FAIL : calloc? really?\n");
+        return EXIT_FAILURE;
+    }
+
+    out_buf = mpz_get_str(null_ptr, 10, g0);
     if ( out_buf == NULL ) {
         fprintf(stderr,"FAIL : mpz_get_str()\n");
         return EXIT_FAILURE;
@@ -163,6 +171,8 @@ main ( int argc, char **argv )
         /* printf("INFO : mpz_get_str() returns %li bytes\n", (int)num_bytes); */
 
         free(out_buf);
+        out_buf = NULL;
+
     }
 
     printf ("    %14i digits\n", (int)num_bytes);
@@ -175,7 +185,11 @@ main ( int argc, char **argv )
         total_time += delta_time.delta;
 
         /* num_bytes = mpz_out_str(stdout, 10, g1); */
-        out_buf = mpz_get_str(out_buf, 10, g1);
+        out_buf = mpz_get_str(null_ptr, 10, g1);
+        if ( out_buf == NULL ) {
+            fprintf(stderr,"FAIL : bork mpz_get_str() returns NULL\n");
+            return EXIT_FAILURE;
+        }
         printf ("\n%3i    %s", j+2, out_buf);
         num_bytes = strlen(out_buf);
         printf ("\n    %14i digits\n", (int)num_bytes);
@@ -189,6 +203,7 @@ main ( int argc, char **argv )
                                 tn_1.tv_sec, tn_1.tv_nsec, delta_time.delta);
 
         free(out_buf);
+        out_buf = NULL;
 
         mpz_set (g0, g1);
 
