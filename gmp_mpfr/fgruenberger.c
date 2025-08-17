@@ -150,22 +150,22 @@ main ( int argc, char **argv )
     mpz_inits ( g0, g1, NULL);
     mpz_set_ui ( g0, 10000001);
 
-    printf ("%3i    ", 1);
-    num_bytes = mpz_out_str(stdout, 10, g0);
-
     out_buf = mpz_get_str(out_buf, 10, g0);
     if ( out_buf == NULL ) {
         fprintf(stderr,"FAIL : mpz_get_str()\n");
         return EXIT_FAILURE;
     } else {
-        buf_len = strlen(out_buf);
+        num_bytes = strlen(out_buf);
         /* this is where OpenSSL can be used to get a SHA512
          * hash of the data */
-        fprintf(stderr,"INFO : mpz_get_str() returns %li bytes\n", buf_len);
+        printf ("%3i    %s\n", 1, out_buf);
+
+        /* printf("INFO : mpz_get_str() returns %li bytes\n", (int)num_bytes); */
+
         free(out_buf);
     }
 
-    printf ("\n    %14i digits\n", (int)num_bytes);
+    printf ("    %14i digits\n", (int)num_bytes);
 
     for ( j = 0; j < (loop_limit-1); j++ ) {
         err_clock = clock_gettime(clock_flag, &tn_0);
@@ -174,8 +174,10 @@ main ( int argc, char **argv )
         err_clock = tdiff( &delta_time, tn_0, tn_1);
         total_time += delta_time.delta;
 
-        printf ("\n%3i    ", j+2);
-        num_bytes = mpz_out_str(stdout, 10, g1);
+        /* num_bytes = mpz_out_str(stdout, 10, g1); */
+        out_buf = mpz_get_str(out_buf, 10, g1);
+        printf ("\n%3i    %s", j+2, out_buf);
+        num_bytes = strlen(out_buf);
         printf ("\n    %14i digits\n", (int)num_bytes);
         printf ("       t0  %7li secs %9li nsec\n", tn_0.tv_sec, tn_0.tv_nsec);
         printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
@@ -185,6 +187,8 @@ main ( int argc, char **argv )
         err_clock = tdiff( &delta_time, tn_0, tn_1);
         printf ("       out %7li secs %9li nsec     output dt = %-+20.10g\n",
                                 tn_1.tv_sec, tn_1.tv_nsec, delta_time.delta);
+
+        free(out_buf);
 
         mpz_set (g0, g1);
 
