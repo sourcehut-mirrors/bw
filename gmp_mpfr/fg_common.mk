@@ -21,4 +21,4 @@ fgruenberger: $(OBJS)
 	-Wl,-enable-new-dtags $(CPPFLAGS) -L$(LDIR) $(LIBS)
 
 clean:
-	rm -f $(OBJS) fred
+	rm -f $(OBJS) fgruenberger
