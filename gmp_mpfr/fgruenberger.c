@@ -219,8 +219,8 @@ main ( int argc, char **argv )
         mpz_mul(g1, g0, g0);
         err_clock = clock_gettime(clock_flag, &tn_1);
         err_clock = tdiff( &delta_time, tn_0, tn_1);
+        fg[j+1] = delta_time.delta;
         mpz_mul_time += delta_time.delta;
-        fg[j+1] = mpz_mul_time;
 
         /* Once upon a time we would output the whole nasty long
          * string of digits thus :
@@ -234,8 +234,8 @@ main ( int argc, char **argv )
         gmp_out_buf = mpz_get_str(null_ptr, 10, g1);
         err_clock = clock_gettime(clock_flag, &tn_1);
         err_clock = tdiff( &delta_time, tn_0, tn_1);
-        mpz_get_str_time += delta_time.delta;
         mgst[j+1] = delta_time.delta;
+        mpz_get_str_time += delta_time.delta;
 
         strncpy(prn_buf, gmp_out_buf, 72);
         printf("%3i    : %s", j+2, prn_buf);

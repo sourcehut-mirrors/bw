@@ -209,6 +209,8 @@ int main(int argc, char **argv)
     uint64_t pagesize;
     long err_flag = 0;
 
+    message_len = 0;
+
     if (argv[1] == NULL) {
         fprintf(stderr,"Usage: %s digest_algorithm_name\n", argv[0]);
         return EXIT_FAILURE;

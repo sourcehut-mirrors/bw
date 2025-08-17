@@ -1,4 +1,9 @@
 
+/* I have no idea why I wrote this and do not recall what
+ * it was supposed to be for. Possibly to get a list of the
+ * available hash digest algorithms.
+ */
+
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 #include <stdio.h>
