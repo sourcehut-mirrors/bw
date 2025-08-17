@@ -82,13 +82,8 @@
 #include <gmp.h>
 #include <mpfr.h>
 
+#include "fred.h"
 #include "tdiff.h"
-
-#define VERBOSE 1
-#define MPFR_VERSION_ERROR 999
-
-int sysinfo(int verbose);
-int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
 int main(int argc, char **argv)
 {
@@ -294,13 +289,17 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
+    /* this is a tad verbose in that is reports the internal
+     * timespec data elements. nice to see .. not needed
+     *
+     *    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
+     *    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.14g\n\n",
+     *                      t1.tv_sec, t1.tv_nsec, delta_time.delta);
+     */
 
     printf("atan(1)   ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi4_mpfr);
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
     /* this really is not helpful 
     printf("    hex   ");
@@ -317,13 +316,9 @@ int main(int argc, char **argv)
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
 
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
     printf("atan(1/2) ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_half_mpfr);
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
     /* compute atan(1/3) */
     mpfr_init2(atan_third_mpfr, prec);
@@ -332,15 +327,9 @@ int main(int argc, char **argv)
     clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
-
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
-
     printf("atan(1/3) ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_third_mpfr);
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
     /* sum atan(1/2) + atan(1/3) */
     mpfr_init2(sum_mpfr, prec);
@@ -349,18 +338,15 @@ int main(int argc, char **argv)
     clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
-
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
     printf("sum       ");
     mpfr_printf(format_buf, MPFR_RNDN, sum_mpfr);
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
     /* check delta on atan(1) and ( atan(1/2) + atan(1/3) ) */
     mpfr_init2(delta_mpfr, prec);
+    clock_gettime(clock_flag, &t0);
     inex = mpfr_sub(delta_mpfr, sum_mpfr, atan_pi4_mpfr, MPFR_RNDN);
+    clock_gettime(clock_flag, &t1);
     if ( inex ) printf("\nINFO : mpfr_sub() returns %i\n", inex);
     if ( mpfr_zero_p(delta_mpfr) != 0 ) {
         printf("delta( atan(1) - atan(1/2) - atan(1/3) ) = 0 exactly.");
@@ -369,7 +355,9 @@ int main(int argc, char **argv)
         mpfr_printf(format_buf, MPFR_RNDN, delta_mpfr);
         printf("\n\n");
     }
-    printf("\n\n");
+    err_clock = tdiff(&delta_time, t0, t1);
+    total_time += delta_time.delta;
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
     /* fetch the value for pi from libMPFR */
     mpfr_init2(pi_mpfr, prec);
@@ -379,14 +367,9 @@ int main(int argc, char **argv)
     clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
-
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
     printf ("mpfr_const_pi() claims pi may be ");
     mpfr_printf(format_buf, MPFR_RNDN, pi_mpfr );
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
 
     /* Eulers Number e */
@@ -398,14 +381,9 @@ int main(int argc, char **argv)
     clock_gettime( clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
-
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
     printf("Eulers e  ");
     mpfr_printf(format_buf, MPFR_RNDN, e_mpfr);
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
 
     /* multiply atan(1) * 4 */
@@ -416,22 +394,26 @@ int main(int argc, char **argv)
     clock_gettime(clock_flag, &t1);
     err_clock = tdiff(&delta_time, t0, t1);
     total_time += delta_time.delta;
-
-    printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-    printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
     printf("4*atan(1) ");
     mpfr_printf(format_buf, MPFR_RNDN, atan_pi_mpfr);
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
+
+    clock_gettime(clock_flag, &t0);
     inex = mpfr_sub(delta_mpfr, pi_mpfr, atan_pi_mpfr, MPFR_RNDN);
+    clock_gettime(clock_flag, &t1);
+    err_clock = tdiff(&delta_time, t0, t1);
+    total_time += delta_time.delta;
     if ( inex ) printf("\nINFO : mpfr_sub() returns %i\n", inex);
-    /* do we really care about the absolute value here? */
-    inex = mpfr_abs(delta_mpfr, delta_mpfr, MPFR_RNDN);
-    if ( inex ) printf("\nINFO : mpfr_abs() returns %i\n", inex);
-
-    /* see https://www.mpfr.org/mpfr-current/mpfr.html
+    /* do we really care about the absolute value here? 
+     *
+     * inex = mpfr_abs(delta_mpfr, delta_mpfr, MPFR_RNDN);
+     * if ( inex ) printf("\nINFO : mpfr_abs() returns %i\n", inex);
+     *
+     * nope .. not really .. we either get zero or we do not
+     *
+     *---------------------------------------------------------
+     * see https://www.mpfr.org/mpfr-current/mpfr.html
      *
      * Check that the delta value is actually zero.
      *
@@ -448,7 +430,7 @@ int main(int argc, char **argv)
         mpfr_printf(format_buf, MPFR_RNDN, delta_mpfr);
         printf("\n\n");
     }
-    printf("\n\n");
+    printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
     /* free up some memory */
     mpfr_clears(atan_half_mpfr, atan_pi_mpfr, atan_pi4_mpfr,
@@ -485,7 +467,7 @@ int main(int argc, char **argv)
     mpfr_printf(format_buf, MPFR_RNDN, gruenberger_0);
     printf("\n\n");
 
-    /* free up some memory */
+    /* free up some memory again */
     mpfr_clears(one_mpfr, ten_million, one_ten_millionth,
                 (mpfr_ptr*) 0 );
 
@@ -499,13 +481,7 @@ int main(int argc, char **argv)
 
         printf("loop %2i : ",j+1);
         mpfr_printf(format_buf, MPFR_RNDN, gruenberger_1);
-        printf("\n\n");
-
-        printf ("       t0  %7li secs %9li nsec\n", t0.tv_sec, t0.tv_nsec);
-        printf ("       t1  %7li secs %9li nsec    compute dt = %-+20.10g\n",
-                            t1.tv_sec, t1.tv_nsec, delta_time.delta);
-
-        printf("\n");
+        printf("\n    compute dt = %-.9f\n\n", delta_time.delta);
 
         mpfr_swap(gruenberger_1, gruenberger_0);
 
@@ -517,11 +493,12 @@ int main(int argc, char **argv)
     printf("\n\n\n");
     printf("expected: ");
     printf("674530.47074108455938268917802974681284444414341\n\n");
+    printf("\nTotal compute time %-.9f\n", total_time);
 
     err_clock = clock_gettime(clock_flag, &tn_end);
     err_clock = tdiff(&delta_time, tn_begin, tn_end);
     total_time = delta_time.delta;
-    printf("\nTotal time %-+20.10g\n", total_time);
+    printf("\n        total time %-.9f\n", total_time);
 
     return EXIT_SUCCESS;
 
