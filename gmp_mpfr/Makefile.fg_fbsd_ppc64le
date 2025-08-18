@@ -1,0 +1,20 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -m64 -mcpu=power9 -mno-altivec \
+	-mno-isel -mno-vsx -mno-crypto -mno-htm \
+	-fno-unsafe-math-optimizations \
+	-fno-builtin -fno-fast-math -ffp-contract=off \
+	-fno-color-diagnostics \
+	-Weverything -Wno-reserved-id-macro \
+	-Wno-padded -Wno-disabled-macro-expansion \
+	-Wno-sign-conversion -Wno-extra-semi-stmt \
+	-Wno-reserved-identifier -Wno-unused-macros \
+	-Wno-strict-prototypes -Wno-unsafe-buffer-usage
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+
+LIBS=	-lgmp -lmpfr
+
+include fg_common.mk

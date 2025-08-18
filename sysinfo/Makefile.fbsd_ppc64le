@@ -1,0 +1,27 @@
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -m64 \
+	-mcpu=power9 -mno-altivec -mno-isel -mno-vsx \
+	-mno-crypto -mno-htm -fno-color-diagnostics \
+	-fno-unsafe-math-optimizations -Weverything \
+	-Wno-unsafe-buffer-usage -Wno-reserved-identifier
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=600
+
+SRCS = report.c sysinfo.c endian.c
+
+OBJS = report.o sysinfo.o endian.o
+
+.PHONY: all
+all: report
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) report
