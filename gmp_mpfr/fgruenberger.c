@@ -187,7 +187,10 @@ main ( int argc, char **argv )
     }
 
     err_clock = clock_gettime(clock_flag, &tn_0);
-    gmp_out_buf = mpz_get_str(null_ptr, 10, g1);
+
+    /* Take note that this is g0 and not g1 */
+    gmp_out_buf = mpz_get_str(null_ptr, 10, g0);
+
     err_clock = clock_gettime(clock_flag, &tn_1);
     err_clock = tdiff( &delta_time, tn_0, tn_1);
     mpz_get_str_time += delta_time.delta;
