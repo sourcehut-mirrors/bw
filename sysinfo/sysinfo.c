@@ -73,12 +73,21 @@
 #include <string.h>
 #include <sys/resource.h>
 #include <sys/utsname.h>
+#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
 
 #if defined(__FreeBSD__)
+/* we need __BSD_VISIBLE or u_char and u_short vanish
+ * and then sys/rtprio.h fails in a big way */
+typedef unsigned char   u_char;
+typedef unsigned short  u_short;
 #include <sys/sysctl.h>
-#include <sys/types.h>
+/*
+#if ! defined (__BSD_VISIBLE)
+#define __BSD_VISIBLE 1
+#endif
+*/
 #include <sys/rtprio.h>
 #endif
 
@@ -174,8 +183,15 @@ int sysinfo(int verbose) {
              *            priority.  See mac_priority(4)
              *  [ESRCH]   The specified process or thread was not found
              */
-            perror("rtprio() : ");
-            return SYSINFO_FAIL;
+            if ( errno == EPERM ) {
+                /* this is not an error condition, merely an access
+                 * problem. Ignore it and know that priority data
+                 * is not available here. */
+            } else {
+                /* something bad happens */
+                perror("rtprio() : ");
+                return SYSINFO_FAIL;
+            }
         }
         this_pid_prio = this_pid_rtp.prio;
 
@@ -467,32 +483,38 @@ int sysinfo(int verbose) {
     }
     printf ("\n");
 
+#if defined(__FreeBSD__)
+    if ( prio_err_flag == 0 ) {
+        printf("INFO : this_pid_prio = %i\n", this_pid_prio);
+    }
+#endif
+
 #if defined(__ISO_C_VISIBLE)
-        printf("INFO : __ISO_C_VISIBLE id defined\n");
+    printf("INFO : __ISO_C_VISIBLE id defined\n");
 #endif
 
 #ifdef FLT_EVAL_METHOD
-        printf("INFO : FLT_EVAL_METHOD == %d\n", FLT_EVAL_METHOD);
+    printf("INFO : FLT_EVAL_METHOD == %d\n", FLT_EVAL_METHOD);
 #endif
 
 #ifdef DECIMAL_DIG
-        printf("INFO : DECIMAL_DIG == %d\n", DECIMAL_DIG);
+    printf("INFO : DECIMAL_DIG == %d\n", DECIMAL_DIG);
 #endif
 
 #ifdef FLT_DECIMAL_DIG
-        printf("INFO : FLT_DECIMAL_DIG == %d\n", FLT_DECIMAL_DIG);
+    printf("INFO : FLT_DECIMAL_DIG == %d\n", FLT_DECIMAL_DIG);
 #endif
 
 #ifdef DBL_DECIMAL_DIG
-        printf("INFO : DBL_DECIMAL_DIG == %d\n", DBL_DECIMAL_DIG);
+    printf("INFO : DBL_DECIMAL_DIG == %d\n", DBL_DECIMAL_DIG);
 #endif
 
 #ifdef LDBL_DECIMAL_DIG
-        printf("INFO : LDBL_DECIMAL_DIG == %d\n", LDBL_DECIMAL_DIG);
+    printf("INFO : LDBL_DECIMAL_DIG == %d\n", LDBL_DECIMAL_DIG);
 #endif
 
 #ifdef LDBL_DIG
-        printf("INFO : LDBL_DIG == %d\n", LDBL_DIG);
+    printf("INFO : LDBL_DIG == %d\n", LDBL_DIG);
 #endif
 
     return return_endian;

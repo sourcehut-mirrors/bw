@@ -1,0 +1,27 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
+	-m64 -g -O0 -fno-builtin -fno-fast-math -pedantic \
+	-fno-color-diagnostics -Wno-unused-variable \
+	-Wno-reserved-id-macro -Wno-unused-but-set-variable \
+	-Wno-double-promotion -Wno-implicit-float-conversion \
+	-Wno-missing-prototypes -Wno-reserved-identifier \
+	-Wno-documentation -Wno-unsafe-buffer-usage
+
+CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+		-D_FILE_OFFSET_BITS=64
+
+.PHONY: all
+all: getprio
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+getprio: getprio.o $(OBJS)
+	$(CC) -o getprio getprio.o $(CFLAGS) $(CPPFLAGS)
+
+.PHONY: clean
+clean:
+	rm -f getprio.o getprio
+
