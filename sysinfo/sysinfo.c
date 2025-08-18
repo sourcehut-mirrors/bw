@@ -79,6 +79,7 @@
 #if defined(__FreeBSD__)
 #include <sys/sysctl.h>
 #include <sys/types.h>
+#include <sys/rtprio.h>
 #endif
 
 /* 23 Aug 2021 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
@@ -121,6 +122,8 @@ int sysinfo(int verbose) {
 
 #if defined(__FreeBSD__)
     size_t len;
+    int this_pid_prio, prio_err_flag;
+    struct rtprio this_pid_rtp;
 #endif
 
     int fp_round_mode;
@@ -159,6 +162,22 @@ int sysinfo(int verbose) {
             perror("sysctlbyname(\"hw.availpages\", ...) : ");
             return SYSINFO_FAIL;
         }
+
+        prio_err_flag = rtprio( RTP_LOOKUP, 0, &this_pid_rtp);
+        if ( prio_err_flag < 0 ) {
+            /*
+             * The rtprio() system call will fail if:
+             *
+             *  [EFAULT]  The rtp pointer passed to rtprio() invalid.
+             *  [EINVAL]  The specified prio was out of range.
+             *  [EPERM]   The calling thread is not allowed to set the
+             *            priority.  See mac_priority(4)
+             *  [ESRCH]   The specified process or thread was not found
+             */
+            perror("rtprio() : ");
+            return SYSINFO_FAIL;
+        }
+        this_pid_prio = this_pid_rtp.prio;
 
 #endif
 
