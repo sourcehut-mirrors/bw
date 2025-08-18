@@ -13,7 +13,7 @@ LIBS = -lm -lrt
 
 SRCS = report.c sysinfo.c
 
-OBJS = report.o sysinfo.o
+OBJS = report.o sysinfo.o endian.o
 
 .PHONY: all
 all: report
