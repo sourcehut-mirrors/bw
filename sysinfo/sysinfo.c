@@ -83,11 +83,6 @@
 typedef unsigned char   u_char;
 typedef unsigned short  u_short;
 #include <sys/sysctl.h>
-/*
-#if ! defined (__BSD_VISIBLE)
-#define __BSD_VISIBLE 1
-#endif
-*/
 #include <sys/rtprio.h>
 #endif
 
