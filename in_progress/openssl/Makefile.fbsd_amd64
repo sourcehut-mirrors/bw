@@ -1,8 +1,0 @@
-
-CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
-        -Weverything -Wno-reserved-id-macro -Wno-unused-macros \
-	-Wno-unsafe-buffer-usage -Wno-missing-prototypes -Wno-padded \
-	-Wno-sign-conversion -fno-fast-math -fno-builtin
-
-include common.mk
-
