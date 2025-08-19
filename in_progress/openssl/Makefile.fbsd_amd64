@@ -1,0 +1,34 @@
+
+CC=	/usr/bin/cc
+
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-fast-math -fno-builtin -fno-color-diagnostics \
+	-Weverything -Wno-reserved-id-macro
+
+
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=600
+
+LIBS=	-lcrypto -lm
+
+IDIR=	/opt/bw/include
+LDIR=	/opt/bw/lib
+
+SRCS = dgst_test.c ../../sysinfo/sysinfo.c ../../sysinfo/endian.c
+
+OBJS = dgst_test.o ../../sysinfo/sysinfo.o ../../sysinfo/endian.o
+
+.PHONY: all
+all: dgst_test
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR) -L$(LDIR)
+
+dgst_test: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) -L$(LDIR) \
+	-Wl,-rpath=$(LDIR) -Wl,-enable-new-dtags $(LIBS)
+
+clean:
+	rm -f $(OBJS) dgst_test
+
