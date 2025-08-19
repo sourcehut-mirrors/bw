@@ -1,7 +1,7 @@
 
 CC?=/opt/bw/gcc13/bin/gcc
 
-CFLAGS = -std=iso9899:1999 -O3 -m64 -mcpu=970 -mfull-toc \
+CFLAGS = -std=iso9899:2017 -O3 -m64 \
 	-mregnames -ffp-contract=on
 
 include common.mk

@@ -1,30 +1,32 @@
 
-CC=/usr/bin/gcc
+CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
-	-mpowerpc64 -mno-altivec -msecure-plt -mno-vsx \
-	-mno-quad-memory -mno-float128 -mhard-float \
-	-mno-float128-hardware -mno-avoid-indexed-addresses \
-	-mno-isel -mno-crypto -mno-htm -mno-quad-memory-atomic \
-	-mno-multiple -mupdate -mno-avoid-indexed-addresses \
-	-mregnames -mno-recip -fno-unsafe-math-optimizations \
-	-fno-fast-math -mfull-toc -mno-fp-in-toc -mno-sum-in-toc \
-	-ffp-contract=off -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+CFLAGS= -g -O0 -m64 -fno-builtin -mcpu=power9 -mpowerpc64 \
+		-mno-altivec -msecure-plt -mno-vsx -mno-quad-memory \
+		-mno-float128 -mhard-float -mno-float128-hardware \
+		-mno-avoid-indexed-addresses -mno-isel -mno-crypto \
+		-mno-htm -mno-quad-memory-atomic -mno-multiple \
+		-mupdate -mno-avoid-indexed-addresses -mregnames \
+		-mno-recip -fno-unsafe-math-optimizations \
+		-fno-fast-math -mbig -mno-fp-in-toc -mno-sum-in-toc \
+		-ffp-contract=off \
+		-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 	-D_XOPEN_SOURCE=600
-
-LIBS = -lm
 
 SRCS = report.c sysinfo.c endian.c
 
 OBJS = report.o sysinfo.o endian.o
 
-%.o: %.c
+.PHONY: all
+all: report
+
+.c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-report: report.o $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+report: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) -lm
 
 clean:
-	rm -f $(OBJS) report.o sysinfo.o report
+	rm -f $(OBJS) report

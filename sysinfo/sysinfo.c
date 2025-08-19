@@ -373,11 +373,10 @@ int sysinfo(int verbose) {
         return_endian = endian();
         printf ( "                      endian = ");
         if ( return_endian == 1 ) {
-            printf ( "little");
+            printf ( "little\n");
         } else {
-            printf ( "big");
+            printf ( "big\n");
         }
-        printf ( " endian %i\n", return_endian );
 
         /* If sizeof reports back an unsigned long integer as 64bit
          * the format string for printf should be %lu. However
