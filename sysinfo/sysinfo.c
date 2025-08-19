@@ -131,7 +131,7 @@ int sysinfo(int verbose) {
 
 #if defined(__FreeBSD__)
     size_t len;
-    int this_pid_prio, prio_err_flag;
+    int this_pid_prio, this_pid_prio_type, prio_err_flag;
     struct rtprio this_pid_rtp;
 #endif
 
@@ -194,6 +194,7 @@ int sysinfo(int verbose) {
             }
         }
         this_pid_prio = this_pid_rtp.prio;
+        this_pid_prio_type = this_pid_rtp.type;
 
 #endif
 
@@ -484,7 +485,22 @@ int sysinfo(int verbose) {
 
 #if defined(__FreeBSD__)
     if ( prio_err_flag == 0 ) {
-        printf("INFO : this_pid_prio = %i\n", this_pid_prio);
+        printf("INFO : this_pid_prio = %i of type ", this_pid_prio);
+        /* The value of the type field may be :
+         *     RTP_PRIO_REALTIME
+         *     RTP_PRIO_NORMAL
+         *     RTP_PRIO_IDLE
+         */
+        if ( this_pid_prio_type == RTP_PRIO_REALTIME ) {
+            printf("RTP_PRIO_REALTIME");
+        } else if ( this_pid_prio_type == RTP_PRIO_NORMAL ) {
+            printf("RTP_PRIO_NORMAL");
+        } else if ( this_pid_prio_type == RTP_PRIO_IDLE ) {
+            printf("RTP_PRIO_IDLE");
+        } else {
+            printf("UNKNOWN ?");
+        }
+        printf("\n");
     }
 #endif
 
