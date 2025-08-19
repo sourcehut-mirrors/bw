@@ -170,7 +170,10 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *********************************************************************/
+
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <stdio.h>
@@ -253,6 +256,11 @@ int main(int argc, char **argv)
     }
 
     endian = sysinfo(VERBOSE);
+
+#ifdef OPENSSL_VERSION_TEXT
+    printf("INFO : %s\n", OPENSSL_VERSION_TEXT);
+#endif
+    printf("\n");
 
     md = EVP_get_digestbyname(argv[1]);
     if (md == NULL) {
