@@ -1,5 +1,5 @@
 
-CC=/usr/bin/gcc
+CC=/usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-g -O0 -fno-builtin -fno-fast-math -mlittle-endian \
@@ -9,8 +9,26 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-mno-sched-control-spec -msched-count-spec-in-critical-path \
 	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
 
-LIBS= -lX11 -lm
+IDIR=/opt/bw/include
+LDIR=/opt/bw/lib
 
-include common.mk
+LIBS = -lssl -lcrypto -lm
+
+SRCS = ./dgst_test.c ../../sysinfo/sysinfo.c \
+	   ../../sysinfo/endian.c
+
+OBJS = ./dgst_test.o ../../sysinfo/sysinfo.o \
+	   ../../sysinfo/endian.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+
+dgst_test: dgst_test.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) dgst_test
+
