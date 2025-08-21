@@ -1,5 +1,5 @@
 
-/* trivial_dgst.c  Trivial sample code to call into the OpenSSL lib
+/* redo_dgst.c  Trivial sample code to call into the OpenSSL lib
  *
  * Copyright (C) Dennis Clarke 2025
  *
