@@ -1,21 +1,30 @@
+
 /*
  * filetimes.c report the various essential UNIX timestamps for a file
- * Copyright (C) Dennis Clarke 2019
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
 /*********************************************************************
@@ -29,7 +38,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <ctype.h>
 #include <errno.h>
@@ -51,7 +62,6 @@
 
 #define VERBOSE 1
 int sysinfo(int verbose);
-
 int file_stat_err( int file_errno );
 
 int main(int argc, char **argv)
@@ -63,10 +73,9 @@ int main(int argc, char **argv)
     char *line = NULL;
     char *c_time_string;
     size_t line_count, char_count;
-    int some_char, char_flag;
+    int endian_type, some_char, char_flag, fpos_status;
     int end_of_file = 0;
     fpos_t fpos;
-    int fpos_status;
     long ftell_pos;
     struct timespec time_tv;
     struct timespec modification_t;
@@ -79,7 +88,11 @@ int main(int argc, char **argv)
     struct tm *sample_tm;
     time_t unix_secs;
 
-    setlocale ( LC_ALL, "C" );
+    if ( setlocale ( LC_ALL, "C" ) == NULL ) {
+        fprintf(stderr,"FAIL : setlocale() returns NULL on \"C\"\n");
+        return EXIT_FAILURE;
+    }
+
     if ( argc < 2 ) {
         fprintf(stderr,"FAIL : provide a filename or pathname\n");
         errno = EINVAL;
@@ -95,7 +108,11 @@ int main(int argc, char **argv)
 
     /* note that we no longer will get an ENOMEM from the
      * sysctlbyname call.  See sysinfo.c for details. */
-    sysinfo(VERBOSE);
+    endian_type = sysinfo(VERBOSE);
+    if ( endian_type > 2 ) {
+        fprintf(stderr,"FAIL : sysinfo() returns an error\n");
+        return EXIT_FAILURE;
+    }
 
     errno = 0;
     status = stat(argv[1], &status_buffer);
@@ -197,21 +214,21 @@ int main(int argc, char **argv)
 
         /* See WARNING above for why st_atime may lose the letter "e" */
         fprintf(stderr,"     :             %s",
-                               ctime(&status_buffer.st_atime));
+                               ctime(&status_buffer.st_atim));
 
         /* modification time */
         fprintf(stderr,"\n     : mtime.sec = %10lu  nsec = %10lu\n",
-                               status_buffer.st_mtim.tv_sec,
-                               status_buffer.st_mtim.tv_nsec);
+                               status_buffer.st_mtime.tv_sec,
+                               status_buffer.st_mtime.tv_nsec);
         fprintf(stderr,"     :             %s",
-                               ctime(&status_buffer.st_mtime));
+                               ctime(&status_buffer.st_mtim));
 
         /* creation time */
         fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
-                               status_buffer.st_ctim.tv_sec,
-                               status_buffer.st_ctim.tv_nsec);
+                               status_buffer.st_ctime.tv_sec,
+                               status_buffer.st_ctime.tv_nsec);
         fprintf(stderr,"     :             %s",
-                               ctime(&status_buffer.st_ctime));
+                               ctime(&status_buffer.st_ctim));
         fprintf(stderr,"\n");
 
         /* Check if pathname is a directory.
@@ -419,14 +436,15 @@ int main(int argc, char **argv)
         } else {
 
             char_flag = isprint(some_char) || isspace(some_char)
-                    || (some_char==0010) || (some_char==0177);
+                       || (some_char==0010) || (some_char==0177);
 
-            /* Try to ensure we have a safe char to print */
+            /* Try to ensure we have a safe char to print and if all
+             * else fails then just use a tilde "~" octal 0176 */
             line[char_count] = char_flag ? (uint8_t)some_char : 0176;
 
             char_count += 1;
 
-            /* check for some insane line length and bail out with
+            /* Check for some insane line length and bail out with
              * a horrific nasty message and tell the user to smarten
              * up.
              */
@@ -499,3 +517,4 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 
 }
+

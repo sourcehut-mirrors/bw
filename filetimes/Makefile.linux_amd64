@@ -1,17 +1,18 @@
 
-CC=/usr/bin/cc
+CC?=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags \
-	-march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-builtin \
+	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
 	-fno-fast-math -malign-double \
-	-m128bit-long-double -mlong-double-80 \
+	-m128bit-long-double \
 	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
-CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 	-D_XOPEN_SOURCE=600
 
-OBJ = ../sysinfo/sysinfo.o filetimes.o
+OBJ = ../sysinfo/sysinfo.o ../sysinfo/endian.o filetimes.o
 
 LIBS = -lm
 
@@ -22,4 +23,5 @@ filetimes: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
-	rm -f *.o ../sysinfo/sysinfo.o filetimes
+	rm -f *.o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.o filetimes
+
