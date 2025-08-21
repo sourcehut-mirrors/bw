@@ -1,6 +1,17 @@
 
+CC=/usr/bin/cc
+
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
 	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
 	-fno-fast-math -fno-builtin -Wno-unsafe-buffer-usage
 
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=600
+
+LIBS=	-lm
+
+LDIR=	/opt/bw/lib
+IDIR=	/opt/bw/include
+
 include common.mk
+

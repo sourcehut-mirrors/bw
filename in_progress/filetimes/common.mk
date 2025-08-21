@@ -1,15 +1,15 @@
 
 CC?=	/usr/bin/cc
 
-CPPFLAGS=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS?=	-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 			-D_XOPEN_SOURCE=600
 
-LIBS=		-lrt
+LIBS?=		-lrt -lm
 
-LDIR?=		/usr/local/lib
-IDIR?=		/usr/local/include
+LDIR?=		/opt/bw/lib
+IDIR?=		/opt/bw/include
 
-OBJS=		../sysinfo/sysinfo.o \
+OBJS=		../sysinfo/sysinfo.o ../sysinfo/endian.o \
 		../stat_test/file_stat_err.o
 
 .PHONY: all
@@ -24,3 +24,4 @@ filetimes: filetimes.o $(OBJS)
 .PHONY: clean
 clean:
 	rm -f $(OBJS) filetimes.o filetimes
+
