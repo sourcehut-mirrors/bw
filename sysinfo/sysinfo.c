@@ -126,7 +126,9 @@ int sysinfo(int verbose) {
 
 #if defined(__FreeBSD__)
     size_t len;
-    int this_pid_prio, this_pid_prio_type, prio_err_flag;
+    int prio_err_flag = 0;
+    int this_pid_prio = 0;
+    int this_pid_prio_type = 0;
     struct rtprio this_pid_rtp;
 #endif
 
