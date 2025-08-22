@@ -21,6 +21,9 @@
  * intermediate values also. A very big problem in 1984. Good luck
  * with floating point. One would need more than 3,121,031,510 bits.
  *
+ * The number of digits in each iteration is somewhere in the close
+ * vicinity of 2^(n+2) - 2^(n-1) + 1
+ *
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
  *
