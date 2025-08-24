@@ -1,0 +1,18 @@
+
+CC=/opt/gcc-15.1.0/bin/gcc
+
+CFLAGS= -g -m64 -std=iso9899:1999 -pedantic -fno-builtin -O0 \
+	-mcpu=power9 -mno-isel -mno-crypto -mno-htm -mno-quad-memory-atomic \
+	-mfloat128-hardware -mfull-toc -mno-multiple -mupdate \
+	-mno-avoid-indexed-addresses -mno-toc -mregnames -mno-recip \
+	-fno-unsafe-math-optimizations
+
+LIBS=	-lgmp -lmpfr -lcrypto -lm
+
+LDIR=	/opt/bw/lib
+IDIR=	/opt/bw/include
+ITIME=	../time_and_date
+SYSINFO=	../sysinfo
+
+include fg_common.mk
+
