@@ -1,35 +1,34 @@
 
-On a typical AMD64 or x86_64 Linux boxen 
+The number of digits in each interation is thus : 
 
-oberon$ CC=/opt/genunix/bin/gcc
-oberon$ export CC
-
-oberon$ CFLAGS='-std=iso9899:1999 -pedantic -pedantic-errors -g -O0 -m64 -fno-builtin -fno-fast-math -ffp-contract=off -fno-unsafe-math-optimizations -malign-double -march=k8 -mtune=k8 -mieee-fp -mhard-float -m128bit-long-double -mpreferred-stack-boundary=8 -Wl,-rpath=/opt/genunix/lib,-enable-new-dtags'
-oberon$ export CFLAGS 
-
-oberon$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600'
-oberon$ export CPPFLAGS 
-oberon$ 
-
-$CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c 
-
-$CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c 
-
-$CC $CFLAGS $CPPFLAGS -I ../time_and_date    -c -o tdiff.o ../time_and_date/tdiff.c
-
-$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -I ../time_and_date -c -o fgruenberger.o fgruenberger.c 
-
-oberon$ $CC $CFLAGS $CPPFLAGS -L/opt/genunix/lib -o fgruenberger fgruenberger.o sysinfo.o endian.o tdiff.o -lgmp -lm
-oberon$ 
-
-
-the old mpfr.c test code can be handled with a decent RPATH : 
-
-$CC $CFLAGS $CPPFLAGS -I../time_and_date -I/opt/bw/include -c -o mpfr.o mpfr.c
-$CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
-$CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c 
-$CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c 
-$CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
-$CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o mpfr \
-mpfr.o sysinfo.o tdiff.o gmp_mpfr_ver.o endian.o -lgmp -lmpfr
+triton$ for n in $(seq 1 28); do echo " 2 $n 2 +^  2 $n 1 -^  1 -- pq " | dc; done
+8
+15
+29
+57
+113
+225
+449
+897
+1793
+3585
+7169
+14337
+28673
+57345
+114689
+229377
+458753
+917505
+1835009
+3670017
+7340033
+14680065
+29360129
+58720257
+117440513
+234881025
+469762049
+939524097
+triton$ 
 

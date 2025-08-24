@@ -253,6 +253,9 @@ main ( int argc, char **argv )
         printf ("    %14i digits    dt = %-.9f     mgs_dt = %-.9f\n\n",
                            (int)num_bytes, fg[j+1], mgst[j+1]);
 
+        /* please do not do this ! */
+        printf ("%s\n",gmp_out_buf);
+
         free(gmp_out_buf);
         gmp_out_buf = NULL;
 
