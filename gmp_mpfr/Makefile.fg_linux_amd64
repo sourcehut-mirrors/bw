@@ -8,6 +8,7 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-m128bit-long-double \
 	-mstackrealign -mpreferred-stack-boundary=8 -mno-mmx
 
-LIBS=	-lgmp -lmpfr -lm
+LIBS=	-lgmp -lmpfr -lcrypto -lm
 
 include fg_common.mk
+
