@@ -363,7 +363,7 @@ main ( int argc, char **argv )
             printf("%02x", md_value[k]);
         }
         printf("\n");
-        printf("    %14i digits    dt = %-.9f     mgs_dt = %-.9f\n\n",
+        printf("    %14i digits    dt = %15.9f     mgs_dt = %15.9f\n\n",
                            (int)num_bytes, fg[j+1], mgst[j+1]);
 
         if ( argc > 3 ) {
@@ -384,23 +384,23 @@ main ( int argc, char **argv )
     err_clock = clock_gettime(clock_flag, &tn_end);
     err_clock = tdiff( &delta_time, tn_begin, tn_end);
 
-    printf ("\n              total mpz_mul time      %14.9f secs\n",
+    printf ("\n              total mpz_mul time      %15.9f secs\n",
                                        mpz_mul_time);
 
-    printf ("              total mpz_get_str time  %14.9f secs\n",
+    printf ("              total mpz_get_str time  %15.9f secs\n",
                                        mpz_get_str_time);
 
-    printf ("              total openssl hash time %14.9f secs\n",
+    printf ("              total openssl hash time %15.9f secs\n",
                                        openssl_hash_time);
 
-    printf ("              total execute time      %14.9f secs\n",
+    printf ("              total execute time      %15.9f secs\n",
                                        delta_time.delta);
 
     printf("\n-------- compute and processing times --------\n");
-    printf("  #           compute             string              openssl\n");
+    printf("  #         compute           string            openssl\n");
     for (j = 0; j < loop_limit; j++ ) {
 
-        printf ("%3i      %14.9f      %14.9f      %14.9f\n",
+        printf ("%3i   %15.9f   %15.9f   %15.9f\n",
                                     j+1,fg[j],mgst[j],hash_t[j]);
 
     }
