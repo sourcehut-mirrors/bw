@@ -21,8 +21,11 @@
  * intermediate values also. A very big problem in 1984. Good luck
  * with floating point. One would need more than 3,121,031,510 bits.
  *
- * The number of digits in each iteration is somewhere in the close
- * vicinity of 2^(n+2) - 2^(n-1) + 1
+ * The number of digits in each iteration is 2^(n+2) - 2^(n-1) + 1
+ * and thus for iteration 18 we have :
+ *
+ *          hydra$ echo ' 2 18 2+^ 2 18 1-^ - 1 + pq' | dc
+ *          917505
  *
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
@@ -61,10 +64,11 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <openssl/evp.h>
+
 #include "gmp.h"
 #include "tdiff.h"
-
-int sysinfo(int verbose);
+#include "sysinfo.h"
 
 int
 main ( int argc, char **argv )
@@ -78,9 +82,10 @@ main ( int argc, char **argv )
 
     /* for the sake of plotting a graph we shall track the compute
      * times per iteration */
-    double fg[29], mgst[29];
+    double fg[29], mgst[29], hash_t[29];
     double mpz_mul_time = 0.0;
     double mpz_get_str_time = 0.0;
+    double openssl_hash_time = 0.0;
 
     mpz_t g0, g1;
     char *gmp_out_buf = NULL;
@@ -98,6 +103,39 @@ main ( int argc, char **argv )
     /* We may or may not have CLOCK_MONOTONIC implemented and thus
      * we test for what does exist and set a clockid_t type. */
     clockid_t clock_flag;
+
+    /* We need a pile of stuff for the OpenSSL message digest calls */
+    EVP_MD_CTX *mdctx;
+    const EVP_MD *md;
+    unsigned char md_value[EVP_MAX_MD_SIZE];
+    unsigned int k, md_len;
+
+    if ( argc > 2 ) {
+        md = EVP_get_digestbyname(argv[2]);
+        if (md == NULL) {
+            fprintf(stderr,"FAIL : unknown message digest %s\n", argv[2]);
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            return EXIT_FAILURE;
+        }
+        /* the user supplied hash algorithm either works or
+         * blows up with an error message 
+         * printf("INFO : user suggests \"%s\"\n",argv[2]);
+         */
+    } else {
+        /* It may be more efficient to use BLAKE2s256 */
+        md = EVP_get_digestbyname("SHA256");
+        if (md == NULL) {
+            fprintf(stderr,"FAIL : EVP_get_digestbyname(\"SHA256\")\n");
+            return EXIT_FAILURE;
+        }
+    }
+
+    mdctx = EVP_MD_CTX_new();
+    if (mdctx == NULL) {
+        fprintf(stderr,"FAIL : EVP_MD_CTX_new()\n");
+        fprintf(stderr,"     : see line %i\n", __LINE__);
+        return EXIT_FAILURE;
+    }
 
     /* The LLVM/Clang compiler can be a real whiner about
      * things declared and not defined. Thus this is a way
@@ -196,9 +234,13 @@ main ( int argc, char **argv )
 
     err_clock = clock_gettime(clock_flag, &tn_1);
     err_clock = tdiff( &delta_time, tn_0, tn_1);
-    mpz_get_str_time += delta_time.delta;
+    /* no need to sum in the time as this is the
+     * first value processed */
+    mpz_get_str_time = delta_time.delta;
     mgst[0] = delta_time.delta;
 
+    /* may as well test the validity of the string returned
+     * by mpz_get_str() at least once. */
     if ( gmp_out_buf == NULL ) {
         fprintf(stderr,"FAIL : mpz_get_str()\n");
         return EXIT_FAILURE;
@@ -206,14 +248,50 @@ main ( int argc, char **argv )
         num_bytes = strlen(gmp_out_buf);
         /* printf("INFO : mpz_get_str() returns %li bytes\n", (int)num_bytes); */
 
-        /* This is where OpenSSL can be used to get a SHA512
-         * hash of the data in gmp_out_buf however we display
-         * only 72 chars of that. For obvious reasons. */
+        /* This is where OpenSSL can be used to get a SHA256
+         * hash of the data in gmp_out_buf. We will only output
+         * up to 72 chars of the decimal data. */
         strncpy(prn_buf, gmp_out_buf, 72);
         printf("  1    : %s\n", prn_buf);
-        printf("    %14i digits\n\n", (int)num_bytes);
         /* slide in a dirty nul char at byte 0 */
         prn_buf[0]='\0';
+
+        err_clock = clock_gettime(clock_flag, &tn_0);
+
+        if (!EVP_DigestInit_ex2(mdctx, md, NULL)) {
+            fprintf(stderr,"FAIL : EVP_DigestInit_ex2()\n");
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            EVP_MD_CTX_free(mdctx);
+            return EXIT_FAILURE;
+        }
+
+        if (!EVP_DigestUpdate(mdctx, gmp_out_buf, num_bytes)) {
+            fprintf(stderr,"FAIL : EVP_DigestUpdate()\n");
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            EVP_MD_CTX_free(mdctx);
+            return EXIT_FAILURE;
+        }
+
+        if (!EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
+            fprintf(stderr,"FAIL : EVP_DigestFinal_ex()\n");
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            EVP_MD_CTX_free(mdctx);
+            return EXIT_FAILURE;
+        }
+
+        err_clock = clock_gettime(clock_flag, &tn_1);
+        err_clock = tdiff( &delta_time, tn_0, tn_1);
+        /* no need to sum in the time as this is the
+         * first value processed */
+        openssl_hash_time = delta_time.delta;
+        hash_t[0] = delta_time.delta;
+
+        printf("  HASH : ");
+        for (k = 0; k < md_len; k++) {
+            printf("%02x", md_value[k]);
+        }
+        printf("\n");
+        printf("    %14i digits\n\n", (int)num_bytes);
 
         free(gmp_out_buf);
         gmp_out_buf = NULL;
@@ -250,11 +328,41 @@ main ( int argc, char **argv )
         printf("\n");
         prn_buf[0]='\0';
 
-        printf ("    %14i digits    dt = %-.9f     mgs_dt = %-.9f\n\n",
-                           (int)num_bytes, fg[j+1], mgst[j+1]);
+        err_clock = clock_gettime(clock_flag, &tn_0);
 
-        /* please do not do this ! */
-        printf ("%s\n",gmp_out_buf);
+        if (!EVP_DigestInit_ex2(mdctx, md, NULL)) {
+            fprintf(stderr,"FAIL : EVP_DigestInit_ex2()\n");
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            EVP_MD_CTX_free(mdctx);
+            return EXIT_FAILURE;
+        }
+
+        if (!EVP_DigestUpdate(mdctx, gmp_out_buf, num_bytes)) {
+            fprintf(stderr,"FAIL : EVP_DigestUpdate()\n");
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            EVP_MD_CTX_free(mdctx);
+            return EXIT_FAILURE;
+        }
+
+        if (!EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
+            fprintf(stderr,"FAIL : EVP_DigestFinal_ex()\n");
+            fprintf(stderr,"     : see line %i\n", __LINE__);
+            EVP_MD_CTX_free(mdctx);
+            return EXIT_FAILURE;
+        }
+
+        err_clock = clock_gettime(clock_flag, &tn_1);
+        err_clock = tdiff( &delta_time, tn_0, tn_1);
+        openssl_hash_time += delta_time.delta;
+        hash_t[j+1] = delta_time.delta;
+
+        printf("  HASH : ");
+        for (k = 0; k < md_len; k++) {
+            printf("%02x", md_value[k]);
+        }
+        printf("\n");
+        printf("    %14i digits    dt = %-.9f     mgs_dt = %-.9f\n\n",
+                           (int)num_bytes, fg[j+1], mgst[j+1]);
 
         free(gmp_out_buf);
         gmp_out_buf = NULL;
@@ -270,20 +378,29 @@ main ( int argc, char **argv )
     err_clock = clock_gettime(clock_flag, &tn_end);
     err_clock = tdiff( &delta_time, tn_begin, tn_end);
 
-    printf ("\n              total mpz_mul time     %-.9f secs\n",
+    printf ("\n              total mpz_mul time      %-.9f secs\n",
                                        mpz_mul_time);
 
-    printf ("\n              total mpz_get_str time %-.9f secs\n",
+    printf ("              total mpz_get_str time  %-.9f secs\n",
                                        mpz_get_str_time);
 
-    printf ("\n              total execute time     %-.9f secs\n",
+    printf ("              total openssl hash time %-.9f secs\n",
+                                       openssl_hash_time);
+
+    printf ("              total execute time      %-.9f secs\n",
                                        delta_time.delta);
 
-    printf("\n------ compute time and mpz_get_str times ------\n");
+    printf("\n-------- compute and processing times --------\n");
+    printf("  #            compute         string          openssl\n");
     for (j = 0; j < loop_limit; j++ ) {
-        printf ("%3i      %-.9f      %-.9f\n",j+1,fg[j],mgst[j]);
+
+        printf ("%3i      %-.9f      %-.9f      %-.9f\n",
+                                    j+1,fg[j],mgst[j],hash_t[j]);
+
     }
     printf("------------------------------------------------\n");
+
+    EVP_MD_CTX_free(mdctx);
 
     EXIT_SUCCESS;
 

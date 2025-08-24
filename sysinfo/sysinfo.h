@@ -1,20 +1,9 @@
 
 /*
- * endian.c   determine if the current system architecture is a
- *            big endian or littler endian machine
- *
- *    The elf.h header files generally define these two values :
- *
- *         #define ELFDATA2LSB     1
- *         #define ELFDATA2MSB     2
- *
- *    Where ELFDATA2MSB is for a big endian machine and the
- *    ELFDATA2LSB would be a little endian machine.
- *
- *     RETURN :  1 for little endian and 2 for big endian
+ * sysinfo.h use uname(2) and sysconf(3C) to determine basic system data
  *
  * ------------------------------------------------------------------
- * Copyright (c) 2024 Dennis Clarke
+ * Copyright (c) 2019 Dennis Clarke
  *
  *    Permission is hereby granted, free of charge, to any person
  *    obtaining a copy of this software and associated documentation
@@ -40,39 +29,21 @@
  */
 
 /*********************************************************************
- *    The intention here is that the code be strictly compliant
- *    with IEEE  Std  1003.1-200x and earlier for ISO/IEC 9899:1990
- *    spec C.
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
 #if ! defined (_XOPEN_SOURCE)
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
 #endif
 
-#include <stdint.h>
-#include <string.h>
-
-#include "sysinfo.h"
-
-int endian( void )
-{
-
-    /* an array of 8 bytes to copy data into */
-    unsigned char eight_byte[8];
-    size_t len_int = sizeof(int);
-    int j = 1;
-    int endian_flag;
-    void *int_ptr = (void *)&j;
-    void *dst_ptr = (void *)&eight_byte;
-
-    memcpy(dst_ptr, int_ptr, len_int);
-
-    /* If a byte value of 1 lands in eight_byte[0]
-     * then we know the machine is little endian
-     */
-    endian_flag = eight_byte[0] ? 1 : 2;
-
-    return endian_flag;
-
-}
+#define SYSINFO_FAIL 127
+int sysinfo(int verbose);
+int endian(void);
 

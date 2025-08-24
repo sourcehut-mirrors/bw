@@ -54,8 +54,6 @@ int
 main(int argc, char *argv[])
 {
 
-    mpfr_prec_t prec;
-
     sysinfo(VERBOSE);
 
     printf("GMP  library version : %d.%d.%d\n",

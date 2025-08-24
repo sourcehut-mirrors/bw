@@ -88,7 +88,7 @@ typedef unsigned short  u_short;
 
 /* 23 Aug 2021 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
  *
- * Some platform do not have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES
+ * Some platforms do not have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES
  * in sysconf(). We can assume they do and then disable it for
  * certain compilers/platforms. Welcome to "ifdef" madness.
  */
@@ -100,12 +100,7 @@ typedef unsigned short  u_short;
 #   undef HAVE_PAGE_INFO
 #endif
 
-#define SYSINFO_FAIL 127
-#define ONEGB 1073741824
-
-/* See comments in endian.c where it just says this is a
- * C90 clean method to determine the system endianess */
-int endian(void);
+#include "sysinfo.h"
 
 int sysinfo(int verbose) {
 
@@ -164,7 +159,6 @@ int sysinfo(int verbose) {
 #if defined(__FreeBSD__)
 
         len = sizeof(pages_avail);
-
         err_flag = sysctlbyname("hw.availpages", &pages_avail,
                                                &len, NULL, 0);
 
@@ -217,6 +211,19 @@ int sysinfo(int verbose) {
          *                         by the firmware. May not make sense.
          * integer   HW_AVAILPAGES The same value as HW_PHYSMEM measured
          *                         in pages. See code above.
+         * 
+         * A typical machine may report things like :
+         *
+         *         $ sysctl hw.byteorder
+         *         hw.byteorder: 1234
+         *         $ sysctl hw.realmem
+         *         hw.realmem: 17179869184
+         *         $ sysctl hw.physmem
+         *         hw.physmem: 17003057152
+         *         $ sysctl hw.usermem
+         *         hw.usermem: 6006362112
+         *         $ sysctl hw.machine_arch
+         *         hw.machine_arch: amd64
          *
          */
 
@@ -335,18 +342,18 @@ int sysinfo(int verbose) {
 
 #else
 
-        printf ( "                   page size = %llu\n", pagesize );
-        printf ( "               system memory = %llu\n", sysmem );
+        printf("                   page size = %llu\n", pagesize );
+        printf("               system memory = %llu\n", sysmem );
 
-        printf ( "                             = %llu kB\n",
+        printf("                             = %llu kB\n",
                                                          sysmem/1024 );
 
-        printf ( "                             = %llu MB\n",
+        printf("                             = %llu MB\n",
                                                       sysmem/1048576 );
 
         if ( (sysmem % ONEGB) == 0 ) {
 
-            printf ( "                             = %llu GB\n",
+            printf("                             = %llu GB\n",
                                                         sysmem >> 30 );
 
         }
@@ -420,28 +427,28 @@ int sysinfo(int verbose) {
         }
 
         return_endian = endian();
-        printf ( "                      endian = ");
+        printf("                      endian = ");
         if ( return_endian == 1 ) {
-            printf ( "little\n");
+            printf("little\n");
         } else {
-            printf ( "big\n");
+            printf("big\n");
         }
 
         /* If sizeof reports back an unsigned long integer as 64bit
          * the format string for printf should be %lu. However
          * compilers on 32bit machines will get upset and warn
          * we should use %u. */
-        printf ( "       sizeof(unsigned long) = %lu\n",
+        printf("       sizeof(unsigned long) = %lu\n",
                                                sizeof(unsigned long));
 
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
-        printf ( "                sizeof(long) = %lu\n",
+        printf("                sizeof(long) = %lu\n",
                                           sizeof(unsigned long long));
 #endif
 
-        printf ( "                 sizeof(int) = %lu\n",sizeof(int));
+        printf("                 sizeof(int) = %lu\n",sizeof(int));
 
-        printf ( "               sizeof(void*) = %lu\n",sizeof(void*));
+        printf("               sizeof(void*) = %lu\n",sizeof(void*));
 
 /* some older systems may not have fenv.h at all */
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
@@ -526,10 +533,10 @@ int sysinfo(int verbose) {
 #endif
 #endif
 
-        printf ( "----------------------------------" );
-        printf ( "---------------------------------" );
+        printf("----------------------------------" );
+        printf("---------------------------------" );
     }
-    printf ("\n");
+    printf("\n");
 
 #if defined(__FreeBSD__)
     if ( prio_err_flag == 0 ) {
