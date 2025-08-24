@@ -15,19 +15,7 @@ CFLAGS= -g -O0 -m64 -fno-builtin -mcpu=power9 -mpowerpc64 \
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 	-D_XOPEN_SOURCE=600
 
-SRCS = report.c sysinfo.c endian.c
+LIBS=	-lgmp -lmpfr -lcrypto -lm
 
-OBJS = report.o sysinfo.o endian.o
-
-.PHONY: all
-all: report
-
-.c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
-
-report: $(OBJS)
-	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) -lm
-
-clean:
-	rm -f $(OBJS) report
+include fg_common.mk
 
