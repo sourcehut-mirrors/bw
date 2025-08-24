@@ -67,6 +67,12 @@ void *do_some_array_thing ( void *work_q ) {
     int thread_id = 0;
     int found_thread_id_flag = 0;
 
+/* this is not workable in a thread ... sadly 
+    size_t len_pages_avail = 0;
+    int sysctl_err = 0;
+    int pages_avail = 0;
+ */
+
     /* track how many times this thread
      * fetches work instruction data
      */
@@ -80,6 +86,20 @@ void *do_some_array_thing ( void *work_q ) {
     pthread_t this_thread_id;
 
     thread_parm_t *foo = NULL;
+
+/* this is not workable in a thread ... sadly 
+#if defined(__FreeBSD__)
+        len_pages_avail = sizeof(pages_avail);
+        sysctl_err = sysctlbyname("hw.availpages", &pages_avail,
+                                  &len_pages_avail, NULL, 0);
+        if ( sysctl_err < 0 ) {
+            perror("sysctlbyname(\"hw.availpages\", ...) : ");
+        } else {
+            sprintf(tbuf,"INFO : memory pages avail %i\n", pages_avail);
+            puts(tbuf);
+        }
+#endif
+*/
 
     /* Walk the worker_thread[k] array to find this thread id.
      *
@@ -105,6 +125,7 @@ void *do_some_array_thing ( void *work_q ) {
             thread_id = k;
         }
     }
+
     /* did that search actually work ? */
     if ( found_thread_id_flag == 1 ) {
         sprintf(tbuf, "INFO : this thread_id = %3i", thread_id );
@@ -121,12 +142,6 @@ void *do_some_array_thing ( void *work_q ) {
      * a pthread condition variable that we put into the
      * queue.
      */
-
-
-
-
-
-
 
     /* check if the queue is empty ******************/
     /* pthread_mutex_lock ( the_q->mutex ); */
@@ -188,7 +203,6 @@ void *do_some_array_thing ( void *work_q ) {
                                   + (uint64_t)foo->fibber;
         }
 
-        /* actually do the call into the recursive and abusive fib() */
         k = sprintf(fbuf,"thr %3i : work  %-3i  fib(%-3" PRIu8 ") = %12" PRIu64,
                           thread_id, foo->work_num,
                           foo->fibber, fib(foo->fibber));
