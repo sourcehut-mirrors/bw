@@ -121,6 +121,10 @@ int sysinfo(int verbose) {
     uint64_t version = 0;
     uint64_t threads = 0;
     uint64_t clock_ticks_sec = 0;
+    int ncpu = 0;
+    int cpu_model_flag = 0;
+    char cpu_model[128];
+    size_t cpu_model_len = 128;
 
     int return_endian = 0;
 
@@ -193,6 +197,49 @@ int sysinfo(int verbose) {
         this_pid_prio = this_pid_rtp.prio;
         this_pid_prio_type = this_pid_rtp.type;
 
+        /* There is a pile of other information we can get from a
+         * FreeBSD system. From the manpage for sysctlbyname()
+         *
+         * string    HW_MACHINE    The machine class.
+         * string    HW_MODEL      The machine model
+         * integer   HW_NCPU       The number of cpus.
+         * integer   HW_BYTEORDER  The byteorder (4321 or 1234)
+         * integer   HW_PHYSMEM    Amount of physical memory
+         *                         in bytes, minus the amount used
+         *                         by the kernel and some other stuff
+         * integer   HW_USERMEM    Amount of memory in bytes which
+         *                         is not wired.
+         * integer   HW_PAGESIZE   The software page size.
+         * integer   HW_FLOATINGPT Nonzero if the floating point
+         *                         support is in hardware.
+         * string    HW_MACHINE_ARCH  The machine architecture
+         * integer   HW_REALMEM    Amount of memory in bytes reported
+         *                         by the firmware. May not make sense.
+         * integer   HW_AVAILPAGES The same value as HW_PHYSMEM measured
+         *                         in pages. See code above.
+         *
+         */
+
+        cpu_model[0] = '\0';
+        err_flag = sysctlbyname("hw.model", &cpu_model, &cpu_model_len,
+                                 NULL, 0);
+        if (err_flag < 0) {
+            /* check for hw.fdt.model */
+            err_flag = sysctlbyname("hw.fdt.model", &cpu_model,
+                                     &cpu_model_len, NULL, 0);
+            if (err_flag < 0) {
+                cpu_model_flag=0;
+            } else {
+                cpu_model_flag=1;
+            }
+        } else {
+            cpu_model_flag=1;
+        }
+
+        len = sizeof(ncpu);
+        err_flag = sysctlbyname("hw.ncpu", &ncpu, &len, NULL, 0);
+
+
 #endif
 
 #ifndef HAVE_PAGE_INFO
@@ -237,23 +284,29 @@ int sysinfo(int verbose) {
          *    can have "uname -a" report they are on a MIPS machine
          *    running Windows NT 3.51 if they choose. So be careful.
          *************************************************************/
-        printf ( "----------------------------------" );
-        printf ( "---------------------------------\n" );
-        printf ( "                 system name = %s\n",
-                                                  uname_data.sysname );
+        printf("----------------------------------");
+        printf("---------------------------------\n");
+        printf("                 system name = %s\n",
+                                                  uname_data.sysname);
 
-        printf ( "                   node name = %s\n",
-                                                 uname_data.nodename );
+        printf("                   node name = %s\n",
+                                                 uname_data.nodename);
 
-        printf ( "                     release = %s\n",
-                                                  uname_data.release );
+        printf("                     release = %s\n",
+                                                  uname_data.release);
 
-        printf ( "                     version = %s\n",
-                                                  uname_data.version );
+        printf("                     version = %s\n",
+                                                  uname_data.version);
 
-        printf ( "                     machine = %s\n",
-                                                  uname_data.machine );
+        printf("                     machine = %s\n",
+                                                  uname_data.machine);
 
+#if defined(__FreeBSD__)
+        if ( cpu_model_flag ) {
+            printf("                   cpu model = %s\n", cpu_model);
+            printf("                   number of = %i\n", ncpu);
+        }
+#endif
         /* If the available system memory is a number aligned on
          * a gigabyte boundary then we report it.
          *
@@ -264,24 +317,22 @@ int sysinfo(int verbose) {
 #ifdef HAVE_PAGE_INFO
 #if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
 
-        printf ( "                   page size = %" PRIu64 "\n",
+        printf("                   page size = %" PRIu64 "\n",
                                                             pagesize );
 
-        printf ( "               system memory = %" PRIu64 "\n",
+        printf("               system memory = %" PRIu64 "\n",
                                                               sysmem );
 
-        printf ( "                             = %" PRIu64 " kB\n",
+        printf("                             = %" PRIu64 " kB\n",
                                                          sysmem/1024 );
 
-        printf ( "                             = %" PRIu64 " MB\n",
+        printf("                             = %" PRIu64 " MB",
                                                       sysmem/1048576 );
-
-        if ( (sysmem % ONEGB) == 0 ) {
-
-            printf ( "                             = %" PRIu64 " GB\n",
-                                                        sysmem >> 30 );
-
+        if ( ( sysmem>>30 ) > 32 ) {
+            printf(" about %" PRIu64 " GB",(sysmem>>30));
         }
+        printf("\n");
+
 #else
 
         printf ( "                   page size = %llu\n", pagesize );
