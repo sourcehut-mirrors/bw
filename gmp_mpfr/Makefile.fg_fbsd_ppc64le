@@ -15,6 +15,7 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
 
-LIBS=	-lgmp -lmpfr
+LIBS=	-lgmp -lmpfr -lcrypto
 
 include fg_common.mk
+
