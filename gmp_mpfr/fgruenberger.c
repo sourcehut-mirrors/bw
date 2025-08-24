@@ -110,6 +110,8 @@ main ( int argc, char **argv )
     unsigned char md_value[EVP_MAX_MD_SIZE];
     unsigned int k, md_len;
 
+    /* slightly out of order but may as well process OpenSSL
+     * situation now */
     if ( argc > 2 ) {
         md = EVP_get_digestbyname(argv[2]);
         if (md == NULL) {
@@ -195,24 +197,24 @@ main ( int argc, char **argv )
         candidate_input = strtol(argv[1], (char **)NULL, 10);
 
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ) {
-            fprintf(stderr,"WARN : loop limit not understood\n");
+            fprintf(stderr,"  WARN : loop limit not understood\n");
             perror("     ");
-            fprintf(stderr,"     : we shall assume 8 loops.\n");
-            loop_limit = 8;
+            fprintf(stderr,"       : we shall assume 12 loops.\n");
+            loop_limit = 12;
         }
 
         if ( ( candidate_input < 2 ) || ( candidate_input > 28 ) ) {
-            fprintf(stderr,"WARN : strange input. we shall assume 28 loops.\n");
-            fprintf(stderr,"     : hundreds of millions of digits needed.\n");
+            fprintf(stderr,"  WARN : strange input. we shall assume 28 loops.\n");
+            fprintf(stderr,"       : hundreds of millions of digits needed.\n");
             loop_limit = 28;
         } else {
             loop_limit = (int)candidate_input;
         }
 
     } else {
-        fprintf(stderr,"WARN : no loop limit entered\n");
-        fprintf(stderr,"     : we shall assume 8 loops\n");
-        loop_limit = 8;
+        fprintf(stderr,"  WARN : no loop limit entered\n");
+        fprintf(stderr,"       : we shall assume 12 loops\n");
+        loop_limit = 12;
     }
     fprintf(stderr,"\n");
 
@@ -364,6 +366,10 @@ main ( int argc, char **argv )
         printf("    %14i digits    dt = %-.9f     mgs_dt = %-.9f\n\n",
                            (int)num_bytes, fg[j+1], mgst[j+1]);
 
+        if ( argc > 3 ) {
+            printf("\n\ndebug : %s\n\n",gmp_out_buf);
+        }
+
         free(gmp_out_buf);
         gmp_out_buf = NULL;
 
@@ -378,23 +384,23 @@ main ( int argc, char **argv )
     err_clock = clock_gettime(clock_flag, &tn_end);
     err_clock = tdiff( &delta_time, tn_begin, tn_end);
 
-    printf ("\n              total mpz_mul time      %-.9f secs\n",
+    printf ("\n              total mpz_mul time      %14.9f secs\n",
                                        mpz_mul_time);
 
-    printf ("              total mpz_get_str time  %-.9f secs\n",
+    printf ("              total mpz_get_str time  %14.9f secs\n",
                                        mpz_get_str_time);
 
-    printf ("              total openssl hash time %-.9f secs\n",
+    printf ("              total openssl hash time %14.9f secs\n",
                                        openssl_hash_time);
 
-    printf ("              total execute time      %-.9f secs\n",
+    printf ("              total execute time      %14.9f secs\n",
                                        delta_time.delta);
 
     printf("\n-------- compute and processing times --------\n");
-    printf("  #            compute         string          openssl\n");
+    printf("  #           compute             string              openssl\n");
     for (j = 0; j < loop_limit; j++ ) {
 
-        printf ("%3i      %-.9f      %-.9f      %-.9f\n",
+        printf ("%3i      %14.9f      %14.9f      %14.9f\n",
                                     j+1,fg[j],mgst[j],hash_t[j]);
 
     }

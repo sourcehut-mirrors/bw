@@ -1,0 +1,28 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -g -O0 \
+	-march=armv8.2-a -mtune=cortex-a76 -mabi=lp64 \
+	-mno-low-precision-recip-sqrt \
+	-mno-low-precision-sqrt \
+	-mno-low-precision-div \
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS = -lm
+
+SRCS = report.c sysinfo.c endian.c
+
+OBJS = report.o sysinfo.o endian.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: report.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report
+

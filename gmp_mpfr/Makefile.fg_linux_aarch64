@@ -1,0 +1,14 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -g -O0 \
+	-march=armv8.2-a -mtune=cortex-a76 -mabi=lp64 \
+	-mno-low-precision-recip-sqrt \
+	-mno-low-precision-sqrt \
+	-mno-low-precision-div \
+	-fno-fast-math -fno-builtin
+
+LIBS=	-lgmp -lmpfr -lcrypto -lm
+
+include fg_common.mk
+
