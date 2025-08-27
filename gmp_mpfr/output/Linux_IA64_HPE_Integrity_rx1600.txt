@@ -1,6 +1,4 @@
 
-
-garak$ 
 garak$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c 
 garak$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
 garak$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
@@ -9,7 +7,7 @@ garak$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I../sysinfo -c -o fgruenberger.
 > fgruenberger.c
 garak$ $CC $CFLAGS $CPPFLAGS -o fgruenberger fgruenberger.o endian.o sysinfo.o \
 > tdiff.o gmp_mpfr_ver.o -lgmp -lmpfr -lcrypto -lm
-garak$ 
+
 garak$ ldd fgruenberger
         libgmp.so.10 => /home/dclarke/local/lib/libgmp.so.10 (0x2000000000090000)
         libmpfr.so.6 => /home/dclarke/local/lib/libmpfr.so.6 (0x20000000001b0000)
@@ -17,7 +15,7 @@ garak$ ldd fgruenberger
         libm.so.6.1 => /lib/libm.so.6.1 (0x2000000000ca0000)
         libc.so.6.1 => /lib/libc.so.6.1 (0x2000000000e40000)
         /lib/ld-linux-ia64.so.2 (0x2000000000000000)
-garak$ 
+
 garak$ /usr/bin/time -p ./fgruenberger 28 blake2s256
 -------------------------------------------------------------------
                  system name = Linux
