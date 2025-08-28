@@ -1,0 +1,231 @@
+
+sedna$ 
+sedna$ uname -a 
+Linux sedna.bw.genunix.com 6.12.0-89.rv.0.el10.riscv64 #1 SMP PREEMPT_DYNAMIC Wed May 28 20:21:05 UTC 2025 riscv64 GNU/Linux
+sedna$ 
+sedna$ cat /etc/redhat-release 
+Red Hat Enterprise Linux release 10.0 (Coughlan)
+sedna$ 
+sedna$ head /proc/cpuinfo 
+processor       : 0
+hart            : 1
+isa             : rv64imafdch_zicsr_zifencei_zca_zcd_zba_zbb_sscofpmf
+mmu             : sv48
+uarch           : eswin,eic770x
+mvendorid       : 0x489
+marchid         : 0x8000000000000008
+mimpid          : 0x6220425
+hart isa        : rv64imafdch_zicsr_zifencei_zca_zcd_zba_zbb_sscofpmf
+
+sedna$ 
+
+sedna$ echo $CC
+/usr/bin/gcc
+sedna$ echo $CFLAGS
+-O3 -march=rv64imafdc -mabi=lp64d -Wl,-rpath=/home/dclarke/local/lib -Wl,-enable-new-dtags
+sedna$ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -L/home/dclarke/local/lib -I/home/dclarke/local/include
+
+sedna$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c 
+sedna$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
+sedna$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
+sedna$ $CC $CFLAGS $CPPFLAGS -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c
+sedna$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I../sysinfo -c -o fgruenberger.o \
+> fgruenberger.c
+sedna$ $CC $CFLAGS $CPPFLAGS -o fgruenberger fgruenberger.o endian.o sysinfo.o \
+> tdiff.o gmp_mpfr_ver.o -lgmp -lmpfr -lcrypto -lm
+
+sedna$ ldd fgruenberger
+        linux-vdso.so.1 (0x00007ff1b964e000)
+        libgmp.so.10 => /home/dclarke/local/lib/libgmp.so.10 (0x00007ff1b95e4000)
+        libmpfr.so.6 => /home/dclarke/local/lib/libmpfr.so.6 (0x00007ff1b9574000)
+        libcrypto.so.3 => /home/dclarke/local/lib/libcrypto.so.3 (0x00007ff1b9000000)
+        libm.so.6 => /lib64/lp64d/libm.so.6 (0x00007ff1b94e9000)
+        libc.so.6 => /lib64/lp64d/libc.so.6 (0x00007ff1b8ea0000)
+        /lib/ld-linux-riscv64-lp64d.so.1 (0x00007ff1b9650000)
+
+sedna$ /usr/bin/time -p ./fgruenberger 28 blake2s256
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = sedna.bw.genunix.com
+                     release = 6.12.0-89.rv.0.el10.riscv64
+                     version = #1 SMP PREEMPT_DYNAMIC Wed May 28 20:21:05 UTC 2025
+                     machine = riscv64
+                   page size = 4096
+               system memory = 33592913920
+                             = 32805580 kB
+                             = 32036 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+GMP  library: 6.3.0
+-------------------------------------------------------------------
+
+  1    : 10000001
+  HASH : d721f975054ef5b2b66564fe11a793d994959a90d001996285d447f73593d723
+                 8 digits
+
+  2    : 100000020000001
+  HASH : 121d37b2a386c3c0674d9f71077c3d4e2d7535aa1c2eb70d68f2779ba3ecf748
+                15 digits    dt =     0.000008000     mgs_dt =     0.000003000
+
+  3    : 10000004000000600000040000001
+  HASH : 80f6cd9a88eef7fcdaadb4d77260d8ea695261352c53c7117d73339bd5a36d93
+                29 digits    dt =     0.000002000     mgs_dt =     0.000008000
+
+  4    : 100000080000028000005600000700000056000002800000080000001
+  HASH : 0d6cc1c570ec02d1499382f89487bad668c5ee34715600a44c3715e40128ae99
+                57 digits    dt =     0.000019000     mgs_dt =     0.000004000
+
+  5    : 100000160000120000056000018200004368000800800114400012870001144000080080...
+  HASH : 9129fcd1cbd4b898946e01ac07798e4a73f39b214138addf8a590a7bbe47e17a
+               113 digits    dt =     0.000004000     mgs_dt =     0.000003000
+
+  6    : 100000320000496000496000359600201376090619233658570518302804880645122529...
+  HASH : 7fa8df5a708f9ce1838888e83801dd6e8efd1b40a14d4287cbb6f20358310095
+               225 digits    dt =     0.000003000     mgs_dt =     0.000005000
+
+  7    : 100000640002016004166406353767624519497443012166346168122059965932891756...
+  HASH : c993954d0e2daa01a55db1d4fcf107f0148d7dce497e8ffba2860b0ae683374a
+               449 digits    dt =     0.000003000     mgs_dt =     0.000010000
+
+  8    : 100001280008128034137706680264566942362065259381704558672471663975250935...
+  HASH : ffe6d900cd5137ed8cd5a6bb4243cfa60c15600064c6ffff9507eafa9e357286
+               897 digits    dt =     0.000005000     mgs_dt =     0.000103999
+
+  9    : 100002560032640276353747935209585909411836867584824129859695582005987889...
+  HASH : 46f9b79b8d0a484ca66761534db77467396ee65340a548e27e0f2a772ebeb3de
+              1793 digits    dt =     0.000012000     mgs_dt =     0.000067999
+
+ 10    : 100005120130818223900299058717944915667031676445989566843671904167246950...
+  HASH : 027ff7a7df128bbcb7db859604f03e5c940892c80eb891c32926211671493921
+              3585 digits    dt =     0.000035000     mgs_dt =     0.000208999
+
+ 11    : 100010240523793843757859585103790307599895849808742345539305031089174329...
+  HASH : 252809f4647c53c31376f08c9ddcae714462190cdb30c32f5bfeaaca58b7b9ff
+              7169 digits    dt =     0.000086000     mgs_dt =     0.000497998
+
+ 12    : 100020482096270963238520687436940057916297247302448431933728450288371567...
+  HASH : 0ae71c8de846ebb839613bbd291ae80a5336d6139c5a28035a4393a9e83cea62
+             14337 digits    dt =     0.000231999     mgs_dt =     0.001500994
+
+ 13    : 100040968387704603007103386117007800026364932940740574433697789675868927...
+  HASH : 44c75f565b89ec6d5508d924f159f2e1d0ce7dcb9ea66337e49b81f0665a49e4
+             28673 digits    dt =     0.000576997     mgs_dt =     0.004640981
+
+ 14    : 100081953559497117160875264393420831453268462338712582751562371289803667...
+  HASH : 6d7cec2262726aef7232c0b94e523a02f5e3f0f9cabf7935f6427d9a1e5e2a83
+             57345 digits    dt =     0.001398994     mgs_dt =     0.013763944
+
+ 15    : 100163974282853376796974474111000166007981405136769117870345726268454678...
+  HASH : 5db553268a1ff8f17e3d4a0af4be24157c96eb3d8825bd22a298b1a186908953
+            114689 digits    dt =     0.002498990     mgs_dt =     0.024861898
+
+ 16    : 100328217441361126386147417724870052954485702815468573576226200133820229...
+  HASH : 9216ef27881d347506ab2941062c6f834038dd91b88d51c798b34bfd93d23265
+            229377 digits    dt =     0.005404978     mgs_dt =     0.065950729
+
+ 17    : 100657512149610389216672917238296122664301031978638438474376752801413166...
+  HASH : fd3e6ff00435515c26b4d6cf3c13dc5d37aaf00fb6a4718df4cbfb8b15434ebe
+            458753 digits    dt =     0.012111950     mgs_dt =     0.169085306
+
+ 18    : 101319347521489631181871180955419575677904364785534734153556271229500522...
+  HASH : a7a176fea36e7c37d401ba00d330fe8b9e637433684751032e4a30e2752615c6
+            917505 digits    dt =     0.021538912     mgs_dt =     0.422859264
+
+ 19    : 102656101821803870691874880152479261624337955400531648712157426502361982...
+  HASH : 2425c1fc57dd8cdceea0420664ab0afcae926ef64a880f142b31a73e86781cc2
+           1835009 digits    dt =     0.044822816     mgs_dt =     1.017684823
+
+ 20    : 105382752412485639792336970367394215723050667967153223407769045139957493...
+  HASH : aec7c3a6086c6c932efefdf4a5bc51d8eb0dbbe880db5391320a0eda0a4c701a
+           3670017 digits    dt =     0.103797574     mgs_dt =     2.388399195
+
+ 21    : 111055245060312479337387599322104717219887087374674476864142576249446157...
+  HASH : 7563d31226f02371bc769c4aa82cf87d51fedf3bef7495676733a8b0ffd673df
+           7340033 digits    dt =     0.227962064     mgs_dt =     5.556155192
+
+ 22    : 123332674554060593423796301691791526848006608840455937686355778522287136...
+  HASH : 53d20601eb1c1d2f578b6b39d6f90f0d1b585f7bb3d1c0d5d269ca9a90a66d1d
+          14680065 digits    dt =     0.687327178     mgs_dt =    12.868225177
+
+ 23    : 152109486126578253969503674230480553461400317991348472334256781297320434...
+  HASH : 99c511224abbdcac4f136d936768a00521b667d194797988a7e1f89334872753
+          29360129 digits    dt =     1.413163199     mgs_dt =    30.134795300
+
+ 24    : 231372957696917023161793815025878577023063163814372103031600923535124580...
+  HASH : 00e5685656d296b2a1403086c3c03f8ef75b3e49f5dacc4853dfcf91f44ad879
+          58720257 digits    dt =     2.906662069     mgs_dt =    70.165544977
+
+ 25    : 535334455534193543508567859863933726190299331164203224937425668303035578...
+  HASH : 85c0feaf3a2b14bbe96e23fadea3c85e0d6c9e9d63c0ba672bd9bab05bda4d86
+         117440513 digits    dt =     5.794844212     mgs_dt =   161.935125272
+
+ 26    : 286582979282091444242718668107790854024332015779464014391877427578408114...
+  HASH : 6f8d38f9609c60405216ecc5e805a6b6b4f3447b08c4acda5b013ff42bf17e32
+         234881026 digits    dt =    12.965326778     mgs_dt =   367.010229838
+
+ 27    : 821298040141996539625570128454288473139737063057615965031212730590247060...
+  HASH : fd839dcbf568db0ab2087b4a9e2127d23475f318b5d996753609634abd49075f
+         469762051 digits    dt =    29.567487570     mgs_dt =   829.724629821
+
+ 28    : 674530470741084559382689178029746812844444143410342031742377327839017761...
+  HASH : e6a75c2942ab8d301141ad45041a67799d1ff0ebe88d56482618f07af3825758
+         939524102 digits    dt =    55.231302906     mgs_dt =  1880.667886619
+
+
+              total mpz_mul time        108.986636186 secs
+              total mpz_get_str time   3362.172292325 secs
+              total openssl hash time    19.205909655 secs
+              total execute time       3491.135595852 secs
+
+-------- compute and processing times --------
+  #         compute           string            openssl
+  1       0.000000000       0.000041000       0.017751928
+  2       0.000008000       0.000003000       0.000010000
+  3       0.000002000       0.000008000       0.000018000
+  4       0.000019000       0.000004000       0.000008000
+  5       0.000004000       0.000003000       0.000009000
+  6       0.000003000       0.000005000       0.000010000
+  7       0.000003000       0.000010000       0.000014000
+  8       0.000005000       0.000103999       0.000023000
+  9       0.000012000       0.000067999       0.000036000
+ 10       0.000035000       0.000208999       0.000066000
+ 11       0.000086000       0.000497998       0.000122999
+ 12       0.000231999       0.001500994       0.000236999
+ 13       0.000576997       0.004640981       0.000466998
+ 14       0.001398994       0.013763944       0.000780997
+ 15       0.002498990       0.024861898       0.001182995
+ 16       0.005404978       0.065950729       0.002355990
+ 17       0.012111950       0.169085306       0.004690981
+ 18       0.021538912       0.422859264       0.009388962
+ 19       0.044822816       1.017684823       0.018814923
+ 20       0.103797574       2.388399195       0.037504846
+ 21       0.227962064       5.556155192       0.075010692
+ 22       0.687327178      12.868225177       0.149970384
+ 23       1.413163199      30.134795300       0.299791769
+ 24       2.906662069      70.165544977       0.599754538
+ 25       5.794844212     161.935125272       1.199464076
+ 26      12.965326778     367.010229838       2.398455744
+ 27      29.567487570     829.724629821       4.796779585
+ 28      55.231302906    1880.667886619       9.593190249
+------------------------------------------------
+real 3491.16
+user 3482.57
+sys 5.90
+sedna$ 
+
