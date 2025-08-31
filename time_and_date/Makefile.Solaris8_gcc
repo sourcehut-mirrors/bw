@@ -1,0 +1,23 @@
+
+CC=/opt/csw/gcc4/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -m32 -g -O0 -mcpu=v7 -mno-v8plus \
+	-mno-vis -fno-builtin -mno-app-regs \
+	-mhard-float -mno-faster-structs \
+	-mstd-struct-return -pthreads -fPIC
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=500
+
+SRCS = test_tdiff.c tdiff.c
+
+OBJS = test_tdiff.o tdiff.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+test_tdiff: $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) test_tdiff

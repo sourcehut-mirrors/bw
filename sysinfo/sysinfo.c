@@ -86,6 +86,9 @@ typedef unsigned short  u_short;
 #include <sys/rtprio.h>
 #endif
 
+#define ONEGB 1073741824
+
+
 /* 23 Aug 2021 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
  *
  * Some platforms do not have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES

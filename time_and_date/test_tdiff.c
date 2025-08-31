@@ -29,7 +29,9 @@
  * ------------------------------------------------------------------
  */
 
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 500
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +52,6 @@ main ( int argc, char **argv )
     double billion = 1000000000.0;
     double fp64_delta;
 
-    /* we may or may not have CLOCK_MONOTONIC implemented */
     clockid_t clock_flag;
 
     tdiff_type delta_time;
@@ -291,7 +292,13 @@ main ( int argc, char **argv )
     printf("---------------------------------------\n");
 
     errno = 0;
+
+#if ! defined (CLOCK_MONOTONIC)
+    clock_flag = CLOCK_REALTIME;
+#else
     clock_flag = CLOCK_MONOTONIC;
+#endif
+
     err_clock = clock_gettime(clock_flag, &tn_0);
     if ( err_clock != 0 ) {
         fprintf(stderr,"FAIL : ");
