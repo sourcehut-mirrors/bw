@@ -1,8 +1,13 @@
 
+This is a really stupid way to play roulette. To be honest, there is
+no smart way to play. The only way to win is to not play.
+
+The code schadenfreude.c should similate this moronic algorithm.
+
 Put a $5 chip on every black square. Then put a $5 chip on every split
 that is beside the black square and provides a red number.
 
-/* The layout generally looks like this : 
+The layout of the American stupid roulette table looks like this : 
 
     -------------------------------------------------------------+
    / |    |    |    |    |    |    |    |    |    |    |    |    |
@@ -18,11 +23,8 @@ that is beside the black square and provides a red number.
    \ |    |    |    |    |    |    |    |    |    |    |    |    |
     -------------------------------------------------------------+
 
-     */
 
-
-
-So if we place an X on every black square then we see this : 
+So if we place an bet ( X ) on every black square : 
 
 
     -------------------------------------------------------------+
@@ -59,7 +61,8 @@ in a unique way  :
     -------------------------------------------------------------+
 
 In this way we have every black number covered as well as all of the red
-numbers.
+numbers. That is all the squares on the board with the obvious exception
+being those nasty green zeros.
 
 Lets look at the probability of a "win" here.  We have 38 numbers on the
 wheel when we include the 36 regular numbers and the 0 and double 00. I
@@ -72,16 +75,15 @@ have enough of a bankroll and the table has no limits then sure. Good
 luck with that.
 
 There are 18 red numbers and 18 black numbers with a wheel of 38 total
-possible results and thus : 
+possible results and thus the probability p() of a red number : 
 
-             ρ(Rw) = 18 / 38 = 0.47368421
+             p(Rw) = 18 / 38 = 0.47368421
 
-Where this means probability of a "win" for red numbers. So here we see
-the result is a bit better than 47% and surely anyone can see the same
-result for black.  In general the house always wins with a slight edge
-that gives 52.6% to the casino. However wait. What if we cover all of
-the black numbers as above and toss in the splits that provide a red
-number?
+Here we see the probability of a red number is a bit better than 47%
+and surely anyone can see the same result for black.  In general the
+casino ( the house ) always wins with a slight edge that gives 52.6%
+to the casino. However wait. What if we cover all of the black numbers
+as above and toss in the splits that provide a red number?
 
 That is the full list of all black numbers with the red split neighbours
 with no consideration to the results from a roulette wheel.  We have two

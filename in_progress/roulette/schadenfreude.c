@@ -1,25 +1,47 @@
 
 /*
  * schmuck.c Simulate the gambling schmuck described in the readme
- * Copyright (C) Dennis Clarke 2019
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
 
-#define _XOPEN_SOURCE 500
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
+#define _XOPEN_SOURCE 600
+#endif
 
 #include <errno.h>
 #include <locale.h>
@@ -41,21 +63,21 @@
  *        00 27 10 25 29 12  8 19 31 18  6 21 33 16  4 23 35 14  2
  *
  * The layout generally looks like this : 
-
-    -------------------------------------------------------------+
-   / |    |    |    |    |    |    |    |    |    |    |    |    |
-  /  | 3r | 6b | 9r | 12r| 15b| 18r| 21r| 24b| 27r| 30r| 33b| 36r|
- /   |    |    |    |    |    |    |    |    |    |    |    |    |
-+ 00 +----+----+----+----+----+----+----+----+----+----+----+----+
-|    |    |    |    |    |    |    |    |    |    |    |    |    |
-+----+ 2b | 5r | 8b | 11b| 14r| 17b| 20b| 23r| 26b| 29b| 32r| 35b|
-|    |    |    |    |    |    |    |    |    |    |    |    |    |
-+  0 +----+----+----+----+----+----+----+----+----+----+----+----+
- \   |    |    |    |    |    |    |    |    |    |    |    |    |
-  \  | 1r | 4b | 7r | 10b| 13b| 16r| 19r| 22b| 25r| 28b| 31b| 34r|
-   \ |    |    |    |    |    |    |    |    |    |    |    |    |
-    -------------------------------------------------------------+
-
+ *  
+ *      -------------------------------------------------------------+
+ *     / |    |    |    |    |    |    |    |    |    |    |    |    |
+ *    /  | 3r | 6b | 9r | 12r| 15b| 18r| 21r| 24b| 27r| 30r| 33b| 36r|
+ *   /   |    |    |    |    |    |    |    |    |    |    |    |    |
+ *  + 00 +----+----+----+----+----+----+----+----+----+----+----+----+
+ *  |    |    |    |    |    |    |    |    |    |    |    |    |    |
+ *  +----+ 2b | 5r | 8b | 11b| 14r| 17b| 20b| 23r| 26b| 29b| 32r| 35b|
+ *  |    |    |    |    |    |    |    |    |    |    |    |    |    |
+ *  +  0 +----+----+----+----+----+----+----+----+----+----+----+----+
+ *   \   |    |    |    |    |    |    |    |    |    |    |    |    |
+ *    \  | 1r | 4b | 7r | 10b| 13b| 16r| 19r| 22b| 25r| 28b| 31b| 34r|
+ *     \ |    |    |    |    |    |    |    |    |    |    |    |    |
+ *      -------------------------------------------------------------+
+ *  
  * also yes it did take me some time to get that to fit in
  * a width of 72 columns or less.
  */
@@ -86,7 +108,7 @@ int main (int argc, char **argv) {
     uint32_t bet = BET;
     long max_spin_l;
 
-    uint32_t n_even, n_odd, n_red, n_black, n_zero;
+    uint32_t n_even, n_odd, n_red, n_black, n_zero_0, n_zero_00;
     uint32_t iteration_count, i;
     uint32_t slot;
     /* FILE   *fp;   maybe use /dev/random someday */
@@ -141,14 +163,14 @@ int main (int argc, char **argv) {
      * data for the numbers 33 upwards to 36. We need to reverse
      * the bit order : 
      *
-     * hex   A    A    5    5    6    A    9    5    5
-     *    1010 1010 0101 0101 0110 1010 1001 0101 0101
-     *    ^                    ^        ^            ^
-     *    |                    |        |            bit0
-     *    |                    |        bit11        slot1
-     *    |                    bit18    slot12
-     *    bit35                slot19
-     *    slot36
+     *   hex    A    A    5    5    6    A    9    5    5
+     *       1010 1010 0101 0101 0110 1010 1001 0101 0101
+     *       ^                    ^        ^            ^
+     *       |                    |        |            bit0
+     *       |                    |        bit11        slot1
+     *       |                    bit18    slot12
+     *       bit35                slot19
+     *       slot36
      *
      * Above we see that bit35 will represent the red 36 and
      * bit18 is for red 19. This makes for a trivial bit mask
@@ -165,6 +187,10 @@ int main (int argc, char **argv) {
 
     /* check if a max_spin parameter was on the command line */
     if ( argc > 1 ) {
+
+        /* This is a somewhat silly way to determine if the user
+         * entered a valid number. They may have just entered a
+         * string of trash that means nothing. */
 
         char *str, *endptr;
         /* note that doing a conversion to a long really will
@@ -222,7 +248,8 @@ assume_max:
        See the readme to understand how bonkers this is.
 
        Tests show you may lose your criteria of 500 with 0.003 rho
-       after 3 spins in 100000 tests.
+       after 3 spins in 100000 tests. That means you lose everything
+       in just three spins of the wheel. Welcome to roulette.
 
        In fact, it is stupid to think that roulette can ever be played
        with such a fashion as to win. Ever. Period. Regardless of what
@@ -243,7 +270,7 @@ assume_max:
        }
      */
 
-    /* get the timenow and use the nanoseconds data as a seed
+    /* Get the timenow and use the nanoseconds data as a seed
      * for the srand48/drand48 PRNG */
     if ( clock_gettime(CLOCK_REALTIME, &time_now) == -1 ) {
         /* We could not get the clock. Bail out. */
@@ -251,9 +278,9 @@ assume_max:
         return EXIT_FAILURE;
     }
 
-    /* if the user wants to use drand48 as the PRNG then they may
-     * simply append a parameter on the command line. Any damn thing
-     * as the third parameter will work. */
+    /* If the user wants to use drand48 as the PRNG then they may
+     * simply append a parameter on the command line.
+     * Anything as the third parameter will work. */
     if ( argc > 2 ) {
         drand48_flag=1;
         c_time_string = ctime(&time_now.tv_sec);
@@ -273,7 +300,8 @@ assume_max:
     n_even = 0;
     n_red = 0;
     n_black = 0;
-    n_zero = 0;
+    n_zero_0 = 0;
+    n_zero_00 = 0;
 
     if ( clock_gettime(CLOCK_REALTIME, &time_start) == -1 ) {
         /* We could not get the clock. Bail out.
@@ -285,7 +313,7 @@ assume_max:
 
     for ( i = 0; i < max_spin; ++i ) {
            
-        /* no matter what we do we bet 36 chips */
+        /* see the readme and bet 36 chips */
         if ( ( ( (int)bankroll - (int)bet*36 ) > 0 )
             &&
              ( (int)bankroll > ( (int)bankroll_start - (int)criteria ) )
@@ -304,6 +332,7 @@ assume_max:
             slot = (uint32_t)(rval * 38.0);
             printf(" rval = %2i", slot);
     
+            /* keep track of where we landed */
             ball[slot] += 1;
     
             /* so long as we didn't end up on a 0 or 00 then
@@ -328,27 +357,24 @@ assume_max:
                 if ( colour_flag > 0 ) {
                     n_red += 1;
                     printf("    red");
-
                     /* player gets a split 17:1 and may pull back their
                      * split bet chip */
                     bankroll = bankroll + bet + 17 * bet;
-
                 } else {
                     n_black += 1;
                     printf("  black");
-
                     /* player gets a split 17:1 and a straight 35:1
                      * and also the player may pull back their straight
                      * bet chip and also the split bet chip */
                     bankroll = bankroll + 2 * bet + 52 * bet;
                 }
-    
             } else {
                 /* The ball landed on a 0 or 00 */
-                n_zero += 1;
                 if (slot) {
+                    n_zero_00 += 1;
                     printf("  --> slot 00");
                 } else {
+                    n_zero_0 += 1;
                     printf("  --> slot  0");
                 }
                 printf("        green");
@@ -376,20 +402,26 @@ bail_out:
     }
 
     /* print out the number of times the ball landed on each number */
-    printf ( "\n\nIterations = %5i\n", iteration_count );
+    printf ( "\n\n\n\nIterations = %5i\n", iteration_count );
+
     printf ( "     0 = %5i     %11.8f\n", ball[0],
              ( 1.0 * ball[0] / ( 1.0 * iteration_count ) ) );
     printf ( "    00 = %5i     %11.8f\n", ball[1],
              ( 1.0 * ball[1] / ( 1.0 * iteration_count ) ) );
 
+    /* redundant 
+    printf ( "     0 = %5i     %11.8f\n", n_zero_0, 
+             ( 1.0 * n_zero_0 / ( 1.0 * iteration_count ) ) );
+
+    printf ( "    00 = %5i     %11.8f\n", n_zero_00, 
+             ( 1.0 * n_zero_00 / ( 1.0 * iteration_count ) ) );
+
+    */
+
     for ( i = 2; i < 38; ++i ) {
         printf ( "    %2i = %5i     %11.8f\n",  ( i - 1 ), ball[i],
              ( 1.0 * ball[i] / ( 1.0 * iteration_count ) ) );
     }
-
-    /* how many zeros ? */
-    printf ( "\n zeros = %5i     %11.8f\n", n_zero,
-          ( 1.0 * n_zero / ( 1.0 * iteration_count ) ) );
 
     /* what was the distribution of even and odds ? */
     printf ( "   odd = %5i     %11.8f\n", n_odd, 
