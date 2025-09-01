@@ -1,4 +1,18 @@
 
+/* This source code is taken directly from RFC-7693 :
+ *
+ *  Independent Submission                        M-J. Saarinen, Ed.
+ *  Request for Comments: 7693            Queen's University Belfast
+ *  Category: Informational                            J-P. Aumasson
+ *  ISSN: 2070-1721                                Kudelski Security
+ *                                                     November 2015
+ * Minor code changes done by Dennis Clarke in August 2025 to ensure
+ * the code is strict ISO9899:1990 ANSI C90 clean.
+ *
+ *  The BLAKE2 Cryptographic Hash and Message Authentication Code (MAC)
+ *
+ */
+
 /* blake2s.c
  * A simple blake2s Reference Implementation.
  */

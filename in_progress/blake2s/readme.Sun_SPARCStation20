@@ -1,0 +1,23 @@
+This was the env on the old Sun Solaris 8 SPARCStation 20
+
+AS=/opt/bw/bin/gas
+CC=/opt/csw/gcc4/bin/gcc
+CFLAGS=-m32 -g -O0 -mcpu=v7 -mno-v8plus -mno-vis -fno-builtin -mno-app-regs -mhard-float -mno-faster-structs -mstd-struct-return -pthreads -fPIC
+NICE=/usr/xpg4/bin/nice
+PAGER=/usr/xpg4/bin/more
+PATH=/opt/bw/bin:/opt/bw/sbin:/usr/xpg4/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/ccs/bin:/usr/openwin/bin:/opt/csw/gcc4/bin:/opt/csw/bin:/opt/schily/bin:/opt/SUNWspro/bin
+SHELL=/usr/xpg4/bin/sh
+TERM=vt100
+TIME=/usr/bin/time
+TZ=GMT
+_INIT_NET_STRATEGY=none
+_INIT_PREV_LEVEL=S
+_INIT_RUN_LEVEL=3
+_INIT_RUN_NPREV=0
+_INIT_UTS_ISA=sparc
+_INIT_UTS_MACHINE=sun4m
+_INIT_UTS_NODENAME=europa
+_INIT_UTS_PLATFORM=SUNW,SPARCstation-20
+_INIT_UTS_RELEASE=5.8
+_INIT_UTS_SYSNAME=SunOS
+_INIT_UTS_VERSION=Generic_117350-62

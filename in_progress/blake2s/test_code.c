@@ -1,21 +1,34 @@
 
-/* directly from the RFC
-
-Appendix E.  BLAKE2b and BLAKE2s Self-Test Module C Source
-
-   This module computes a series of keyed and unkeyed hashes from
-   deterministically generated pseudorandom data and computes a hash
-   over those results.  This is a fairly exhaustive, yet compact and
-   fast method for verifying that the hashing module is functioning
-   correctly.
-
-   Such testing is RECOMMENDED, especially when compiling the
-   implementation for a new a target platform configuration.
-   Furthermore, some security standards, such as FIPS-140, may require a
-   Power-On Self Test (POST) to be performed every time the
-   cryptographic module is loaded [FIPS140-2IG].
-
-*/
+/* This source code is taken directly from RFC-7693 :
+ *
+ *  Independent Submission                        M-J. Saarinen, Ed.
+ *  Request for Comments: 7693            Queen's University Belfast
+ *  Category: Informational                            J-P. Aumasson
+ *  ISSN: 2070-1721                                Kudelski Security
+ *                                                     November 2015
+ *
+ * Minor code changes done by Dennis Clarke in August 2025 to ensure
+ * the code is strict ISO9899:1990 ANSI C90 clean.
+ *
+ *  The BLAKE2 Cryptographic Hash and Message Authentication Code (MAC)
+ *
+ *
+ *--------------------------------------------------------------------
+ * Appendix E.  BLAKE2b and BLAKE2s Self-Test Module C Source
+ *
+ * This module computes a series of keyed and unkeyed hashes from
+ * deterministically generated pseudorandom data and computes a hash
+ * over those results.  This is a fairly exhaustive, yet compact and
+ * fast method for verifying that the hashing module is functioning
+ * correctly.
+ *
+ * Such testing is RECOMMENDED, especially when compiling the
+ * implementation for a new a target platform configuration.
+ * Furthermore, some security standards, such as FIPS-140, may
+ * require a Power-On Self Test (POST) to be performed every time
+ * the cryptographic module is loaded [FIPS140-2IG].
+ *
+ */
 
 /* test_main.c
  * Self test Modules for BLAKE2b and BLAKE2s -- and a stub main().
