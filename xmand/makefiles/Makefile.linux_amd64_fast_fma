@@ -1,0 +1,5 @@
+
+CFLAGS= -std=iso9899:1999 -m64 -O3 \
+	-ffast-math -ffp-contract=on -mfma
+
+include common.mk
