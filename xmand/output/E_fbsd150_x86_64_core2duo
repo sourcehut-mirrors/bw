@@ -1,0 +1,136 @@
+
+callisto$ ./xmand 1048576 262144 -0.749961860477924346924  -0.0119202360510826110840 1
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = callisto
+                     release = 15.0-PRERELEASE
+                     version = FreeBSD 15.0-PRERELEASE #4 main-n279987-9764aa1ccad0: Wed Sep  3 02:20:48 GMT 2025     root@callisto:/usr/obj/usr/src/amd64.amd64/sys/GENERIC
+                     machine = amd64
+                   cpu model = Intel(R) Core(TM)2 Duo CPU     E4400  @ 2.00GHz
+                   number of = 2
+                   page size = 4096
+               system memory = 4235448320
+                             = 4136180 kB
+                             = 4039 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    3 days    3 hours   45 mins   13 secs
+-------------------------------------------------------------------
+INFO : this_pid_prio = 0 of type RTP_PRIO_NORMAL
+INFO : __ISO_C_VISIBLE id defined
+INFO : baseline tdelta =            210 nsec
+INFO : magnify accepted as long long int
+INFO : FP Exception raised is FE_INEXACT FE_INEXACT
+real : Perfectly safe to ignore FE_INEXACT
+INFO : FP Exception raised is FE_INEXACT
+imag : Perfectly safe to ignore FE_INEXACT
+
+    mand_bail = 1048576
+pthread_limit = 1
+    translate = ( -7.49961860477924346923828125e-01 , -1.19202360510826110839843750e-02 )
+      magnify = +2.62144000000000000000000000e+05
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +1.49011611938476562500000000e-08
+pixel_imag_h = +1.49011611938476562500000000e-08
+raw  [ 1398 , 863  ]
+click at 1397 861 
+raw  [ 1398 , 863  ]
+click at 1397 861 
+raw  [ 675  , 563  ]
+DBUG : sample space [ 664   , 473    ]
+     : vbox  [ 010 , 007 ]
+     : win_r = +2.97851562500000000000000000e-01
+     : win_j = -7.51953125000000000000000000e-02
+     : after translation
+     : r_trn   = -7.49961860477924346923828125e-01
+     : j_trn   = -1.19202360510826110839843750e-02
+     : x_prime = -7.49959588050842285156250000e-01
+     : y_prime = -1.19208097457885742187500000e-02
+     : bailout = 1048576           
+     : magnify = 2.621440000000e+05
+[mand] =  3938075209036 nsec   3938.075209  sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -7.49969482421875000000000000e-01
+     : j[ 0][ 0][ 0][ 0] = -1.19278579950332641601562500e-02
+     :       mand_height =       802
+     : r[ 7][ 7][63][63] = -7.49961867928504943847656250e-01
+     : j[ 7][ 7][63][63] = -1.19202435016632080078125000e-02
+     :       mand_height =     72620
+     : r[ 8][ 8][ 0][ 0] = -7.49961853027343750000000000e-01
+     : j[ 8][ 8][ 0][ 0] = -1.19202286005020141601562500e-02
+     :       mand_height =     81883
+     : r[ 8][ 8][ 1][ 0] = -7.49961838126182556152343750e-01
+     : j[ 8][ 8][ 1][ 0] = -1.19202286005020141601562500e-02
+     :       mand_height =     86548
+     : r[ 8][ 8][32][32] = -7.49961376190185546875000000e-01
+     : j[ 8][ 8][32][32] = -1.19197517633438110351562500e-02
+     :       mand_height =     35719
+     : r[ 3][12][44][21] = -7.49965965747833251953125000e-01
+     : j[ 3][12][44][21] = -1.19161009788513183593750000e-02
+     :       mand_height =      6072
+     : r[15][15][63][63] = -7.49954238533973693847656250e-01
+     : j[15][15][63][63] = -1.19126141071319580078125000e-02
+     :       mand_height =      1848
+--------------------------- full plot done -----------------------------
+click at 674 561 
+raw  [ 1398 , 894  ]
+INFO : dumper_flag = 1
+click at 1397 892 
+raw  [ 1398 , 894  ]
+INFO : file /var/tmp/dclarke/20250914203828 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =  1048576
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +2.62144000000000000000000000e+05
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -7.49961860477924346923828125e-01
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = -1.19202360510826110839843750e-02
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20250914203828 closed.
+INFO : dumper_flag = 0
+click at 1397 892 
+raw  [ 794  , 587  ]
+right click
+click at 793 585 
+raw  [ 794  , 587  ]
+right click
+
+callisto$ openssl dgst -sha256 -r /var/tmp/dclarke/20250914203828
+0d5c27522f3cc92b514cc7419345ee6859b50f1eba4e189fc9dd89fd4198d980 */var/tmp/dclarke/20250914203828
+

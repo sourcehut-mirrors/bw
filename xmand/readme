@@ -1,6 +1,10 @@
 one may generate both timing and variant scripts with a bit
 of nasty awk :
 
-ls output/readme.dataset* | cut -c22-22 | sort -u | awk 'BEGIN{printf"#!/bin/sh\nLC_ALL=C\nexport LC_ALL\n\nTMPDIR=/var/tmp/\140\050 id | sed -e \047s/\133\136\050\135*\050\057\057\047 -e \047s\057\051.*\057\057\047 \051\140\nexport TMPDIR\nmkdir -m 0750 $TMPDIR > /dev/null 2>&1\nchmod 0750 $TMPDIR\n\n"}{print "cat timing_template | sed -e \047s/X/" $1 "/g\047 > $TMPDIR/t" $1 ".sh\nchmod 0755 $TMPDIR/t" $1 ".sh\n\ncat list_variant_template | sed -e \047s/X/" $1 "/g\047 > $TMPDIR/v" $1 ".sh\nchmod 0755 $TMPDIR/v" $1 ".sh\n\nls -l $TMPDIR/t" $1 ".sh $TMPDIR/v" $1 ".sh\n"}' > $TMPDIR/ms.sh
+-----------------------------------------
+
+ls -1b output/* | cut -c8-8 | sort -u | awk 'BEGIN{printf"#!/bin/sh\nLC_ALL=C\nexport LC_ALL\n\nTMPDIR=/var/tmp/\140\050 id | sed -e \047s/\133\136\050\135*\050\057\057\047 -e \047s\057\051.*\057\057\047 \051\140\nexport TMPDIR\nmkdir -m 0750 $TMPDIR > /dev/null 2>&1\nchmod 0750 $TMPDIR\n\n"}{print "cat timing_template | sed -e \047s/X/" $1 "/g\047 > $TMPDIR/t" $1 ".sh\nchmod 0755 $TMPDIR/t" $1 ".sh\n\ncat list_variant_template | sed -e \047s/X/" $1 "/g\047 > $TMPDIR/v" $1 ".sh\nchmod 0755 $TMPDIR/v" $1 ".sh\n\nls -l $TMPDIR/t" $1 ".sh $TMPDIR/v" $1 ".sh\n"}' > $TMPDIR/ms.sh
+
+----------------------------------------
 
 then look at $TMPDIR/ms.sh and run it
