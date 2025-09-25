@@ -41,7 +41,9 @@
 #define _XOPEN_SOURCE 600
 
 #define ELEMENT_COUNT_LIMIT 1073741824
-#define THREAD_LIMIT 256
+
+/* This is a silly number of threads */
+#define THREAD_LIMIT 512
 #define FIB_LIMIT 30
 
 /* If we are going to use pthread_mutex_trylock */

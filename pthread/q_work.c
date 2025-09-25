@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
             perror("     ");
             return EXIT_FAILURE;
         }
-        if ( ( candidate_int < 1 ) || ( candidate_int > 512 ) ){
+        if ( ( candidate_int < 1 ) || ( candidate_int > THREAD_LIMIT ) ){
             fprintf(stderr,"WARN : num_pthreads is unreasonable\n");
             fprintf(stderr,"     : we shall assume 4 pthreads and proceed.\n");
             num_pthreads = 4;
@@ -383,6 +383,10 @@ int main(int argc, char **argv) {
         } else if ( pthread_err == EPERM ) {
            fprintf(stderr,"FAIL : EPERM permission denied\n");
            perror("FAIL : EPERM");
+           return EXIT_FAILURE;
+        } else if ( pthread_err != 0 ) {
+           fprintf(stderr,"FAIL : unknown error at %i in %s\n",
+                                    __LINE__, __FILE__ );
            return EXIT_FAILURE;
         }
     }
