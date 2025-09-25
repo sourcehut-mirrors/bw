@@ -1,0 +1,15 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-builtin -fno-fast-math -mno-app-regs -mno-fmaf
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600 -D_REENTRANT \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS=	-lpthread -lrt -lm
+IDIR=	/usr/include
+
+include common.mk
+
