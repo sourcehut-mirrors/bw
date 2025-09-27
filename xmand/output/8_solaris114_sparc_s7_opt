@@ -1,0 +1,127 @@
+
+$ 
+$ ./xmand 16384 4096 -1.576179504394531250 0.0 64
+-------------------------------------------------------------------
+                 system name = SunOS
+                   node name = neptune
+                     release = 5.11
+                     version = 11.4.42.111.0
+                     machine = sun4v
+                   page size = 8192
+               system memory = 135559905280
+                             = 132382720 kB
+                             = 129280 MB about 126 GB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+INFO : baseline tdelta =            135 nsec
+INFO : magnify accepted as long long int
+
+    mand_bail = 16384
+pthread_limit = 64
+    translate = ( -1.57617950439453125000000000e+00 , +0.00000000000000000000000000e+00 )
+      magnify = +4.09600000000000000000000000e+03
+
+
+ X11 : default width=1044 height=1044
+     : connection number 4
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +9.53674316406250000000000000e-07
+pixel_imag_h = +9.53674316406250000000000000e-07
+raw  [ 501  , 658  ]
+DBUG : sample space [ 490   , 378    ]
+     : vbox  [ 007 , 005 ]
+     : win_r = -4.19921875000000000000000000e-02
+     : win_j = -2.60742187500000000000000000e-01
+     : after translation
+     : r_trn   = -1.57617950439453125000000000e+00
+     : j_trn   = +0.00000000000000000000000000e+00
+     : x_prime = -1.57620000839233398437500000e+00
+     : y_prime = -1.27315521240234375000000000e-04
+     : bailout = 16384             
+     : magnify = 4.096000000000e+03
+[mand] =     3529445715 nsec   3.529446     sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.57666730880737304687500000e+00
+     : j[ 0][ 0][ 0][ 0] = -4.87804412841796875000000000e-04
+     :       mand_height =        31
+     : r[ 7][ 7][63][63] = -1.57617998123168945312500000e+00
+     : j[ 7][ 7][63][63] = -4.76837158203125000000000000e-07
+     :       mand_height =       155
+     : r[ 8][ 8][ 0][ 0] = -1.57617902755737304687500000e+00
+     : j[ 8][ 8][ 0][ 0] = +4.76837158203125000000000000e-07
+     :       mand_height =       281
+     : r[ 8][ 8][ 1][ 0] = -1.57617807388305664062500000e+00
+     : j[ 8][ 8][ 1][ 0] = +4.76837158203125000000000000e-07
+     :       mand_height =       141
+     : r[ 8][ 8][32][32] = -1.57614850997924804687500000e+00
+     : j[ 8][ 8][32][32] = +3.09944152832031250000000000e-05
+     :       mand_height =        59
+     : r[ 3][12][44][21] = -1.57644224166870117187500000e+00
+     : j[ 3][12][44][21] = +2.64644622802734375000000000e-04
+     :       mand_height =        30
+     : r[15][15][63][63] = -1.57569169998168945312500000e+00
+     : j[15][15][63][63] = +4.87804412841796875000000000e-04
+     :       mand_height =        41
+--------------------------- full plot done -----------------------------
+click at 500 656 
+raw  [ 1402 , 889  ]
+INFO : dumper_flag = 1
+click at 1401 887 
+raw  [ 1402 , 889  ]
+INFO : file /var/tmp/dclarke/20250927075744 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =    16384
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +4.09600000000000000000000000e+03
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.57617950439453125000000000e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +0.00000000000000000000000000e+00
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20250927075744 closed.
+INFO : dumper_flag = 0
+click at 1401 887 
+raw  [ 602  , 715  ]
+right click
+click at 601 713 
+raw  [ 602  , 715  ]
+right click
+
+
+
+$ sha256 /var/tmp/dclarke/20250927075744
+15077453b1e53ed6a43e98143d64ce95a569a2c61f0a235fa0d4b835c3a1a663  /var/tmp/dclarke/20250927075744
+$ 
+
