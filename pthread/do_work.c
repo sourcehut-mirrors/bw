@@ -183,15 +183,24 @@ void *do_some_array_thing ( void *work_q ) {
                                  (size_t)sizeof(uint64_t));
 
         if ( foo->big_array == NULL ) {
-            /* really? possible ENOMEM? */
+            fbuf[0]='\0';
             if ( errno == ENOMEM ) {
-                /* TODO : this is not a thread safe way to output */
-                fprintf(stderr,"FAIL : calloc ENOMEM at %s:%d\n",
-                        __FILE__, __LINE__ );
+                sprintf(fbuf,"FAIL : calloc ENOMEM at %s:%d\n",
+                              __FILE__, __LINE__ );
+            } else if ( errno == EAGAIN ) {
+                /* Solaris 10 and upwards claims that we may get
+                 * error state EAGAIN for "There is not enough memory
+                 * available at this point in time". This may not be
+                 * in the POSIX spec. Ask Nico Sonack.
+                 */
+                sprintf(fbuf,"FAIL : calloc EAGAIN at %s:%d\n",
+                              __FILE__, __LINE__ );
             } else {
-                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                /*T H I S   S H O U L D   B E   I M P O S S I B L E*/
+                sprintf(fbuf,"FAIL : calloc UNKNOWN err at %s:%d\n",
                         __FILE__, __LINE__ );
             }
+            puts(fbuf);
             perror("FAIL ");
             /* this is horrible and here we bail out */
             exit ( EXIT_FAILURE );
