@@ -1,4 +1,4 @@
 #!/bin/sh
-grep 'nsec' output/X* | cut -f2 -d\:  | grep -v 'INFO' | cut -f2 -d\=  | sort -n | awk 'BEGIN{print"#!/bin/sh"}{print "/usr/bin/printf \047" $1 "    \047\ngrep \047" $1 "\047 output/X* | cut -f1 -d\: "}' > $TMPDIR/wat.sh; chmod 0755 $TMPDIR/wat.sh
+grep 'nsec' output/X* | cut -f2 -d\:  | grep -v 'INFO' | grep -v 'vbox' | cut -f2 -d\=  | sort -n | awk 'BEGIN{print"#!/bin/sh"}{print "/usr/bin/printf \047" $1 "    \047\ngrep \047" $1 "\047 output/X* | cut -f1 -d\: "}' > $TMPDIR/wat.sh; chmod 0755 $TMPDIR/wat.sh
 $TMPDIR/wat.sh | sed -e 's/output\/X_//' | awk '{ printf("%16s    %s\n", $1, $2)}'
 rm $TMPDIR/wat.sh

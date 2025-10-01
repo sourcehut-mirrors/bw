@@ -226,6 +226,11 @@ int main(int argc, char*argv[])
      * over and over. */
     int vbox_flag[VBOX_REAL_COUNT][VBOX_IMAG_COUNT];
 
+    /* due to perceived catastrophic loss of performance
+     * on the ORACLE S7 server we may want verbose
+     * t_delta data per vbox */
+    int debug = 0;
+
     /*
      * uint32_t mandel_val[VBOX_REAL_COUNT][VBOX_IMAG_COUNT][VBOX_SAMPLE_REAL][VBOX_SAMPLE_IMAG];
      */
@@ -562,6 +567,11 @@ int main(int argc, char*argv[])
                 pthread_limit = 1;
             }
         }
+
+        /* we may want verbose time delta reports within each vbox */
+        if ( argc == 7 ) {
+            debug = 1;
+        };
 
     } else {
         fprintf(stderr,"WARN : No arguments received thus we have\n");
@@ -2163,6 +2173,9 @@ replot:
                             sprintf(buf,"[vbox] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
                             XSetForeground(dsp, gc3, yellow.pixel);
                             XDrawImageString( dsp, win3, gc3, 10, 310, buf, (int)strlen(buf));
+                            if ( debug ) {
+                                fprintf(stderr,"[ %2i , %2i ] %s\n", vbox_r, vbox_j, buf);
+                            }
                         }
                     } /* vbox_r for */
                 } /* vbox_j for */
@@ -2218,6 +2231,7 @@ replot:
 
         } else if ( button == Button3 ) {
 
+            /* TODO : implement a check for the ESC key */
             printf("right click\n");
             clock_gettime(CLOCK_REALTIME, &t1 );
             t_delta = timediff( t0, t1 );
@@ -2228,8 +2242,8 @@ replot:
 
             t0.tv_sec = t1.tv_sec;
             t0.tv_nsec = t1.tv_nsec;
-            /* If a 200ms right double click anywhere then quit */
-            if ( t_delta < 200000000 ) {
+            /* If a 250ms right double click anywhere then quit */
+            if ( t_delta < 250000000 ) {
                 printf("\n\n");
                 /* If we allocate memory for any purpose whatsoever
                  * then we had better free() it. */

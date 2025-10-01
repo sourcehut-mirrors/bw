@@ -1,0 +1,403 @@
+
+
+neptune$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2 d
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = neptune
+                     release = 6.17.0-genunix
+                     version = #1 SMP Mon Sep 29 19:24:27 UTC 2025
+                     machine = sparc64
+                   page size = 8192
+               system memory = 134224281600
+                             = 131078400 kB
+                             = 128006 MB about 125 GB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+INFO : baseline tdelta =             90 nsec
+INFO : magnify accepted as long long int
+
+    mand_bail = 256
+pthread_limit = 2
+    translate = ( -1.22589111328125000000000000e+00 , -1.77673339843750000000000000e-01 )
+      magnify = +1.28000000000000000000000000e+02
+
+
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+
+--------------------------------------------
+pixel_real_w = +3.05175781250000000000000000e-05
+pixel_imag_h = +3.05175781250000000000000000e-05
+raw  [ 652  , 659  ]
+DBUG : sample space [ 641   , 377    ]
+     : vbox  [ 010 , 005 ]
+     : win_r = +2.52929687500000000000000000e-01
+     : win_j = -2.62695312500000000000000000e-01
+     : after translation
+     : r_trn   = -1.22589111328125000000000000e+00
+     : j_trn   = -1.77673339843750000000000000e-01
+     : x_prime = -1.22193908691406250000000000e+00
+     : y_prime = -1.81777954101562500000000000e-01
+     : bailout = 256               
+     : magnify = 1.280000000000e+02
+[  0 ,  0 ] [vbox] =        1568428 nsec   1.568428e-03 sec
+[  1 ,  0 ] [vbox] =        1351035 nsec   1.351035e-03 sec
+[  2 ,  0 ] [vbox] =        1380331 nsec   1.380331e-03 sec
+[  3 ,  0 ] [vbox] =        1439720 nsec   1.439720e-03 sec
+[  4 ,  0 ] [vbox] =        1931193 nsec   1.931193e-03 sec
+[  5 ,  0 ] [vbox] =        2343385 nsec   2.343385e-03 sec
+[  6 ,  0 ] [vbox] =        1874159 nsec   1.874159e-03 sec
+[  7 ,  0 ] [vbox] =        1445856 nsec   1.445856e-03 sec
+[  8 ,  0 ] [vbox] =        1408953 nsec   1.408953e-03 sec
+[  9 ,  0 ] [vbox] =        1395452 nsec   1.395452e-03 sec
+[ 10 ,  0 ] [vbox] =        1371301 nsec   1.371301e-03 sec
+[ 11 ,  0 ] [vbox] =        1373027 nsec   1.373027e-03 sec
+[ 12 ,  0 ] [vbox] =        1376926 nsec   1.376926e-03 sec
+[ 13 ,  0 ] [vbox] =        1374976 nsec   1.374976e-03 sec
+[ 14 ,  0 ] [vbox] =        1411638 nsec   1.411638e-03 sec
+[ 15 ,  0 ] [vbox] =        1415868 nsec   1.415868e-03 sec
+[  0 ,  1 ] [vbox] =        1577697 nsec   1.577697e-03 sec
+[  1 ,  1 ] [vbox] =        1345469 nsec   1.345469e-03 sec
+[  2 ,  1 ] [vbox] =        1348245 nsec   1.348245e-03 sec
+[  3 ,  1 ] [vbox] =        1420324 nsec   1.420324e-03 sec
+[  4 ,  1 ] [vbox] =        1674483 nsec   1.674483e-03 sec
+[  5 ,  1 ] [vbox] =        2385103 nsec   2.385103e-03 sec
+[  6 ,  1 ] [vbox] =        1833912 nsec   1.833912e-03 sec
+[  7 ,  1 ] [vbox] =        1548191 nsec   1.548191e-03 sec
+[  8 ,  1 ] [vbox] =        1475977 nsec   1.475977e-03 sec
+[  9 ,  1 ] [vbox] =        1448466 nsec   1.448466e-03 sec
+[ 10 ,  1 ] [vbox] =        1429249 nsec   1.429249e-03 sec
+[ 11 ,  1 ] [vbox] =        1392482 nsec   1.392482e-03 sec
+[ 12 ,  1 ] [vbox] =        1389782 nsec   1.389782e-03 sec
+[ 13 ,  1 ] [vbox] =        1407213 nsec   1.407213e-03 sec
+[ 14 ,  1 ] [vbox] =        1423054 nsec   1.423054e-03 sec
+[ 15 ,  1 ] [vbox] =        1471432 nsec   1.471432e-03 sec
+[  0 ,  2 ] [vbox] =        1580848 nsec   1.580848e-03 sec
+[  1 ,  2 ] [vbox] =        1352460 nsec   1.352460e-03 sec
+[  2 ,  2 ] [vbox] =        1370476 nsec   1.370476e-03 sec
+[  3 ,  2 ] [vbox] =        1457901 nsec   1.457901e-03 sec
+[  4 ,  2 ] [vbox] =        1574743 nsec   1.574743e-03 sec
+[  5 ,  2 ] [vbox] =        2229319 nsec   2.229319e-03 sec
+[  6 ,  2 ] [vbox] =        2021782 nsec   2.021782e-03 sec
+[  7 ,  2 ] [vbox] =        1661103 nsec   1.661103e-03 sec
+[  8 ,  2 ] [vbox] =        1576888 nsec   1.576888e-03 sec
+[  9 ,  2 ] [vbox] =        1522000 nsec   1.522000e-03 sec
+[ 10 ,  2 ] [vbox] =        1557342 nsec   1.557342e-03 sec
+[ 11 ,  2 ] [vbox] =        1649102 nsec   1.649102e-03 sec
+[ 12 ,  2 ] [vbox] =        1506309 nsec   1.506309e-03 sec
+[ 13 ,  2 ] [vbox] =        1484918 nsec   1.484918e-03 sec
+[ 14 ,  2 ] [vbox] =        1500278 nsec   1.500278e-03 sec
+[ 15 ,  2 ] [vbox] =        1509054 nsec   1.509054e-03 sec
+[  0 ,  3 ] [vbox] =        1602224 nsec   1.602224e-03 sec
+[  1 ,  3 ] [vbox] =        1376491 nsec   1.376491e-03 sec
+[  2 ,  3 ] [vbox] =        1378546 nsec   1.378546e-03 sec
+[  3 ,  3 ] [vbox] =        1417623 nsec   1.417623e-03 sec
+[  4 ,  3 ] [vbox] =        1507508 nsec   1.507508e-03 sec
+[  5 ,  3 ] [vbox] =        1642876 nsec   1.642876e-03 sec
+[  6 ,  3 ] [vbox] =        1965319 nsec   1.965319e-03 sec
+[  7 ,  3 ] [vbox] =        2460317 nsec   2.460317e-03 sec
+[  8 ,  3 ] [vbox] =        1993671 nsec   1.993671e-03 sec
+[  9 ,  3 ] [vbox] =        1649956 nsec   1.649956e-03 sec
+[ 10 ,  3 ] [vbox] =        1990415 nsec   1.990415e-03 sec
+[ 11 ,  3 ] [vbox] =        2024782 nsec   2.024782e-03 sec
+[ 12 ,  3 ] [vbox] =        1576992 nsec   1.576992e-03 sec
+[ 13 ,  3 ] [vbox] =        1529875 nsec   1.529875e-03 sec
+[ 14 ,  3 ] [vbox] =        1501328 nsec   1.501328e-03 sec
+[ 15 ,  3 ] [vbox] =        1511079 nsec   1.511079e-03 sec
+[  0 ,  4 ] [vbox] =        1626346 nsec   1.626346e-03 sec
+[  1 ,  4 ] [vbox] =        1375381 nsec   1.375381e-03 sec
+[  2 ,  4 ] [vbox] =        1385237 nsec   1.385237e-03 sec
+[  3 ,  4 ] [vbox] =        1464487 nsec   1.464487e-03 sec
+[  4 ,  4 ] [vbox] =        1497158 nsec   1.497158e-03 sec
+[  5 ,  4 ] [vbox] =        1598998 nsec   1.598998e-03 sec
+[  6 ,  4 ] [vbox] =        1827011 nsec   1.827011e-03 sec
+[  7 ,  4 ] [vbox] =        2609020 nsec   2.609020e-03 sec
+[  8 ,  4 ] [vbox] =        2346235 nsec   2.346235e-03 sec
+[  9 ,  4 ] [vbox] =        2045769 nsec   2.045769e-03 sec
+[ 10 ,  4 ] [vbox] =       57551584 nsec   5.755158e-02 sec
+[ 11 ,  4 ] [vbox] =        1774029 nsec   1.774029e-03 sec
+[ 12 ,  4 ] [vbox] =        1613145 nsec   1.613145e-03 sec
+[ 13 ,  4 ] [vbox] =        1586774 nsec   1.586774e-03 sec
+[ 14 ,  4 ] [vbox] =        1558062 nsec   1.558062e-03 sec
+[ 15 ,  4 ] [vbox] =        1545401 nsec   1.545401e-03 sec
+[  0 ,  5 ] [vbox] =        1633590 nsec   1.633590e-03 sec
+[  1 ,  5 ] [vbox] =        1389137 nsec   1.389137e-03 sec
+[  2 ,  5 ] [vbox] =        1438175 nsec   1.438175e-03 sec
+[  3 ,  5 ] [vbox] =        1504238 nsec   1.504238e-03 sec
+[  4 ,  5 ] [vbox] =        1560417 nsec   1.560417e-03 sec
+[  5 ,  5 ] [vbox] =        1852858 nsec   1.852858e-03 sec
+[  6 ,  5 ] [vbox] =        2088206 nsec   2.088206e-03 sec
+[  7 ,  5 ] [vbox] =        2572658 nsec   2.572658e-03 sec
+[  8 ,  5 ] [vbox] =        3332466 nsec   3.332466e-03 sec
+[  9 ,  5 ] [vbox] =        2784365 nsec   2.784365e-03 sec
+[ 10 ,  5 ] [vbox] =        2842914 nsec   2.842914e-03 sec
+[ 11 ,  5 ] [vbox] =        2026478 nsec   2.026478e-03 sec
+[ 12 ,  5 ] [vbox] =        1673118 nsec   1.673118e-03 sec
+[ 13 ,  5 ] [vbox] =        1617405 nsec   1.617405e-03 sec
+[ 14 ,  5 ] [vbox] =        2012917 nsec   2.012917e-03 sec
+[ 15 ,  5 ] [vbox] =        1762823 nsec   1.762823e-03 sec
+[  0 ,  6 ] [vbox] =        1705535 nsec   1.705535e-03 sec
+[  1 ,  6 ] [vbox] =        1536341 nsec   1.536341e-03 sec
+[  2 ,  6 ] [vbox] =        1865054 nsec   1.865054e-03 sec
+[  3 ,  6 ] [vbox] =        1605525 nsec   1.605525e-03 sec
+[  4 ,  6 ] [vbox] =        1625535 nsec   1.625535e-03 sec
+[  5 ,  6 ] [vbox] =        1853563 nsec   1.853563e-03 sec
+[  6 ,  6 ] [vbox] =        2209713 nsec   2.209713e-03 sec
+[  7 ,  6 ] [vbox] =        2555242 nsec   2.555242e-03 sec
+[  8 ,  6 ] [vbox] =        3026973 nsec   3.026973e-03 sec
+[  9 ,  6 ] [vbox] =        2544711 nsec   2.544711e-03 sec
+[ 10 ,  6 ] [vbox] =        1940673 nsec   1.940673e-03 sec
+[ 11 ,  6 ] [vbox] =        1792945 nsec   1.792945e-03 sec
+[ 12 ,  6 ] [vbox] =        1694914 nsec   1.694914e-03 sec
+[ 13 ,  6 ] [vbox] =        1670148 nsec   1.670148e-03 sec
+[ 14 ,  6 ] [vbox] =        2072395 nsec   2.072395e-03 sec
+[ 15 ,  6 ] [vbox] =        2534331 nsec   2.534331e-03 sec
+[  0 ,  7 ] [vbox] =        1800730 nsec   1.800730e-03 sec
+[  1 ,  7 ] [vbox] =       40849026 nsec   4.084903e-02 sec
+[  2 ,  7 ] [vbox] =        2232154 nsec   2.232154e-03 sec
+[  3 ,  7 ] [vbox] =        1710875 nsec   1.710875e-03 sec
+[  4 ,  7 ] [vbox] =        1803190 nsec   1.803190e-03 sec
+[  5 ,  7 ] [vbox] =        1807031 nsec   1.807031e-03 sec
+[  6 ,  7 ] [vbox] =        1861559 nsec   1.861559e-03 sec
+[  7 ,  7 ] [vbox] =        2306288 nsec   2.306288e-03 sec
+[  8 ,  7 ] [vbox] =        2890330 nsec   2.890330e-03 sec
+[  9 ,  7 ] [vbox] =        3487274 nsec   3.487274e-03 sec
+[ 10 ,  7 ] [vbox] =        2442796 nsec   2.442796e-03 sec
+[ 11 ,  7 ] [vbox] =        2125798 nsec   2.125798e-03 sec
+[ 12 ,  7 ] [vbox] =        1741162 nsec   1.741162e-03 sec
+[ 13 ,  7 ] [vbox] =        1738402 nsec   1.738402e-03 sec
+[ 14 ,  7 ] [vbox] =        1987071 nsec   1.987071e-03 sec
+[ 15 ,  7 ] [vbox] =        2693745 nsec   2.693745e-03 sec
+[  0 ,  8 ] [vbox] =        1649956 nsec   1.649956e-03 sec
+[  1 ,  8 ] [vbox] =        1678143 nsec   1.678143e-03 sec
+[  2 ,  8 ] [vbox] =        1926287 nsec   1.926287e-03 sec
+[  3 ,  8 ] [vbox] =        2725727 nsec   2.725727e-03 sec
+[  4 ,  8 ] [vbox] =        2313189 nsec   2.313189e-03 sec
+[  5 ,  8 ] [vbox] =        1916867 nsec   1.916867e-03 sec
+[  6 ,  8 ] [vbox] =        2498734 nsec   2.498734e-03 sec
+[  7 ,  8 ] [vbox] =        2988781 nsec   2.988781e-03 sec
+[  8 ,  8 ] [vbox] =        5808968 nsec   5.808968e-03 sec
+[  9 ,  8 ] [vbox] =       72784196 nsec   7.278420e-02 sec
+[ 10 ,  8 ] [vbox] =        2018227 nsec   2.018227e-03 sec
+[ 11 ,  8 ] [vbox] =        1775859 nsec   1.775859e-03 sec
+[ 12 ,  8 ] [vbox] =        1817711 nsec   1.817711e-03 sec
+[ 13 ,  8 ] [vbox] =        1776354 nsec   1.776354e-03 sec
+[ 14 ,  8 ] [vbox] =        1868204 nsec   1.868204e-03 sec
+[ 15 ,  8 ] [vbox] =        2422185 nsec   2.422185e-03 sec
+[  0 ,  9 ] [vbox] =        2130344 nsec   2.130344e-03 sec
+[  1 ,  9 ] [vbox] =        1740037 nsec   1.740037e-03 sec
+[  2 ,  9 ] [vbox] =        2043714 nsec   2.043714e-03 sec
+[  3 ,  9 ] [vbox] =        2715421 nsec   2.715421e-03 sec
+[  4 ,  9 ] [vbox] =        2990686 nsec   2.990686e-03 sec
+[  5 ,  9 ] [vbox] =        2014747 nsec   2.014747e-03 sec
+[  6 ,  9 ] [vbox] =        2711986 nsec   2.711986e-03 sec
+[  7 ,  9 ] [vbox] =        3606711 nsec   3.606711e-03 sec
+[  8 ,  9 ] [vbox] =        2861844 nsec   2.861844e-03 sec
+[  9 ,  9 ] [vbox] =        2864034 nsec   2.864034e-03 sec
+[ 10 ,  9 ] [vbox] =        2034683 nsec   2.034683e-03 sec
+[ 11 ,  9 ] [vbox] =        1835232 nsec   1.835232e-03 sec
+[ 12 ,  9 ] [vbox] =        1989396 nsec   1.989396e-03 sec
+[ 13 ,  9 ] [vbox] =        1932213 nsec   1.932213e-03 sec
+[ 14 ,  9 ] [vbox] =        1997076 nsec   1.997076e-03 sec
+[ 15 ,  9 ] [vbox] =        3284058 nsec   3.284058e-03 sec
+[  0 , 10 ] [vbox] =        2351336 nsec   2.351336e-03 sec
+[  1 , 10 ] [vbox] =        2004306 nsec   2.004306e-03 sec
+[  2 , 10 ] [vbox] =       94777834 nsec   9.477783e-02 sec
+[  3 , 10 ] [vbox] =        2693205 nsec   2.693205e-03 sec
+[  4 , 10 ] [vbox] =        3493275 nsec   3.493275e-03 sec
+[  5 , 10 ] [vbox] =        2427885 nsec   2.427885e-03 sec
+[  6 , 10 ] [vbox] =        3208184 nsec   3.208184e-03 sec
+[  7 , 10 ] [vbox] =        4267602 nsec   4.267602e-03 sec
+[  8 , 10 ] [vbox] =        2738013 nsec   2.738013e-03 sec
+[  9 , 10 ] [vbox] =        2074360 nsec   2.074360e-03 sec
+[ 10 , 10 ] [vbox] =        1927142 nsec   1.927142e-03 sec
+[ 11 , 10 ] [vbox] =        1894246 nsec   1.894246e-03 sec
+[ 12 , 10 ] [vbox] =        2025923 nsec   2.025923e-03 sec
+[ 13 , 10 ] [vbox] =        2846573 nsec   2.846573e-03 sec
+[ 14 , 10 ] [vbox] =        2567933 nsec   2.567933e-03 sec
+[ 15 , 10 ] [vbox] =        3642113 nsec   3.642113e-03 sec
+[  0 , 11 ] [vbox] =        3846589 nsec   3.846589e-03 sec
+[  1 , 11 ] [vbox] =        3060470 nsec   3.060470e-03 sec
+[  2 , 11 ] [vbox] =        2382897 nsec   2.382897e-03 sec
+[  3 , 11 ] [vbox] =        2342155 nsec   2.342155e-03 sec
+[  4 , 11 ] [vbox] =       65340436 nsec   6.534044e-02 sec
+[  5 , 11 ] [vbox] =        2943884 nsec   2.943884e-03 sec
+[  6 , 11 ] [vbox] =        4064806 nsec   4.064806e-03 sec
+[  7 , 11 ] [vbox] =        3286517 nsec   3.286517e-03 sec
+[  8 , 11 ] [vbox] =        2304083 nsec   2.304083e-03 sec
+[  9 , 11 ] [vbox] =        2052609 nsec   2.052609e-03 sec
+[ 10 , 11 ] [vbox] =        2511799 nsec   2.511799e-03 sec
+[ 11 , 11 ] [vbox] =        2047404 nsec   2.047404e-03 sec
+[ 12 , 11 ] [vbox] =        2093921 nsec   2.093921e-03 sec
+[ 13 , 11 ] [vbox] =        3035118 nsec   3.035118e-03 sec
+[ 14 , 11 ] [vbox] =        4128185 nsec   4.128185e-03 sec
+[ 15 , 11 ] [vbox] =        4572509 nsec   4.572509e-03 sec
+[  0 , 12 ] [vbox] =        3129443 nsec   3.129443e-03 sec
+[  1 , 12 ] [vbox] =        3230385 nsec   3.230385e-03 sec
+[  2 , 12 ] [vbox] =        3796141 nsec   3.796141e-03 sec
+[  3 , 12 ] [vbox] =       60997170 nsec   6.099717e-02 sec
+[  4 , 12 ] [vbox] =        3554973 nsec   3.554973e-03 sec
+[  5 , 12 ] [vbox] =        4159746 nsec   4.159746e-03 sec
+[  6 , 12 ] [vbox] =        3512085 nsec   3.512085e-03 sec
+[  7 , 12 ] [vbox] =        2576049 nsec   2.576049e-03 sec
+[  8 , 12 ] [vbox] =        2398199 nsec   2.398199e-03 sec
+[  9 , 12 ] [vbox] =        2858514 nsec   2.858514e-03 sec
+[ 10 , 12 ] [vbox] =        3268937 nsec   3.268937e-03 sec
+[ 11 , 12 ] [vbox] =        2471208 nsec   2.471208e-03 sec
+[ 12 , 12 ] [vbox] =        2290883 nsec   2.290883e-03 sec
+[ 13 , 12 ] [vbox] =        2768584 nsec   2.768584e-03 sec
+[ 14 , 12 ] [vbox] =        4196093 nsec   4.196093e-03 sec
+[ 15 , 12 ] [vbox] =        4707352 nsec   4.707352e-03 sec
+[  0 , 13 ] [vbox] =        2588424 nsec   2.588424e-03 sec
+[  1 , 13 ] [vbox] =        2147189 nsec   2.147189e-03 sec
+[  2 , 13 ] [vbox] =        2542717 nsec   2.542717e-03 sec
+[  3 , 13 ] [vbox] =        2731817 nsec   2.731817e-03 sec
+[  4 , 13 ] [vbox] =       54784516 nsec   5.478452e-02 sec
+[  5 , 13 ] [vbox] =        4185188 nsec   4.185188e-03 sec
+[  6 , 13 ] [vbox] =        4300334 nsec   4.300334e-03 sec
+[  7 , 13 ] [vbox] =        3995007 nsec   3.995007e-03 sec
+[  8 , 13 ] [vbox] =        3158125 nsec   3.158125e-03 sec
+[  9 , 13 ] [vbox] =        3449157 nsec   3.449157e-03 sec
+[ 10 , 13 ] [vbox] =        4687160 nsec   4.687160e-03 sec
+[ 11 , 13 ] [vbox] =        4285453 nsec   4.285453e-03 sec
+[ 12 , 13 ] [vbox] =        2972925 nsec   2.972925e-03 sec
+[ 13 , 13 ] [vbox] =        2938379 nsec   2.938379e-03 sec
+[ 14 , 13 ] [vbox] =        3070461 nsec   3.070461e-03 sec
+[ 15 , 13 ] [vbox] =        3954160 nsec   3.954160e-03 sec
+[  0 , 14 ] [vbox] =        2281702 nsec   2.281702e-03 sec
+[  1 , 14 ] [vbox] =        1994706 nsec   1.994706e-03 sec
+[  2 , 14 ] [vbox] =        2345200 nsec   2.345200e-03 sec
+[  3 , 14 ] [vbox] =       86819351 nsec   8.681935e-02 sec
+[  4 , 14 ] [vbox] =        3958855 nsec   3.958855e-03 sec
+[  5 , 14 ] [vbox] =        2955344 nsec   2.955344e-03 sec
+[  6 , 14 ] [vbox] =        4145570 nsec   4.145570e-03 sec
+[  7 , 14 ] [vbox] =        5981687 nsec   5.981687e-03 sec
+[  8 , 14 ] [vbox] =        4081396 nsec   4.081396e-03 sec
+[  9 , 14 ] [vbox] =        4340656 nsec   4.340656e-03 sec
+[ 10 , 14 ] [vbox] =        5542583 nsec   5.542583e-03 sec
+[ 11 , 14 ] [vbox] =        4359302 nsec   4.359302e-03 sec
+[ 12 , 14 ] [vbox] =        3434171 nsec   3.434171e-03 sec
+[ 13 , 14 ] [vbox] =        5399835 nsec   5.399835e-03 sec
+[ 14 , 14 ] [vbox] =       54656934 nsec   5.465693e-02 sec
+[ 15 , 14 ] [vbox] =        6558769 nsec   6.558769e-03 sec
+[  0 , 15 ] [vbox] =        2556802 nsec   2.556802e-03 sec
+[  1 , 15 ] [vbox] =        2410184 nsec   2.410184e-03 sec
+[  2 , 15 ] [vbox] =        3454827 nsec   3.454827e-03 sec
+[  3 , 15 ] [vbox] =        4170651 nsec   4.170651e-03 sec
+[  4 , 15 ] [vbox] =        3655118 nsec   3.655118e-03 sec
+[  5 , 15 ] [vbox] =        2422515 nsec   2.422515e-03 sec
+[  6 , 15 ] [vbox] =        3462973 nsec   3.462973e-03 sec
+[  7 , 15 ] [vbox] =        4153131 nsec   4.153131e-03 sec
+[  8 , 15 ] [vbox] =        6099608 nsec   6.099608e-03 sec
+[  9 , 15 ] [vbox] =        7907150 nsec   7.907150e-03 sec
+[ 10 , 15 ] [vbox] =        8845407 nsec   8.845407e-03 sec
+[ 11 , 15 ] [vbox] =        7810409 nsec   7.810409e-03 sec
+[ 12 , 15 ] [vbox] =       42386881 nsec   4.238688e-02 sec
+[ 13 , 15 ] [vbox] =        7250398 nsec   7.250398e-03 sec
+[ 14 , 15 ] [vbox] =        8935427 nsec   8.935427e-03 sec
+[ 15 , 15 ] [vbox] =        8933582 nsec   8.933582e-03 sec
+[mand] =     1255720550 nsec   1.255721     sec
+
+
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.24150085449218750000000000e+00
+     : j[ 0][ 0][ 0][ 0] = -1.93283081054687500000000000e-01
+     :       mand_height =        13
+     : r[ 7][ 7][63][63] = -1.22590637207031250000000000e+00
+     : j[ 7][ 7][63][63] = -1.77688598632812500000000000e-01
+     :       mand_height =       104
+     : r[ 8][ 8][ 0][ 0] = -1.22587585449218750000000000e+00
+     : j[ 8][ 8][ 0][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        69
+     : r[ 8][ 8][ 1][ 0] = -1.22584533691406250000000000e+00
+     : j[ 8][ 8][ 1][ 0] = -1.77658081054687500000000000e-01
+     :       mand_height =        65
+     : r[ 8][ 8][32][32] = -1.22489929199218750000000000e+00
+     : j[ 8][ 8][32][32] = -1.76681518554687500000000000e-01
+     :       mand_height =       256
+     : r[ 3][12][44][21] = -1.23429870605468750000000000e+00
+     : j[ 3][12][44][21] = -1.69204711914062500000000000e-01
+     :       mand_height =        45
+     : r[15][15][63][63] = -1.21028137207031250000000000e+00
+     : j[15][15][63][63] = -1.62063598632812500000000000e-01
+     :       mand_height =       256
+--------------------------- full plot done -----------------------------
+click at 651 657 
+raw  [ 1390 , 888  ]
+INFO : dumper_flag = 1
+click at 1389 886 
+raw  [ 1390 , 888  ]
+INFO : file /var/tmp/dclarke/20251001140443 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =      256
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.28000000000000000000000000e+02
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = -1.22589111328125000000000000e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = -1.77673339843750000000000000e-01
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20251001140443 closed.
+INFO : dumper_flag = 0
+click at 1389 886 
+raw  [ 558  , 725  ]
+right click
+click at 557 723 
+raw  [ 558  , 725  ]
+right click
+
+
+
+neptune$ openssl dgst -sha256 -r /var/tmp/dclarke/20251001140443 
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20251001140443
+neptune$ 
+neptune$ 
+neptune$ od -Ax -t x1 -v -N 256 /var/tmp/dclarke/20251001140443 
+000000 00 00 10 00 00 01 00 00 00 00 00 00 00 00 60 40
+000010 00 00 00 00 40 9d f3 bf 00 00 00 00 00 be c6 bf
+000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
+000030 00 00 00 00 30 dd f3 bf 00 00 00 00 80 bd c8 bf
+000040 0d 00 00 00 00 00 00 00 10 dd f3 bf 00 00 00 00
+000050 80 bd c8 bf 0d 00 00 00 00 00 00 00 f0 dc f3 bf
+000060 00 00 00 00 80 bd c8 bf 0d 00 00 00 00 00 00 00
+000070 d0 dc f3 bf 00 00 00 00 80 bd c8 bf 0d 00 00 00
+000080 00 00 00 00 b0 dc f3 bf 00 00 00 00 80 bd c8 bf
+000090 0d 00 00 00 00 00 00 00 90 dc f3 bf 00 00 00 00
+0000a0 80 bd c8 bf 0d 00 00 00 00 00 00 00 70 dc f3 bf
+0000b0 00 00 00 00 80 bd c8 bf 0d 00 00 00 00 00 00 00
+0000c0 50 dc f3 bf 00 00 00 00 80 bd c8 bf 0d 00 00 00
+0000d0 00 00 00 00 30 dc f3 bf 00 00 00 00 80 bd c8 bf
+0000e0 0d 00 00 00 00 00 00 00 10 dc f3 bf 00 00 00 00
+0000f0 80 bd c8 bf 0d 00 00 00 00 00 00 00 f0 db f3 bf
+000100
+neptune$ 
+

@@ -1,13 +1,11 @@
 
-CC=/opt/bw/gcc13/bin/gcc
+CC?=/opt/bw/gcc15/bin/gcc
 
 CFLAGS=-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
 	-fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat \
 	-msoft-quad-float -mno-unaligned-doubles -mno-faster-structs \
 	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
-	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc -mcmodel=medany \
-	-mmemory-model=tso \
-	-fPIC -Wl,-rpath=/usr/lib64 -Wl,-rpath=/usr/lib64 -Wl,-pie
+	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc
 
 LIBS= -lX11 -lm
 
