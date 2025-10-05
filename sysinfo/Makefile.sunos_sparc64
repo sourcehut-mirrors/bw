@@ -11,7 +11,7 @@ CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS = -lm -lrt
 
-SRCS = report.c sysinfo.c
+SRCS = report.c sysinfo.c endian.c
 
 OBJS = report.o sysinfo.o endian.o
 
@@ -26,3 +26,4 @@ report: $(OBJS)
 
 clean:
 	rm -f $(OBJS) report
+

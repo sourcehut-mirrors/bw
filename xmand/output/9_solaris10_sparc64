@@ -1,17 +1,19 @@
 
-sparc64$ 
-sparc64$ ./xmand 67108864 137438953472 -1.94153728488889210091 -0.0000597622039112954972495 16
+hubble $ 
+hubble $ ./xmand 67108864 137438953472 -1.94153728488889210091 -0.0000597622039112954972495 16
 -------------------------------------------------------------------
                  system name = SunOS
                    node name = hubble
                      release = 5.10
                      version = Generic_150400-67
                      machine = sun4u
+                   cpu model = sparcv9
+                   cpu clock = 2860 MHz
+                   cpu state = NOINTR
                    page size = 8192
                system memory = 68719476736
                              = 67108864 kB
-                             = 65536 MB
-                             = 64 GB
+                             = 65536 MB about 64 GB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 100
@@ -22,7 +24,7 @@ sparc64$ ./xmand 67108864 137438953472 -1.94153728488889210091 -0.00005976220391
           _POSIX_OPEN_MAX    = 20
           _POSIX_PATH_MAX    = 256
           _POSIX_TZNAME_MAX  = 6
-                      endian = big endian
+                      endian = big
        sizeof(unsigned long) = 8
                 sizeof(long) = 8
                  sizeof(int) = 4
@@ -46,26 +48,26 @@ pthread_limit = 16
      : connection number 3
      : screen number 0
      : default depth is 24
-     : display seems to be 5760 wide and 1080 high.
+     : display seems to be 1920 wide and 1080 high.
      : offset x=20 y=20
      : eff_width =  1024    eff_height =  1024
 
 --------------------------------------------
 pixel_real_w = +2.84217094304040074348449707e-14
 pixel_imag_h = +2.84217094304040074348449707e-14
-raw  [ 669  , 456  ]
-DBUG : sample space [ 658   , 580    ]
-     : vbox  [ 010 , 009 ]
-     : win_r = +2.86132812500000000000000000e-01
-     : win_j = +1.33789062500000000000000000e-01
+raw  [ 395  , 594  ]
+DBUG : sample space [ 384   , 442    ]
+     : vbox  [ 006 , 006 ]
+     : win_r = -2.49023437500000000000000000e-01
+     : win_j = -1.35742187500000000000000000e-01
      : after translation
      : r_trn   = -1.94153728488889210090917459e+00
      : j_trn   = -5.97622039112954972495117545e-05
-     : x_prime = -1.94153728488472832047762040e+00
-     : y_prime = -5.97622019644084012668372452e-05
+     : x_prime = -1.94153728489251586886155110e+00
+     : y_prime = -5.97622058866043026625902712e-05
      : bailout = 67108864          
      : magnify = 1.374389534720e+11
-[mand] =    44934425400 nsec   44.934425    sec
+[mand] =    45928799100 nsec   45.928799    sec
 
 
 raw data values -------------------------------------------------------
@@ -91,12 +93,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -5.97621893735911235978619516e-05
      :       mand_height =      1058
 --------------------------- full plot done -----------------------------
-click at 668 454 
-raw  [ 1403 , 892  ]
+click at 394 592 
+raw  [ 1414 , 891  ]
 INFO : dumper_flag = 1
-click at 1402 890 
-raw  [ 1403 , 892  ]
-INFO : file /var/tmp/dclarke/20250312040020 dump begins.
+click at 1413 889 
+raw  [ 1414 , 891  ]
+INFO : file /var/tmp/dclarke/20251005073407 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -115,19 +117,29 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20250312040020 closed.
+INFO : file /var/tmp/dclarke/20251005073407 closed.
 INFO : dumper_flag = 0
-click at 1402 890 
-raw  [ 687  , 742  ]
+click at 1413 889 
+raw  [ 809  , 857  ]
 right click
-click at 686 740 
-raw  [ 687  , 742  ]
+click at 808 855 
+raw  [ 809  , 857  ]
+right click
+click at 808 855 
+raw  [ 808  , 856  ]
+right click
+click at 807 854 
+raw  [ 808  , 856  ]
+right click
+click at 807 854 
+raw  [ 808  , 856  ]
 right click
 
 
 
-sparc64$ openssl dgst -sha256 -r /var/tmp/dclarke/20250312040020 
-b0de9c445fdb2cc66d7c54a02c18589004af793294b0a470f51a9740a6e0f0b8 */var/tmp/dclarke/20250312040020
-sparc64$ 
-
+hubble $ openssl dgst -sha256 -r /var/tmp/dclarke/20251005073407
+b0de9c445fdb2cc66d7c54a02c18589004af793294b0a470f51a9740a6e0f0b8 */var/tmp/dclarke/20251005073407
+hubble $ 
+hubble $ 
+hubble $ 
 

@@ -86,6 +86,11 @@ typedef unsigned short  u_short;
 #include <sys/rtprio.h>
 #endif
 
+#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+#include <sys/types.h>
+#include <sys/processor.h>
+#endif
+
 #define ONEGB 1073741824
 
 
@@ -132,6 +137,13 @@ int sysinfo(int verbose) {
     int this_pid_prio = 0;
     int this_pid_prio_type = 0;
     struct rtprio this_pid_rtp;
+#endif
+
+#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+    processorid_t solaris_cpu;
+    ushort_t      solaris_locality;
+    processor_info_t solaris_cpu_info;
+    int get_cpu_info_status;
 #endif
 
     int fp_round_mode;
@@ -252,6 +264,27 @@ int sysinfo(int verbose) {
 
 #endif
 
+/* what follows is just pure hackary to see what works where on
+ * Solaris ... like who runs that ?? 
+#if defined (__SunOS_5_8) || defined (__SunOS_5_9)
+
+    printf("\n\n    Solaris 8 ? or Solaris 9 ? good luck...\n\n");
+
+#endif
+
+#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+
+    printf("\n\n    Solaris 10 or 11 detected.\n\n");
+
+#endif
+*/
+
+/* may only work with the ORACLE Studio 12.6 stuff 
+#if defined (__SunOS_RELEASE)
+    printf("\n\n  __SunOS_RELEASE may be %i\n", __SunOS_RELEASE);
+#endif
+*/
+
 #ifndef HAVE_PAGE_INFO
         avail_memory = pages_avail * pagesize;
 #endif
@@ -317,6 +350,26 @@ int sysinfo(int verbose) {
             printf("                   number of = %i\n", ncpu);
         }
 #endif
+
+#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+    printf("                   cpu model = ");
+    get_cpu_info_status = processor_info( solaris_cpu, &solaris_cpu_info);
+    if ( get_cpu_info_status<0 ) {
+        /* no idea what to do here really... */
+        printf("unknown\n");
+    } else {
+        printf("%s\n",solaris_cpu_info.pi_processor_type);
+        printf("                   cpu clock = %i MHz\n", solaris_cpu_info.pi_clock);
+        printf("                   cpu state = ");
+        if ( solaris_cpu_info.pi_state == P_NOINTR ) {
+            printf("NOINTR\n");
+        } else {
+            printf("%i\n", solaris_cpu_info.pi_state);
+        }
+    }
+#endif
+
+
         /* If the available system memory is a number aligned on
          * a gigabyte boundary then we report it.
          *

@@ -1,17 +1,19 @@
 
 hubble $ 
-hubble $ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
+hubble $ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4 
 -------------------------------------------------------------------
                  system name = SunOS
                    node name = hubble
                      release = 5.10
                      version = Generic_150400-67
                      machine = sun4u
+                   cpu model = sparcv9
+                   cpu clock = 2860 MHz
+                   cpu state = NOINTR
                    page size = 8192
                system memory = 68719476736
                              = 67108864 kB
-                             = 65536 MB
-                             = 64 GB
+                             = 65536 MB about 64 GB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 100
@@ -22,7 +24,7 @@ hubble $ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.020619210887999
           _POSIX_OPEN_MAX    = 20
           _POSIX_PATH_MAX    = 256
           _POSIX_TZNAME_MAX  = 6
-                      endian = big endian
+                      endian = big
        sizeof(unsigned long) = 8
                 sizeof(long) = 8
                  sizeof(int) = 4
@@ -53,25 +55,21 @@ pthread_limit = 4
 --------------------------------------------
 pixel_real_w = +1.42108547152020037174224854e-14
 pixel_imag_h = +1.42108547152020037174224854e-14
-raw  [ 1414 , 857  ]
-click at 1413 855 
-raw  [ 1414 , 857  ]
-click at 1413 855 
-raw  [ 1414 , 857  ]
-click at 1413 855 
-raw  [ 531  , 631  ]
-DBUG : sample space [ 520   , 405    ]
-     : vbox  [ 008 , 006 ]
-     : win_r = +1.66015625000000000000000000e-02
-     : win_j = -2.08007812500000000000000000e-01
+raw  [ 1403 , 863  ]
+click at 1402 861 
+raw  [ 699  , 529  ]
+DBUG : sample space [ 688   , 507    ]
+     : vbox  [ 010 , 007 ]
+     : win_r = +3.44726562500000000000000000e-01
+     : win_j = -8.78906250000000000000000000e-03
      : after translation
      : r_trn   = -1.57887752805699992098009687e-02
      : j_trn   = +1.02061921088799989476569863e+00
-     : x_prime = -1.57887752804492069447217517e-02
-     : y_prime = +1.02061921088648643873852961e+00
+     : x_prime = -1.57887752780617833525678151e-02
+     : y_prime = +1.02061921088793594591948022e+00
      : bailout = 32768             
      : magnify = 2.748779069440e+11
-[mand] =   154731578600 nsec   1.547316e+02 sec
+[mand] =   159311478100 nsec   159.311478   sec
 
 
 raw data values -------------------------------------------------------
@@ -97,12 +95,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +1.02061921089526874695252445e+00
      :       mand_height =      2065
 --------------------------- full plot done -----------------------------
-click at 530 629 
-raw  [ 1387 , 890  ]
+click at 698 527 
+raw  [ 1395 , 895  ]
 INFO : dumper_flag = 1
-click at 1386 888 
-raw  [ 1387 , 890  ]
-INFO : file /var/tmp/dclarke/20240831202416 dump begins.
+click at 1394 893 
+raw  [ 1395 , 895  ]
+INFO : file /var/tmp/dclarke/20251005053725 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -121,29 +119,18 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20240831202416 closed.
+INFO : file /var/tmp/dclarke/20251005053725 closed.
 INFO : dumper_flag = 0
-click at 1386 888 
-raw  [ 778  , 764  ]
+click at 1394 893 
+raw  [ 607  , 672  ]
 right click
-click at 777 762 
-raw  [ 778  , 764  ]
+click at 606 670 
+raw  [ 607  , 672  ]
 right click
 
 
 
-hubble $ hdump -Ax -t x1 -v -N 128 /var/tmp/dclarke/20240831202416
-     0:  00 00 10 00 00 80 00 00 00 00 00 00 00 00 50 42
-    10:  e3 50 e5 c5 ee 2a 90 bf be ee 46 cf 74 54 f0 3f
-    20:  10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
-    30:  e3 48 05 c6 ee 2a 90 bf de 6e 46 cf 74 54 f0 3f
-    40:  ba 07 00 00 e3 38 05 c6 ee 2a 90 bf de 6e 46 cf
-    50:  74 54 f0 3f bc 07 00 00 e3 28 05 c6 ee 2a 90 bf
-    60:  de 6e 46 cf 74 54 f0 3f c1 07 00 00 e3 18 05 c6
-    70:  ee 2a 90 bf de 6e 46 cf 74 54 f0 3f c1 07 00 00
-    80: 
-hubble $ 
-hubble $ sha256 /var/tmp/dclarke/20240831202416
-41ea986da30ff13a269adcbec16af97c3f5ca7945bebe2ec496d9d534f471aca  /var/tmp/dclarke/20240831202416
+hubble $ sha256 /var/tmp/dclarke/20251005053725
+41ea986da30ff13a269adcbec16af97c3f5ca7945bebe2ec496d9d534f471aca */var/tmp/dclarke/20251005053725
 hubble $ 
 

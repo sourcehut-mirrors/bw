@@ -1,18 +1,13 @@
 
 CC=/opt/developerstudio12.6/bin/cc
 
-CFLAGS= -fast -m64
+CFLAGS= -m64 -fast -xO3 -xregs=no%appl \
+	-xtarget=sparc64viiplus -xcache=64/64/2:11264/256/11
 
-CPPFLAGS= -D_TS_ERRNO -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
-	-D_FILE_OFFSET_BITS=64
+CPPFLAGS= -D_TS_ERRNO -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
 
 LIBS= -lX11 -lrt -lm -lpthread
-LDIR= /opt/bw/lib
-IDIR= /opt/bw/include
-
-# custom built libX11 stuff
-LD_OPTIONS= -R/opt/bw/lib -L/opt/bw/lib
-LD_RUN_PATH= /opt/bw/lib
 
 OBJS= mandel_col.o linear_inter.o mbrot.o \
 	mbrot_fma.o \
@@ -23,16 +18,17 @@ OBJS= mandel_col.o linear_inter.o mbrot.o \
 	../xwin/create_gc.o \
 	../xwin/create_borderless_topwin.o \
 	../time_and_date/timediff.o \
-	../sysinfo/sysinfo.o
+	../sysinfo/sysinfo.o \
+	../sysinfo/endian.o
 
 .PHONY: all
 all: xmand
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 xmand: xmand.o $(OBJS)
-	$(CC) -o xmand xmand.o $(OBJS) $(CFLAGS) -Wl,-rpath=$(LDIR) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o xmand xmand.o $(OBJS) $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 .PHONY: clean
 clean:

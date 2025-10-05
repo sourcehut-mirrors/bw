@@ -7,8 +7,13 @@ if [ -d /usr/xpg7/bin ]; then
     PATH=/usr/xpg7/bin:/usr/xpg6/bin:/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin
     export PATH
 else
-    PATH=/usr/bin:/usr/sbin:/bin:/sbin
-    export PATH
+    if [ -d /usr/xpg6/bin ]; then
+        PATH=/usr/xpg6/bin:/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin
+        export PATH
+    else
+        PATH=/usr/bin:/usr/sbin:/bin:/sbin
+        export PATH
+    fi
 fi
 
 LS=`( command -v ls )`
@@ -53,7 +58,7 @@ fi
 
 ${LS} -1b output/* | ${CUT} -c8-8 | ${SORT} -u > $TMPDIR/sorted_list_$$
 
-${CAT} $TMPDIR/sorted_list_$$ | ${AWK} 'BEGIN{printf"#!/bin/sh\nLC_ALL=C\nexport LC_ALL\n\nTMPDIR=/var/tmp/\140\050 id | sed -e \047s/\133\136\050\135*\050\057\057\047 -e \047s\057\051.*\057\057\047 \051\140\nexport TMPDIR\n\n\nif \133 -d /usr/xpg7/bin \135; then\n    PATH=/usr/xpg7/bin:/usr/xpg6/bin:/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin\n    export PATH\nelse\n    PATH=/usr/bin:/usr/sbin:/bin:/sbin\n    export PATH\nfi\n\nCAT=\140\050 command -v cat \051\140\nSED=\140\050 command -v sed \051\140\nCHMOD=\140\050 command -v chmod \051\140\nLS=\140\050 command -v ls \051\140\n"}{printf"\n\044\173CAT\175 scripts/timing_template | \044\173SED\175 \047s/X/" $1 "/g\047 > $TMPDIR/t" $1 ".sh\n\044\173CHMOD\175 0755 $TMPDIR/t" $1 ".sh\n\n\044\173CAT\175 scripts/list_variant_template | \044\173SED\175 \047s/X/" $1 "/g\047 > $TMPDIR/v" $1 ".sh\n\044\173CHMOD\175 0755 $TMPDIR/v" $1 ".sh\n\n\044\173LS\175 -l $TMPDIR/t" $1 ".sh $TMPDIR/v" $1 ".sh\n"}' > $TMPDIR/runthis_$$.sh
+${CAT} $TMPDIR/sorted_list_$$ | ${AWK} 'BEGIN{printf"#!/bin/sh\nLC_ALL=C\nexport LC_ALL\n\nTMPDIR=/var/tmp/\140\050 id | sed -e \047s/\133\136\050\135*\050\057\057\047 -e \047s\057\051.*\057\057\047 \051\140\nexport TMPDIR\n\n\nif \133 -d /usr/xpg7/bin \135; then\n    PATH=/usr/xpg7/bin:/usr/xpg6/bin:/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin\n    export PATH\nelse\n    if \133 -d /usr/xpg6/bin \135; then\n        PATH=/usr/xpg6/bin:/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin\n        export PATH\n    else\n        PATH=/usr/bin:/usr/sbin:/bin:/sbin\n        export PATH\n    fi\nfi\n\nCAT=\140\050 command -v cat \051\140\nSED=\140\050 command -v sed \051\140\nCHMOD=\140\050 command -v chmod \051\140\nLS=\140\050 command -v ls \051\140\n"}{printf"\n\044\173CAT\175 scripts/timing_template | \044\173SED\175 \047s/X/" $1 "/g\047 > $TMPDIR/t" $1 ".sh\n\044\173CHMOD\175 0755 $TMPDIR/t" $1 ".sh\n\n\044\173CAT\175 scripts/list_variant_template | \044\173SED\175 \047s/X/" $1 "/g\047 > $TMPDIR/v" $1 ".sh\n\044\173CHMOD\175 0755 $TMPDIR/v" $1 ".sh\n\n\044\173LS\175 -l $TMPDIR/t" $1 ".sh $TMPDIR/v" $1 ".sh\n"}' > $TMPDIR/runthis_$$.sh
 
 ${RM} $TMPDIR/sorted_list_$$
 
