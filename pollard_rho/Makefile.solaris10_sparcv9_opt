@@ -1,0 +1,41 @@
+
+CC=/opt/developerstudio12.6/bin/cc
+
+CFLAGS= -m64 -fast -xO3 -xregs=no%appl \
+	-xtarget=sparc64viiplus -xcache=64/64/2:11264/256/11
+
+CPPFLAGS= -D_TS_ERRNO -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+
+LIBS= -lgmp -lmpfr -lrt -lm
+
+LDIR=/export/home/dclarke/local/lib
+IDIR=/export/home/dclarke/local/include
+
+SRCS = pollard_rho.c \
+	../sysinfo/sysinfo.c ../sysinfo/endian.c \
+	../gmp_mpfr/gcd_mpfr.c \
+	../gmp_mpfr/mpfr_check_flags.c \
+	../gmp_mpfr/gmp_mpfr_ver.c \
+	../time_and_date/tdiff.c
+
+OBJS= pollard_rho.o \
+	../sysinfo/sysinfo.o ../sysinfo/endian.o \
+	../gmp_mpfr/gcd_mpfr.o \
+	../gmp_mpfr/mpfr_check_flags.o \
+	../gmp_mpfr/gmp_mpfr_ver.o \
+	../time_and_date/tdiff.o
+
+.PHONY: all
+all: pollard_rho
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR) \
+	-I../time_and_date
+
+pollard_rho: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) -L$(LDIR) -R$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) pollard_rho pollard_rho.o
+

@@ -1,7 +1,6 @@
 
 /*
  * pr_mpfr_quiet.c Pollard Rho Algorithm with arbitrary precision.
- *                 Less verbose output here unless you ask for it.
  *
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
@@ -61,6 +60,9 @@
 #include <gmp.h>
 #include <mpfr.h>
 
+#include "tdiff.h"
+#include "sysinfo.h"
+
 /* lowest reasonable precision */
 #define PREC 113
 
@@ -70,14 +72,10 @@
 int mpfr_check_flags(int status, int debug_flag);
 int gmp_mpfr_ver(int *status, int *mpfr_flags);
 
-uint64_t timediff( struct timespec start_time,
-                   struct timespec end_time );
-
-
 #define VERBOSE 1
 int sysinfo(int verbose);
 
-/* Note that a recusrsive algorithm may be faster here.
+/* Note that a recursive algorithm may be faster here.
  * For that matter the GMP Library provides a gcd
  * function that is very optimal.
  *
@@ -110,10 +108,11 @@ int gcd_m(mpfr_t *a_in, mpfr_t *b_in, mpfr_t *g_in)
 /* For the Pollard Rho factorization algorithm please
  * see page 976 of the "CLRS" Algorithms textbook.
  *
- * Feel free to test with a prime pair that Jenny gave us :
+ * Feel free to test with a prime pair :
  *
  *     75261003596099 = 8675309 * 8675311
- * Should factor neatly in about 16 secs or so :
+ *
+ * Should factor neatly :
  *
  *     count = 382124  x = 24317867926243  factor = 8675309
  *     A factor of 75261003596099 is 8675309
@@ -359,8 +358,10 @@ prime_check:
         return EXIT_FAILURE;
     }
 
+/*
     t_delta = timediff(t0, t1);
     printf("INFO : mpz_probab_prime_p() = %14" PRIu64 " nsec\n", t_delta);
+*/
 
     if ( prime_check_test == 2 ) {
         /* well we are done here ! this is a prime number */

@@ -1,16 +1,31 @@
-$CC $CFLAGS $CPPFLAGS -c -o ../time_and_date/timediff.o ../time_and_date/timediff.c
 
-$CC $CFLAGS $CPPFLAGS -c -o ../time_and_date/tdiff.o ../time_and_date/tdiff.c
+If using libs in $HOME dir :
 
-$CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/endian.o  ../sysinfo/endian.c
+ $CC $CFLAGS $CPPFLAGS -I$HOME/local/include -c -o ../gmp_mpfr/gcd_mpfr.o ../gmp_mpfr/gcd_mpfr.c
+ $CC $CFLAGS $CPPFLAGS -I$HOME/local/include -c -o ../gmp_mpfr/mpfr_check_flags.o ../gmp_mpfr/mpfr_check_flags.c
+ $CC $CFLAGS $CPPFLAGS -I$HOME/local/include -c -o ../gmp_mpfr/gmp_mpfr_ver.o ../gmp_mpfr/gmp_mpfr_ver.c
+ $CC $CFLAGS $CPPFLAGS -I$HOME/local/include -I../time_and_date -c -o pollard_rho.o pollard_rho.c
+ $CC $CFLAGS $CPPFLAGS -I$HOME/local/include -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
+ $CC $CFLAGS $CPPFLAGS -L$HOME/local/lib -R$HOME/local/lib -o pollard_rho pollard_rho.o \
+> ../sysinfo/sysinfo.o ../sysinfo/endian.o ../gmp_mpfr/gcd_mpfr.o ../gmp_mpfr/mpfr_check_flags.o \
+> ../gmp_mpfr/gmp_mpfr_ver.o tdiff.o -lgmp -lmpfr -lrt -lm
 
-$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -c -o ../gmp_mpfr/gcd_mpfr.o ../gmp_mpfr/gcd_mpfr.c
+hubble $ ./pollard_rho
+GMP  library: 6.3.0
+MPFR library: 4.2.2       
+MPFR header : 4.2.2 (based on 4.2.2)
+            : compiled as thread safe using TLS
+            : sizeof(mpfr_prec_t) = 8
+MPFR thresholds file used at compile time src/sparc64/mparam.h
 
-$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -c -o ../gmp_mpfr/mpfr_check_flags.o ../gmp_mpfr/mpfr_check_flags.c
+INFO : gmp_mpfr_ver() returns mpfr_flags = 01
+     :                            status = 00
+     :                  gmp_mpfr_ver_ret = 08
 
-$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -c -o ../gmp_mpfr/gmp_mpfr_ver.o ../gmp_mpfr/gmp_mpfr_ver.c
-
-$CC $CFLAGS $CPPFLAGS -I/opt/genunix/include -I../time_and_date -c -o pollard_rho.o pollard_rho.c
-
-$CC $CFLAGS $CPPFLAGS -L/opt/genunix/lib -o pollard_rho pollard_rho.o ../gmp_mpfr/gmp_mpfr_ver.o ../gmp_mpfr/mpfr_check_flags.o ../gmp_mpfr/gcd_mpfr.o ../sysinfo/sysinfo.o ../time_and_date/tdiff.o ../time_and_date/timediff.o -lm -lgmp -lmpfr
+            : sizeof(mpfr_prec_t) = 8
+FAIL : test number and bit precision?
+FAIL : ./pollard_rho <integer> <bit precision>
+hubble $ 
 

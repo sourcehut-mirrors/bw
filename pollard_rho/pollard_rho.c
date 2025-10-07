@@ -170,21 +170,19 @@ fprintf(stderr,"\nWARN : CLOCK_MONOTONIC not defined.\n");
     gmp_mpfr_ver_ret = gmp_mpfr_ver(&status, &mpfr_flags);
 
 
-    /* TODO : interpret the status and flags */
+    /* TODO : interpret the status and flags
     printf("INFO : gmp_mpfr_ver() returns mpfr_flags = %02x\n", mpfr_flags);
-    /* would be nice to dig into those flags a bit */
-
     printf("     :                            status = %02x\n", status);
     printf("     :                  gmp_mpfr_ver_ret = %02x\n\n", gmp_mpfr_ver_ret);
+    */
 
     /* set the default rounding mode to round to nearest, with the even
      * rounding rule (roundTiesToEven in IEEE 754) */
     mpfr_set_default_rounding_mode (MPFR_RNDN);
     
     mpfr_precision_size = sizeof(mpfr_prec_t);
-    printf("            : sizeof(mpfr_prec_t) = %zu\n", mpfr_precision_size);
 
-    /* if the gmp_mpfr_ver_ret differs from mpfr_precision_size then
+    /* If the gmp_mpfr_ver_ret differs from mpfr_precision_size then
      * we likely have a problem somewhere.  Good luck. */
     if ( gmp_mpfr_ver_ret != ( (int) mpfr_precision_size ) ) {
         fprintf(stderr,"FAIL : gmp_mpfr_ver_ret != mpfr_precision_size\n");
@@ -283,12 +281,14 @@ input_try:
         if ( strcasecmp( argv[1], buf) == 0 ){
             printf("INFO : perfect match on data input.\n");
         }else{
+            /*
             if(debug||(input_attempt_loop<1)){
                 fprintf(stderr,"WARN : incorrect data on input.\n");
                 fprintf(stderr,"     : this is most likely caused by ");
                 fprintf(stderr,"insufficient bits\n     : of precision to ");
                 fprintf(stderr,"represent the data correctly.\n");
             }
+            */
             bit_prec = bit_prec + delta_bit_prec;
             /* check here is bit_prec is a multiple of 32 and
              * just add upwards similar to dc calc with 113 bits
@@ -298,7 +298,7 @@ input_try:
             /* make input variable wider */
             mpfr_set_prec(input_m,(mpfr_prec_t)bit_prec);
             actual_prec=mpfr_get_default_prec();
-            printf("INFO : Input variable re-initialized with");
+            printf("INFO : input re-initialized with");
             printf(" %i bits of precision.\n", (int)actual_prec);
             free(buf);
             buf = NULL;
@@ -348,7 +348,9 @@ input_try:
         /* TODO determine what may have happened with the buff */
     } else {
         masprintf_buf_len = strlen( masprintf_buf );
+        /*
         fprintf(stderr,"INFO : %zu chars into masprintf_buf\n", masprintf_buf_len);
+        */
     }
 
 

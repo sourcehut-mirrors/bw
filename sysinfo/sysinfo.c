@@ -353,6 +353,7 @@ int sysinfo(int verbose) {
 
 #if defined (__SunOS_5_10) || defined (__SunOS_5_11)
     printf("                   cpu model = ");
+    solaris_cpu = getcpuid();
     get_cpu_info_status = processor_info( solaris_cpu, &solaris_cpu_info);
     if ( get_cpu_info_status<0 ) {
         /* no idea what to do here really... */
