@@ -78,9 +78,6 @@ int main(int argc, char **argv)
     fpos_t fpos;
     long ftell_pos;
     struct timespec time_tv;
-    struct timespec modification_t;
-    struct timespec creation_t;
-    struct timespec access_t;
 
     uint64_t candidate;
     struct tm *time_tm;
@@ -119,8 +116,51 @@ int main(int argc, char **argv)
     if ( status == 0 ) {
         fprintf (stderr,"\nINFO : current time is %s", c_time_string );
 
-        /*
-         * Solaris 10 is a whole other world :
+        /* FreeBSD reports stuff like : 
+         *
+         * (gdb) print status_buffer
+         * $1 = {st_dev = 6442747668494998274, st_ino = 67964, st_nlink = 1,
+         *       st_mode = 33188, st_bsdflags = 0, st_uid = 16411,
+         *       st_gid = 16411, st_padding1 = 0,
+         *       st_rdev = 18446744073709551615,
+         *       st_atim = {tv_sec = 1759893368, tv_nsec = 641968000},
+         *       st_mtim = {tv_sec = 1755833174, tv_nsec = 433916000},
+         *       st_ctim = {tv_sec = 1755833174, tv_nsec = 433916000},
+         *       st_birthtim = { tv_sec = 1755833174, tv_nsec = 433813000},
+         *       st_size = 62, st_blocks = 1, st_blksize = 4096,
+         *       st_flags = 2048, st_gen = 0, st_filerev = 8013395,
+         *       st_spare = {0, 0, 0, 0, 0, 0, 0, 0, 0}
+         *      }
+         *
+         */
+#if defined(__FreeBSD__)
+        fprintf (stderr,"     : three UNIX times of the pathname are :\n");
+        /* access time */
+        fprintf(stderr,"     : atime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_atim.tv_sec,
+                               status_buffer.st_atim.tv_nsec);
+
+        fprintf(stderr,"     :             %s",
+                               ctime(&status_buffer.st_atim.tv_sec));
+
+        /* modification time */
+        fprintf(stderr,"     : mtime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_mtim.tv_sec,
+                               status_buffer.st_mtim.tv_nsec);
+
+        fprintf(stderr,"     :             %s",
+                               ctime(&status_buffer.st_mtim.tv_sec));
+
+        /* creation time */
+        fprintf(stderr,"     : ctime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_ctim.tv_sec,
+                               status_buffer.st_ctim.tv_nsec);
+
+        fprintf(stderr,"     :             %s",
+                               ctime(&status_buffer.st_ctim.tv_sec));
+#endif
+
+        /* Solaris 10 is a whole other world :
          *
          * (dbx) print status_buffer
          * status_buffer = {
@@ -161,7 +201,7 @@ int main(int argc, char **argv)
 
         fprintf (stderr,"     : three UNIX times of the pathname are :\n");
         /* access time */
-        fprintf(stderr,"\n     : atime.sec = %10lu  nsec = %10lu\n",
+        fprintf(stderr,"     : atime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_atim.__tv_sec,
                                status_buffer.st_atim.__tv_nsec);
 
@@ -169,7 +209,7 @@ int main(int argc, char **argv)
                                ctime(&status_buffer.st_atim.__tv_sec));
 
         /* modification time */
-        fprintf(stderr,"\n     : mtime.sec = %10lu  nsec = %10lu\n",
+        fprintf(stderr,"     : mtime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_mtim.__tv_sec,
                                status_buffer.st_mtim.__tv_nsec);
 
@@ -177,7 +217,7 @@ int main(int argc, char **argv)
                                ctime(&status_buffer.st_mtim.__tv_sec));
 
         /* creation time */
-        fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
+        fprintf(stderr,"     : ctime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_ctim.__tv_sec,
                                status_buffer.st_ctim.__tv_nsec);
 
@@ -207,7 +247,7 @@ int main(int argc, char **argv)
 
         fprintf (stderr,"     : three UNIX times of the pathname are :\n");
         /* access time */
-        fprintf(stderr,"\n     : atime.sec = %10lu  nsec = %10lu\n",
+        fprintf(stderr,"     : atime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_atime,
                                status_buffer.st_atimensec);
 
@@ -216,20 +256,20 @@ int main(int argc, char **argv)
 
 
         /* modification time */
-        fprintf(stderr,"\n     : mtime.sec = %10lu  nsec = %10lu\n",
+        fprintf(stderr,"     : mtime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_mtime,
                                status_buffer.st_mtimensec);
         fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_mtime));
 
         /* creation time */
-        fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
+        fprintf(stderr,"     : ctime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_ctime,
                                status_buffer.st_ctimensec);
         fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_ctime));
-        fprintf(stderr,"\n");
 #endif
+        fprintf(stderr,"\n");
 
         /* Check if pathname is a directory.
          * Note the ISO646 bitand. */
