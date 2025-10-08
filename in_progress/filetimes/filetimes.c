@@ -117,119 +117,49 @@ int main(int argc, char **argv)
     errno = 0;
     status = stat(argv[1], &status_buffer);
     if ( status == 0 ) {
-        /* ----------------------------------------------------------
-         * W A R N I N G : be sure to see sys/stat.h
-         * atime is re-defined as foo.atim <-- note the "e" vanished
-         *
-         * H O W E V E R that is wrapped in an ifndef.
-         * ----------------------------------------------------------
-         *
-         *
-         * typical contents of status_buffer for these
-         * essential timestamps :
-         *
-         * { st_dev = 2208041306733982082,
-         *   st_ino = 662, st_nlink = 1, st_mode = 33188, 
-         *   st_padding0 = 0, st_uid = 16411, st_gid = 16411,
-         *   st_padding1 = 0, st_rdev = 0, 
-         *       st_atim = {tv_sec = 1721761189, tv_nsec = 711706000},
-         *       st_mtim = {tv_sec = 1721761189, tv_nsec = 711749000},
-         *       st_ctim = {tv_sec = 1723953512, tv_nsec = 819791000}, 
-         *   st_birthtim = {tv_sec = 1721761189, tv_nsec = 711706000},
-         *   st_size = 62, st_blocks = 1, st_blksize = 4096,
-         *   st_flags = 2048, st_gen = 0,
-         *   st_spare = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-         * }
-         *
-         * Some of the above is not entirely portable and part of a
-         * standard. All the needed data is there however. Such as :
-         *
-         *     st_atim = {tv_sec  = 1721761189,
-         *                tv_nsec = 710337000   },
-         *     st_mtim = {tv_sec  = 1721761189, 
-         *                tv_nsec = 710382000   },
-         *     st_ctim = {tv_sec  = 1723954137,
-         *                tv_nsec = 509936000} 
-         *
-         * This is the struct stat taken directly from the
-         * include file /usr/include/sys/stat.h :
-         *
-         *   struct stat {
-         *     dev_t     st_dev;       * inode's device
-         *     ino_t     st_ino;       * inode's number
-         *     nlink_t   st_nlink;     * number of hard links
-         *     mode_t    st_mode;      * inode mode
-         *
-         *     __int16_t st_padding0;
-         *
-         *     uid_t     st_uid;       * user ID of file owner
-         *     gid_t     st_gid;       * group ID of file group
-         *
-         *     __int32_t st_padding1;
-         *
-         *     dev_t     st_rdev;      * device type
-         *
-         *     #ifdef  __STAT_TIME_T_EXT
-         *             __int32_t st_atim_ext;
-         *     #endif
-         *
-         *     struct  timespec st_atim; * access time
-         *
-         *     #ifdef  __STAT_TIME_T_EXT
-         *             __int32_t st_mtim_ext;
-         *     #endif
-         *
-         *     struct  timespec st_mtim; * modification time
-         *
-         *     #ifdef  __STAT_TIME_T_EXT
-         *             __int32_t st_ctim_ext;
-         *     #endif
-         *
-         *     struct  timespec st_ctim; * file status time
-         *
-         *     #ifdef  __STAT_TIME_T_EXT
-         *             __int32_t st_btim_ext;
-         *     #endif
-         *
-         *     *** this seems to be an extension in FreeBSD ? ***
-         *     struct  timespec st_birthtim; * time of file creation * 
-         *
-         *     off_t     st_size;        * file size in bytes
-         *     blkcnt_t st_blocks;       * blocks allocated
-         *     blksize_t st_blksize;     * optimal blocksize for I/O
-         *     fflags_t  st_flags;       * user defined flags for file
-         *
-         *     *** again these seem to be extensions ***
-         *     __uint64_t st_gen;        * file generation number
-         *     __uint64_t st_spare[10];
-         *   };
-         */
         fprintf (stderr,"\nINFO : current time is %s", c_time_string );
         fprintf (stderr,"     : three UNIX times of the pathname are :\n");
 
-        /* access time */
-        fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
-                               status_buffer.st_atim.tv_sec,
-                               status_buffer.st_atim.tv_nsec);
+        /* what I see on recent Linux
+         *
+         * (gdb) print &status_buffer
+         * $1 = (struct stat *) 0x7fffffffe6d0
+         * (gdb) print status_buffer
+         * $2 = {st_dev = 2052, st_ino = 9473459, st_nlink = 1,
+         *       st_mode = 33188, st_uid = 16411, st_gid = 20002,
+         *       __pad0 = 0, st_rdev = 0,
+         *       st_size = 350, st_blksize = 4096, st_blocks = 8,
+         *       st_atime = 1759890002, st_atimensec = 930193717,
+         *       st_mtime = 1759889998, st_mtimensec = 686183065,
+         *       st_ctime = 1759889998, st_ctimensec = 686183065,
+         *       __glibc_reserved = {0, 0, 0}}
+         * 
+         */
 
-        /* See WARNING above for why st_atime may lose the letter "e" */
+        /* access time */
+        fprintf(stderr,"\n     : atime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_atime,
+                               status_buffer.st_atimensec);
+
         fprintf(stderr,"     :             %s",
-                               ctime(&status_buffer.st_atim));
+                               ctime(&status_buffer.st_atime));
+
 
         /* modification time */
         fprintf(stderr,"\n     : mtime.sec = %10lu  nsec = %10lu\n",
-                               status_buffer.st_mtime.tv_sec,
-                               status_buffer.st_mtime.tv_nsec);
+                               status_buffer.st_mtime,
+                               status_buffer.st_mtimensec);
         fprintf(stderr,"     :             %s",
-                               ctime(&status_buffer.st_mtim));
+                               ctime(&status_buffer.st_mtime));
 
         /* creation time */
         fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
-                               status_buffer.st_ctime.tv_sec,
-                               status_buffer.st_ctime.tv_nsec);
+                               status_buffer.st_ctime,
+                               status_buffer.st_ctimensec);
         fprintf(stderr,"     :             %s",
-                               ctime(&status_buffer.st_ctim));
+                               ctime(&status_buffer.st_ctime));
         fprintf(stderr,"\n");
+
 
         /* Check if pathname is a directory.
          * Note the ISO646 bitand. */

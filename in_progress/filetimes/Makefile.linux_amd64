@@ -1,27 +1,32 @@
 
-CC?=/usr/bin/cc
+CC?=/opt/genunix/bin/gcc
 
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
-	-m64 -g -O0 -fno-builtin \
-	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
-	-fno-fast-math -malign-double \
-	-m128bit-long-double \
-	-mstackrealign -mpreferred-stack-boundary=4 -mno-mmx \
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float \
+	-fno-fast-math -malign-double -m128bit-long-double \
+	-mstackrealign -mpreferred-stack-boundary=8 \
 	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 	-D_XOPEN_SOURCE=600
-
-OBJ = ../sysinfo/sysinfo.o ../sysinfo/endian.o filetimes.o
 
 LIBS = -lm
 
-%.o: %.c
+SRCS = filetimes.c ../../stat_test/file_stat_err.c \
+	../../sysinfo/sysinfo.c ../../sysinfo/endian.c
+
+OBJS = filetimes.o ../../stat_test/file_stat_err.o \
+	../../sysinfo/sysinfo.o ../../sysinfo/endian.o
+
+.PHONY: all
+all: filetimes
+
+.c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
-filetimes: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+filetimes: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
-	rm -f *.o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.o filetimes
+	rm -f $(OBJS) filetimes
 
