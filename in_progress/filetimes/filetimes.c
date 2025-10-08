@@ -118,9 +118,76 @@ int main(int argc, char **argv)
     status = stat(argv[1], &status_buffer);
     if ( status == 0 ) {
         fprintf (stderr,"\nINFO : current time is %s", c_time_string );
-        fprintf (stderr,"     : three UNIX times of the pathname are :\n");
 
-        /* what I see on recent Linux
+        /*
+         * Solaris 10 is a whole other world :
+         *
+         * (dbx) print status_buffer
+         * status_buffer = {
+         *     st_dev     = 1099511693316U
+         *     st_ino     = 101787U
+         *     st_mode    = 33188U
+         *     st_nlink   = 1U
+         *     st_uid     = 16411
+         *     st_gid     = 20002
+         *     st_rdev    = 18446744073709551615U
+         *     st_size    = 1513
+         *     st_atim    = {
+         *         __tv_sec  = 1759891354
+         *         __tv_nsec = 506466100
+         *     }
+         *     st_mtim    = {
+         *         __tv_sec  = 1759891354
+         *         __tv_nsec = 510318200
+         *     }
+         *     st_ctim    = {
+         *         __tv_sec  = 1759891354
+         *         __tv_nsec = 510318200
+         *     }
+         *     st_blksize = 1536
+         *     st_blocks  = 3
+         *     st_fstype  = "zfs"
+         * }
+         * 
+         */
+
+/* this stuff does not work if we compile with GCC */
+#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+
+/* may only work with the ORACLE Studio 12.6 stuff */
+#if defined (__SunOS_RELEASE)
+        printf("INFO : __SunOS_RELEASE may be %x\n", __SunOS_RELEASE);
+#endif
+
+        fprintf (stderr,"     : three UNIX times of the pathname are :\n");
+        /* access time */
+        fprintf(stderr,"\n     : atime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_atim.__tv_sec,
+                               status_buffer.st_atim.__tv_nsec);
+
+        fprintf(stderr,"     :             %s",
+                               ctime(&status_buffer.st_atim.__tv_sec));
+
+        /* modification time */
+        fprintf(stderr,"\n     : mtime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_mtim.__tv_sec,
+                               status_buffer.st_mtim.__tv_nsec);
+
+        fprintf(stderr,"     :             %s",
+                               ctime(&status_buffer.st_mtim.__tv_sec));
+
+        /* creation time */
+        fprintf(stderr,"\n     : ctime.sec = %10lu  nsec = %10lu\n",
+                               status_buffer.st_ctim.__tv_sec,
+                               status_buffer.st_ctim.__tv_nsec);
+
+        fprintf(stderr,"     :             %s",
+                               ctime(&status_buffer.st_ctim.__tv_sec));
+
+#endif
+
+#ifdef __GLIBC__
+        /* what I see on recent Linux :
          *
          * (gdb) print &status_buffer
          * $1 = (struct stat *) 0x7fffffffe6d0
@@ -136,6 +203,9 @@ int main(int argc, char **argv)
          * 
          */
 
+        printf("Glibc vers: %u.%u\n", __GLIBC__, __GLIBC_MINOR__)
+
+        fprintf (stderr,"     : three UNIX times of the pathname are :\n");
         /* access time */
         fprintf(stderr,"\n     : atime.sec = %10lu  nsec = %10lu\n",
                                status_buffer.st_atime,
@@ -159,7 +229,7 @@ int main(int argc, char **argv)
         fprintf(stderr,"     :             %s",
                                ctime(&status_buffer.st_ctime));
         fprintf(stderr,"\n");
-
+#endif
 
         /* Check if pathname is a directory.
          * Note the ISO646 bitand. */

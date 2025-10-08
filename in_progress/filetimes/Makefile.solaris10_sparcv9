@@ -11,13 +11,21 @@ CPPFLAGS=-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
 
 LIBS = -lrt -lm
 
-OBJQ =	../sysinfo/sysinfo.o filetimes.o
+SRCS = filetimes.c ../../stat_test/file_stat_err.c \
+	../../sysinfo/sysinfo.c ../../sysinfo/endian.c
 
-%.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -D_REENTRANT
+OBJS = filetimes.o ../../stat_test/file_stat_err.o \
+	../../sysinfo/sysinfo.o ../../sysinfo/endian.o
 
-filetimes: $(OBJQ)
-	$(CC) -o $@ $^ -L$(LDIR) $(CFLAGS) $(CPPFLAGS) $(LIBS)
+.PHONY: all
+all: filetimes
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+filetimes: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) $(CPPFLAGS) $(LIBS)
 
 clean:
-	rm -f *.o filetimes ../sysinfo/sysinfo.o
+	rm -f $(OBJS) filetimes
+
