@@ -48,6 +48,7 @@
 #include <inttypes.h>
 #include <iso646.h>
 #include <locale.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -56,9 +57,13 @@
 #include <time.h>
 #include <unistd.h>
 
-/* Maximum length of a single line of test in a file
- * before we give up. */
-#define MAX_LINE 512
+/* Maximum length of a single line should be a portable
+ * definition from SUSv3 */
+#if ! defined (_POSIX2_LINE_MAX)
+#define MAX_LINE _POSIX2_LINE_MAX
+#else
+#define MAX_LINE 2048
+#endif
 
 #define VERBOSE 1
 int sysinfo(int verbose);
@@ -243,7 +248,7 @@ int main(int argc, char **argv)
          * 
          */
 
-        printf("Glibc vers: %u.%u\n", __GLIBC__, __GLIBC_MINOR__)
+        printf("     : Glibc vers: %u.%u\n", __GLIBC__, __GLIBC_MINOR__);
 
         fprintf (stderr,"     : three UNIX times of the pathname are :\n");
         /* access time */
@@ -491,9 +496,10 @@ int main(int argc, char **argv)
             if (char_count>=MAX_LINE) {
                 free(line);
                 line = NULL;
-                fprintf(stderr,"\n\n*****************************\n");
-                fprintf(stderr,"*    WHAT? Binary file?     *\n");
-                fprintf(stderr,"*****************************\n");
+                fprintf(stderr,"\n");
+                fprintf(stderr,"**********    FAIL   ************\n");
+                fprintf(stderr,"*    Line length > MAX_LINE     *\n");
+                fprintf(stderr,"*********************************\n");
                 return EXIT_FAILURE;
             }
 
