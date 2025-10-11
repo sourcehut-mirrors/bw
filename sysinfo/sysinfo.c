@@ -86,7 +86,14 @@ typedef unsigned short  u_short;
 #include <sys/rtprio.h>
 #endif
 
+/* W A R N I N G : this is broken on Solaris 11.4 
 #if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+#include <sys/types.h>
+#include <sys/processor.h>
+#endif
+ */
+
+#if defined (__SunOS_5_10)
 #include <sys/types.h>
 #include <sys/processor.h>
 #endif
@@ -139,7 +146,15 @@ int sysinfo(int verbose) {
     struct rtprio this_pid_rtp;
 #endif
 
+/* W A R N I N G : this is broken on Solaris 11.4 
 #if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+    processorid_t solaris_cpu;
+    ushort_t      solaris_locality;
+    processor_info_t solaris_cpu_info;
+    int get_cpu_info_status;
+#endif
+*/
+#if defined (__SunOS_5_10)
     processorid_t solaris_cpu;
     ushort_t      solaris_locality;
     processor_info_t solaris_cpu_info;
@@ -351,7 +366,8 @@ int sysinfo(int verbose) {
         }
 #endif
 
-#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
+/* W A R N I N G : this is broken on Solaris 11.4 */
+#if defined (__SunOS_5_10)
     printf("                   cpu model = ");
     solaris_cpu = getcpuid();
     get_cpu_info_status = processor_info( solaris_cpu, &solaris_cpu_info);
@@ -369,7 +385,6 @@ int sysinfo(int verbose) {
         }
     }
 #endif
-
 
         /* If the available system memory is a number aligned on
          * a gigabyte boundary then we report it.
