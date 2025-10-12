@@ -1,0 +1,17 @@
+
+
+to do a hack 
+
+neptune $ CC=/opt/developerstudio12.6/bin/c99
+neptune $ export CC
+neptune $ CFLAGS='-Xc -g -xmemalign=8s -xstrconst -xildoff -m64 -xnolibmil -xcode=pic32 -xregs=no%appl -xlibmieee -mc -xs -xbuiltin=%none -xunroll=1'
+neptune $ export CFLAGS 
+neptune $ CPPFLAGS='-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -D_SOL10_HACK'
+neptune $ export CPPFLAGS
+neptune $ $CC $CFLAGS $CPPFLAGS -c -o solaris_cpuid.o solaris_cpuid.c 
+neptune $ $CC $CFLAGS $CPPFLAGS -o solaris_cpuid solaris_cpuid.o 
+neptune $ ./solaris_cpuid
+cpu model = sparcv9
+    cpu clock = 4267 MHz
+    cpu state = 2
+
