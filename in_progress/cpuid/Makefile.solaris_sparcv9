@@ -7,7 +7,7 @@ CFLAGS= -Xc -g -errfmt=error -erroff=%none -xmemalign=8s -errshort=full \
 	-xdebugformat=dwarf -xunroll=1
 
 CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
-	-D_XOPEN_SOURCE=600
+	-D_FILE_OFFSET_BITS=64
 
 LIBS = -lm -lrt
 

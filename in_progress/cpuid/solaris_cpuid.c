@@ -37,10 +37,14 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *
- *********************************************************************/
+ ************  Matthew says do not do this ***************************
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
 #endif
+ *
+ *             However I do not know why _XOPEN_SOURCE is the issue !
+ *
+ *********************************************************************/
 
 #include <errno.h>
 
