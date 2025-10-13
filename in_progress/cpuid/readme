@@ -1,17 +1,84 @@
 
 
-to do a hack 
+the pre-processed code 
 
-neptune $ CC=/opt/developerstudio12.6/bin/c99
-neptune $ export CC
-neptune $ CFLAGS='-Xc -g -xmemalign=8s -xstrconst -xildoff -m64 -xnolibmil -xcode=pic32 -xregs=no%appl -xlibmieee -mc -xs -xbuiltin=%none -xunroll=1'
-neptune $ export CFLAGS 
-neptune $ CPPFLAGS='-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 -D_SOL10_HACK'
-neptune $ export CPPFLAGS
-neptune $ $CC $CFLAGS $CPPFLAGS -c -o solaris_cpuid.o solaris_cpuid.c 
-neptune $ $CC $CFLAGS $CPPFLAGS -o solaris_cpuid solaris_cpuid.o 
-neptune $ ./solaris_cpuid
-cpu model = sparcv9
-    cpu clock = 4267 MHz
-    cpu state = 2
+neptune $ echo $CC
+/opt/developerstudio12.6/bin/cc
+neptune $ echo $CFLAGS 
+-g -xO0 -xmemalign=8s -xstrconst -xildoff -m64 -xnolibmil -xcode=pic32 -xregs=no%appl -xlibmieee -mc -xs -xbuiltin=%none
+neptune $ echo $CPPFLAGS 
+-D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+neptune $ 
+neptune $ $CC -std=iso9899:1999 -H $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -E -o solaris_cpuid.i solaris_cpuid.c
+/usr/include/errno.h
+        /usr/include/sys/ccompile.h
+                /opt/developerstudio12.6/lib/compilers/include/cc/sys/note.h
+        /usr/include/sys/errno.h
+/usr/include/sys/types.h
+        /usr/include/sys/feature_tests.h
+                /usr/include/sys/ccompile.h
+                /usr/include/sys/isa_defs.h
+        /usr/include/sys/isa_defs.h
+        /usr/include/sys/machtypes.h
+                /usr/include/sys/feature_tests.h
+        /usr/include/sys/int_types.h
+                /usr/include/sys/feature_tests.h
+/usr/include/sys/processor.h
+        /usr/include/sys/types.h
+        /usr/include/sys/procset.h
+                /usr/include/sys/feature_tests.h
+                /usr/include/sys/types.h
+                /usr/include/sys/signal.h
+                        /usr/include/sys/feature_tests.h
+                        /usr/include/sys/iso/signal_iso.h
+                                /usr/include/sys/unistd.h
+                                        /usr/include/sys/feature_tests.h
+                        /usr/include/sys/siginfo.h
+                                /usr/include/sys/feature_tests.h
+                                /usr/include/sys/types.h
+                                /usr/include/sys/machsig.h
+                                        /usr/include/sys/feature_tests.h
+                                /usr/include/sys/types.h
+                        /usr/include/sys/ucontext.h
+                                /usr/include/sys/feature_tests.h
+                                /usr/include/sys/types.h
+                                /usr/include/sys/regset.h
+                                        /usr/include/sys/feature_tests.h
+                                        /usr/include/sys/types.h
+/usr/include/stdio.h
+        /usr/include/sys/feature_tests.h
+        /usr/include/iso/stdio_iso.h
+                /usr/include/sys/feature_tests.h
+                /usr/include/sys/va_list.h
+                        /usr/include/sys/isa_defs.h
+                /usr/include/stdio_tag.h
+                /usr/include/stdio_impl.h
+                        /usr/include/sys/isa_defs.h
+        /usr/include/iso/stdio_c99.h
+/usr/include/stdlib.h
+        /usr/include/sys/feature_tests.h
+        /usr/include/iso/stdlib_iso.h
+                /usr/include/sys/feature_tests.h
+        /usr/include/iso/stdlib_c99.h
+        /usr/include/sys/wait.h
+                /usr/include/sys/feature_tests.h
+                /usr/include/sys/types.h
+                /usr/include/sys/resource.h
+                        /usr/include/sys/feature_tests.h
+                        /usr/include/sys/types.h
+                        /usr/include/sys/time.h
+                                /usr/include/sys/feature_tests.h
+                                /usr/include/sys/types.h
+                                /usr/include/sys/select.h
+                                        /usr/include/sys/feature_tests.h
+                                        /usr/include/sys/time_impl.h
+                                                /usr/include/sys/feature_tests.h
+                                        /usr/include/sys/time.h
+                /usr/include/sys/siginfo.h
+                /usr/include/sys/procset.h
+/usr/include/unistd.h
+        /usr/include/sys/feature_tests.h
+        /usr/include/sys/types.h
+        /usr/include/sys/unistd.h
+neptune $ 
 

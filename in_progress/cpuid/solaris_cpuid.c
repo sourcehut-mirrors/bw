@@ -27,36 +27,13 @@
  * ------------------------------------------------------------------
  */
 
-/*********************************************************************
- * The Open Group Base Specifications Issue 6
- * IEEE Std 1003.1, 2004 Edition
- *
- *    An XSI-conforming application should ensure that the feature
- *    test macro _XOPEN_SOURCE is defined with the value 600 before
- *    inclusion of any header. This is needed to enable the
- *    functionality described in The _POSIX_C_SOURCE Feature Test
- *    Macro and in addition to enable the XSI extension.
- *
- ************  Matthew says do not do this ***************************
-#if ! defined (_XOPEN_SOURCE)
-#define _XOPEN_SOURCE 600
-#endif
- *
- *             However I do not know why _XOPEN_SOURCE is the issue !
- *
- *********************************************************************/
-
 #include <errno.h>
 
 /* slight difference between Solaris 10 and 11.4 if we trust
  * the manpages */
-#if ! defined (_SOL10_HACK)
 #if defined (__SunOS_5_10) || (__SunOS_5_11)
 #include <sys/types.h>
 #include <sys/processor.h>
-#endif
-#else
-#include "sol10_processor.h"
 #endif
 
 #include <stdio.h>
@@ -72,12 +49,6 @@ main ( int argc, char **argv )
     ushort_t      solaris_locality;
     processor_info_t solaris_cpu_info;
     int get_cpu_info_status;
-#else
-    fprintf(stderr,"FAIL : this is for Solaris 10 or 11.4 only\n");
-    return EXIT_FAILURE;
-#endif
-
-#if defined (__SunOS_5_10) || defined (__SunOS_5_11)
     printf("cpu model = ");
     solaris_cpu = getcpuid();
     get_cpu_info_status = processor_info( solaris_cpu, &solaris_cpu_info);
@@ -94,6 +65,9 @@ main ( int argc, char **argv )
             printf("%i\n", solaris_cpu_info.pi_state);
         }
     }
+#else
+    fprintf(stderr,"FAIL : this is for Solaris 10 or 11.4 only\n");
+    return EXIT_FAILURE;
 #endif
 
     return EXIT_SUCCESS;
