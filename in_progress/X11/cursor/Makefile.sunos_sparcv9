@@ -1,5 +1,5 @@
 
-CC=/usr/bin/c99
+CC=/opt/developerstudio12.6/bin/c99
 
 CFLAGS= -I$(IDIR) -Xc -g -errfmt=error -erroff=%none \
 	-xmemalign=8s -errshort=full -xstrconst -xildoff -m64 -xnolibmil \
@@ -14,17 +14,20 @@ LDIR=/opt/bw/lib
 IDIR=/opt/bw/include
 RPATH=/opt/bw/lib
 
-SRCS =  ./cursor.c ../../xwin/x_error_handler.c \
-	../../xwin/create_gc.c \
-	../../xwin/create_borderless_topwin.c \
-	../../sysinfo/sysinfo.c
+SRCS =  ./cursor.c \
+	../../../xwin/x_error_handler.c \
+	../../../xwin/create_gc.c \
+	../../../xwin/create_borderless_topwin.c \
+	../../../sysinfo/sysinfo.c \
+	../../../sysinfo/endian.c
 
 
 OBJS = ./cursor.o \
-	../../xwin/x_error_handler.o \
-	../../xwin/create_gc.o \
-	../../xwin/create_borderless_topwin.o \
-	../../sysinfo/sysinfo.o
+	../../../xwin/x_error_handler.o \
+	../../../xwin/create_gc.o \
+	../../../xwin/create_borderless_topwin.o \
+	../../../sysinfo/sysinfo.o \
+	../../../sysinfo/endian.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I. -I$(IDIR)

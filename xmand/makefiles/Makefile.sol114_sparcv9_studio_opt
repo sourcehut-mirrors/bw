@@ -1,0 +1,13 @@
+
+CC=/opt/developerstudio12.6/bin/cc
+
+CFLAGS= -fast -xtarget=S7 -xcache=16/32/4/8:256/64/8/16:8192/64/8/32
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+IDIR=/usr/include -I/usr/include/X11
+LDIR=/usr/lib64 -L/usr/lib64
+LIBS=-lX11 -lrt -lm -lpthread
+
+include common.mk
+
