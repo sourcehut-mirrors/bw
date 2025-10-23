@@ -1,8 +1,7 @@
 
 CC=/opt/developerstudio12.6/bin/cc
 
-CFLAGS= -m64 -fast -xO3 -xregs=no%appl \
-	-xtarget=sparc64viiplus -xcache=64/64/2:11264/256/11
+CFLAGS= -m64 -fast -xO3 -xregs=no%appl -xtarget=S7
 
 CPPFLAGS= -D_TS_ERRNO -D_LARGEFILE64_SOURCE \
 	-D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
