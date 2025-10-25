@@ -232,7 +232,6 @@ int main(int argc, char **argv) {
          *        returned back into the queue.
          */
 
-
         /* Create a random fibonacci number to compute.
          *
          * NOTE : we all agree this is a silly thing to compute

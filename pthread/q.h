@@ -44,7 +44,9 @@
 
 /* This is a silly number of threads */
 #define THREAD_LIMIT 512
-#define FIB_LIMIT 30
+
+/* beware the nasty stack smasher fibonacci code */
+#define FIB_LIMIT 36
 
 /* If we are going to use pthread_mutex_trylock */
 #define MUTEX_TRY_LOCK_LIMIT 16
