@@ -1,0 +1,27 @@
+
+IDIR = .
+
+CC?=/usr/bin/gcc
+
+CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -fno-unsafe-math-optimizations \
+	-mcpu=niagara7 -mtune=niagara7 -I$(IDIR)
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
+DEPS = v.h
+
+LIBS = -lm
+
+SRCS = $(wildcard c*.c) line_plane_icept.c
+OBJS = $(SRCS:.c=.o)
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+cplex_test: $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) cplex_test

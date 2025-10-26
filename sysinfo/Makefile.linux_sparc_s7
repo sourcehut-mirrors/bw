@@ -1,0 +1,24 @@
+
+CC?=/usr/bin/gcc
+
+CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -fno-unsafe-math-optimizations \
+	-mcpu=niagara7 -mtune=niagara7
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS = -lm
+
+SRCS = report.c sysinfo.c endian.c
+
+OBJS = report.o sysinfo.o endian.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+report: report.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) report
