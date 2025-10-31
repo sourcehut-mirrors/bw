@@ -2,7 +2,7 @@
 CC?=	/usr/bin/cc
 
 CPPFLAGS=	-D_LARGEFILE64_SOURCE \
-		-D_REENTRANT -D_XOPEN_SOURCE=600
+		-D_XOPEN_SOURCE=600
 
 IDIR=	/opt/bw/include
 LDIR=	/opt/bw/lib

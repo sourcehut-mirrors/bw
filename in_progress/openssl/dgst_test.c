@@ -291,9 +291,9 @@ int main(int argc, char **argv)
          */
         fprintf(stderr,"FAIL : Unknown message digest %s\n", argv[1]);
 
-        fprintf(stderr,"    : Please check your available methods :\n");
-        fprintf(stderr,"    :   openssl list --digest-commands\n");
-        fprintf(stderr,"    :   openssl dgst -list\n");
+        fprintf(stderr,"     : Please check your available methods :\n");
+        fprintf(stderr,"     :   openssl list --digest-commands\n");
+        fprintf(stderr,"     :   openssl dgst -list\n");
 
         return EXIT_FAILURE;
     }
