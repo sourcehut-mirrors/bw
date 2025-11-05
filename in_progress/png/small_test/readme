@@ -1,0 +1,4 @@
+This just barely works and the PNG file spec is still
+a deep and wide well of stuff to climb all over. This
+code has a stack of warnings all over the place but I
+disable a stack of stuff with the compiler.
