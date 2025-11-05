@@ -1,0 +1,13 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -O3 -mno-app-regs \
+	-mcpu=niagara7 -mtune=niagara7
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+
+IDIR=/usr/include -I/usr/include/X11
+LDIR=/usr/lib64 -L/usr/lib64
+
+include common.mk
+
