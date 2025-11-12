@@ -3,7 +3,7 @@ CC?=	/usr/bin/cc
 CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
 		-D_FILE_OFFSET_BITS=64
 
-LIBS?=		-lX11 -lrt -lm -lpthread
+LIBS?=		-lX11 -lm -lpthread
 
 LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include

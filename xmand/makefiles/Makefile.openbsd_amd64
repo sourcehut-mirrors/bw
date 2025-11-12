@@ -1,0 +1,13 @@
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-fast-math -fno-builtin -fno-unsafe-math-optimizations \
+	-fno-color-diagnostics \
+	-Weverything -Wno-unsafe-buffer-usage -Wno-reserved-identifier
+
+LDIR= /usr/X11R6/lib
+IDIR= /usr/X11R6/include
+
+LD_RUN_PATH= /usr/X11R6/lib
+
+include common.mk
+

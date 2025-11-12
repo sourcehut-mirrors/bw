@@ -1,0 +1,10 @@
+
+CFLAGS= -std=iso9899:1999 -m64 -O3
+
+LDIR= /usr/X11R6/lib
+IDIR= /usr/X11R6/include
+
+LD_RUN_PATH= /usr/X11R6/lib
+
+include common.mk
+

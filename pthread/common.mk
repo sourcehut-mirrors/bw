@@ -4,7 +4,7 @@ CPPFLAGS?= -D_LARGEFILE64_SOURCE \
         -D_XOPEN_SOURCE=600 -D_REENTRANT \
         -D_FILE_OFFSET_BITS=64
 
-LIBS?=		-lpthread -lrt -lm
+LIBS?=		-lpthread -lm
 
 LDIR?=		/usr/local/lib
 IDIR?=		/usr/local/include

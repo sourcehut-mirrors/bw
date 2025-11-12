@@ -98,9 +98,6 @@ typedef unsigned short  u_short;
 #include <sys/processor.h>
 #endif
 
-#define ONEGB 1073741824
-
-
 /* 23 Aug 2021 : Both PAGESIZE and PAGE_SIZE are specified in POSIX
  *
  * Some platforms do not have _SC_PHYS_PAGES and _SC_AVPHYS_PAGES
@@ -388,9 +385,6 @@ int sysinfo(int verbose) {
 
         /* If the available system memory is a number aligned on
          * a gigabyte boundary then we report it.
-         *
-         * For that reason alone we need a #define ONEGB just for
-         * some trivial modulo math.
          */
 
 #ifdef HAVE_PAGE_INFO
@@ -423,7 +417,8 @@ int sysinfo(int verbose) {
         printf("                             = %llu MB\n",
                                                       sysmem/1048576 );
 
-        if ( (sysmem % ONEGB) == 0 ) {
+        /* lines up on exactly 1GB ? */
+        if ( (sysmem % 1073741824) == 0 ) {
 
             printf("                             = %llu GB\n",
                                                         sysmem >> 30 );
