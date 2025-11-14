@@ -256,9 +256,12 @@ int main(int argc, char **argv)
      *         wtf = CWOverrideRedirect;
      */
     win_attributes_mask = CWBackPixel | CWBorderPixel | CWEventMask;
+
+    /* the main window will be at ( 4, 4 ) in the upper left corner
+     * on the users screen */
     win0 = XCreateWindow(dsp,
                          RootWindow(dsp, DefaultScreen(dsp)),
-                         offset_x, offset_y, width, height, 0,
+                         4, 4, width, height, 0,
                          CopyFromParent, CopyFromParent,
                          CopyFromParent, win_attributes_mask,
                          &win0_attribs);

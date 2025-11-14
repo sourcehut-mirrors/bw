@@ -26,10 +26,22 @@
  *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ------------------------------------------------------------------
+ * 
+ ********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
  *
- * NOTE: should be C90 clean
- */
-
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ * This code should be C90 clean and therefore we may use :
+ *
+ *                 #define _XOPEN_SOURCE 500
+ *
+ *******************************************************************/
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 500
 #endif
@@ -58,22 +70,24 @@ int main(int argc, char *argv[])
     start_year = 2023;
     end_year = 2024;
 
+    /* assume a trivial POSIX locale */
+    buf = setlocale ( LC_ALL, "POSIX" );
+    if ( buf == NULL ) {
+        fprintf (stderr,"FAIL : setlocale fail\n");
+        return EXIT_FAILURE;
+    }
+
     if ( argc > 1 ) {
         printf ("\nINFO : You suggest a locale of %s\n", argv[1]);
         buf = setlocale ( LC_ALL, argv[1] );
         /* The return value is NULL if the request can not be done */
         if ( buf == NULL ) {
-            fprintf(stderr,"WARN : locale request failed.\n");
-            buf = setlocale ( LC_ALL, "POSIX" );
-            fprintf(stderr,"     : locale POSIX should just work.\n");
+            fprintf(stderr,"FAIL : * * * locale request failed * * *\n");
+            fprintf(stderr,"     : ---------------------------------\n");
+            fprintf(stderr,"     : please check your available list\n");
+            fprintf(stderr,"     : of supported locales.\n");
+            return EXIT_FAILURE;
         }
-    } else {
-        buf = setlocale ( LC_ALL, "POSIX" );
-    }
-
-    if ( buf == NULL ) {
-        fprintf (stderr,"FAIL : setlocale fail\n");
-        return(EXIT_FAILURE);
     }
 
     if ( argc == 4 ) {

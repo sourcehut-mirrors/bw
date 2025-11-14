@@ -1,3 +1,4 @@
+
 /*
  * ct.c    report the date for a given UNIX time expressed in secs
  *         since 1 Jan 1970 00:00:00. This was likely written in
@@ -114,10 +115,12 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    setlocale ( LC_TIME, "C" );
+    setlocale ( LC_TIME, "POSIX" );
+    /* TODO did the setlocale call work? */
 
     time_tv.tv_sec = candidate_input;
-    /* someday maybe ... deal with fractional seconds ?
+    /* TODO someday deal with fractional seconds ?
+     *
      * However I fail to see the use for such a thing.
      *   time_tv.tv_nsec = (argc == 3 ) ?
      *            strtol(argv[2], (char **)NULL, 10) : 0; 
@@ -134,6 +137,7 @@ main(int argc, char **argv)
      * $ date -u "+%a %b %e %H:%M:%S %Y"
      * Mon Apr  8 10:21:52 2024
      *
+     * ==== output with timezone would be preferred ====
      * $ date -u "+%a %b %e %H:%M:%S %Z %Y"
      * Mon Apr  8 10:22:00 UTC 2024
      */
