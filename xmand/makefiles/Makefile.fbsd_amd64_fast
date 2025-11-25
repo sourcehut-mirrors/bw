@@ -1,4 +1,7 @@
 
 CFLAGS= -std=iso9899:1999 -O3 -fno-color-diagnostics
 
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
 include common.mk
+

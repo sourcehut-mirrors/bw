@@ -4,4 +4,7 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
 	-fno-color-diagnostics \
 	-Weverything -Wno-unsafe-buffer-usage -Wno-reserved-identifier
 
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
 include common.mk
+
