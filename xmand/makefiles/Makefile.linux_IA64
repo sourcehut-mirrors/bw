@@ -1,13 +1,17 @@
 
-CC = /usr/bin/gcc
+CC=/usr/bin/gcc
 
-CFLAGS = -std=iso9899:1999 -g -O0 -fno-builtin -fno-fast-math \
-	-mlittle-endian -mgnu-as -mgnu-ld -mregister-names \
-	-mno-inline-int-divide -mno-inline-sqrt -ffp-contract=off \
-	-mtune=itanium2 -mno-sched-br-data-spec \
-	-mno-sched-ar-data-spec -mno-sched-control-spec \
-	-msched-count-spec-in-critical-path \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -fno-fast-math -mlittle-endian \
+	-mgnu-as -mgnu-ld -mregister-names -mno-inline-int-divide \
+	-mno-inline-sqrt -ffp-contract=off -mtune=itanium2 \
+	-mno-sched-br-data-spec -mno-sched-ar-data-spec \
+	-mno-sched-control-spec -msched-count-spec-in-critical-path
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
+LDIR=	/usr/X11R7/lib
+IDIR=	/usr/X11R7/include
 
 include common.mk
-

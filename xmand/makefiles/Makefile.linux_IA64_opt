@@ -1,8 +1,12 @@
 
-CC = /usr/bin/gcc
+CC=/usr/bin/gcc
 
-CFLAGS = -std=iso9899:1999 -g -O3 -mtune=itanium2 \
-	-Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+CFLAGS= -O3 -mlittle-endian -mtune=itanium2
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+LDIR=	/usr/X11R7/lib
+IDIR=	/usr/X11R7/include
 
 include common.mk
 
