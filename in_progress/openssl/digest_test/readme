@@ -1,10 +1,19 @@
 
+At some point one may need to create a local certificate : 
+
+    openssl req -x509 -nodes -days 365 \
+            -newkey rsa:4096 \
+            -keyout my_local_cert.pem \
+            -out my_lcoal_cert.pem
+
+--------------------------------------------------------------------
+
 The test file "the_merchant_of_venice.txt" was lifted with tender
 thanks to The Project Gutenberg :
 
     https://www.gutenberg.org/cache/epub/1515/pg1515.txt
 
--------------------------------------------------------------------
+--------------------------------------------------------------------
 
 The code is trivial and only expects that you provide a
 message digest algorithm and an optional text string.
