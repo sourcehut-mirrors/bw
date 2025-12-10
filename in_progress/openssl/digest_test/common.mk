@@ -1,22 +1,21 @@
 
-CC?=	/usr/bin/cc
+CC?= /usr/bin/cc
 
-CPPFLAGS=	-D_LARGEFILE64_SOURCE
+CPPFLAGS?= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 
-IDIR=	/opt/bw/include
-LDIR=	/opt/bw/lib
+IDIR= /opt/bw/include
+LDIR= /opt/bw/lib
 
-LIBS=	-lcrypto -lm
+LIBS= -lcrypto -lm
 
-OBJS=	dgst_test.o ../../../sysinfo/sysinfo.o \
+OBJS= dgst_test.o ../../../sysinfo/sysinfo.o \
 		../../../sysinfo/endian.o
 
 .PHONY: all
 all: dgst_test
 
 dgst_test: $(OBJS)
-	$(CC) -o dgst_test $(OBJS) $(CFLAGS) $(CPPFLAGS) \
-	-I$(IDIR) -L$(LDIR) $(LIBS)
+	$(CC) -o dgst_test $(OBJS) $(CFLAGS) $(CPPFLAGS) -I$(IDIR) -L$(LDIR) $(LIBS)
 
 .PHONY: clean
 clean:
