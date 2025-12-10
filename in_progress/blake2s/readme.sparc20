@@ -1,4 +1,6 @@
+
 This was the env on the old Sun Solaris 8 SPARCStation 20
+where the code actually worked.
 
 AS=/opt/bw/bin/gas
 CC=/opt/csw/gcc4/bin/gcc
@@ -21,3 +23,4 @@ _INIT_UTS_PLATFORM=SUNW,SPARCstation-20
 _INIT_UTS_RELEASE=5.8
 _INIT_UTS_SYSNAME=SunOS
 _INIT_UTS_VERSION=Generic_117350-62
+

@@ -35,6 +35,7 @@
  */
 
 #include <stdio.h>
+#include "test_code.h"
 
 #include "blake2b.h"
 #include "blake2s.h"
@@ -58,7 +59,7 @@ static void selftest_seq(uint8_t *out, size_t len, uint32_t seed)
 }
 
 /* BLAKE2b self-test validation. Return 0 when OK. */
-int blake2b_selftest()
+int blake2b_selftest(void)
 {
     /* grand hash of hash results */
     const uint8_t blake2b_res[32] = {
@@ -84,11 +85,12 @@ int blake2b_selftest()
         for (j = 0; j < 6; j++) {
             inlen = b2b_in_len[j];
 
-            selftest_seq(in, inlen, inlen);     /* unkeyed hash */
+            /* watch for the possible 64-bit size_t conversion */
+            selftest_seq(in, inlen, (uint32_t)inlen);     /* unkeyed hash */
             blake2b(md, outlen, NULL, 0, in, inlen);
             blake2b_update(&ctx, md, outlen);   /* hash the hash */
 
-            selftest_seq(key, outlen, outlen);  /* keyed hash */
+            selftest_seq(key, outlen, (uint32_t)outlen);  /* keyed hash */
             blake2b(md, outlen, key, outlen, in, inlen);
             blake2b_update(&ctx, md, outlen);   /* hash the hash */
         }
@@ -106,7 +108,7 @@ int blake2b_selftest()
 }
 
 /* BLAKE2s self-test validation. Return 0 when OK. */
-int blake2s_selftest()
+int blake2s_selftest(void)
 {
     /* Grand hash of hash results. */
     const uint8_t blake2s_res[32] = {
@@ -132,11 +134,11 @@ int blake2s_selftest()
         for (j = 0; j < 6; j++) {
             inlen = b2s_in_len[j];
 
-            selftest_seq(in, inlen, inlen);     /* unkeyed hash */
+            selftest_seq(in, inlen, (uint32_t)inlen);     /* unkeyed hash */
             blake2s(md, outlen, NULL, 0, in, inlen);
             blake2s_update(&ctx, md, outlen);   /* hash the hash */
 
-            selftest_seq(key, outlen, outlen);  /* keyed hash */
+            selftest_seq(key, outlen, (uint32_t)outlen);  /* keyed hash */
             blake2s(md, outlen, key, outlen, in, inlen);
             blake2s_update(&ctx, md, outlen);   /* hash the hash */
         }

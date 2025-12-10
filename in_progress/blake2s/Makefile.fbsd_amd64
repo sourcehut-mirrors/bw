@@ -1,0 +1,13 @@
+
+CC= /usr/bin/cc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-fast-math -fno-builtin -fno-unsafe-math-optimizations \
+	-fno-color-diagnostics \
+	-Weverything -Wno-unsafe-buffer-usage \
+	-Wno-reserved-identifier -Wno-unused-parameter
+
+CPPFLAGS= -D_XOPEN_SOURCE=500 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+include common.mk
+

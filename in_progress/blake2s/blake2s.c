@@ -85,15 +85,25 @@ static void blake2s_compress(blake2s_ctx *ctx, int last)
     for (i = 0; i < 16; i++)            /* get little-endian words */
         m[i] = B2S_GET32(&ctx->b[4 * i]);
 
+    /* see MACRO definition above */
     for (i = 0; i < 10; i++) {          /* ten rounds */
-        B2S_G( 0, 4,  8, 12, m[sigma[i][ 0]], m[sigma[i][ 1]]);
-        B2S_G( 1, 5,  9, 13, m[sigma[i][ 2]], m[sigma[i][ 3]]);
-        B2S_G( 2, 6, 10, 14, m[sigma[i][ 4]], m[sigma[i][ 5]]);
-        B2S_G( 3, 7, 11, 15, m[sigma[i][ 6]], m[sigma[i][ 7]]);
-        B2S_G( 0, 5, 10, 15, m[sigma[i][ 8]], m[sigma[i][ 9]]);
-        B2S_G( 1, 6, 11, 12, m[sigma[i][10]], m[sigma[i][11]]);
-        B2S_G( 2, 7,  8, 13, m[sigma[i][12]], m[sigma[i][13]]);
-        B2S_G( 3, 4,  9, 14, m[sigma[i][14]], m[sigma[i][15]]);
+
+        B2S_G( 0, 4,  8, 12, m[sigma[i][ 0]], m[sigma[i][ 1]]) 
+
+        B2S_G( 1, 5,  9, 13, m[sigma[i][ 2]], m[sigma[i][ 3]]) 
+
+        B2S_G( 2, 6, 10, 14, m[sigma[i][ 4]], m[sigma[i][ 5]]) 
+
+        B2S_G( 3, 7, 11, 15, m[sigma[i][ 6]], m[sigma[i][ 7]]) 
+
+        B2S_G( 0, 5, 10, 15, m[sigma[i][ 8]], m[sigma[i][ 9]]) 
+
+        B2S_G( 1, 6, 11, 12, m[sigma[i][10]], m[sigma[i][11]]) 
+
+        B2S_G( 2, 7,  8, 13, m[sigma[i][12]], m[sigma[i][13]]) 
+
+        B2S_G( 3, 4,  9, 14, m[sigma[i][14]], m[sigma[i][15]]) 
+
     }
 
     for( i = 0; i < 8; ++i )
