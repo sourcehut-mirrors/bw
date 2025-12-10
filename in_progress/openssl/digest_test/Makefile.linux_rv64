@@ -14,11 +14,11 @@ LDIR=/opt/bw/lib
 
 LIBS= -lcrypto -lm
 
-SRCS = ./dgst_test.c ../../sysinfo/sysinfo.c \
-	   ../../sysinfo/endian.c
+SRCS = ./dgst_test.c ../../../sysinfo/sysinfo.c \
+	   ../../../sysinfo/endian.c
 
-OBJS = ./dgst_test.o ../../sysinfo/sysinfo.o \
-	   ../../sysinfo/endian.o
+OBJS = ./dgst_test.o ../../../sysinfo/sysinfo.o \
+	   ../../../sysinfo/endian.o
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS) -I$(IDIR)
