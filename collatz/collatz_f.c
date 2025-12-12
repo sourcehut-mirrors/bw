@@ -68,8 +68,8 @@ int collatz(collatz_type *cdat)
             if ( number > COLLATZ_LIM ) {
 
                 fprintf(stderr,"FAIL : computation outside uint64_t");
-                fprintf(stderr," domain.\n     : %12llu at", number);
-                fprintf(stderr," path pos %12llu\n", cdat->path_len );
+                fprintf(stderr," domain.\n     : %12" PRIu64, number);
+                fprintf(stderr," path pos %8i\n", cdat->path_len );
 
                 return EXIT_FAILURE;
             }
@@ -85,7 +85,7 @@ int collatz(collatz_type *cdat)
 
         if ( number > ( cdat->path_height ) ) {
             cdat->path_height = number;
-            cdat->height_location = cdat->path_len;
+            cdat->height_location = (uint64_t)cdat->path_len;
         }
 
         /* if we ever want to look at all the intermediate value
