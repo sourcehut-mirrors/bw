@@ -54,11 +54,11 @@ int main(int argc, char *argv[])
     if ( argc > 1 ){
         number = (uint64_t)strtoll(argv[1], (char **)NULL, 10);
         if ( number > COLLATZ_LIM ) {
-            fprintf(stderr,"FAIL : computation outside uint64_t domain.\n");
+            fprintf(stderr,"FAIL : stay in the uint64_t domain\n");
             return EXIT_FAILURE;
         }
         if ( number < 3 ) {
-            fprintf(stderr,"FAIL : be reasonable please.\n");
+            fprintf(stderr,"FAIL : be reasonable\n");
             return EXIT_FAILURE;
         }
         clatz.c0 = number;
@@ -75,7 +75,6 @@ int main(int argc, char *argv[])
     printf ("--------------------------------");
     printf ("--------------------------------\n");
 
-    /* 
     for ( k = number; k > 0; k-- ) {
         clatz.c0 = k;
         if ( collatz( &clatz ) == EXIT_FAILURE ) {
@@ -84,7 +83,6 @@ int main(int argc, char *argv[])
         }
         c_out(&clatz);
     }
-    */
 
     if ( collatz( &clatz ) == EXIT_FAILURE ) {
         fprintf(stderr,"FAIL : something bad happened\n");
