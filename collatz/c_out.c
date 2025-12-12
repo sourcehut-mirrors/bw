@@ -33,7 +33,7 @@
 #define _XOPEN_SOURCE 600
 
 #include <stdio.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -48,7 +48,7 @@
 int c_out(collatz_type *cdat) 
 {
 
-    printf ("%12" PRIu64 "   %8" PRIu64,
+    printf ("%12" PRIu64 "   %8i",
                cdat->c0, cdat->path_len);
 
     /* we may have the weird situation where the starting number
@@ -57,11 +57,12 @@ int c_out(collatz_type *cdat)
         cdat->height_location = 0;
     }
 
-    printf("    %6" PRIu64 "    %16" PRIu64,
+    printf("    %6" PRIu64 "    %12" PRIu64,
             cdat->height_location, cdat->path_height);
 
 
-    printf("   %8" PRIu64 "\n", cdat->upwards_count);
+    /* track hailstones */
+    printf("   %8i\n", cdat->upwards_count);
 
     return EXIT_SUCCESS;
 

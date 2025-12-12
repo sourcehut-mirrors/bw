@@ -91,15 +91,12 @@ int collatz(collatz_type *cdat)
         /* if we ever want to look at all the intermediate value
          * then we drop in this 
          *
-         *  printf ("debug : number = %16" PRIu64 " path_height = ",
-         *                   number);
-         *  printf ("%16" PRIu64 "path_len = %16" PRIu64"\n",
-         *                   cdat->path_height, cdat->path_len );
-         */
 
         printf ("debug : number = %16" PRIu64 " max_height = ", number);
         printf ("%16" PRIu64 " path_len = %16" PRIu64"\n",
                             cdat->path_height, cdat->path_len );
+
+        */
 
 
     }

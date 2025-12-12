@@ -33,7 +33,7 @@
 #define _XOPEN_SOURCE 600
 
 #include <stdio.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
@@ -46,8 +46,22 @@ int c_out(collatz_type *cdat);
 
 int main(int argc, char *argv[]) 
 {
+    int debug = 0;
+    int return_status;
     uint64_t k, number;
     collatz_type clatz;
+
+    /* calloc provides a pile of zero value data elements */
+    struct hailstone_t *hs = calloc(1, sizeof(struct hailstone_t));
+    struct hailstone_t *first_hailstone = hs;
+    struct hailstone_t *last_hailstone = hs;
+    struct hailstone_t *hailstone_ptr = first_hailstone;
+    int hs_count = 0;
+    uint64_t big_upwards = 0;
+
+    /* not necessary but pedantic to set next pointer NULL */
+    hs->next = NULL;
+    hs->prev = NULL;
 
     setlocale( LC_ALL, "C" );
 
@@ -62,35 +76,97 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
         clatz.c0 = number;
+        if ( argc > 2 ) {
+            debug = 1;
+        }
     } else {
         fprintf(stderr,"FAIL : please enter a starting number.\n");
         return EXIT_FAILURE;
     }
 
-    /* After a whack of OCD fiddling around we have this at 60 chars */
+    /* After a whack of OCD fiddling around we have this header */
     printf ("--------------------------------");
     printf ("--------------------------------\n");
-    printf ("       start   path_len    max_at                 max");
+    printf ("       start   path_len    max_at             max");
     printf ("  hailstone\n");
     printf ("--------------------------------");
     printf ("--------------------------------\n");
 
-    for ( k = number; k > 0; k-- ) {
+    for ( k = 1; k < (number+1); k++ ) {
         clatz.c0 = k;
         if ( collatz( &clatz ) == EXIT_FAILURE ) {
             fprintf(stderr,"FAIL : oops ... something bad happened\n");
             return EXIT_FAILURE;
         }
-        c_out(&clatz);
+
+        if ( debug ) {
+            c_out(&clatz);
+        }
+
+        /* here we can track the big hailstones */
+        if ( clatz.upwards_count > big_upwards ) {
+            big_upwards = clatz.upwards_count;
+            hs->c0 = clatz.c0;
+            hs->path_len = clatz.path_len;
+            hs->height_location = clatz.height_location;
+            hs->path_height = clatz.path_height;
+            hs->upwards_count = clatz.upwards_count;
+            last_hailstone = hs;
+
+            if ( debug ) {
+                printf ("hailstone at %12" PRIu64 " and upwards_count %i\n",
+                        clatz.c0, clatz.upwards_count);
+            }
+
+            /* make an empty hailstone */
+            hs->next = calloc(1, sizeof(struct hailstone_t));
+            hs->next->prev = hs;
+            hs = hs->next;
+            hs->next = NULL;
+        }
     }
 
     if ( collatz( &clatz ) == EXIT_FAILURE ) {
         fprintf(stderr,"FAIL : something bad happened\n");
-        return EXIT_FAILURE;
+        /* TODO : clean up the hailstone list */
+        return_status = EXIT_FAILURE;
+    } else {
+        return_status = EXIT_SUCCESS;
+        /* c_out(&clatz); */
     }
-    c_out(&clatz);
 
-    return EXIT_SUCCESS;
+    /*
+     *
+       start   path_len    max_at             max  hailstone
+----------------------------------------------------------------
+         871        178        31          190996         65
+        1161        181        34          190996         66
+        2463        208       120          250504         76
+        2919        216       128          250504         79
+        3711        237        24          481624         87
+        6171        261        78          975400         96
+
+     *
+     *
+     */
+    printf ("\n");
+    while ( hailstone_ptr->next != NULL ) {
+
+        printf ("%12" PRIu64 "   %8i",
+                hailstone_ptr->c0,
+                hailstone_ptr->path_len);
+
+        printf("    %6" PRIu64 "    %12" PRIu64,
+                hailstone_ptr->height_location,
+                hailstone_ptr->path_height);
+
+        printf("   %8i\n",
+                hailstone_ptr->upwards_count);
+
+        hailstone_ptr = hailstone_ptr->next;
+    }
+
+    return return_status;
 
 }
 

@@ -1,4 +1,28 @@
 
+12 Dec 2025 -- need to free up that hailstone list
+
+For some obscure reason I just had to put in a hailstone
+tracking list. Try 100 000 000 for kicks to see the machine
+grind. Be sure to time it.
+
+----------------------------------------------------------------
+       start   path_len    max_at             max  hailstone
+----------------------------------------------------------------
+ 
+           3          7         3              16          2
+           7         16         5              52          5
+           9         19         8              52          6
+....
+     8400511        685       190    159424614880        256
+    11200681        688       193    159424614880        257
+    14934241        691       196    159424614880        258
+    15733191        704       209    159424614880        263
+    36791535        744       249    159424614880        278
+    63728127        949        74    966616035460        357
+
+So there we see 63728127 will go up and down 357 times.
+
+--------------------------------------------------------------
 After a pile of messing around on 16 May 2021 we have a 
 must better looking output and we track the hailstones :
 
@@ -13,7 +37,6 @@ mars$
 where : 
 
 https://mathworld.wolfram.com/HailstoneNumber.html
-
 
 be sure to look at 63728127 
 

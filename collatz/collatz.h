@@ -15,13 +15,24 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+/* multiply by 3 and stay under 2^64 */
 #define COLLATZ_LIM 6148914691236517204UL
 
 typedef struct collatz {
      uint64_t c0;
-     uint64_t path_len;
+     int path_len;
      uint64_t height_location;
      uint64_t path_height;
-     uint64_t upwards_count;
+     int upwards_count;
 } collatz_type;
+
+typedef struct hailstone_t {
+     uint64_t c0;
+     int path_len;
+     uint64_t height_location;
+     uint64_t path_height;
+     int upwards_count;
+     struct hailstone_t *next;
+     struct hailstone_t *prev;
+} hailstone_t;
 
