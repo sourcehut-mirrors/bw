@@ -1,15 +1,15 @@
 
 CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -Weverything \
-	-Wno-reserved-id-macro -Wno-missing-prototypes -m64 -g -O0 \
-	-fno-fast-math -fno-builtin
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-fast-math -fno-builtin \
+	-Weverything -Wno-unsafe-buffer-usage
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS= -D_XOPEN_SOURCE=500 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
 
 LDIR=/usr/local/lib
 IDIR=/usr/local/include
-LIBS=-lrt
 
 SRCS = tn.c
 OBJS = tn.o
@@ -18,7 +18,7 @@ OBJS = tn.o
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
 
 tn: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR)
 
 clean:
 	rm -f $(OBJS) tn

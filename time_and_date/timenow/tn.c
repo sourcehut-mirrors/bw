@@ -151,7 +151,7 @@ main( int argc, char *argv[] )
             }
 
             if ( frac == 1 ) {
-                snprintf( time_buffer, (size_t)11, ".%-9lu", tn.tv_nsec );
+                snprintf( time_buffer, (size_t)11, ".%-9ld", tn.tv_nsec );
                 for ( j=0; j<strlen(time_buffer); j++ ) {
                     if (isspace(time_buffer[j])){
                         time_buffer[j] = 0x0;
