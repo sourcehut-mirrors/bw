@@ -64,10 +64,15 @@ int c_do(collatz_type *cdat, int verbose)
     }
 
     cdat->height_location = 0;
-    cdat->path_height = 0;
+    cdat->path_height = cdat->c0;
     cdat->path_len = 0;
     cdat->upwards_count = 0;
     number = cdat->c0;
+
+    if ( verbose ) {
+        printf ("        0 : number = %16" PRIu64 " ", number);
+        printf ("max_height = %16" PRIu64 "\n", cdat->c0);
+    }
 
     while (number > 1) {
 

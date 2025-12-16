@@ -92,6 +92,13 @@ int main(int argc, char *argv[])
         }
     } else {
         fprintf(stderr,"FAIL : please enter a starting number.\n");
+        fprintf(stderr,"     : optional flags may also be entered\n");
+        fprintf(stderr,"     : thus -> %s N 1\n", argv[0]);
+        fprintf(stderr,"     : that provides verbose output.\n");
+        fprintf(stderr,"     : You may provide an additional flag\n");
+        fprintf(stderr,"     : thus -> %s N 1 1\n", argv[0]);
+        fprintf(stderr,"     : To process only N verbosely.\n");
+        fprintf(stderr,"     : WARNING : you are wasting your life!\n");
         return EXIT_FAILURE;
     }
 

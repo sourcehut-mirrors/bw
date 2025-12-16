@@ -5,7 +5,9 @@ For some obscure reason I just had to put in a hailstone
 tracking list. Try 100 000 000 for kicks to see the machine
 grind. Be sure to time it.
 
-hydra$ 
+WARNING : the process blows up at 12327829503 due to uint64_t
+
+
 hydra$ /usr/bin/time -p /usr/bin/nice -n +18 ./collatz 1000000000000
 ----------------------------------------------------------------
        start   path_len    max_at             max  hailstone
