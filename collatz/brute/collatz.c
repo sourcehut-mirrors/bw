@@ -38,7 +38,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <stdio.h>
 #include <inttypes.h>

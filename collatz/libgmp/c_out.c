@@ -1,7 +1,8 @@
 
 /*
+ * c_out.c  Kick out a line of numbers to stdout
  * ------------------------------------------------------------------
- * Copyright (C) Dennis Clarke 2025
+ * Copyright (C) Dennis Clarke 2019
  *
  *    Permission is hereby granted, free of charge, to any person
  *    obtaining a copy of this software and associated documentation
@@ -41,30 +42,56 @@
 #define _XOPEN_SOURCE 600
 #endif
 
+#include <stdio.h>
+#include <inttypes.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <string.h>
+#include <inttypes.h>
+#include <gmp.h>
 
-/* multiply by 3 and stay under 2^64 */
-#define COLLATZ_LIM 6148914691236517204UL
+#include "collatz.h"
 
-typedef struct collatz {
-     uint64_t c0;
-     int path_len;
-     uint64_t height_location;
-     uint64_t path_height;
-     int upwards_count;
-} collatz_type;
+int c_out(stuff_t *cdat) 
+{
 
-typedef struct hailstone_t {
-     uint64_t c0;
-     int path_len;
-     uint64_t height_location;
-     uint64_t path_height;
-     int upwards_count;
-     struct hailstone_t *next;
-     struct hailstone_t *prev;
-} hailstone_t;
+    size_t num_bytes;
 
-int c_do(collatz_type *cdat, int verbose);
-int c_out(collatz_type *cdat);
+    printf("\n");
+    num_bytes = mpz_out_str(stdout, 10, cdat->c0);
+    if ( num_bytes == 0 ) {
+        fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+        fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+        exit(EXIT_FAILURE);
+    }
+
+    printf ("   %8i", cdat->path_len);
+
+    /* we may have the weird situation where the starting number
+     * cdat->c0 is the largest number ever */
+    if ( mpz_cmp(cdat->c0, cdat->path_height) > 0 ) {
+        mpz_set_ui(cdat->height_location, 0);
+    }
+
+    printf("    ");
+    num_bytes = mpz_out_str(stdout, 10, cdat->height_location);
+    if ( num_bytes == 0 ) {
+        fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+        fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("    ");
+    num_bytes = mpz_out_str(stdout, 10, cdat->path_height);
+    if ( num_bytes == 0 ) {
+        fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+        fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+        exit(EXIT_FAILURE);
+    }
+
+    /* hailstones */
+    printf("   %8i\n", cdat->upwards_count);
+
+    return EXIT_SUCCESS;
+
+}
 

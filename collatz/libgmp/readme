@@ -1,0 +1,26 @@
+
+
+hydra$ echo $CC
+/usr/bin/cc
+hydra$ echo $CFLAGS
+-std=iso9899:1999 -m64 -g -O0 -fno-fast-math -fno-builtin -fno-color-diagnostics
+hydra$ echo $CPPFLAGS
+-D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+
+hydra$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o c_do.o c_do.c
+hydra$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o c_out.o c_out.c 
+hydra$ $CC $CFLAGS $CPPFLAGS -I/opt/bw/include -c -o collatz.o collatz.c
+
+hydra$ $CC $CFLAGS $CPPFLAGS -Wl,-rpath=/opt/bw/lib,-enable-new-dtags -L/opt/bw/lib \
+> -o collatz collatz.o c_do.o c_out.o -lgmp 
+
+hydra$ ldd collatz
+collatz:
+        libgmp.so.10 => /opt/bw/lib/libgmp.so.10 (0x1f6bf5a56000)
+        libc.so.7 => /lib/libc.so.7 (0x1f6bf710b000)
+        libsys.so.7 => /lib/libsys.so.7 (0x1f6bf8017000)
+        [vdso] (0x1f6bf4dcb000)
+hydra$ 
+
+

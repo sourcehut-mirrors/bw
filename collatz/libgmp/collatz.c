@@ -38,7 +38,9 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <stdio.h>
 #include <inttypes.h>
@@ -46,25 +48,31 @@
 #include <string.h>
 #include <locale.h>
 #include <sys/utsname.h>
+#include <errno.h>
 
 #include <gmp.h>
 
 #include "collatz.h"
 
-int collatz(collatz_type *cdat);
-int c_out(collatz_type *cdat);
+#define VERBOSE 1
 
 int main(int argc, char *argv[]) 
 {
     int debug = 0;
     int return_status;
-    uint64_t k, number;
-    collatz_type clatz;
+    uint64_t candidate_n;
+    mpz_t k, number, end_loop;
+    stuff_t clatz;
 
-    struct hailstone_t *hs = calloc(1, sizeof(struct hailstone_t));
-    struct hailstone_t *first_hailstone = hs;
-    struct hailstone_t *last_hailstone = hs;
-    struct hailstone_t *hailstone_ptr = first_hailstone;
+    mpz_inits (k, number, end_loop,
+               clatz.c0,
+               clatz.height_location,
+               clatz.path_height, NULL);
+
+    struct stuff_t *hs = calloc(1, sizeof(struct stuff_t));
+    struct stuff_t *first_hailstone = hs;
+    struct stuff_t *last_hailstone = hs;
+    struct stuff_t *hailstone_ptr = first_hailstone;
     int hs_count = 0;
     int big_upwards = 0;
 
@@ -73,20 +81,25 @@ int main(int argc, char *argv[])
     hs->prev = NULL;
 
     setlocale( LC_ALL, "C" );
-
+    errno = 0;
     if ( argc > 1 ){
-        number = (uint64_t)strtoll(argv[1], (char **)NULL, 10);
-        if ( number > COLLATZ_LIM ) {
-            fprintf(stderr,"FAIL : stay in the uint64_t domain\n");
+
+        candidate_n = (int)strtol(argv[1], (char **)NULL, 10);
+        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
+            fprintf(stderr,"FAIL : integer not understood\n");
+            perror("     ");
             return EXIT_FAILURE;
         }
-        if ( number < 3 ) {
-            fprintf(stderr,"FAIL : be reasonable\n");
+        if ( candidate_n < 4 ) {
+            fprintf(stderr,"WARN : you are unreasonable\n");
             return EXIT_FAILURE;
         }
-        clatz.c0 = number;
+
+        mpz_set_ui(number, (unsigned long int)candidate_n);
+        mpz_set_ui(clatz.c0, (unsigned long int)candidate_n);
+
         if ( argc > 2 ) {
-            debug = 1;
+            debug = VERBOSE;
         }
     } else {
         fprintf(stderr,"FAIL : please enter a starting number.\n");
@@ -101,9 +114,15 @@ int main(int argc, char *argv[])
     printf ("--------------------------------");
     printf ("--------------------------------\n");
 
-    for ( k = 1; k < (number+1); k++ ) {
-        clatz.c0 = k;
-        if ( collatz( &clatz ) == EXIT_FAILURE ) {
+    mpz_set_ui(k, 1);
+    mpz_set_ui(end_loop, (unsigned long int)(candidate_n + 1));
+
+    /* for ( k = 1; k < (number+1); k++ ) { */
+    do {
+
+        mpz_set(clatz.c0, k);
+
+        if ( c_do( &clatz, debug ) == EXIT_FAILURE ) {
             fprintf(stderr,"FAIL : oops ... something bad happened\n");
             return EXIT_FAILURE;
         }
@@ -112,7 +131,7 @@ int main(int argc, char *argv[])
             c_out(&clatz);
         }
 
-        /* here we can track the big hailstones */
+        /* here we can track the big hailstones *
         if ( clatz.upwards_count > big_upwards ) {
             big_upwards = clatz.upwards_count;
             hs->c0 = clatz.c0;
@@ -133,7 +152,7 @@ int main(int argc, char *argv[])
             printf("   %8i\n",
                 clatz.upwards_count);
 
-            /* make an empty hailstone */
+            ******* make an empty hailstone ********
             hs->next = calloc(1, sizeof(struct hailstone_t));
             hs->next->prev = hs;
             hs = hs->next;
@@ -141,55 +160,15 @@ int main(int argc, char *argv[])
 
             hs_count += 1;
         }
-    }
+    */
 
-    if ( collatz( &clatz ) == EXIT_FAILURE ) {
-        fprintf(stderr,"FAIL : something bad happened\n");
-        return_status = EXIT_FAILURE;
-        goto freeit;
-    } else {
-        return_status = EXIT_SUCCESS;
-    }
+        /* k++ */
+        mpz_add_ui(k, k, 1);
 
-    printf ("\n\n-------------- %i hailstones\n", hs_count);
-    while ( hailstone_ptr->next != NULL ) {
+        /* do while k < (number+1) */
+    } while ( mpz_cmp(k, end_loop) < 0 );
 
-        printf ("%12" PRIu64 "   %8i",
-                hailstone_ptr->c0,
-                hailstone_ptr->path_len);
-
-        printf("    %6" PRIu64 "    %12" PRIu64,
-                hailstone_ptr->height_location,
-                hailstone_ptr->path_height);
-
-        printf("   %8i\n",
-                hailstone_ptr->upwards_count);
-
-        hailstone_ptr = hailstone_ptr->next;
-    }
-
-
-freeit:
-
-    /* Actually the really last hailstone in the list
-     * was just a pile of zeros. We never did put any
-     * data in there.
-     */
-    free ( last_hailstone->next );
-    last_hailstone->next = NULL;
-
-    /* TODO fix this broken shit and only you can
-     * stop the SIGSEGV
-    while ( last_hailstone != NULL ) {
-        last_hailstone = last_hailstone->prev;
-        free ( last_hailstone->next );
-        if ( last_hailstone != NULL ) {
-            last_hailstone->next = NULL;
-        }
-    }
-     */
-
-    return return_status;
+    return EXIT_SUCCESS;
 
 }
 

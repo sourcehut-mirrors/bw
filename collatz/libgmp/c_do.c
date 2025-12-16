@@ -47,69 +47,82 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* there should be no reason to need this anymore 
- *   #define __STDC_FORMAT_MACROS
- */
 #include <inttypes.h>
+#include <gmp.h>
 
 #include "collatz.h"
 
-int c_do(collatz_type *cdat, int verbose) 
+int c_do(stuff_t *cdat, int verbose) 
 {
 
-    uint64_t number;
+    mpz_t number;
+    size_t num_bytes;
 
-    if ( ( cdat->c0 ) > COLLATZ_LIM ) {
-        fprintf(stderr,"FAIL : computation outside uint64_t domain.\n");
-        return EXIT_FAILURE;
-    }
-
-    cdat->height_location = 0;
-    cdat->path_height = cdat->c0;
+    mpz_set_ui(cdat->height_location, 0);
+    mpz_set(cdat->path_height, cdat->c0) ;
     cdat->path_len = 0;
     cdat->upwards_count = 0;
-    number = cdat->c0;
+
+    mpz_set(number,cdat->c0);
 
     if ( verbose ) {
-        printf ("        0 : number = %16" PRIu64 " ", number);
-        printf ("max_height = %16" PRIu64 "\n", cdat->c0);
+        printf ("\n        0 : number = ");
+
+        num_bytes = mpz_out_str(stdout, 10, number);
+        if ( num_bytes == 0 ) {
+            fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+            fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+            exit(EXIT_FAILURE);
+        }
+
+        printf ("    max_height = ");
+        num_bytes = mpz_out_str(stdout, 10, cdat->c0);
+        if ( num_bytes == 0 ) {
+            fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+            fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+            exit(EXIT_FAILURE);
+        }
+        printf ("\n");
     }
 
-    while (number > 1) {
+    while ( mpz_cmp_ui(number, 1) > 0 ) {
 
-        if (number % 2 == 0) {
-            number = number / 2;
+        if mpz_even_p(number) {
+            mpz_divexact_ui(number, number, 2);
         } else {
-            if ( number > COLLATZ_LIM ) {
+            
+            mpz_mul_ui(number, number, 3);
 
-                fprintf(stderr,"FAIL : uint64_t overflow\n");
-                fprintf(stderr," cdat->c0 = %16" PRIu64, cdat->c0);
-                fprintf(stderr," number   = %16" PRIu64, number);
-                fprintf(stderr," path pos = %16i\n", cdat->path_len );
+            mpz_add_ui(number, number, 1);
 
-                return EXIT_FAILURE;
-            }
-            number = 3 * number + 1;
-            /* We are curious about hailstone numbers 
-             * https://mathworld.wolfram.com/HailstoneNumber.html
-             * integers in the Collatz conjecture may rise and fall
-             * over and over before dropping to one. Called hailstone
-             * numbers which rise and fall. */
             cdat->upwards_count +=1;
         }
         cdat->path_len = cdat->path_len + 1;
 
-        if ( number > ( cdat->path_height ) ) {
-            cdat->path_height = number;
-            cdat->height_location = (uint64_t)cdat->path_len;
+        if ( mpz_cmp(number, cdat->path_height ) > 0 ) {
+            mpz_set(cdat->path_height, number);
+            mpz_set_ui(cdat->height_location, cdat->path_len);
         }
 
         if ( verbose ) {
-            printf (" %8i : number = %16" PRIu64 " ",
-                      cdat->path_len, number);
-            printf ("max_height = %16" PRIu64 "\n",
-                            cdat->path_height );
+            printf ("\n %8i ", cdat->path_len);
+
+            printf(" : number = ");
+            num_bytes = mpz_out_str(stdout, 10, number);
+            if ( num_bytes == 0 ) {
+                fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+                fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+                exit(EXIT_FAILURE);
+            }
+
+            printf ("    max_height = ");
+            num_bytes = mpz_out_str(stdout, 10, cdat->path_height);
+            if ( num_bytes == 0 ) {
+                fprintf(stderr,"\nFAIL : mpz_out_str() bork bork bork\n");
+                fprintf(stderr,"     : %s at %i\n",__FILE__,__LINE__);
+                exit(EXIT_FAILURE);
+            }
+            printf("\n");
         }
 
     }
