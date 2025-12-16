@@ -3,17 +3,17 @@ CC= /usr/bin/cc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-m64 -g -O0 -fno-fast-math -fno-builtin \
-	-Weverything \
-	-Wno-reserved-id-macro -Wno-missing-prototypes \
-	-Wno-padded
+	-Weverything -Wno-reserved-id-macro \
+	-Wno-missing-prototypes -Wno-padded \
+	-Wno-unsafe-buffer-usage
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LDIR= /usr/local/lib
 IDIR= /usr/local/include
 
-SRCS = c_out.c collatz_f.c collatz.c
-OBJS = c_out.o collatz_f.o collatz.o
+SRCS = c_out.c c_do.c collatz.c
+OBJS = c_out.o c_do.o collatz.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)

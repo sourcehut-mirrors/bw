@@ -8,8 +8,8 @@ CPPFLAGS= -D_LARGEFILE64_SOURCE
 LDIR= /usr/local/lib
 IDIR= /usr/local/include
 
-SRCS = c_out.c collatz_f.c collatz.c
-OBJS = c_out.o collatz_f.o collatz.o
+SRCS = c_out.c c_do.c collatz.c
+OBJS = c_out.o c_do.o collatz.o
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)

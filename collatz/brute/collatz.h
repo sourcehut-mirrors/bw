@@ -63,3 +63,6 @@ typedef struct hailstone_t {
      struct hailstone_t *prev;
 } hailstone_t;
 
+int c_do(collatz_type *cdat, int verbose);
+int c_out(collatz_type *cdat);
+

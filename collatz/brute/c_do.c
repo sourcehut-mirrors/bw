@@ -1,6 +1,6 @@
 
 /*
- * collatz_f.c  Collatz Conjecture calculation
+ * c_do.c  Collatz Conjecture calculation function
  *
  * ------------------------------------------------------------------
  * Copyright (C) Dennis Clarke 2019
@@ -53,7 +53,7 @@
 
 #include "collatz.h"
 
-int collatz(collatz_type *cdat) 
+int c_do(collatz_type *cdat, int verbose) 
 {
 
     uint64_t number;
@@ -76,9 +76,10 @@ int collatz(collatz_type *cdat)
         } else {
             if ( number > COLLATZ_LIM ) {
 
-                fprintf(stderr,"FAIL : computation outside uint64_t");
-                fprintf(stderr," domain.\n     : %12" PRIu64, number);
-                fprintf(stderr," path pos %8i\n", cdat->path_len );
+                fprintf(stderr,"FAIL : uint64_t overflow\n");
+                fprintf(stderr," cdat->c0 = %16" PRIu64, cdat->c0);
+                fprintf(stderr," number   = %16" PRIu64, number);
+                fprintf(stderr," path pos = %16i\n", cdat->path_len );
 
                 return EXIT_FAILURE;
             }
@@ -97,16 +98,12 @@ int collatz(collatz_type *cdat)
             cdat->height_location = (uint64_t)cdat->path_len;
         }
 
-        /* if we ever want to look at all the intermediate value
-         * then we drop in this 
-         *
-
-        printf ("debug : number = %16" PRIu64 " max_height = ", number);
-        printf ("%16" PRIu64 " path_len = %16" PRIu64"\n",
-                            cdat->path_height, cdat->path_len );
-
-        */
-
+        if ( verbose ) {
+            printf (" %8i : number = %16" PRIu64 " ",
+                      cdat->path_len, number);
+            printf ("max_height = %16" PRIu64 "\n",
+                            cdat->path_height );
+        }
 
     }
 

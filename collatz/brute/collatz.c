@@ -49,8 +49,7 @@
 
 #include "collatz.h"
 
-int collatz(collatz_type *cdat);
-int c_out(collatz_type *cdat);
+#define VERBOSE 1
 
 int main(int argc, char *argv[]) 
 {
@@ -87,6 +86,10 @@ int main(int argc, char *argv[])
         if ( argc > 2 ) {
             debug = 1;
         }
+        if ( argc > 3 ) {
+            c_do( &clatz, VERBOSE );
+            return EXIT_SUCCESS;
+        }
     } else {
         fprintf(stderr,"FAIL : please enter a starting number.\n");
         return EXIT_FAILURE;
@@ -102,8 +105,8 @@ int main(int argc, char *argv[])
 
     for ( k = 1; k < (number+1); k++ ) {
         clatz.c0 = k;
-        if ( collatz( &clatz ) == EXIT_FAILURE ) {
-            fprintf(stderr,"FAIL : oops ... something bad happened\n");
+        if ( c_do( &clatz, 0 ) == EXIT_FAILURE ) {
+            fprintf(stderr,"FAIL : computer says \"No\"\n");
             return EXIT_FAILURE;
         }
 
@@ -142,7 +145,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if ( collatz( &clatz ) == EXIT_FAILURE ) {
+    if ( c_do( &clatz, 0 ) == EXIT_FAILURE ) {
         fprintf(stderr,"FAIL : something bad happened\n");
         return_status = EXIT_FAILURE;
         goto freeit;
