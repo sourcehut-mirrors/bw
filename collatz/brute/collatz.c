@@ -56,16 +56,22 @@
 int main(int argc, char *argv[]) 
 {
     int debug = 0;
-    int return_status;
+    /* int return_status; */
     uint64_t k, number;
     collatz_type clatz;
 
-    /* calloc provides a pile of zero value data elements */
+    /* allocate an empty bucket for a future hailstone */
     struct hailstone_t *hs = calloc(1, sizeof(struct hailstone_t));
-    struct hailstone_t *first_hailstone = hs;
-    struct hailstone_t *last_hailstone = hs;
-    struct hailstone_t *hailstone_ptr = first_hailstone;
+    struct hailstone_t *last_hailstone = NULL;
+
+    /* beginning of the hailstone list */
+    struct hailstone_t *hailstone_ptr = hs;
+
     int hs_count = 0;
+
+    /* Track when a hailstone happens and it is more dynamic
+     * than seen before.
+     */
     int big_upwards = 0;
 
     /* not necessary but pedantic to set next pointer NULL */
@@ -95,14 +101,30 @@ int main(int argc, char *argv[])
     } else {
         fprintf(stderr,"FAIL : please enter a starting number.\n");
         fprintf(stderr,"     : optional flags may also be entered\n");
-        fprintf(stderr,"     : thus -> %s N 1\n", argv[0]);
+        fprintf(stderr,"     : thus -> %s N v\n", argv[0]);
         fprintf(stderr,"     : that provides verbose output.\n");
         fprintf(stderr,"     : You may provide an additional flag\n");
-        fprintf(stderr,"     : thus -> %s N 1 1\n", argv[0]);
+        fprintf(stderr,"     : thus -> %s N v v\n", argv[0]);
         fprintf(stderr,"     : To process only N verbosely.\n");
         fprintf(stderr,"     : WARNING : you are wasting your life!\n");
         return EXIT_FAILURE;
     }
+
+    /* There are a few problems with the Collatz Conjecture and
+     * the hailstone ( up and down and up and down ) is cool.
+     *
+     * Here is the sequence for N = 9 :
+     *
+     *   9 -> 28 
+     *     -> 14 ->  7
+     *     -> 22 -> 11 
+     *     -> 34 -> 17 
+     *     -> 52 -> 26 -> 13
+     *     -> 40 -> 20 -> 10 -> 5
+     *     -> 16 -> 8 ->  4 ->  2 -> 1
+     *
+     * Above we see the sequence goes upwards 7 time.
+     */
 
     /* After a whack of OCD fiddling around we have this header */
     printf ("--------------------------------");
@@ -112,18 +134,24 @@ int main(int argc, char *argv[])
     printf ("--------------------------------");
     printf ("--------------------------------\n");
 
-    for ( k = 1; k < (number+1); k++ ) {
+    for ( k = 1; k <= number; k++ ) {
         clatz.c0 = k;
+
+        /* If the extra verbose flag exists then we never get here.
+         * Thus the verbosity flag here is hard coded to 0.
+         */
         if ( c_do( &clatz, 0 ) == EXIT_FAILURE ) {
             fprintf(stderr,"FAIL : computer says \"No\"\n");
             return EXIT_FAILURE;
         }
 
+        /*
         if ( debug ) {
             c_out(&clatz);
         }
+        */
 
-        /* here we can track the big hailstones */
+        /* track the hailstones */
         if ( clatz.upwards_count > big_upwards ) {
             big_upwards = clatz.upwards_count;
             hs->c0 = clatz.c0;
@@ -131,20 +159,19 @@ int main(int argc, char *argv[])
             hs->height_location = clatz.height_location;
             hs->path_height = clatz.path_height;
             hs->upwards_count = clatz.upwards_count;
+
+            /* We actually have data */
             last_hailstone = hs;
 
-            printf ("%12" PRIu64 "   %8i",
-                clatz.c0,
-                clatz.path_len);
+            printf ("%12" PRIu64 "   %8i", clatz.c0, clatz.path_len);
 
             printf("    %6" PRIu64 "    %12" PRIu64,
                 clatz.height_location,
                 clatz.path_height);
 
-            printf("   %8i\n",
-                clatz.upwards_count);
+            printf("   %8i\n", clatz.upwards_count);
 
-            /* make an empty hailstone */
+            /* Make an empty hailstone */
             hs->next = calloc(1, sizeof(struct hailstone_t));
             hs->next->prev = hs;
             hs = hs->next;
@@ -154,6 +181,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    /*
     if ( c_do( &clatz, 0 ) == EXIT_FAILURE ) {
         fprintf(stderr,"FAIL : something bad happened\n");
         return_status = EXIT_FAILURE;
@@ -161,26 +189,33 @@ int main(int argc, char *argv[])
     } else {
         return_status = EXIT_SUCCESS;
     }
+    */
 
-    printf ("\n\n-------------- %i hailstones\n", hs_count);
-    while ( hailstone_ptr->next != NULL ) {
-
-        printf ("%12" PRIu64 "   %8i",
-                hailstone_ptr->c0,
-                hailstone_ptr->path_len);
-
-        printf("    %6" PRIu64 "    %12" PRIu64,
-                hailstone_ptr->height_location,
-                hailstone_ptr->path_height);
-
-        printf("   %8i\n",
-                hailstone_ptr->upwards_count);
-
-        hailstone_ptr = hailstone_ptr->next;
+    if ( debug ) {
+        printf ("\n\n-------------- %i hailstones\n", hs_count);
+        /* The top of the list is hailstone_ptr and the last
+         * entry is empty. See above. */
+        while ( hailstone_ptr->next != NULL ) {
+    
+            printf ("%12" PRIu64 "   %8i",
+                    hailstone_ptr->c0,
+                    hailstone_ptr->path_len);
+    
+            printf("    %6" PRIu64 "    %12" PRIu64,
+                    hailstone_ptr->height_location,
+                    hailstone_ptr->path_height);
+    
+            printf("   %8i\n",
+                    hailstone_ptr->upwards_count);
+    
+            hailstone_ptr = hailstone_ptr->next;
+        }
     }
 
 
+    /*
 freeit:
+*/
 
     /* Actually the really last hailstone in the list
      * was just a pile of zeros. We never did put any
@@ -200,7 +235,7 @@ freeit:
     }
      */
 
-    return return_status;
+    return EXIT_SUCCESS;
 
 }
 

@@ -46,10 +46,6 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* there should be no reason to need this anymore 
- *   #define __STDC_FORMAT_MACROS
- */
 #include <inttypes.h>
 
 #include "collatz.h"

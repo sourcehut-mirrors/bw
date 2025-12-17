@@ -47,10 +47,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-/* there should be no reason to need this anymore 
- *   #define __STDC_FORMAT_MACROS
- */
 #include <inttypes.h>
 
 #include "collatz.h"
@@ -61,14 +57,19 @@ int c_do(collatz_type *cdat, int verbose)
     uint64_t number;
 
     if ( ( cdat->c0 ) > COLLATZ_LIM ) {
+        /* Note that this will likely never happen */
         fprintf(stderr,"FAIL : computation outside uint64_t domain.\n");
         return EXIT_FAILURE;
     }
 
     cdat->height_location = 0;
+
+    /* we always start with a height at the zeroth value for N */
     cdat->path_height = cdat->c0;
+
     cdat->path_len = 0;
     cdat->upwards_count = 0;
+
     number = cdat->c0;
 
     if ( verbose ) {
@@ -77,10 +78,13 @@ int c_do(collatz_type *cdat, int verbose)
     }
 
     while (number > 1) {
-
-        if (number % 2 == 0) {
+        if (number%2 == 0) {
             number = number / 2;
         } else {
+            /* Note that we blow right through the 64-bit limit
+             * well before hitting this COLLATZ_LIM.
+             * see 12327829503
+             */
             if ( number > COLLATZ_LIM ) {
 
                 fprintf(stderr,"FAIL : uint64_t overflow\n");
@@ -100,7 +104,7 @@ int c_do(collatz_type *cdat, int verbose)
         }
         cdat->path_len = cdat->path_len + 1;
 
-        if ( number > ( cdat->path_height ) ) {
+        if ( number > cdat->path_height ) {
             cdat->path_height = number;
             cdat->height_location = (uint64_t)cdat->path_len;
         }
@@ -108,10 +112,10 @@ int c_do(collatz_type *cdat, int verbose)
         if ( verbose ) {
             printf (" %8i : number = %16" PRIu64 " ",
                       cdat->path_len, number);
-            printf ("max_height = %16" PRIu64 "\n",
+            printf ("max_height = %16" PRIu64,
                             cdat->path_height );
+            printf ("    hs = %8i\n", cdat->upwards_count);
         }
-
     }
 
     return EXIT_SUCCESS;
