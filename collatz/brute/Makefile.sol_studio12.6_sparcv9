@@ -1,7 +1,7 @@
 
-CC=/opt/developerstudio12.6/bin/c99
+CC=/opt/developerstudio12.6/bin/cc
 
-CFLAGS= -Xc -m64 -xarch=sparc -g -xO0 -mc -xs \
+CFLAGS= -std=iso9899:1999 -m64 -xarch=sparc -g -xO0 -mc -xs \
 	-errfmt=error -erroff=%none -errshort=full -errtags=yes \
 	-errwarn=%none -ftrap=%none -xbuiltin=%none -xildoff \
 	-xlibmieee -xstrconst -xcode=pic32 -xmemalign=8s \

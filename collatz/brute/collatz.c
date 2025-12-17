@@ -56,13 +56,15 @@
 int main(int argc, char *argv[]) 
 {
     int debug = 0;
-    /* int return_status; */
     uint64_t k, number;
     collatz_type clatz;
 
     /* allocate an empty bucket for a future hailstone */
     struct hailstone_t *hs = calloc(1, sizeof(struct hailstone_t));
     struct hailstone_t *last_hailstone = NULL;
+    /* not necessary but pedantic to set next pointer NULL */
+    hs->next = NULL;
+    hs->prev = NULL;
 
     /* beginning of the hailstone list */
     struct hailstone_t *hailstone_ptr = hs;
@@ -73,10 +75,6 @@ int main(int argc, char *argv[])
      * than seen before.
      */
     int big_upwards = 0;
-
-    /* not necessary but pedantic to set next pointer NULL */
-    hs->next = NULL;
-    hs->prev = NULL;
 
     setlocale( LC_ALL, "C" );
 
@@ -145,11 +143,10 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-        /*
+        /* the actual data line for k */
         if ( debug ) {
             c_out(&clatz);
         }
-        */
 
         /* track the hailstones */
         if ( clatz.upwards_count > big_upwards ) {
@@ -181,23 +178,20 @@ int main(int argc, char *argv[])
         }
     }
 
-    /*
-    if ( c_do( &clatz, 0 ) == EXIT_FAILURE ) {
-        fprintf(stderr,"FAIL : something bad happened\n");
-        return_status = EXIT_FAILURE;
-        goto freeit;
-    } else {
-        return_status = EXIT_SUCCESS;
-    }
-    */
-
     if ( debug ) {
-        printf ("\n\n-------------- %i hailstones\n", hs_count);
-        /* The top of the list is hailstone_ptr and the last
-         * entry is empty. See above. */
+        printf ("\n\n %i hailstones\n", hs_count);
+        printf ("--------------------------------");
+        printf ("--------------------------------\n");
+        printf ("       start   path_len    max_at");
+        printf ("             max  hailstone\n");
+        printf ("--------------------------------");
+        printf ("--------------------------------\n");
+
+        hs_count = 0;
         while ( hailstone_ptr->next != NULL ) {
-    
-            printf ("%12" PRIu64 "   %8i",
+            hs_count += 1;
+            printf("%4i : ", hs_count);
+            printf("%12" PRIu64 "   %8i",
                     hailstone_ptr->c0,
                     hailstone_ptr->path_len);
     
@@ -212,28 +206,16 @@ int main(int argc, char *argv[])
         }
     }
 
-
-    /*
-freeit:
-*/
-
-    /* Actually the really last hailstone in the list
-     * was just a pile of zeros. We never did put any
-     * data in there.
-     */
-    free ( last_hailstone->next );
-    last_hailstone->next = NULL;
-
-    /* TODO fix this broken shit and only you can
-     * stop the SIGSEGV
-    while ( last_hailstone != NULL ) {
+    printf("\n\nfree the list %i \n", hs_count);
+    do {
+        printf("free(%p)\n",last_hailstone->next);
+        free(last_hailstone->next);
+        last_hailstone->next = NULL;
+        hs_count -= 1;
+        printf("%i \n", hs_count);
         last_hailstone = last_hailstone->prev;
-        free ( last_hailstone->next );
-        if ( last_hailstone != NULL ) {
-            last_hailstone->next = NULL;
-        }
-    }
-     */
+    } while ( last_hailstone != NULL );
+    printf("\n");
 
     return EXIT_SUCCESS;
 
