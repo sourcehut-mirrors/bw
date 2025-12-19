@@ -1,0 +1,31 @@
+
+CC = /usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
+	-mpowerpc64 -mno-altivec -msecure-plt -mno-vsx \
+	-mno-quad-memory -mno-float128 -mhard-float \
+	-mno-float128-hardware -mno-avoid-indexed-addresses \
+	-mno-isel -mno-crypto -mno-htm -mno-quad-memory-atomic \
+	-mno-multiple -mupdate -mno-avoid-indexed-addresses \
+	-mregnames -mno-recip -fno-unsafe-math-optimizations \
+	-fno-fast-math -mfull-toc -mno-fp-in-toc -mno-sum-in-toc \
+	-ffp-contract=off -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+
+CPPFLAGS= -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE \
+	-D_XOPEN_SOURCE=600
+
+LDIR= /usr/local/lib
+IDIR= /usr/local/include
+
+SRCS = c_out.c c_do.c collatz.c
+OBJS = c_out.o c_do.o collatz.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+collatz: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) collatz
+

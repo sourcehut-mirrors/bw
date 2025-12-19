@@ -8,7 +8,8 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-Wno-missing-prototypes -Wno-padded \
 	-Wno-unsafe-buffer-usage
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+		-D_XOPEN_SOURCE=600
 
 LDIR= /usr/local/lib
 IDIR= /usr/local/include

@@ -3,7 +3,7 @@ CC= /usr/bin/cc
 
 CFLAGS= -m64 -O3
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 
 LDIR= /usr/local/lib
 IDIR= /usr/local/include
