@@ -11,17 +11,14 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 		-D_XOPEN_SOURCE=600
 
-LDIR= /usr/local/lib
-IDIR= /usr/local/include
-
 SRCS = c_out.c c_do.c collatz.c
 OBJS = c_out.o c_do.o collatz.o
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 collatz: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
 
 clean:
 	rm -f $(OBJS) collatz
