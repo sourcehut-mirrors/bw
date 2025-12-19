@@ -7,8 +7,10 @@ grind. Be sure to time it.
 
 WARNING : the process blows up at 12327829503 due to uint64_t
 
+A reasonably fast ORACLE Sparc S7-2 server takes a good long
+while to get to the fail point : 
 
-hydra$ /usr/bin/time -p /usr/bin/nice -n +18 ./collatz 1000000000000
+proteus$ /usr/bin/time -p /usr/bin/nice -n +18 ./collatz 1000000000000
 ----------------------------------------------------------------
        start   path_len    max_at             max  hailstone
 ----------------------------------------------------------------
@@ -75,18 +77,16 @@ hydra$ /usr/bin/time -p /usr/bin/nice -n +18 ./collatz 1000000000000
   4890328815       1131       638    319497287463520        425
  12212032815       1153       660    319497287463520        433
  12235060455       1184       573    1037298361093936        445
-FAIL : computation outside uint64_t domain.
-     : 6907466304801683909 path pos      201
-FAIL : oops ... something bad happened
-real 4411.05
-user 4410.60
+FAIL : uint64_t overflow
+ cdat->c0 =      12327829503 number   = 6907466304801683909 path pos =              201
+FAIL : computer says "No"
+real 25471.81
+user 25470.24
 sys 0.00
-
 
 --------------------------------------------------------------
 After a pile of messing around on 16 May 2021 we have a 
 must better looking output and we track the hailstones :
-
 
 mars$ ./collatz 8842233                                                                       
 ----------------------------------------------------------------
@@ -98,6 +98,4 @@ mars$
 where : 
 
 https://mathworld.wolfram.com/HailstoneNumber.html
-
-be sure to look at 63728127 
 

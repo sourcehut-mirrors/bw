@@ -1,0 +1,24 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-builtin -fno-fast-math -mhard-float -mno-app-regs -mflat \
+	-msoft-quad-float -mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=niagara7 -mtune=niagara7 -mno-vis -mno-cbcond \
+	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc
+
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
+
+SRCS = c_out.c c_do.c collatz.c
+OBJS = c_out.o c_do.o collatz.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+collatz: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) collatz
+
