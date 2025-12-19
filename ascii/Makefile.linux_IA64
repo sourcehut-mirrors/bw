@@ -1,0 +1,28 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -fno-fast-math -mlittle-endian \
+	-mgnu-as -mgnu-ld -mregister-names -mno-inline-int-divide \
+	-mno-inline-sqrt -ffp-contract=off -mtune=itanium2 \
+	-mno-sched-br-data-spec -mno-sched-ar-data-spec \
+	-mno-sched-control-spec -msched-count-spec-in-critical-path
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
+LIBS = -lm
+
+SRCS = ./argv_dump.c ../sysinfo/endian.c ../sysinfo/sysinfo.c
+
+OBJS = ./argv_dump.o ../sysinfo/endian.o ../sysinfo/sysinfo.o
+
+%.o: %.c
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+argv_dump: argv_dump.o $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) argv_dump.o argv_dump
+

@@ -1,0 +1,28 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -fno-builtin -fno-fast-math -mlittle-endian \
+	-mgnu-as -mgnu-ld -mregister-names -mno-inline-int-divide \
+	-mno-inline-sqrt -ffp-contract=off -mtune=itanium2 \
+	-mno-sched-br-data-spec -mno-sched-ar-data-spec \
+	-mno-sched-control-spec -msched-count-spec-in-critical-path
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
+LDIR= /usr/local/lib
+IDIR= /usr/local/include
+
+SRCS = c_out.c c_do.c collatz.c
+OBJS = c_out.o c_do.o collatz.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+collatz: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) collatz
+
