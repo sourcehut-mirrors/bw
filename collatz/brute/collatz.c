@@ -59,15 +59,9 @@ int main(int argc, char *argv[])
     uint64_t k, number;
     collatz_type clatz;
 
-    /* allocate an empty bucket for a future hailstone */
-    struct hailstone_t *hs = calloc(1, sizeof(struct hailstone_t));
-    struct hailstone_t *last_hailstone = NULL;
-    /* not necessary but pedantic to set next pointer NULL */
-    hs->next = NULL;
-    hs->prev = NULL;
-
-    /* beginning of the hailstone list */
-    struct hailstone_t *hailstone_ptr = hs;
+    struct hailstone_t *hs = NULL;
+    struct hailstone_t *hs_ptr = NULL;
+    struct hailstone_t *first_hs = NULL;
 
     int hs_count = 0;
 
@@ -121,10 +115,10 @@ int main(int argc, char *argv[])
      *     -> 40 -> 20 -> 10 -> 5
      *     -> 16 -> 8 ->  4 ->  2 -> 1
      *
-     * Above we see the sequence goes upwards 7 time.
+     * Above we see the sequence goes upwards 7 times.
      */
 
-    /* After a whack of OCD fiddling around we have this header */
+    /* After some fiddling around we have this header */
     printf ("--------------------------------");
     printf ("--------------------------------\n");
     printf ("       start   path_len    max_at             max");
@@ -135,9 +129,7 @@ int main(int argc, char *argv[])
     for ( k = 1; k <= number; k++ ) {
         clatz.c0 = k;
 
-        /* If the extra verbose flag exists then we never get here.
-         * Thus the verbosity flag here is hard coded to 0.
-         */
+        /* If extra verbose flag exists then we never get here. */
         if ( c_do( &clatz, 0 ) == EXIT_FAILURE ) {
             fprintf(stderr,"FAIL : computer says \"No\"\n");
             return EXIT_FAILURE;
@@ -148,17 +140,32 @@ int main(int argc, char *argv[])
             c_out(&clatz);
         }
 
-        /* track the hailstones */
+        /* hailstones */
         if ( clatz.upwards_count > big_upwards ) {
+            hs = calloc(1, sizeof(struct hailstone_t));
+            if ( hs == NULL ) {
+                fprintf(stderr,"FAIL : calloc %s:%d\n", __FILE__, __LINE__ );
+                perror("FAIL ");
+                /* NOTE : nasty to bail out this way */
+                return EXIT_FAILURE;
+            }
+            hs->next = NULL;
+
+            if ( hs_count > 0 ) {
+                hs->prev = hs_ptr;
+                hs_ptr->next = hs;
+            } else {
+                first_hs = hs;
+                hs->prev = NULL;
+            }
+            hs_ptr = hs;
+
             big_upwards = clatz.upwards_count;
             hs->c0 = clatz.c0;
             hs->path_len = clatz.path_len;
             hs->height_location = clatz.height_location;
             hs->path_height = clatz.path_height;
             hs->upwards_count = clatz.upwards_count;
-
-            /* We actually have data */
-            last_hailstone = hs;
 
             printf ("%12" PRIu64 "   %8i", clatz.c0, clatz.path_len);
 
@@ -168,56 +175,41 @@ int main(int argc, char *argv[])
 
             printf("   %8i\n", clatz.upwards_count);
 
-            /* Make an empty hailstone */
-            hs->next = calloc(1, sizeof(struct hailstone_t));
-            hs->next->prev = hs;
-            hs = hs->next;
-            hs->next = NULL;
-
             hs_count += 1;
         }
     }
 
     if ( debug ) {
         printf ("\n\n %i hailstones\n", hs_count);
-        printf ("--------------------------------");
-        printf ("--------------------------------\n");
-        printf ("       start   path_len    max_at");
+        printf ("-----------------------------------");
+        printf ("-----------------------------------\n");
+        printf ("              start   path_len    max_at");
         printf ("             max  hailstone\n");
-        printf ("--------------------------------");
-        printf ("--------------------------------\n");
-
+        printf ("-----------------------------------");
+        printf ("-----------------------------------\n");
         hs_count = 0;
-        while ( hailstone_ptr->next != NULL ) {
+        hs = first_hs;
+        do {
             hs_count += 1;
             printf("%4i : ", hs_count);
             printf("%12" PRIu64 "   %8i",
-                    hailstone_ptr->c0,
-                    hailstone_ptr->path_len);
+                    hs->c0,
+                    hs->path_len);
     
             printf("    %6" PRIu64 "    %12" PRIu64,
-                    hailstone_ptr->height_location,
-                    hailstone_ptr->path_height);
+                    hs->height_location,
+                    hs->path_height);
     
             printf("   %8i\n",
-                    hailstone_ptr->upwards_count);
+                    hs->upwards_count);
     
-            hailstone_ptr = hailstone_ptr->next;
-        }
+            hs_ptr = hs;
+            hs = hs->next;
+            /* We may need this list later.
+             *     free(hs_ptr);
+             */
+        } while ( hs != NULL );
     }
-
-    printf("\n\nfree the list %i \n", hs_count);
-    do {
-        printf("free(%p)\n",last_hailstone->next);
-        free(last_hailstone->next);
-        last_hailstone->next = NULL;
-        hs_count -= 1;
-        printf("%i \n", hs_count);
-        last_hailstone = last_hailstone->prev;
-    } while ( last_hailstone != NULL );
-    printf("\n");
-
     return EXIT_SUCCESS;
-
 }
 
