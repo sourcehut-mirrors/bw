@@ -43,6 +43,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <gmp.h>
 
 typedef struct stuff_t {
      mpz_t c0;
@@ -50,8 +51,8 @@ typedef struct stuff_t {
      mpz_t height_location;
      mpz_t path_height;
      uint32_t upwards_count;
-     struct stuff_t *next;
      struct stuff_t *prev;
+     struct stuff_t *next;
 } stuff_t;
 
 int c_do(stuff_t *cdat, int verbose);
