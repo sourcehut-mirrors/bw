@@ -1,23 +1,26 @@
 
-CC=/usr/bin/cc
+CC=/usr/bin/gcc
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -m64 -fno-builtin -fno-fast-math \
+	-ffp-contract=off -fno-unsafe-math-optimizations \
+	-malign-double \
 	-march=k8 -mtune=k8 -mieee-fp -mhard-float \
-	-fno-fast-math -mno-fancy-math-387 -malign-double \
-	-m128bit-long-double -mno-mmx \
-	-mstackrealign -mpreferred-stack-boundary=4
+	-m128bit-long-double \
+	-mpreferred-stack-boundary=8
 
-CPPFLAGS= -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE \
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 		-D_XOPEN_SOURCE=600
 
-SRCS = c_out.c collatz.c collatz_f.c
-OBJS = c_out.o collatz.o collatz_f.o
+SRCS = c_out.c c_do.c collatz.c
+OBJS = c_out.o c_do.o collatz.o
 
-%.o: %.c
-	$(CC) -I. -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 collatz: $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(CPPFLAGS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS)
 
 clean:
 	rm -f $(OBJS) collatz
+

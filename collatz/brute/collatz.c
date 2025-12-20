@@ -205,9 +205,8 @@ int main(int argc, char *argv[])
     
             hs_ptr = hs;
             hs = hs->next;
-            /* We may need this list later.
-             *     free(hs_ptr);
-             */
+            /* We may need this list later. */
+            free(hs_ptr);
         } while ( hs != NULL );
     }
     return EXIT_SUCCESS;
