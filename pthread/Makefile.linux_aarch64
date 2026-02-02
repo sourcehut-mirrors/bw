@@ -1,5 +1,7 @@
-CFLAGS= -std=iso9899:2017 -g -O0 \
-	-march=armv8.2-a -mtune=cortex-a76 -mabi=lp64 \
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -g -O0 \
+	-mcpu=cortex-a76+crc+crypto -mtune=cortex-a76 -mabi=lp64 \
 	-mno-low-precision-recip-sqrt \
 	-mno-low-precision-sqrt \
 	-mno-low-precision-div \
