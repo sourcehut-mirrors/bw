@@ -3,34 +3,46 @@
  * flt_trap.c More or less lifted from the intertubes and a book
  *            of POSIX signal handling.
  *
- * Copyright (C) Dennis Clarke 2022
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
-
+ 
 /*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
+ *
  *    An XSI-conforming application should ensure that the feature
  *    test macro _XOPEN_SOURCE is defined with the value 600 before
  *    inclusion of any header. This is needed to enable the
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
+ *
  *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
+#endif
 
 #include <fenv.h>
 #include <signal.h>
@@ -59,7 +71,7 @@ void enable_floating_point_exceptions()
     fenv_t env;
     fegetenv(&env);
 
-    /*
+    /* this needs some investigation
     env.__fpcr = env.__fpcr | __fpcr_trap_invalid;
     */
     fesetenv(&env);
@@ -76,7 +88,10 @@ int main(void)
     volatile double x = -1;
     volatile double zero_me = -0.0;
     printf("y = %f\n",sqrt(x));
-    /* enable_floating_point_exceptions(); */
+
+    /* enable floating point exceptions */
+    enable_floating_point_exceptions();
+
     printf("y = %f\n",sqrt(x));
 
     printf("foobar %f\n", x / zero_me);
