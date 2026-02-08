@@ -135,18 +135,31 @@ int main(int argc, char **argv)
     fprintf(stderr,"this is a biggie+1 %" PRIu64 "\n", biggie);
     fprintf(stderr,"                   %" PRIx64 "\n", biggie);
 
+
     /* now set biggie to 2^64 - 2 */
+    fprintf(stderr,"\n\nnow set biggie to 2^64 - 2\n\n");
     biggie = 0xfffffffffffffffe;
+    fprintf(stderr,"     2^64 - 2 is   %" PRIx64 "\n", biggie);
+
 
     /* this will likely NOT work without some modern GCC */
+    fprintf(stderr,"\ncalling __builtin_uaddll_overflow ()\n");
     flag = __builtin_uaddll_overflow (biggie, one_64bit, result);
 
     fprintf(stderr,"\n");
+    fprintf(stderr,"\nwe have some destination called \047result\047\n");
     fprintf(stderr,"result = %" PRIu64 "\n", *result);
     fprintf(stderr,"         %" PRIx64 "\n", *result);
-    fprintf(stderr,"  flag = %i\n", flag);
+    fprintf(stderr,"  flag = %i", flag);
+    if ( flag ) {
+        fprintf(stderr," <-- OVERFLOW FLAG");
+    } else {
+        fprintf(stderr," <-- no overflow");
+    }
+    fprintf(stderr,"\n");
 
     /* now we try to trigger an overflow flag condition */
+    fprintf(stderr,"\nnow try to trigger an overflow flag\n");
     biggie = *result;
     flag = __builtin_uaddll_overflow (biggie, one_64bit, result);
 
@@ -154,9 +167,9 @@ int main(int argc, char **argv)
     fprintf(stderr,"result = %" PRIx64 "\n", *result);
     fprintf(stderr,"  flag = %i", flag);
     if ( flag ) {
-        fprintf(stderr," <-- OVERFLOW FLAG");
+        fprintf(stderr," <-- OVERFLOW FLAG CAUGHT");
     }
-    fprintf(stderr,"\n");
+    fprintf(stderr,"\n\n");
 
     return 42;
 
