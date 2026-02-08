@@ -81,6 +81,8 @@ void enable_floating_point_exceptions()
     sigemptyset (&act.sa_mask);
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGILL, &act, NULL);
+    feclearexcept(FE_ALL_EXCEPT);
+    feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
 }
 
 int main(void)

@@ -133,14 +133,17 @@ int main(int argc, char **argv)
 
     fprintf(stderr,"\n");
     fprintf(stderr,"this is a biggie+1 %" PRIu64 "\n", biggie);
+    fprintf(stderr,"                   %" PRIx64 "\n", biggie);
 
     /* now set biggie to 2^64 - 2 */
     biggie = 0xfffffffffffffffe;
 
+    /* this will likely NOT work without some modern GCC */
     flag = __builtin_uaddll_overflow (biggie, one_64bit, result);
 
     fprintf(stderr,"\n");
     fprintf(stderr,"result = %" PRIu64 "\n", *result);
+    fprintf(stderr,"         %" PRIx64 "\n", *result);
     fprintf(stderr,"  flag = %i\n", flag);
 
     /* now we try to trigger an overflow flag condition */
