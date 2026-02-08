@@ -1,12 +1,11 @@
 
 CC=	/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+CFLAGS= -std=iso9899:1999 \
 	-g -O0 -fno-builtin -m64 -mcpu=power9 -mno-altivec \
 	-mno-isel -mno-vsx -mno-crypto -mno-htm \
 	-fno-unsafe-math-optimizations \
-	-fno-color-diagnostics \
-	-Weverything -Wno-reserved-id-macro
+	-fno-color-diagnostics
 
 CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 	-D_XOPEN_SOURCE=600
@@ -16,9 +15,9 @@ LIBS=	-lcrypto -lm
 IDIR=	/opt/bw/include
 LDIR=	/opt/bw/lib
 
-SRCS = dgst_test.c ../../sysinfo/sysinfo.c ../../sysinfo/endian.c
+SRCS = dgst_test.c ../../../sysinfo/sysinfo.c ../../../sysinfo/endian.c
 
-OBJS = dgst_test.o ../../sysinfo/sysinfo.o ../../sysinfo/endian.o
+OBJS = dgst_test.o ../../../sysinfo/sysinfo.o ../../../sysinfo/endian.o
 
 .PHONY: all
 all: dgst_test
