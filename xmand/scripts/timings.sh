@@ -32,6 +32,15 @@ export TMPDIR
 ${MKDIR} -m 0750 $TMPDIR > /dev/null 2>&1
 ${CHMOD} 0750 $TMPDIR
 
+# take note that /usr/bin/printf may be confused by a single dash as the
+# first char 
+#
+#     CAVEATS
+# 
+#         Trying to print a dash ("-") as the first character causes
+#         printf to interpret the dash as a program argument.
+#              -- must be used before format.
+#
 
 /usr/bin/printf "\n\n-------------------------------------------------------------------\n"
 /usr/bin/printf "This script should ( good luck ) produce a script. Yes it is an ugly\n"
@@ -41,8 +50,8 @@ ${CHMOD} 0750 $TMPDIR
 /usr/bin/printf "and that is a script to run. that thing will produce a whole stack of\n"
 /usr/bin/printf "smaller scripts. So yes this is a script that produces a script which\n"
 /usr/bin/printf "then creates a stack of trivial scripts. They all look like v6.sh or\n"
-/usr/bin/printf "t6.sh and those will product \042variant\042 and \042timing\042 reports.\n"
-/usr/bin/printf "-------------------------------------------------------------------\n\n"
+/usr/bin/printf "t6.sh and those will product \042variant\042 and \042timing\042 reports."
+/usr/bin/printf "\n-------------------------------------------------------------------\n\n"
 
 if [ -d $TMPDIR ]; then
     ${TOUCH} $TMPDIR/foo_$$

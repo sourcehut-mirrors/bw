@@ -1,0 +1,130 @@
+eris$ ./xmand
+-------------------------------------------------------------------
+                 system name = FreeBSD
+                   node name = eris
+                     release = 15.0-RELEASE-p2
+                     version = FreeBSD 15.0-RELEASE-p2 GENERIC
+                     machine = amd64
+                   cpu model = AMD E-450 APU with Radeon(tm) HD Graphics
+                   number of = 2
+                   page size = 4096
+               system memory = 5973569536
+                             = 5833564 kB
+                             = 5696 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 128
+             threads support = 200112
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+           system uptime    9 days   22 hours    5 mins   19 secs
+-------------------------------------------------------------------
+INFO : this_pid_prio = 0 of type RTP_PRIO_NORMAL
+INFO : __ISO_C_VISIBLE id defined
+INFO : baseline tdelta =            977 nsec
+WARN : No arguments received thus we have
+     : some hard coded values ... enjoy.
+ 
+    mand_bail = 4096
+pthread_limit = 1
+    translate = ( +0.00000000000000000000000000e+00 , +0.00000000000000000000000000e+00 )
+      magnify = +1.00000000000000000000000000e+00
+ 
+ 
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+ 
+--------------------------------------------
+pixel_real_w = +3.90625000000000000000000000e-03
+pixel_imag_h = +3.90625000000000000000000000e-03
+raw  [ 693  , 537  ]
+DBUG : sample space [ 682   , 499    ]
+     : vbox  [ 010 , 007 ]
+     : win_r = +3.33007812500000000000000000e-01
+     : win_j = -2.44140625000000000000000000e-02
+     : after translation
+     : r_trn   = +0.00000000000000000000000000e+00
+     : j_trn   = +0.00000000000000000000000000e+00
+     : x_prime = +6.66015625000000000000000000e-01
+     : y_prime = -4.88281250000000000000000000e-02
+     : bailout = 4096              
+     : magnify = 1.000000000000e+00
+[mand] =   299149640873 nsec   299.149641   sec
+ 
+ 
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.99804687500000000000000000e+00
+     : j[ 0][ 0][ 0][ 0] = -1.99804687500000000000000000e+00
+     :       mand_height =         1
+     : r[ 7][ 7][63][63] = -1.95312500000000000000000000e-03
+     : j[ 7][ 7][63][63] = -1.95312500000000000000000000e-03
+     :       mand_height =      4096
+     : r[ 8][ 8][ 0][ 0] = +1.95312500000000000000000000e-03
+     : j[ 8][ 8][ 0][ 0] = +1.95312500000000000000000000e-03
+     :       mand_height =      4096
+     : r[ 8][ 8][ 1][ 0] = +5.85937500000000000000000000e-03
+     : j[ 8][ 8][ 1][ 0] = +1.95312500000000000000000000e-03
+     :       mand_height =      4096
+     : r[ 8][ 8][32][32] = +1.26953125000000000000000000e-01
+     : j[ 8][ 8][32][32] = +1.26953125000000000000000000e-01
+     :       mand_height =      4096
+     : r[ 3][12][44][21] = -1.07617187500000000000000000e+00
+     : j[ 3][12][44][21] = +1.08398437500000000000000000e+00
+     :       mand_height =         3
+     : r[15][15][63][63] = +1.99804687500000000000000000e+00
+     : j[15][15][63][63] = +1.99804687500000000000000000e+00
+     :       mand_height =         1
+--------------------------- full plot done -----------------------------
+click at 692 535 
+raw  [ 1400 , 896  ]
+INFO : dumper_flag = 1
+click at 1399 894 
+raw  [ 1400 , 896  ]
+INFO : file /var/tmp/dclarke/20260209215014 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =     4096
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.00000000000000000000000000e+00
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = +0.00000000000000000000000000e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +0.00000000000000000000000000e+00
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20260209215014 closed.
+INFO : dumper_flag = 0
+click at 1399 894 
+raw  [ 883  , 783  ]
+right click
+click at 882 781 
+raw  [ 883  , 783  ]
+right click
+ 
+ 
+ 
+eris$ openssl dgst -sha256 -r /var/tmp/dclarke/20260209215014
+84ad79951b7bdee7d86fcb63fa408166dc34a8583e325865bb060068c15da24b */var/tmp/dclarke/20260209215014
+eris$ 

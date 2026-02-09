@@ -571,7 +571,7 @@ int main(int argc, char*argv[])
         /* we may want verbose time delta reports within each vbox */
         if ( argc == 7 ) {
             debug = 1;
-        };
+        }
 
     } else {
         fprintf(stderr,"WARN : No arguments received thus we have\n");
@@ -2163,19 +2163,28 @@ replot:
                                         }
                                     }
 
-                                    XDrawPoint(dsp, win, gc, vbox_ll_x + offset_x, ( eff_height - vbox_ll_y + offset_y ) );
+                                    XDrawPoint(dsp, win, gc,
+                                               vbox_ll_x + offset_x,
+                                               ( eff_height - vbox_ll_y + offset_y ) );
 
                                 }
                             }
                             vbox_flag[vbox_r][vbox_j] = 1;
                             clock_gettime(CLOCK_REALTIME, &vbox_t1 );
                             t_delta = timediff( vbox_t0, vbox_t1);
-                            sprintf(buf,"[vbox] = %14" PRIu64 " nsec   %08.6e sec", t_delta, ((double)t_delta)/1.0e9);
+
+                            sprintf(buf,"[vbox] = %14" PRIu64 " nsec   %08.6e sec",
+                                         t_delta, ((double)t_delta)/1.0e9);
+
                             XSetForeground(dsp, gc3, yellow.pixel);
-                            XDrawImageString( dsp, win3, gc3, 10, 310, buf, (int)strlen(buf));
+                            XDrawImageString( dsp, win3, gc3, 10, 310,
+                                              buf, (int)strlen(buf));
+
                             if ( debug ) {
+                                /* verbose time data for every vbox region */
                                 fprintf(stderr,"[ %2i , %2i ] %s\n", vbox_r, vbox_j, buf);
                             }
+
                         }
                     } /* vbox_r for */
                 } /* vbox_j for */
