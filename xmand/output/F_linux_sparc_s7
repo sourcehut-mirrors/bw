@@ -1,0 +1,125 @@
+proteus$ ./xmand 
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = proteus
+                     release = 6.18.3-genunix
+                     version = #1 SMP Fri Jan  2 16:06:25 GMT 2026
+                     machine = sparc64
+                   page size = 8192
+               system memory = 67072516096
+                             = 65500504 kB
+                             = 63965 MB about 62 GB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+INFO : baseline tdelta =             60 nsec
+WARN : No arguments received thus we have
+     : some hard coded values ... enjoy.
+ 
+    mand_bail = 4096
+pthread_limit = 1
+    translate = ( +0.00000000000000000000000000e+00 , +0.00000000000000000000000000e+00 )
+      magnify = +1.00000000000000000000000000e+00
+ 
+ 
+ X11 : default width=1044 height=1044
+     : connection number 3
+     : screen number 0
+     : default depth is 24
+     : display seems to be 5760 wide and 1080 high.
+     : offset x=20 y=20
+     : eff_width =  1024    eff_height =  1024
+ 
+--------------------------------------------
+pixel_real_w = +3.90625000000000000000000000e-03
+pixel_imag_h = +3.90625000000000000000000000e-03
+raw  [ 709  , 598  ]
+DBUG : sample space [ 698   , 438    ]
+     : vbox  [ 010 , 006 ]
+     : win_r = +3.64257812500000000000000000e-01
+     : win_j = -1.43554687500000000000000000e-01
+     : after translation
+     : r_trn   = +0.00000000000000000000000000e+00
+     : j_trn   = +0.00000000000000000000000000e+00
+     : x_prime = +7.28515625000000000000000000e-01
+     : y_prime = -2.87109375000000000000000000e-01
+     : bailout = 4096              
+     : magnify = 1.000000000000e+00
+[mand] =    24417860385 nsec   24.417860    sec
+ 
+ 
+raw data values -------------------------------------------------------
+     : r[ 0][ 0][ 0][ 0] = -1.99804687500000000000000000e+00
+     : j[ 0][ 0][ 0][ 0] = -1.99804687500000000000000000e+00
+     :       mand_height =         1
+     : r[ 7][ 7][63][63] = -1.95312500000000000000000000e-03
+     : j[ 7][ 7][63][63] = -1.95312500000000000000000000e-03
+     :       mand_height =      4096
+     : r[ 8][ 8][ 0][ 0] = +1.95312500000000000000000000e-03
+     : j[ 8][ 8][ 0][ 0] = +1.95312500000000000000000000e-03
+     :       mand_height =      4096
+     : r[ 8][ 8][ 1][ 0] = +5.85937500000000000000000000e-03
+     : j[ 8][ 8][ 1][ 0] = +1.95312500000000000000000000e-03
+     :       mand_height =      4096
+     : r[ 8][ 8][32][32] = +1.26953125000000000000000000e-01
+     : j[ 8][ 8][32][32] = +1.26953125000000000000000000e-01
+     :       mand_height =      4096
+     : r[ 3][12][44][21] = -1.07617187500000000000000000e+00
+     : j[ 3][12][44][21] = +1.08398437500000000000000000e+00
+     :       mand_height =         3
+     : r[15][15][63][63] = +1.99804687500000000000000000e+00
+     : j[15][15][63][63] = +1.99804687500000000000000000e+00
+     :       mand_height =         1
+--------------------------- full plot done -----------------------------
+click at 708 596 
+raw  [ 1402 , 892  ]
+INFO : dumper_flag = 1
+click at 1401 890 
+raw  [ 1402 , 892  ]
+INFO : file /var/tmp/dclarke/20260209221306 dump begins.
+     :  4 byte uint32_t num_elements num_written = 1
+     : num_elements =  1048576
+     :  4 byte uint32_t mand_bail    num_written = 1
+     : mand_bail =     4096
+     :  8 byte double magnify        num_written = 1
+     :        magnify = +1.00000000000000000000000000e+00
+DBUG :  8 byte double real_translate num_written = 1
+     : real_translate = +0.00000000000000000000000000e+00
+     :  8 byte double imag_translate num_written = 1
+     : imag_translate = +0.00000000000000000000000000e+00
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_REAL_COUNT =       16
+     :  4 byte uint32_t VBOX_REAL_COUNT num_written = 1
+     : VBOX_IMAG_COUNT =       16
+     :  4 byte uint32_t VBOX_SAMPLE_REAL num_written = 1
+     : VBOX_SAMPLE_REAL =       64
+     :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
+     : VBOX_SAMPLE_IMAG =       64
+INFO : file /var/tmp/dclarke/20260209221306 closed.
+INFO : dumper_flag = 0
+click at 1401 890 
+raw  [ 890  , 762  ]
+right click
+click at 889 760 
+raw  [ 890  , 762  ]
+right click
+ 
+ 
+ 
+proteus$ openssl dgst -sha256 -r /var/tmp/dclarke/20260209221306
+84ad79951b7bdee7d86fcb63fa408166dc34a8583e325865bb060068c15da24b */var/tmp/dclarke/20260209221306
+proteus$ 
