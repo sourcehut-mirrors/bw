@@ -14,36 +14,47 @@
  *
  *     n = 93461639715357977769163558199606896584051237541638188580280321
  *
- * Copyright (C) Dennis Clarke 2023
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * https://www.gnu.org/licenses/gpl-3.0.txt
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
  */
-
-/*******************************************************************
+ 
+/*********************************************************************
  * The Open Group Base Specifications Issue 6
  * IEEE Std 1003.1, 2004 Edition
  *
- *  An XSI-conforming application should ensure that the feature
- *  test macro _XOPEN_SOURCE is defined with the value 600 before
- *  inclusion of any header. This is needed to enable the
- *  functionality described in The _POSIX_C_SOURCE Feature Test
- *  Macro and in addition to enable the XSI extension.
- *******************************************************************/
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
-
+#endif
+ 
 #include <errno.h>
 #include <stdio.h>
 #include <assert.h>
@@ -59,7 +70,6 @@
 #include <time.h>
 #include <math.h>
 #include <gmp.h>
-#include <mpfr.h>
 
 #define MAX_CHECKS 100
 
@@ -71,6 +81,7 @@ int main (int argc, char *argv[]) {
     size_t len;
     int prime_check_reps, prime_check_test, cli_check;
 
+    /* TODO : be nice and allow the user to set locale */
     setlocale(LC_ALL, "C");
 
     /* argv[1] must provide an integer */
@@ -104,6 +115,7 @@ int main (int argc, char *argv[]) {
     /* we will likely want to check if the input was
      * accepted and processed correctly. Therefore we
      * need a copy of the input string.
+     *
      * NOTE : would it not be lovely to use a variable
      *        name such as : 
      *
@@ -119,6 +131,12 @@ int main (int argc, char *argv[]) {
         fprintf(stderr,"BORK BORK BORK at %d in %s\n", __LINE__, __FILE__);
         return EXIT_FAILURE;
     }
+
+    printf("\n----------------------------------------------\n");
+    printf("   There is no promise this will make sense for\n");
+    printf("   any given integer input. This is just a guess\n");
+    printf("   and not even a good guess. Good luck.\n");
+    printf("----------------------------------------------\n");
 
     /* this is a visual eyeball check if the input matches the 
      * data represented inside the mpz_t struct
@@ -145,7 +163,6 @@ int main (int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-
     /*
      * Function: int mpz_probab_prime_p (const mpz_t n, int reps)
      *
@@ -154,25 +171,29 @@ int main (int argc, char *argv[]) {
      * certain), or return 0 if n is definitely non-prime.
      */
 
-    prime_check_reps = 20;
+    prime_check_reps = 10;
+
 prime_check:
     prime_check_test = mpz_probab_prime_p(prime_check_input, prime_check_reps);
 
     if ( prime_check_test == 2 ) {
         /* well we are done here ! this is a prime */
-        printf("INFO : that number is a prime!\n");
+        printf("DONE : that number is a prime!\n");
         return EXIT_SUCCESS;
     }
 
     if ( ( prime_check_test == 1 ) && ( prime_check_reps < MAX_CHECKS ) ) {
         prime_check_reps += 10;
-        fprintf(stderr,"INFO : we do not know about that number.\n");
+        fprintf(stderr,"INFO : we do not know yet\n");
         fprintf(stderr,"     : reps = %i\n", prime_check_reps);
         goto prime_check;
+    } else {
+        fprintf(stderr,"INFO : prime_check_test reports %i\n",
+                               prime_check_test);
+        fprintf(stderr,"     : definitely non-prime.\n");
     }
 
-    fprintf(stderr,"INFO : prime_check_test = %i\n", prime_check_test);
-    fprintf(stderr,"     : mpz_probab_prime_p() does not know!\n");
+    fprintf(stderr,"     : mpz_probab_prime_p() is unsure.\n");
 
     /* if we landed here then we know that the prime check 
      * does not help us. Therefore we may try a trivial 
@@ -200,12 +221,12 @@ prime_check:
     gmp_printf ("     : mpz_nextprime claims  %Zd\n", next_prime);
 
     if ( mpz_cmp(prime_check_input, next_prime) == 0 ) {
-        printf("DONE : the input is a prime. Most likely.\n");
+        printf("DONE : The input is a prime? Most likely.\n");
         printf("     : Maybe. Good luck.\n");
         return EXIT_SUCCESS;
     }
 
-    fprintf(stderr,"FAIL : we do not know anything about the input number.\n");
+    fprintf(stderr,"FAIL : We do not know for certain.\n");
 
     return EXIT_FAILURE;
 

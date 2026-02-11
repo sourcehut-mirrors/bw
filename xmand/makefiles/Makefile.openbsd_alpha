@@ -1,0 +1,19 @@
+
+CC= /usr/bin/gcc
+
+CFLAGS= -g -O0 -mcpu=21164 -mgas -mexplicit-relocs \
+	-fno-fast-math -fno-builtin -mno-soft-float \
+	-fno-unsafe-math-optimizations \
+	-mfp-trap-mode=sui -mfp-rounding-mode=n \
+	-mtrap-precision=i -mieee-with-inexact \
+	-mieee-conformant
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+LDIR= /usr/X11R6/lib
+IDIR= /usr/X11R6/include
+
+LD_RUN_PATH= /usr/X11R6/lib
+
+include common.mk
+

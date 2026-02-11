@@ -64,7 +64,15 @@ int sysinfo(int verbose);
 int main(int argc, char **argv)
 {
 
-    setlocale( LC_ALL, "C" );
+    if ( argc > 1 ) {
+        if (setlocale(LC_ALL,argv[1])==NULL){
+            fprintf(stderr,"FAIL : bad locale \"%s\"\n",argv[1]);
+            return EXIT_FAILURE;
+        }
+    } else {
+        setlocale(LC_ALL, "C" );
+    }
+
     if ( sysinfo( VERBOSE ) == SYSINFO_FAIL ) {
         fprintf(stderr,"FAIL : sysinfo returns SYSINFO_FAIL\n");
         return EXIT_FAILURE;

@@ -1,0 +1,14 @@
+
+CC= /usr/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors \
+	-g -O0 -mcpu=21164 -mgas -mexplicit-relocs \
+	-fno-fast-math -fno-builtin -fno-unsafe-math-optimizations \
+	-mno-soft-float -mfp-trap-mode=sui \
+	-mfp-rounding-mode=n -mtrap-precision=i \
+	-mieee-with-inexact -mieee-conformant
+
+CPPFLAGS= -D_XOPEN_SOURCE=500 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+include common.mk
+

@@ -77,24 +77,25 @@
 #include <time.h>
 #include <unistd.h>
 
+#if defined (__FreeBSD__) || defined (__OpenBSD__)
+#include <sys/sysctl.h> 
+#endif
+
 #if defined(__FreeBSD__)
 /* we need __BSD_VISIBLE or u_char and u_short vanish
  * and then sys/rtprio.h fails in a big way */
 typedef unsigned char   u_char;
 typedef unsigned short  u_short;
-#include <sys/sysctl.h>
 #include <sys/rtprio.h>
 #endif
 
 /* W A R N I N G : this is broken on Solaris 11.4 
 #if defined (__SunOS_5_10) || defined (__SunOS_5_11)
-#include <sys/types.h>
 #include <sys/processor.h>
 #endif
  */
 
 #if defined (__SunOS_5_10)
-#include <sys/types.h>
 #include <sys/processor.h>
 #endif
 
@@ -143,6 +144,10 @@ int sysinfo(int verbose) {
     struct rtprio this_pid_rtp;
 #endif
 
+#if defined(__OpenBSD__)
+     int mib[2];
+#endif
+
 /* W A R N I N G : this is broken on Solaris 11.4 
 #if defined (__SunOS_5_10) || defined (__SunOS_5_11)
     processorid_t solaris_cpu;
@@ -151,6 +156,7 @@ int sysinfo(int verbose) {
     int get_cpu_info_status;
 #endif
 */
+
 #if defined (__SunOS_5_10)
     processorid_t solaris_cpu;
     ushort_t      solaris_locality;
@@ -276,6 +282,22 @@ int sysinfo(int verbose) {
 
 #endif
 
+#if defined(__OpenBSD__)
+    cpu_model[0] = '\0';
+
+    mib[0] = CTL_HW;
+    mib[1] = HW_MODEL;
+
+    err_flag = sysctl(mib, 2, &cpu_model, &cpu_model_len, NULL, 0);
+
+    if (err_flag < 0) {
+        cpu_model_flag=0;
+    } else {
+        cpu_model_flag=1;
+    }
+#endif
+
+
 /* what follows is just pure hackary to see what works where on
  * Solaris ... like who runs that ?? 
 #if defined (__SunOS_5_8) || defined (__SunOS_5_9)
@@ -321,7 +343,10 @@ int sysinfo(int verbose) {
 
     }
 
+    /* locale should be set by the calling routine
     setlocale( LC_MESSAGES, "C" );
+    */
+
     if ( uname( &uname_data ) < 0 ) {
         /* just give up if we can not use uname */
         return SYSINFO_FAIL;
