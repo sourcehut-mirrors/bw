@@ -1,8 +1,12 @@
-CC=/usr/bin/cc
 
-CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
-	-fno-fast-math -fno-builtin -fno-color-diagnostics \
-	-Weverything -Wno-reserved-id-macro
+CC= /usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -g -O0 -mcpu=21164 -mgas \
+	-mexplicit-relocs -fno-fast-math -fno-builtin \
+	-fno-unsafe-math-optimizations \
+	-mno-soft-float -mfp-trap-mode=sui \
+	-mfp-rounding-mode=n -mtrap-precision=i \
+	-mieee-with-inexact -mieee-conformant
 
 CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 

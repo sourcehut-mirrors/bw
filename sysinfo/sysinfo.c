@@ -45,9 +45,13 @@
  *    Macro and in addition to enable the XSI extension.
  *
  *********************************************************************/
+
+
+/* hack this away on the OpenBSD world for now 
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
 #endif
+*/
 
 #include <errno.h>
 
@@ -57,8 +61,11 @@
  * really true. However the ELF headers surely list a lot of machine
  * types and we just can not rely on anything else but the stuff
  * in fenv.h.  Good luck.
+ *
+ * With OpenBSD there seems to be major issues with _XOPEN_SOURCE
+ * being defined. Perhaps C99 is the issue? Perhaps magic?
  */
-#if defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600)
+#if ( defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600) ) || defined(__OpenBSD__)
 #include <fenv.h>
 #endif
 
@@ -133,11 +140,11 @@ int sysinfo(int verbose) {
     int cpu_model_flag = 0;
     char cpu_model[128];
     size_t cpu_model_len = 128;
+    size_t len;
 
     int return_endian = 0;
 
 #if defined(__FreeBSD__)
-    size_t len;
     int prio_err_flag = 0;
     int this_pid_prio = 0;
     int this_pid_prio_type = 0;
@@ -292,9 +299,20 @@ int sysinfo(int verbose) {
 
     if (err_flag < 0) {
         cpu_model_flag=0;
+        fprintf(stderr,"\n\nFAIL : OpenBSD sysctl() shat itself\n\n");
     } else {
         cpu_model_flag=1;
     }
+ 
+    mib[0] = CTL_HW;
+    mib[1] = HW_NCPU;
+    errno = 0;
+    len = sizeof(ncpu);
+    err_flag = sysctl(mib, 2, &ncpu, &len, NULL, 0);
+    if ( err_flag < 0 ) {
+        ncpu = 0;
+    }
+
 #endif
 
 
@@ -381,10 +399,10 @@ int sysinfo(int verbose) {
         printf("                     machine = %s\n",
                                                   uname_data.machine);
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
         if ( cpu_model_flag ) {
-            printf("                   cpu model = %s\n", cpu_model);
-            printf("                   number of = %i\n", ncpu);
+            printf("                   model     = %s\n", cpu_model);
+            printf("                   cpu num   = %i\n", ncpu);
         }
 #endif
 
