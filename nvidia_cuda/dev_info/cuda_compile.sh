@@ -18,85 +18,89 @@ unset SIZE
 unset STRINGS
 unset STRIP
 
+ADDR2LINE=/usr/local/bin/addr2line
+export ADDR2LINE
 
-PATH=/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
+AR=/usr/local/bin/ar
+export AR
+
+AS=/usr/local/bin/as
+export AS
+
+ELFEDIT=/usr/local/bin/elfedit
+export ELFEDIT
+
+GPROF=/usr/local/bin/gprof
+export GPROF
+
+LD=/usr/local/bin/ld
+export LD
+
+NM=/usr/local/bin/nm
+export NM
+
+OBJCOPY=/usr/local/bin/objcopy
+export OBJCOPY
+
+OBJDUMP=/usr/local/bin/objdump
+export OBJDUMP
+
+RANLIB=/usr/local/bin/ranlib
+export RANLIB
+
+READELF=/usr/local/bin/readelf
+export READELF
+
+SIZE=/usr/local/bin/size
+export SIZE
+
+STRINGS=/usr/local/bin/strings
+export STRINGS
+
+STRIP=/usr/local/bin/strip
+export STRIP
+
+PATH=/usr/local/cuda-13.1/bin:/usr/local/gcc15/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/schily/bin
 export PATH
-
-if [ -d /usr/local/cuda-12.3 ]; then
-    if [ -x /usr/local/cuda-12.3/bin/nvcc ]; then
-        NVCC=/usr/local/cuda-12.3/bin/nvcc
-        export NVCC
-        CUDA_HOME=/usr/local/cuda-12.3
-        export CUDA_HOME
-        PATH=/usr/local/cuda-12.3/bin:/usr/bin:/bin:/usr/sbin:/sbin
-        export PATH
-    else
-        /usr/bin/printf "FAIL : the NVidia compiler not found\n"
-        return 42
-    fi
-else
-    if [ -d /usr/local/cuda-11.8 ]; then
-        if [ -x /usr/local/cuda-11.8/bin/nvcc ]; then
-            NVCC=/usr/local/cuda-11.8/bin/nvcc
-            export NVCC
-            CUDA_HOME=/usr/local/cuda-11.8
-            export CUDA_HOME
-            PATH=/usr/local/cuda-11.8/bin:/usr/bin:/bin:/usr/sbin:/sbin
-            export PATH
-        else
-            /usr/bin/printf "FAIL : the NVidia compiler 11.8 not found\n"
-            return 42
-        fi
-    fi
-fi
 
 rm -f dev_info dev_info.o > /dev/null 2>&1
 
-# for device compute level stuff be sure to check
-# the more or less up to date list at
-# https://developer.nvidia.com/cuda-gpus
-# lines to rip out for now 
-#
-# -gencode arch=compute_37,code=sm_37
-# -gencode arch=compute_50,code=sm_50
-# -gencode arch=compute_52,code=sm_52
-# -gencode arch=compute_61,code=sm_61
-# -gencode arch=compute_70,code=sm_70
-# -gencode arch=compute_75,code=sm_75
-#
-#
-#------------------------------------------------------------
-#    W A R N I N G    :    NVIDIA will not support the K6000
-#                          with any driver after 470.223.02
-#
-#       Therefore compute_35 is gone gone gone ...
-#------------------------------------------------------------
+CUDA_HOME=/usr/local/cuda-13.1
+export CUDA_HOME
+
+CXX=/usr/local/gcc15/bin/g++
+export CXX
+
+LANG=en_US.UTF-8
+export LANG
+
+LC_TIME=C
+export LC_TIME
+
+NVCC=/usr/local/cuda-13.1/bin/nvcc
+export NVCC
+
+${NVCC} -x cu -ccbin ${CXX} \
+-I ../include -I /usr/local/cuda-13.1/include \
+-I /usr/local/cuda-13.1/targets/x86_64-linux/include \
+-allow-unsupported-compiler \
+-Wno-deprecated-gpu-targets \
+--ftz=false --prec-div=true --prec-sqrt=true \
+-c -o dev_info.o dev_info.cu
 
 
-if [ -x /usr/bin/g++-11 ]; then
-    CXX=/usr/bin/g++-11
-    export CXX
-else
-    /usr/bin/printf "FAIL : We need GCC 11 for some obscure reason.\n"
-    return 42
+if [ ! -f dev_info.o ]; then
+    /usr/bin/printf "\n bork bork bork \n"
+    exit 42
 fi
 
-${NVCC} -ccbin ${CXX} -I../include -m64 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_60,code=sm_60 \
+
+${NVCC} -ccbin ${CXX} -allow-unsupported-compiler \
 -Wno-deprecated-gpu-targets \
--lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
+-o dev_info dev_info.o
 
-${NVCC} -ccbin ${CXX} -m64 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_60,code=sm_60 \
--Wno-deprecated-gpu-targets -o dev_info dev_info.o
 
-/usr/bin/printf "\n------- NVidia profiler to run also. In five secs.\n\n"
-
-sleep 5 
-
-NVPROF=`( command -v nvprof )`; export NVPROF
-
-${NVPROF} ./dev_info
-
+#NVPROF=`( command -v nvprof )`; export NVPROF
+#
+#${NVPROF} ./dev_info
+#

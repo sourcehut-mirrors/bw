@@ -13,6 +13,10 @@
  *
  *   Lines are too darn long.
  *
+ *   6 Mar 2026 : also someone changed the device properties struct?
+ *
+ *   see https://developer.download.nvidia.com/compute/DevZone/docs/html/C/doc/html/structcudaDeviceProp.html
+ *
  */
 
 #include <memory>
@@ -29,6 +33,7 @@ int main(int argc, char **argv)
     int driver_ver = 0;
     int runtime_ver = 0;
 
+    /*
     const char *compute_mode_type_string[] =
         {
             "Default (multiple host threads can use ::cudaSetDevice() with device simultaneously)",
@@ -38,6 +43,7 @@ int main(int argc, char **argv)
             "Unknown",
             NULL
         };
+    */
 
     cudaError_t cuda_err_status;
     cudaDeviceProp dev_prop;
@@ -142,12 +148,11 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
      ****************************************************************/
 
     for (dev = 0; dev < dev_count; ++dev) {
-        char buff[256];
 
         cudaSetDevice(dev);
         cudaGetDeviceProperties(&dev_prop, dev);
 
-        printf("INFO : dev number %d: name = \"%s\"\n",
+        printf("\n\nINFO : dev number %d: name = \"%s\"\n",
                                                    dev, dev_prop.name);
 
         cudaDriverGetVersion(&driver_ver);
@@ -165,7 +170,7 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
 
 
 
-        /* these are barely documented */
+        /* These are barely documented */
         printf("     : managedMemory claims %i\n", dev_prop.managedMemory );
 
         printf("     : ECCEnabled claims %i\n", dev_prop.ECCEnabled );
@@ -177,21 +182,36 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         printf("     : asyncEngineCount = %i\n", dev_prop.asyncEngineCount );
         printf("     : canMapHostMemory = %i\n", dev_prop.canMapHostMemory );
         printf("     : canUseHostPointerForRegisteredMem = %i\n", dev_prop.canUseHostPointerForRegisteredMem );
+
+/*
         printf("     : clockRate = %i\n", dev_prop.clockRate );
-        printf("     : computeMode = %i\n", dev_prop.computeMode );
+*/
+
+/*
+ *     WTF ? this is a documented member of the struct
+ *
+ *      printf("     : computeMode = %i\n", dev_prop.computeMode );
+ */
+   
         printf("     : computePreemptionSupported = %i\n", dev_prop.computePreemptionSupported );
         printf("     : concurrentKernels = %i\n", dev_prop.concurrentKernels );
         printf("     : concurrentManagedAccess = %i\n", dev_prop.concurrentManagedAccess );
         printf("     : cooperativeLaunch = %i\n", dev_prop.cooperativeLaunch );
+/*
         printf("     : cooperativeMultiDeviceLaunch = %i\n", dev_prop.cooperativeMultiDeviceLaunch );
+*/
+/*
         printf("     : deviceOverlap = %i\n", dev_prop.deviceOverlap );
+*/
         printf("     : directManagedMemAccessFromHost = %i\n", dev_prop.directManagedMemAccessFromHost );
         printf("     : ECCEnabled = %i\n", dev_prop.ECCEnabled );
         printf("     : globalL1CacheSupported = %i\n", dev_prop.globalL1CacheSupported );
         printf("     : hostNativeAtomicSupported = %i\n", dev_prop.hostNativeAtomicSupported );
         printf("     : integrated = %i\n", dev_prop.integrated );
         printf("     : isMultiGpuBoard = %i\n", dev_prop.isMultiGpuBoard );
+/*
         printf("     : kernelExecTimeoutEnabled = %i\n", dev_prop.kernelExecTimeoutEnabled );
+*/
         printf("     : l2CacheSize = %i\n", dev_prop.l2CacheSize );
         printf("     : localL1CacheSupported = %i\n", dev_prop.localL1CacheSupported );
         printf("     : major = %i\n", dev_prop.major );
@@ -225,7 +245,9 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         printf("     : maxTexture1DLayered[0] = %i\n", dev_prop.maxTexture1DLayered[0] );
         printf("     : maxTexture1DLayered[1] = %i\n", dev_prop.maxTexture1DLayered[1] );
 
+/*
         printf("     : maxTexture1DLinear = %i\n", dev_prop.maxTexture1DLinear );
+*/
         printf("     : maxTexture1DMipmap = %i\n", dev_prop.maxTexture1DMipmap );
 
         printf("     : maxTexture2D[0] = %i\n", dev_prop.maxTexture2D[0] );
@@ -265,7 +287,9 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         printf("     : maxThreadsPerBlock = %i\n", dev_prop.maxThreadsPerBlock );
         printf("     : maxThreadsPerMultiProcessor = %i\n", dev_prop.maxThreadsPerMultiProcessor );
         printf("     : memoryBusWidth = %i\n", dev_prop.memoryBusWidth );
+/*
         printf("     : memoryClockRate = %i\n", dev_prop.memoryClockRate );
+*/
         printf("     : minor = %i\n", dev_prop.minor );
         printf("     : multiGpuBoardGroupID = %i\n", dev_prop.multiGpuBoardGroupID );
         printf("     : multiProcessorCount = %i\n", dev_prop.multiProcessorCount );
@@ -277,7 +301,9 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         printf("     : persistingL2CacheMaxSize = %i\n", dev_prop.persistingL2CacheMaxSize );
         printf("     : regsPerBlock = %i\n", dev_prop.regsPerBlock );
         printf("     : regsPerMultiprocessor = %i\n", dev_prop.regsPerMultiprocessor );
+/*
         printf("     : singleToDoublePrecisionPerfRatio = %i\n", dev_prop.singleToDoublePrecisionPerfRatio );
+*/
         printf("     : streamPrioritiesSupported = %i\n", dev_prop.streamPrioritiesSupported );
         printf("     : tccDriver = %i\n", dev_prop.tccDriver );
         printf("     : unifiedAddressing = %i\n", dev_prop.unifiedAddressing );
@@ -300,11 +326,15 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
                   ( _ConvertSMVer2Cores(dev_prop.major, dev_prop.minor)
                     * dev_prop.multiProcessorCount ) );
 
+/*
         printf("     : GPU max graphics clock rate: %i kHz\n",
                                                   dev_prop.clockRate );
+*/
 
+/*
         printf("     : Memory Clock rate: %i khz\n",
                                     dev_prop.memoryClockRate );
+*/
 
         printf("     : Memory Bus Width: %i-bit\n",
                                               dev_prop.memoryBusWidth);
@@ -379,15 +409,19 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         printf("     : texture pitch alignment = %llu bytes\n",
                                             dev_prop.texturePitchAlignment);
 
+/*
         printf("     : concurrent copy ability = %s\n",
                               (dev_prop.deviceOverlap ? "Yes" : "No"));
+*/
 
         printf("     : concurrent kernel exec with %d engine(s)\n",
                                             dev_prop.asyncEngineCount);
 
 
+/*
         printf("     : run time limit on kernels = %s\n",
                      dev_prop.kernelExecTimeoutEnabled ? "Yes" : "No");
+*/
 
         printf("     : integrated GPU sharing Host memory = %s\n",
                                    dev_prop.integrated ? "Yes" : "No");
@@ -404,11 +438,15 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         printf("     : supports Unified Addressing (UVA) = %s\n",
                             dev_prop.unifiedAddressing ? "Yes" : "No");
 
+/*
         printf("     : supports Cooperative Kernel Launch = %s\n",
                             dev_prop.cooperativeLaunch ? "Yes" : "No");
+*/
 
+/*
         printf("     : supports MultiDevice Co-op Kernel Launch = %s\n",
                  dev_prop.cooperativeMultiDeviceLaunch ? "Yes" : "No");
+*/
 
         printf("     : device PCI Domain ID, bus ID, location ID\n");
         printf("         id = %d , bus id = %d , location = %d\n",
@@ -416,12 +454,15 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
                                                   dev_prop.pciBusID,
                                                   dev_prop.pciDeviceID);
 
+/*
         printf("     : compute mode:\n");
         printf("           < %s >\n",
                         compute_mode_type_string[dev_prop.computeMode]);
+*/
 
     }
 
+    printf("\n");
     /* If there are 2 or more GPUs, query to determine
      * whether RDMA is supported */
     if (dev_count >= 2) {
@@ -440,6 +481,7 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
             }
         }
 
+
         /* Show all the combinations of support P2P GPUs */
         int can_access_peer;
 
@@ -454,7 +496,7 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
                                                              gpuid[i],
                                                              gpuid[j]));
 
-                    printf("> Peer access from %s (GPU%d) -> %s (GPU%d) : %s\n",
+                    printf("     : Peer access from %s (GPU%d) -> %s (GPU%d) : %s\n",
                                  prop[gpuid[i]].name,
                                  gpuid[i],
                                  prop[gpuid[j]].name,
@@ -466,18 +508,13 @@ cudaUUID_t cudaDeviceProp::uuid [inherited]
         }
     }
 
-    /* csv masterlog info
-     * exe and CUDA driver name */
-    printf("\ndeviceQuery, CUDA Driver = CUDART");
-    char cTemp[16];
+    printf("\n\n     : deviceQuery, CUDA Driver = CUDART");
     /* driver version */
-    printf(", CUDA Driver Version = %d.%d", driver_ver/1000, (driver_ver%100)/10);
+    printf("\n     : CUDA Driver Version = %d.%d", driver_ver/1000, (driver_ver%100)/10);
     /* runtime version */
-    printf(", CUDA Runtime Version = %d.%d", runtime_ver/1000, (runtime_ver%100)/10);
+    printf("\n     : CUDA Runtime Version = %d.%d", runtime_ver/1000, (runtime_ver%100)/10);
     /* device count */
-    printf(", NumDevs = %d\n", dev_count);
-
-    printf("Result = PASS\n");
+    printf("\n     : NumDevs = %d\n\n", dev_count);
 
     return EXIT_SUCCESS;
 
