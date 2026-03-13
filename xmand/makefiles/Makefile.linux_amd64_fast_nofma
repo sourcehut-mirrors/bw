@@ -1,9 +1,9 @@
-
-CC?=/opt/bw/gcc13/bin/gcc
+CC?=/usr/bin/gcc
 
 CFLAGS= -std=iso9899:2017 -m64 -O3 -ffp-contract=off -mno-fma
 
-CPPFLAGS=	-D_LARGEFILE64_SOURCE \
-		-D_FILE_OFFSET_BITS=64
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+		-D_XOPEN_SOURCE=700
 
 include common.mk
+

@@ -513,20 +513,30 @@ int sysinfo(int verbose) {
             printf("               POSIX Version = %llu\n",
                                                               version);
 #endif
+#ifdef _POSIX_CHILD_MAX
             printf("          _POSIX_CHILD_MAX   = %i\n",
                                                      _POSIX_CHILD_MAX);
+#endif
 
+#ifdef _POSIX_NGROUPS_MAX
             printf("          _POSIX_NGROUPS_MAX = %i\n", 
                                                    _POSIX_NGROUPS_MAX);
+#endif
 
+#ifdef _POSIX_OPEN_MAX
             printf("          _POSIX_OPEN_MAX    = %i\n",
                                                       _POSIX_OPEN_MAX);
+#endif
 
+#ifdef _POSIX_PATH_MAX
             printf("          _POSIX_PATH_MAX    = %i\n",
                                                       _POSIX_PATH_MAX);
+#endif
 
+#ifdef _POSIX_TZNAME_MAX
             printf("          _POSIX_TZNAME_MAX  = %i\n",
                                                     _POSIX_TZNAME_MAX);
+#endif
 
             /* I am somewhat unsure what this is for */
 #ifdef __STAT_TIME_T_EXT
