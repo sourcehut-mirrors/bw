@@ -1,0 +1,27 @@
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -m64 -g -O0 -pedantic -pedantic-errors \
+	-fno-builtin -fno-fast-math -mhard-float -mno-app-regs \
+	-mflat -msoft-quad-float -mno-unaligned-doubles \
+	-mno-faster-structs -mcpu=niagara7 -mtune=niagara7 \
+	-mno-vis -mno-cbcond -mno-fmaf -mno-fsmuld \
+	-mno-popc -mno-subxc
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500
+
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=500
+
+SRCS = date_list.c print_date.c valid_date.c
+
+OBJS = ${SRCS:.c=.o}
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+date_list: $(OBJS)
+	$(CC) -o date_list $(OBJS) $(CFLAGS) $(CPPFLAGS)
+
+clean:
+	rm -f $(OBJS) date_list
+
