@@ -10,6 +10,27 @@
  *  The mpz_probab_prime_p is a guess. Probably correct.
  *  No promise. Good luck.
  *
+ * See https://gmplib.org/manual/Number-Theoretic-Functions
+ *
+ *     5.9 Number Theoretic Functions
+ *
+ *         Function: int mpz_probab_prime_p (const mpz_t n, int reps)
+ *
+ *         Determine whether n is prime. Return 2 if n is definitely
+ *         prime, return 1 if n is probably prime ( guess ), or
+ *         return 0 if n is definitely non-prime.
+ *
+ *         This function performs some trial divisions, a Baillie-PSW
+ *         probable prime test, then reps-24 Miller-Rabin probabilistic
+ *         primality tests. A higher reps value will reduce the chances
+ *         of a non-prime being identified as “probably prime”.
+ *         A composite number will be identified as a prime with an
+ *         asymptotic probability of less than 4^(-reps).
+ *         Reasonable values of reps are between 15 and 50.
+ *
+ *    * * * NOTE : read that twice as needed. * * * 
+ *
+ *
  * Tested with a really big prime p-1
  *
  * ./pair 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150002
