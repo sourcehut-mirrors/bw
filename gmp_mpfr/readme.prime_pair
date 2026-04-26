@@ -1,0 +1,65 @@
+
+On Solaris 11 sun4v hardware with the Oracle Studio 12.5 c99 tools :
+
+$ echo $CC
+/opt/developerstudio12.6/bin/c99
+
+$ echo $CFLAGS
+warf
+
+$ echo $CPPFLAGS 
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+
+
+$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
+$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
+$CC $CFLAGS $CPPFLAGS -I $HOME/local/include -c -o pair.o pair.c
+
+ $CC $CFLAGS $CPPFLAGS -L $HOME/local/lib -R $HOME/local/lib  -o pair pair.o sysinfo.o endian.o -lgmp -lm
+
+The shell on Solaris just barfs are a really large string. So this hack :
+
+
+neptune $ BIGNUM='90412595549414139695585839734542972800598084387417125706655138104526802551535778346908453488865881005438877237404'
+neptune $ export BIGNUM
+neptune $ BIGNUM=$BIGNUM'65467229857042846880561991348944234310869765344840513902872919742491377390672534'
+neptune $ export BIGNUM
+neptune $ BIGNUM=$BIGNUM'29506499876396186510562764635083152075130685909408356397510660161489040913053898577'
+neptune $ export BIGNUM
+neptune $ echo $BIGNUM
+904125955494141396955858397345429728005980843874171257066551381045268025515357783469084534888658810054388772374046546722985704284688056199134894423431086976534484051390287291974249137739067253429506499876396186510562764635083152075130685909408356397510660161489040913053898577
+neptune $ ./pair $BIGNUM
+-------------------------------------------------------------------
+                 system name = SunOS
+                   node name = neptune
+                     release = 5.11
+                     version = 11.4.90.212.0
+                     machine = sun4v
+                   page size = 8192
+               system memory = 238370684928
+                             = 232783872 kB
+                             = 227328 MB about 222 GB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200112
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = big
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+GMP  library version : 6.3.0
+
+ maybe twin prime?
+904125955494141396955858397345429728005980843874171257066551381045268025515357783469084534888658810054388772374046546722985704284688056199134894423431086976534484051390287291974249137739067253429506499876396186510562764635083152075130685909408356397510660161489040913054145429
+904125955494141396955858397345429728005980843874171257066551381045268025515357783469084534888658810054388772374046546722985704284688056199134894423431086976534484051390287291974249137739067253429506499876396186510562764635083152075130685909408356397510660161489040913054145431
+neptune $ 
+
