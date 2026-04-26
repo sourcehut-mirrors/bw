@@ -87,11 +87,14 @@
 #define _XOPEN_SOURCE 600
 #endif
 
+#define VERBOSE 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <gmp.h>
 
+int sysinfo(int verbose);
 static int is_digits_only(const char *s);
 static void print_mpz(const mpz_t x);
 
@@ -147,7 +150,7 @@ main( int argc, char **argv )
     int hell_freeze_over;
 
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s start_number\n", argv[0]);
+        fprintf(stderr, "Use: %s start_number\n", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -155,6 +158,13 @@ main( int argc, char **argv )
         fprintf(stderr, "decimal only please\n");
         return EXIT_FAILURE;
     }
+
+    sysinfo(VERBOSE);
+
+    printf("GMP  library version : %d.%d.%d\n",
+            __GNU_MP_VERSION,
+            __GNU_MP_VERSION_MINOR,
+            __GNU_MP_VERSION_PATCHLEVEL );
 
     /* Miller-Rabin loops or repititions and good luck */
     mr_reps = 25;
