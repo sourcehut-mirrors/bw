@@ -35,6 +35,9 @@
  *
  * ./pair 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150002
  *
+ * Also worth looking at the start number  2462906046200000. We get a
+ * mixture of certainty ( 28 ) and guess work ( 72 ).
+ *
  * Good luck checking that.
  * --------------------------------------------------------------------
  * Copyright (C) Dennis Clarke 2026
@@ -117,7 +120,7 @@ static int is_digits_only(const char *s)
 
         /* use 0x30 to 0x39 as ascii values */
         if ( (c < 0x30) || (c > 0x39) ) {
-            /* could have used isdigit() */
+            /* should have used isdigit() where EBCDIC may work */
             return 0;
         }
     }
@@ -130,6 +133,11 @@ static void print_mpz(const mpz_t x)
     mpz_out_str(stdout, 10, x);
 }
 
+/* a few trivial experiments suggest that the number of loops
+ * in the Miller-Rabin probabilistic test is of no concern.
+ * Leave the number at 25 which is DEFAULT_MR_LOOP.
+ * Again .. good luck.
+ */
 static int miller_rabin_reps(const char *s)
 {
     long candidate_input;
@@ -166,6 +174,11 @@ main( int argc, char **argv )
 {
     /* a starting number and then two candidates */
     mpz_t start, cand, cand_plus2;
+
+    /* track the first probable prime as well as the last
+     * found after 100 twins
+     */
+    mpz_t first, last, range;
 
     /* mpz_probab_prime_p() is a guess */
     int twin_count, possible_twin_count, r_cand, r_cand2;
@@ -208,6 +221,9 @@ main( int argc, char **argv )
     mpz_init(start);
     mpz_init(cand);
     mpz_init(cand_plus2);
+    mpz_init(first);
+    mpz_init(last);
+    mpz_init(range);
 
     /* can the input number be understood? */
     if (mpz_set_str(start, argv[1], 10) != 0) {
@@ -261,6 +277,11 @@ hell:
                     possible_twin_count += 1;
                 }
 
+                if ( ( twin_count + possible_twin_count ) == 1 ) {
+                    /* copy the candidate found into first found */
+                    mpz_set (first, cand);
+                }
+
                 fputs("twin p and p+2\n", stdout);
 
                 print_mpz(cand);
@@ -284,12 +305,30 @@ hell:
         goto hell;
     }
 
-    fprintf(stdout,"\n\n Possible prime pairs = %i\n", possible_twin_count);
-    fprintf(stdout,"  Certain prime pairs = %i\n\n", twin_count);
+    /* snag the last prime candidate */
+    mpz_set (last, cand_plus2);
+
+    if ( twin_count ) {
+        fprintf(stdout,"\n\n Possible prime pairs = %i\n", possible_twin_count);
+        fprintf(stdout,"  Certain prime pairs = %i\n\n", twin_count);
+    } else {
+        fprintf(stdout,"\n\n None of the above are certain to be primes.\n");
+        fprintf(stdout,"Good luck.\n\n");
+    }
+
+    /* compute the range over which out TWIN_LIMIT primes were found */
+    mpz_sub (range, last, first);
+
+    printf("Range = ");
+    print_mpz(range);
+    fputc('\n', stdout);
 
     mpz_clear(start);
     mpz_clear(cand);
     mpz_clear(cand_plus2);
+    mpz_clear(first);
+    mpz_clear(last);
+    mpz_clear(range);
 
     return EXIT_SUCCESS;
 
