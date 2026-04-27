@@ -79,7 +79,10 @@
 #endif
 
 #define VERBOSE 1
+#define DEFAULT_MR_LOOP 25
+#define TWIN_LIMIT 100
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -88,6 +91,7 @@
 int sysinfo(int verbose);
 static int is_digits_only(const char *s);
 static void print_mpz(const mpz_t x);
+static int miller_rabin_reps(const char *s);
 
 /* check if the user string is just decimal digits */
 static int is_digits_only(const char *s)
@@ -126,6 +130,37 @@ static void print_mpz(const mpz_t x)
     mpz_out_str(stdout, 10, x);
 }
 
+static int miller_rabin_reps(const char *s)
+{
+    long candidate_input;
+
+    if (is_digits_only(s)) {
+
+        errno = 0;
+        candidate_input = strtol(s, (char **)NULL, 10);
+
+        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ) {
+            fprintf(stderr,"  WARN : Miller-Rabin reps not understood\n");
+            perror("     ");
+defaults:
+            fprintf(stderr,"       : we assume %i loops.\n", DEFAULT_MR_LOOP);
+            return DEFAULT_MR_LOOP;
+        }
+
+        if ( ( candidate_input < 15 ) || ( candidate_input > 50 ) ) {
+            fprintf(stderr,"  WARN : out of reasonable range Miller-Rabin reps\n");
+            goto defaults;
+        } else {
+            return (int)candidate_input;
+        }
+
+    } else {
+        fprintf(stderr,"  WARN : no Miller-Rabin loop limit entered\n");
+        goto defaults;
+    }
+
+}
+
 int
 main( int argc, char **argv )
 {
@@ -142,14 +177,24 @@ main( int argc, char **argv )
      * going into the gates of hell with large numbers */
     int hell_freeze_over;
 
-    if (argc != 2) {
+    if (argc < 2) {
         fprintf(stderr, "Use: %s start_number\n", argv[0]);
+        fprintf(stderr, "   : optional to add Miller-Rabin loops.\n");
+        fprintf(stderr, "   : %s start_number loop_number\n");
         return EXIT_FAILURE;
     }
 
     if (!is_digits_only(argv[1])) {
-        fprintf(stderr, "decimal only please\n");
+        fprintf(stderr, "FAIL : decimal only please\n");
         return EXIT_FAILURE;
+    }
+
+    /* Miller-Rabin loops or repetitions and good luck */
+    mr_reps = DEFAULT_MR_LOOP;
+
+    if (argc>2) {
+        /* just ignore any extra trash on the command line */
+        mr_reps = miller_rabin_reps(argv[2]);
     }
 
     sysinfo(VERBOSE);
@@ -158,9 +203,6 @@ main( int argc, char **argv )
             __GNU_MP_VERSION,
             __GNU_MP_VERSION_MINOR,
             __GNU_MP_VERSION_PATCHLEVEL );
-
-    /* Miller-Rabin loops or repetitions and good luck */
-    mr_reps = 25;
 
     /* init the GMP data things */
     mpz_init(start);
@@ -189,6 +231,10 @@ main( int argc, char **argv )
 
     twin_count = 0;
     possible_twin_count = 0;
+
+    printf("\nINFO : mpz_probab_prime_p() and Miller-Rabin loops %i\n",
+              mr_reps);
+    printf("     : stop after %i prime pairs are found.\n\n", TWIN_LIMIT);
 
 hell:
     hell_freeze_over = 0;
@@ -234,7 +280,7 @@ hell:
     /* now do the loop from hell ... forever */
     mpz_add_ui(cand, cand, 4);
 
-    if ( ( twin_count + possible_twin_count ) < 100 ) {
+    if ( ( twin_count + possible_twin_count ) < TWIN_LIMIT ) {
         goto hell;
     }
 
