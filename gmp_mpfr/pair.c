@@ -31,18 +31,9 @@
  *    * * * NOTE : read that twice as needed. * * * 
  *
  *
- * Tested with a really big prime p-1
+ * Test with a really big prime p-1
  *
  * ./pair 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150002
- *
- * bork even number ... lets add 1
- *
- * 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150003 <-- how about an odd number?
- *
- *
- * maybe twin prime?
- * 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493178507
- * 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493178509
  *
  * Good luck checking that.
  * --------------------------------------------------------------------
@@ -194,6 +185,7 @@ main( int argc, char **argv )
         }
     }
 
+hell:
     hell_freeze_over = 0;
 
     do {
@@ -209,7 +201,14 @@ main( int argc, char **argv )
             r_cand2 = mpz_probab_prime_p(cand_plus2, mr_reps);
             if (r_cand2 > 0) {
                 /* cool ... just output the basics */
-                fputs("\n maybe twin prime?\n", stdout);
+                fputc('\n', stdout);
+                if ( (r_cand == 2) && (r_cand2 == 2) ) {
+                    /* holy fuk balls .. these are prime! */
+                    fputs("certain ", stdout);
+                }
+
+                fputs("twin p and p+2\n", stdout);
+
                 print_mpz(cand);
                 fputc('\n', stdout);
                 print_mpz(cand_plus2);
@@ -224,15 +223,16 @@ main( int argc, char **argv )
 
     } while ( hell_freeze_over == 0 );
 
+    /* now do the loop from hell ... forever */
+    mpz_add_ui(cand, cand, 4);
+    goto hell;
+
+
     mpz_clear(start);
     mpz_clear(cand);
     mpz_clear(cand_plus2);
 
-    if ( hell_freeze_over ) {
-        return EXIT_SUCCESS;
-    } else {
-        return EXIT_FAILURE;
-    }
+    return EXIT_SUCCESS;
 
 }
 
