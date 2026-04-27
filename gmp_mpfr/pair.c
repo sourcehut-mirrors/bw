@@ -92,6 +92,7 @@ static void print_mpz(const mpz_t x);
 /* check if the user string is just decimal digits */
 static int is_digits_only(const char *s)
 {
+    unsigned char c;
     /* only you can stop the abuse of "i" */
     size_t j;
 
@@ -107,11 +108,12 @@ static int is_digits_only(const char *s)
 
     /* walk the string and if anything is borked ... then bork */
     for (j = 0; s[j] != '\0'; ++j) {
-        /* pedantic as hell */
-        unsigned char c = (unsigned char)s[j];
 
-        /* use 0x30 to 0x39 ascii values */
+        c = (unsigned char)s[j];
+
+        /* use 0x30 to 0x39 as ascii values */
         if ( (c < 0x30) || (c > 0x39) ) {
+            /* could have used isdigit() */
             return 0;
         }
     }
@@ -131,7 +133,7 @@ main( int argc, char **argv )
     mpz_t start, cand, cand_plus2;
 
     /* mpz_probab_prime_p() is a guess */
-    int r_cand, r_cand2;
+    int twin_count, possible_twin_count, r_cand, r_cand2;
 
     /* how many times will the Miller-Rabin loop? */
     int mr_reps;
@@ -157,7 +159,7 @@ main( int argc, char **argv )
             __GNU_MP_VERSION_MINOR,
             __GNU_MP_VERSION_PATCHLEVEL );
 
-    /* Miller-Rabin loops or repititions and good luck */
+    /* Miller-Rabin loops or repetitions and good luck */
     mr_reps = 25;
 
     /* init the GMP data things */
@@ -185,6 +187,9 @@ main( int argc, char **argv )
         }
     }
 
+    twin_count = 0;
+    possible_twin_count = 0;
+
 hell:
     hell_freeze_over = 0;
 
@@ -203,8 +208,11 @@ hell:
                 /* cool ... just output the basics */
                 fputc('\n', stdout);
                 if ( (r_cand == 2) && (r_cand2 == 2) ) {
-                    /* holy fuk balls .. these are prime! */
+                    /* holy balls .. these are really prime! */
+                    twin_count += 1;
                     fputs("certain ", stdout);
+                } else {
+                    possible_twin_count += 1;
                 }
 
                 fputs("twin p and p+2\n", stdout);
@@ -225,8 +233,13 @@ hell:
 
     /* now do the loop from hell ... forever */
     mpz_add_ui(cand, cand, 4);
-    goto hell;
 
+    if ( ( twin_count + possible_twin_count ) < 100 ) {
+        goto hell;
+    }
+
+    fprintf(stdout,"\n\n Possible prime pairs = %i\n", possible_twin_count);
+    fprintf(stdout,"  Certain prime pairs = %i\n\n", twin_count);
 
     mpz_clear(start);
     mpz_clear(cand);

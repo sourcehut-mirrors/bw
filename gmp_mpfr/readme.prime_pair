@@ -17,6 +17,11 @@ $CC $CFLAGS $CPPFLAGS -I $HOME/local/include -c -o pair.o pair.c
 
  $CC $CFLAGS $CPPFLAGS -L $HOME/local/lib -R $HOME/local/lib  -o pair pair.o sysinfo.o endian.o -lgmp -lm
 
+       NOTE: FreeBSD may want something special 
+
+           $CC $CFLAGS $CPPFLAGS -L $HOME/local/lib -Wl,-rpath=/home/dclarke/local/lib,-enable-new-dtags -o pair pair.o sysinfo.o endian.o -lgmp -lm
+
+
 The shell on Solaris just barfs are a really large string. So this hack :
 
 
