@@ -617,20 +617,20 @@ int sysinfo(int verbose) {
 
                 uptime_day = uptime.tv_sec / 86400;
 
-                printf("%4lu day", uptime_day);
+                printf("%4ld day", uptime_day);
                 if ( uptime_day > 1 ) printf("s");
 
                 uptime_hour = ( uptime.tv_sec
                                 - ( uptime_day * 86400 ) ) / 3600;
 
-                printf("  %3lu hour", uptime_hour);
+                printf("  %3ld hour", uptime_hour);
                 if ( uptime_hour > 1 ) printf("s");
 
                 uptime_min = ( uptime.tv_sec 
                                 - ( uptime_day * 86400 ) 
                                 - ( uptime_hour * 3600 ) ) / 60;
 
-                printf("  %3lu min", uptime_min);
+                printf("  %3ld min", uptime_min);
                 if ( uptime_min > 1 ) printf("s");
 
                 uptime_sec = uptime.tv_sec 
@@ -638,7 +638,7 @@ int sysinfo(int verbose) {
                                 - ( uptime_hour * 3600 )
                                 - ( uptime_min * 60 );
 
-                printf("  %3lu sec", uptime_sec);
+                printf("  %3ld sec", uptime_sec);
                 if ( uptime_sec > 1 ) printf("s");
           
                 printf("\n");

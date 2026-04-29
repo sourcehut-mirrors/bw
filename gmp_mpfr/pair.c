@@ -193,7 +193,7 @@ main( int argc, char **argv )
     if (argc < 2) {
         fprintf(stderr, "Use: %s start_number\n", argv[0]);
         fprintf(stderr, "   : optional to add Miller-Rabin loops.\n");
-        fprintf(stderr, "   : %s start_number loop_number\n");
+        fprintf(stderr, "   : %s start_number loop_number\n", argv[0]);
         return EXIT_FAILURE;
     }
 
