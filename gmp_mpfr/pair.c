@@ -35,8 +35,15 @@
  *
  * ./pair 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150002
  *
- * Also worth looking at the start number  2462906046200000. We get a
- * mixture of certainty ( 28 ) and guess work ( 72 ).
+ * Also worth looking at the start number 2462906046175243 where
+ * we get a mixture of certainty and maybe :
+ *
+ * $ ./pair 2462906046175243 | tail -4
+ *   Possible prime pairs = 50
+ *    Certain prime pairs = 50
+ *
+ *    Range = 84032
+ *
  *
  * Good luck checking that.
  * --------------------------------------------------------------------
