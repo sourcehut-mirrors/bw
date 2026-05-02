@@ -1,5 +1,5 @@
 
-/* pair.c Guess with Miller–Rabin mpz_probab_prime_p to
+/* pair.c Guess with Miller-Rabin mpz_probab_prime_p to
  *        find a prime pair p and p+2
  *
  * Compile as clean ISO9899:1999 clean as you can. Be sure
@@ -31,7 +31,7 @@
  *    * * * NOTE : read that twice as needed. * * * 
  *
  *
- * Test with a really big prime p-1
+ * Test with a big prime p-1
  *
  * ./pair 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150002
  *
@@ -91,6 +91,7 @@
 #define VERBOSE 1
 #define DEFAULT_MR_LOOP 25
 #define TWIN_LIMIT 100
+#define SMALL_PAGE 4096
 
 #include <errno.h>
 #include <stdio.h>
@@ -102,6 +103,150 @@ int sysinfo(int verbose);
 static int is_digits_only(const char *s);
 static void print_mpz(const mpz_t x);
 static int miller_rabin_reps(const char *s);
+
+/* accept an input string which may be multiple lines
+ * from output that dc spits out */
+char *multi_pass_line(FILE *in_stream)
+{
+    size_t buffer_capacity, len, line_len, newcap;
+    char *buffer, *new_buf, line[SMALL_PAGE];
+    int continued;
+
+    /* check the input is sane */
+    if ( in_stream == NULL ) {
+        /* the user is a jerk. return a '\0' empty string */
+        buffer = calloc(8,sizeof(unsigned char));
+        if ( buffer == NULL ) {
+            /* major problem ENOMEM or worse?
+             * If you can not get 8 bytes on the heap then
+             * you have far far bigger problems. */
+            exit ( EXIT_FAILURE );
+        }
+        return buffer;
+    }
+
+    /* the smallest pagesize is in x86 systems at 4KB */
+    buffer_capacity = SMALL_PAGE;
+
+    len = 0;
+    buffer = (char *)calloc(buffer_capacity, sizeof(unsigned char));
+    if (buffer == NULL) {
+        /* really? what am I supposed to do now? */
+        return NULL;
+    }
+
+    /*  the fgets just hangs ... I don't know why yet 
+     *
+     *
+     *  DESCRIPTION
+     *  The fgets() function reads at most one less than the number of
+     *  characters specified by size from the given stream and stores
+     *  them in the string str.  Reading stops when a newline character
+     *  is found, at end-of-file or error.  The newline, if any, is
+     *  retained.
+     *
+     *  If any characters are read and there is no error, a '\0' char
+     *  is appended to end the string.
+     *
+     *  The gets_s() function is equivalent to fgets() with a stream
+     *  of stdin, except that the newline character (if any) is not
+     *  stored in the string.
+     *
+     *  RETURN VALUES
+     *  Upon successful completion, fgets() and gets_s() return a
+     *  pointer to the string.  If end-of-file occurs before any
+     *  characters are read, they return NULL and the buffer contents
+     *  remain unchanged.  If an error occurs, they return NULL and
+     *  the buffer contents are indeterminate.  The fgets() and
+     *  gets_s() functions do not distinguish between end-of-file and
+     *  error, and callers must use feof(3) and ferror(3) to determine
+     *  which occurred.
+     *
+     *  ERRORS
+     *     [EBADF]    The given stream is not a readable stream.
+     *
+     *  The function fgets() may also fail and set errno for any of
+     *  the errors specified for the routines fflush(3), fstat(2),
+     *  read(2), or malloc(3).
+     *
+     * I have to guess calloc() also?
+     */
+    while (fgets(line, sizeof line, in_stream) != NULL) {
+        /* we expect 72 chars at most however anything can
+         * and will happen */
+        line_len = strlen(line);
+
+        /* TODO : what if line_len > SMALL_PAGE ? 
+         *      : how about 0 bytes ?
+         *
+         *      Always assume the user is a jerk.
+         */
+
+        /* in this loop we may hit a trailing newline?
+         * strip that out */
+        if ( (line_len > 0) && (line[line_len - 1] == '\n') ) {
+            line[--line_len] = '\0';
+        }
+
+        /* have we accepted a continuation backslash char yet? */
+        continued = 0;
+
+        if ( (line_len > 0) && (line[line_len - 1] == '\\') ) {
+            /* yup .. we got one for sure */
+            continued = 1;
+            /* strip out the backslash */
+            line[--line_len] = '\0';
+        }
+
+        /* ensure capacity for SMALL_PAGE bytes + NUL */
+        if ( (len + line_len + 1) > buffer_capacity) {
+            newcap = buffer_capacity;
+            while (len + line_len + 1 > newcap) {
+                newcap *= 2;
+            }
+
+            new_buf = (char *)calloc(newcap, sizeof(unsigned char));
+            if (new_buf == NULL) {
+                /* yeah .. we are borked into the gates of hell */
+                free(buffer);
+                /* TODO any other options here? */
+                exit ( EXIT_FAILURE );
+            }
+
+            /* we survived the growth .. so swap around pointers */
+            memcpy(new_buf, buffer, len);
+            free(buffer);
+            buffer = new_buf;
+            buffer_capacity = newcap;
+        }
+
+        /* copy in the chars that we have workable */
+        memcpy(buffer + len, line, line_len);
+        len += line_len;
+
+        /* did we hit the last line ? */
+        if (continued == 0) {
+            break;
+        }
+    }
+
+    /* feof() tests the end-of-file indicator for the stream
+     * pointed to by stream, returning non-zero if it is set.
+     * The end-of-file indicator may be cleared by explicitly
+     * calling clearerr(), or as a side-effect of other stuff
+     * like fseek().
+     */
+    if ( (len == 0) && feof(in_stream)) {
+        free(buffer);
+        return NULL;
+    }
+
+    /* I kknow I did a calloc() but just to be safe
+     * stick a '\0' at the end */
+    buffer[len] = '\0';
+    return buffer;
+}
+
 
 /* check if the user string is just decimal digits */
 static int is_digits_only(const char *s)
@@ -179,6 +324,9 @@ defaults:
 int
 main( int argc, char **argv )
 {
+    /* a char pointer to the stdin stream */
+    char *multi_line;
+
     /* a starting number and then two candidates */
     mpz_t start, cand, cand_plus2;
 
@@ -204,7 +352,17 @@ main( int argc, char **argv )
         return EXIT_FAILURE;
     }
 
-    if (!is_digits_only(argv[1])) {
+    /* possibly accept multi-line numbers that are big or
+     * just have the continuation backslash char in them */
+    multi_line = multi_pass_line(stdin);
+
+    /* did that work? */
+    if ( multi_line == NULL ) {
+        /* nope */
+        return EXIT_FAILURE;
+    }
+
+    if (!is_digits_only(multi_line)) {
         fprintf(stderr, "FAIL : decimal only please\n");
         return EXIT_FAILURE;
     }
@@ -233,7 +391,7 @@ main( int argc, char **argv )
     mpz_init(range);
 
     /* can the input number be understood? */
-    if (mpz_set_str(start, argv[1], 10) != 0) {
+    if (mpz_set_str(start, multi_line, 10) != 0) {
         fprintf(stderr, "whoa .. that number does not grok\n");
         /* be polite and clean up and then fuk off */
         mpz_clear(start);
