@@ -91,162 +91,19 @@
 #define VERBOSE 1
 #define DEFAULT_MR_LOOP 25
 #define TWIN_LIMIT 100
-#define SMALL_PAGE 4096
+#define PAGE_SIZE 4096
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include <gmp.h>
 
 int sysinfo(int verbose);
 static int is_digits_only(const char *s);
 static void print_mpz(const mpz_t x);
 static int miller_rabin_reps(const char *s);
-
-/* accept an input string which may be multiple lines
- * from output that dc spits out */
-char *multi_pass_line(FILE *in_stream)
-{
-    size_t buffer_capacity, len, line_len, newcap;
-    char *buffer, *new_buf, line[SMALL_PAGE];
-    int continued;
-
-    /* check the input is sane */
-    if ( in_stream == NULL ) {
-        /* the user is a jerk. return a '\0' empty string */
-        buffer = calloc(8,sizeof(unsigned char));
-        if ( buffer == NULL ) {
-            /* major problem ENOMEM or worse?
-             * If you can not get 8 bytes on the heap then
-             * you have far far bigger problems. */
-            exit ( EXIT_FAILURE );
-        }
-        return buffer;
-    }
-
-    /* the smallest pagesize is in x86 systems at 4KB */
-    buffer_capacity = SMALL_PAGE;
-
-    len = 0;
-    buffer = (char *)calloc(buffer_capacity, sizeof(unsigned char));
-    if (buffer == NULL) {
-        /* really? what am I supposed to do now? */
-        return NULL;
-    }
-
-    /*  the fgets just hangs ... I don't know why yet 
-     *
-     *
-     *  DESCRIPTION
-     *  The fgets() function reads at most one less than the number of
-     *  characters specified by size from the given stream and stores
-     *  them in the string str.  Reading stops when a newline character
-     *  is found, at end-of-file or error.  The newline, if any, is
-     *  retained.
-     *
-     *  If any characters are read and there is no error, a '\0' char
-     *  is appended to end the string.
-     *
-     *  The gets_s() function is equivalent to fgets() with a stream
-     *  of stdin, except that the newline character (if any) is not
-     *  stored in the string.
-     *
-     *  RETURN VALUES
-     *  Upon successful completion, fgets() and gets_s() return a
-     *  pointer to the string.  If end-of-file occurs before any
-     *  characters are read, they return NULL and the buffer contents
-     *  remain unchanged.  If an error occurs, they return NULL and
-     *  the buffer contents are indeterminate.  The fgets() and
-     *  gets_s() functions do not distinguish between end-of-file and
-     *  error, and callers must use feof(3) and ferror(3) to determine
-     *  which occurred.
-     *
-     *  ERRORS
-     *     [EBADF]    The given stream is not a readable stream.
-     *
-     *  The function fgets() may also fail and set errno for any of
-     *  the errors specified for the routines fflush(3), fstat(2),
-     *  read(2), or malloc(3).
-     *
-     * I have to guess calloc() also?
-     */
-    while (fgets(line, sizeof line, in_stream) != NULL) {
-        /* we expect 72 chars at most however anything can
-         * and will happen */
-        line_len = strlen(line);
-
-        /* TODO : what if line_len > SMALL_PAGE ? 
-         *      : how about 0 bytes ?
-         *
-         *      Always assume the user is a jerk.
-         */
-
-        /* in this loop we may hit a trailing newline?
-         * strip that out */
-        if ( (line_len > 0) && (line[line_len - 1] == '\n') ) {
-            line[--line_len] = '\0';
-        }
-
-        /* have we accepted a continuation backslash char yet? */
-        continued = 0;
-
-        if ( (line_len > 0) && (line[line_len - 1] == '\\') ) {
-            /* yup .. we got one for sure */
-            continued = 1;
-            /* strip out the backslash */
-            line[--line_len] = '\0';
-        }
-
-        /* ensure capacity for SMALL_PAGE bytes + NUL */
-        if ( (len + line_len + 1) > buffer_capacity) {
-            newcap = buffer_capacity;
-            while (len + line_len + 1 > newcap) {
-                newcap *= 2;
-            }
-
-            new_buf = (char *)calloc(newcap, sizeof(unsigned char));
-            if (new_buf == NULL) {
-                /* yeah .. we are borked into the gates of hell */
-                free(buffer);
-                /* TODO any other options here? */
-                exit ( EXIT_FAILURE );
-            }
-
-            /* we survived the growth .. so swap around pointers */
-            memcpy(new_buf, buffer, len);
-            free(buffer);
-            buffer = new_buf;
-            buffer_capacity = newcap;
-        }
-
-        /* copy in the chars that we have workable */
-        memcpy(buffer + len, line, line_len);
-        len += line_len;
-
-        /* did we hit the last line ? */
-        if (continued == 0) {
-            break;
-        }
-    }
-
-    /* feof() tests the end-of-file indicator for the stream
-     * pointed to by stream, returning non-zero if it is set.
-     * The end-of-file indicator may be cleared by explicitly
-     * calling clearerr(), or as a side-effect of other stuff
-     * like fseek().
-     */
-    if ( (len == 0) && feof(in_stream)) {
-        free(buffer);
-        return NULL;
-    }
-
-    /* I kknow I did a calloc() but just to be safe
-     * stick a '\0' at the end */
-    buffer[len] = '\0';
-    return buffer;
-}
-
 
 /* check if the user string is just decimal digits */
 static int is_digits_only(const char *s)
@@ -324,8 +181,8 @@ defaults:
 int
 main( int argc, char **argv )
 {
-    /* a char pointer to the stdin stream */
-    char *multi_line;
+    /* a char pointer to the input number */
+    char *input_num;
 
     /* a starting number and then two candidates */
     mpz_t start, cand, cand_plus2;
@@ -343,46 +200,97 @@ main( int argc, char **argv )
 
     /* check of the user is a moron and also we are
      * going into the gates of hell with large numbers */
-    int hell_freeze_over;
+    int hundred;
+
+    /* I will want pages of memory to represent the input
+     * number as well as other large numbers later. However
+     * it is unlikely that one would ever get into numbers
+     * with more than 4000 digits. Good luck.
+     */
+    int page_count, err_status, candidate_int;
+    size_t str_chars;
 
     if (argc < 2) {
-        fprintf(stderr, "Use: %s start_number\n", argv[0]);
-        fprintf(stderr, "   : optional to add Miller-Rabin loops.\n");
-        fprintf(stderr, "   : %s start_number loop_number\n", argv[0]);
+        fprintf(stderr, "INFO : %s start_number\n", argv[0]);
+        fprintf(stderr, "     : optional to add Miller-Rabin loops.\n");
+        fprintf(stderr, "     : %s start_number loop_number\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    /* possibly accept multi-line numbers that are big or
-     * just have the continuation backslash char in them */
-    multi_line = multi_pass_line(stdin);
+    /* we will need at least one full page of memory */
+    str_chars = strlen(argv[1]);
+    page_count = 1 + str_chars/PAGE_SIZE;
 
-    /* did that work? */
-    if ( multi_line == NULL ) {
-        /* nope */
+    /* create a buffer for the input number */
+    input_num = calloc( page_count * PAGE_SIZE, sizeof(unsigned char));
+    if ( input_num == NULL ) {
+        /* really? possible ENOMEM? */
+        if ( errno == ENOMEM ) {
+            fprintf(stderr,"FAIL : calloc ENOMEM at %s:%d\n",
+                    __FILE__, __LINE__ );
+        } else {
+            fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                    __FILE__, __LINE__ );
+        }
+        perror("FAIL ");
+        /* NOTE : it is very nasty to bail out this way
+         *        but why bother to continue ?
+         */
         return EXIT_FAILURE;
     }
 
-    if (!is_digits_only(multi_line)) {
+    strncpy( input_num, argv[1], str_chars);
+
+    if (!is_digits_only(input_num)) {
         fprintf(stderr, "FAIL : decimal only please\n");
         return EXIT_FAILURE;
     }
+
+    sysinfo(VERBOSE);
 
     /* Miller-Rabin loops or repetitions and good luck */
     mr_reps = DEFAULT_MR_LOOP;
 
     if (argc>2) {
-        /* just ignore any extra trash on the command line */
-        mr_reps = miller_rabin_reps(argv[2]);
+        errno = 0;
+        err_status = sscanf(argv[2],"%" PRIu8, &candidate_int);
+        if ( err_status == 0 ) {
+            fprintf(stderr,"INFO : Miller-Rabin reps not understood\n");
+            if ( errno != 0 ) perror("dBUG ");
+
+            /* we failed to process argv[2] as an unsigned int */
+            errno = 0;
+            candidate_int = (int)strtol(argv[2], (char **)NULL, 10);
+            if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
+                fprintf(stderr,"FAIL : Miller-Rabin reps not valid\n");
+                perror("     ");
+                return EXIT_FAILURE;
+            }
+            if ( ( candidate_int < 15 ) || ( candidate_int > 50 ) ){
+                fprintf(stderr,"WARN : Miller-Rabin reps invalid\n");
+                fprintf(stderr,"     : we shall assume 24 and proceed.\n");
+                mr_reps = 24;
+            } else {
+                mr_reps = candidate_int;
+            }
+        } else {
+            if ( ( candidate_int < 15 ) || ( candidate_int > 50 ) ){
+                fprintf(stderr,"WARN : Miller-Rabin reps invalid\n");
+                fprintf(stderr,"     : we shall assume 25 and proceed.\n");
+                mr_reps = 25;
+            } else {
+                fprintf(stderr,"INFO : Miller-Rabin reps accepted\n");
+                mr_reps = candidate_int;
+            }
+        }
     }
 
-    sysinfo(VERBOSE);
-
-    printf("GMP  library version : %d.%d.%d\n",
+    printf("     : GMP library version : %d.%d.%d\n",
             __GNU_MP_VERSION,
             __GNU_MP_VERSION_MINOR,
             __GNU_MP_VERSION_PATCHLEVEL );
 
-    /* init the GMP data things */
+    /* init the GMP data stuff */
     mpz_init(start);
     mpz_init(cand);
     mpz_init(cand_plus2);
@@ -391,7 +299,7 @@ main( int argc, char **argv )
     mpz_init(range);
 
     /* can the input number be understood? */
-    if (mpz_set_str(start, multi_line, 10) != 0) {
+    if (mpz_set_str(start, input_num, 10) != 0) {
         fprintf(stderr, "whoa .. that number does not grok\n");
         /* be polite and clean up and then fuk off */
         mpz_clear(start);
@@ -417,8 +325,8 @@ main( int argc, char **argv )
               mr_reps);
     printf("     : stop after %i prime pairs are found.\n\n", TWIN_LIMIT);
 
-hell:
-    hell_freeze_over = 0;
+hundred:
+    hundred = 0;
 
     do {
         r_cand = mpz_probab_prime_p(cand, mr_reps);
@@ -437,9 +345,10 @@ hell:
                 if ( (r_cand == 2) && (r_cand2 == 2) ) {
                     /* holy balls .. these are really prime! */
                     twin_count += 1;
-                    fputs("certain ", stdout);
+                    fputs("P ", stdout);
                 } else {
                     possible_twin_count += 1;
+                    fputs("p ", stdout);
                 }
 
                 if ( ( twin_count + possible_twin_count ) == 1 ) {
@@ -447,13 +356,12 @@ hell:
                     mpz_set (first, cand);
                 }
 
-                fputs("twin p and p+2\n", stdout);
-
                 print_mpz(cand);
-                fputc('\n', stdout);
-                print_mpz(cand_plus2);
-                fputc('\n', stdout);
-                hell_freeze_over = 1;
+                /* fputc('\n', stdout); */
+
+                /* terrible flag name. really we just loop until
+                 * we get a hundred twin primes */
+                hundred = 1;
                 break;
             }
         }
@@ -461,13 +369,13 @@ hell:
         /* if we fell to here then just add two and keep going */
         mpz_add_ui(cand, cand, 2);
 
-    } while ( hell_freeze_over == 0 );
+    } while ( hundred == 0 );
 
-    /* now do the loop from hell ... forever */
+    /* now do the loop to a hundred twin primes */
     mpz_add_ui(cand, cand, 4);
 
     if ( ( twin_count + possible_twin_count ) < TWIN_LIMIT ) {
-        goto hell;
+        goto hundred;
     }
 
     /* snag the last prime candidate */
