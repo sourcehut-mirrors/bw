@@ -1,0 +1,18 @@
+
+manually setup the usual and then 
+
+oberon$ 
+oberon$ $CC $CFLAGS $CPPFLAGS -c -o marian_cursor.o marian_cursor.c 
+oberon$ $CC $CFLAGS $CPPFLAGS -c -o x_error_handler.o ../../../xwin/x_error_handler.c
+oberon$ $CC $CFLAGS $CPPFLAGS -c -o create_gc.o       ../../../xwin/create_gc.c
+oberon$ $CC $CFLAGS $CPPFLAGS -c -o create_borderless_topwin.o ../../../xwin/create_borderless_topwin.c
+oberon$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../../../sysinfo/sysinfo.c
+oberon$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../../../sysinfo/endian.c
+oberon$ 
+oberon$ $CC $CFLAGS $CPPFLAGS -o marian_cursor \
+>    marian_cursor.o x_error_handler.o create_gc.o create_borderless_topwin.o sysinfo.o endian.o -lX11 -lm
+oberon$ 
+
+
+results are a bit strange ... however the main window moves
+
