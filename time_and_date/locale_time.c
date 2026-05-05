@@ -1,5 +1,38 @@
 
+/*
+ * locale_time.c  report the time with a provided locale
+ *
+ * ------------------------------------------------------------------
+ * Copyright (c) 2026 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
+
+/* ISO9899:1990 C */
+#if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 500
+#endif
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,8 +46,8 @@ main (int argc, char **argv)
 
     struct timespec tn_now;
     struct tm *tm_now;
-    time_t now, then;
-    int err_clock, j;
+    time_t now;
+    int err_clock, j, locale_accepted;
     clockid_t clock_flag;
     char *buf, buffer[256];
 
@@ -42,6 +75,7 @@ main (int argc, char **argv)
     now = tn_now.tv_sec;
     tm_now = localtime(&now);
 
+    locale_accepted = 0;
     if ( argc > 1 ) {
         printf("\nINFO : You suggest a locale of %s\n", argv[1]);
         buf = setlocale( LC_ALL, argv[1] );
@@ -55,6 +89,7 @@ main (int argc, char **argv)
             return EXIT_FAILURE;
         }
         printf("     : accepted.\n");
+        locale_accepted = 1;
     } else {
         printf("\nINFO : locale is set to default \"POSIX\".\n\n");
     }
@@ -69,6 +104,12 @@ main (int argc, char **argv)
                   tm_now);
 
     printf("\nINFO : time now\n     : %s\n", buffer);
+    printf("     : %i chars ", j);
+    if ( locale_accepted ) {
+        printf("in locale \"%s\"\n", argv[1]);
+    } else {
+        printf("in locale \"POSIX\" or \"C\" which is the same thing.\n");
+    }
 
     return 42;
 
