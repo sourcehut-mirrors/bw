@@ -12,6 +12,16 @@ some strftime format.
 
 Please note the use of calloc() and mktime().
 
+
+well into 2026 and I wanted a locale aware time report so
+therefore locale_time.c exists. It can be tested with ALL
+available locales on a machine thus : 
+
+$ locale -a | awk 'BEGIN{print"#!/bin/sh\n\nIFS=\047 \t\n\047\n\n"}{print "./locale_time " $1 }' > test_locale_time.sh 
+$ chmod 0755 test_locale_time.sh 
+
+be sure to delete test_locale_time.sh afterwards
+
 --
 Dennis Clarke
 RISC-V/SPARC/PPC/ARM/CISC
