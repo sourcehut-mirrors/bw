@@ -100,6 +100,9 @@
 #include <inttypes.h>
 #include <gmp.h>
 
+/* to get decent time delta measurements */
+#include "tdiff.h"
+
 int sysinfo(int verbose);
 static int is_digits_only(const char *s);
 static void print_mpz(const mpz_t x);
@@ -207,8 +210,13 @@ main( int argc, char **argv )
      * it is unlikely that one would ever get into numbers
      * with more than 4000 digits. Good luck.
      */
-    int page_count, err_status, candidate_int;
+    int page_count, err_status, err_clock, candidate_int;
     size_t str_chars;
+
+    /* to measure time delta */
+    clockid_t clock_flag;
+    struct timespec tn_0, tn_1, tn_begin, tn_end;
+    tdiff_type delta_time;
 
     if (argc < 2) {
         fprintf(stderr, "INFO : %s start_number\n", argv[0]);
@@ -290,6 +298,47 @@ main( int argc, char **argv )
             __GNU_MP_VERSION_MINOR,
             __GNU_MP_VERSION_PATCHLEVEL );
 
+
+ 
+    /* The LLVM/Clang compiler can be a real whiner about
+     * things declared and not defined. Thus this is a way
+     * to tell the compiler to shut up. */
+    tn_0.tv_sec     = 0; tn_0.tv_nsec     = 0;
+    tn_1.tv_sec     = 0; tn_1.tv_nsec     = 0;
+    tn_begin.tv_sec = 0; tn_begin.tv_nsec = 0;
+    tn_end.tv_sec   = 0; tn_end.tv_nsec   = 0;
+ 
+    errno = 0;
+    clock_flag = CLOCK_MONOTONIC;
+    err_clock = clock_gettime(clock_flag, &tn_begin);
+    if ( err_clock != 0 ) {
+        fprintf(stderr,"FAIL : ");
+        if ( errno == ENOSYS ) {
+            fprintf(stderr,"clock_gettime() not supported\n");
+            return EXIT_FAILURE;
+        }
+ 
+        if ( errno == EINVAL ) {
+            fprintf(stderr,"CLOCK_MONOTONIC not known\n");
+            errno = 0;
+            clock_flag = CLOCK_REALTIME;
+            err_clock = clock_gettime(clock_flag, &tn_begin);
+ 
+            if ( err_clock != 0 ) {
+                if ( errno == EINVAL ) {
+                    /* Not very likely to ever happen as CLOCK_REALTIME
+                     * shall always be implemented if the clock_gettime()
+                     * function exists. */
+                    fprintf(stderr,"FAIL : CLOCK_REALTIME not supported\n");
+                    fprintf(stderr,"     : your system is bork bork bork\n");
+                    return EXIT_FAILURE;
+                }
+                fprintf(stderr,"FAIL : bizarre error. good luck.\n");
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
     /* init the GMP data stuff */
     mpz_init(start);
     mpz_init(cand);
@@ -329,6 +378,7 @@ hundred:
     hundred = 0;
 
     do {
+        err_clock = clock_gettime(clock_flag, &tn_0);
         r_cand = mpz_probab_prime_p(cand, mr_reps);
         /* so that is a guess and we get 1 if the number
          * is likely prime. No promise. We get 2 is the
@@ -340,6 +390,7 @@ hundred:
             /* same deal ... is that p+2 prime smelling? */
             r_cand2 = mpz_probab_prime_p(cand_plus2, mr_reps);
             if (r_cand2 > 0) {
+                err_clock = clock_gettime(clock_flag, &tn_1);
                 /* cool ... just output the basics */
                 fputc('\n', stdout);
                 if ( (r_cand == 2) && (r_cand2 == 2) ) {
@@ -358,6 +409,11 @@ hundred:
 
                 print_mpz(cand);
                 /* fputc('\n', stdout); */
+
+                tdiff( &delta_time, tn_0, tn_1);
+                /* we do not need another newline here due to the
+                 * one fputc() above in this loop */
+                printf(" dt = %-+20.10g", delta_time.delta);
 
                 /* terrible flag name. really we just loop until
                  * we get a hundred twin primes */
@@ -378,17 +434,20 @@ hundred:
         goto hundred;
     }
 
-    /* snag the last prime candidate */
-    mpz_set (last, cand_plus2);
+    err_clock = clock_gettime(clock_flag, &tn_end);
+    tdiff( &delta_time, tn_begin, tn_end);
+    printf("\n\nTotal time DT = %-+20.10g\n", delta_time.delta);
 
     if ( twin_count ) {
-        fprintf(stdout,"\n\n Possible prime pairs = %i\n", possible_twin_count);
-        fprintf(stdout,"  Certain prime pairs = %i\n\n", twin_count);
+        fprintf(stdout,"Possible prime pairs = %i\n", possible_twin_count);
+        fprintf(stdout," Certain prime pairs = %i\n\n", twin_count);
     } else {
-        fprintf(stdout,"\n\n None of the above are certain to be primes.\n");
+        fprintf(stdout,"None of the above are certain to be primes.\n");
         fprintf(stdout,"Good luck.\n\n");
     }
 
+    /* snag the last prime candidate to compute the range */
+    mpz_set (last, cand_plus2);
     /* compute the range over which out TWIN_LIMIT primes were found */
     mpz_sub (range, last, first);
 

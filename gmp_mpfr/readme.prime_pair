@@ -1,25 +1,19 @@
 
-On Solaris 11 sun4v hardware with the Oracle Studio 12.5 c99 tools :
-
-$ echo $CC
-/opt/developerstudio12.6/bin/c99
-
-$ echo $CFLAGS
-warf
-
-$ echo $CPPFLAGS 
+set CPPFLAGS thus :
 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
 
 
+$CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
 $ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
 $ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
-$CC $CFLAGS $CPPFLAGS -I $HOME/local/include -c -o pair.o pair.c
+$CC $CFLAGS $CPPFLAGS -I../time_and_date -I/opt/bw/include -c -o pair.o pair.c
 
- $CC $CFLAGS $CPPFLAGS -L $HOME/local/lib -R $HOME/local/lib  -o pair pair.o sysinfo.o endian.o -lgmp -lm
+$CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lm
 
        NOTE: FreeBSD may want something special 
 
-           $CC $CFLAGS $CPPFLAGS -L $HOME/local/lib -Wl,-rpath=/home/dclarke/local/lib,-enable-new-dtags -o pair pair.o sysinfo.o endian.o -lgmp -lm
+         $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -Wl,-rpath=/opt/bw/lib,-enable-new-dtags -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lm
+
 
 
 The shell on Solaris just barfs are a really large string. So this hack :
