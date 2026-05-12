@@ -2,13 +2,42 @@
 set CPPFLAGS thus :
 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
 
+eris$ 
+eris$ echo $CC
+/usr/bin/gcc
+eris$ echo $CFLAGS
+-std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 -fno-builtin -march=k8 -mtune=k8 -mieee-fp -mhard-float -fno-fast-math -mno-fancy-math-387 -malign-double -m128bit-long-double -mstackrealign -mpreferred-stack-boundary=8 -Wl,-rpath=/opt/bw/lib,-enable-new-dtags
+eris$ 
 
-$CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
-$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
-$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
-$CC $CFLAGS $CPPFLAGS -I../time_and_date -I/opt/bw/include -c -o pair.o pair.c
 
-$CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lm
+
+   You must use -std=iso9899:1999 
+
+eris$ 
+eris$ uname -a 
+Linux eris 6.1.0-47-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.170-3 (2026-05-08) x86_64 GNU/Linux
+eris$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
+eris$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
+eris$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
+eris$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/opt/bw/include -c -o pair.o pair.c
+eris$ $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lm
+eris$ 
+eris$ ldd pair
+        linux-vdso.so.1 (0x00007fff81262000)
+        libgmp.so.10 => /opt/bw/lib/libgmp.so.10 (0x00007fe72bc72000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fe72bb85000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe72b9a3000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007fe72bd5b000)
+eris$ 
+eris$ readelf -delV /opt/bw/lib/libgmp.so.10.5.0 | grep -E 'NEED|NAME|PATH'
+  [ 6] .gnu.version_r    VERNEED          0000000000008028  00008028
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x000000000000000e (SONAME)             Library soname: [libgmp.so.10]
+ 0x000000000000001d (RUNPATH)            Library runpath: [/opt/bw/lib]
+ 0x000000006ffffffe (VERNEED)            0x8028
+ 0x000000006fffffff (VERNEEDNUM)         1
+eris$ 
+
 
        NOTE: FreeBSD may want something special 
 

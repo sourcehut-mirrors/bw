@@ -1,5 +1,5 @@
 
-CC?= /usr/bin/gcc
+CC=/usr/bin/gcc
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-m64 -g -O0 -fno-builtin \
@@ -8,11 +8,6 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-m128bit-long-double \
 	-mstackrealign -mpreferred-stack-boundary=8 -mno-mmx
 
-LIBS=	-lgmp -lmpfr -lcrypto -lm
+LIBS=	-lgmp -lmpfr -lm
 
-LDIR=  /usr/local/lib
-IDIR=  /usr/local/include
-LD_RUN_PATH= /usr/local/lib
-
-include fg_common.mk
-
+include fred_common.mk

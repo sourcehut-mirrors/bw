@@ -105,7 +105,6 @@
 
 int sysinfo(int verbose);
 static int is_digits_only(const char *s);
-static void print_mpz(const mpz_t x);
 static int miller_rabin_reps(const char *s);
 
 /* check if the user string is just decimal digits */
@@ -137,48 +136,6 @@ static int is_digits_only(const char *s)
         }
     }
     return 1;
-}
-
-/* do base 10 output and note there is no newline */
-static void print_mpz(const mpz_t x)
-{
-    mpz_out_str(stdout, 10, x);
-}
-
-/* a few trivial experiments suggest that the number of loops
- * in the Miller-Rabin probabilistic test is of no concern.
- * Leave the number at 25 which is DEFAULT_MR_LOOP.
- * Again .. good luck.
- */
-static int miller_rabin_reps(const char *s)
-{
-    long candidate_input;
-
-    if (is_digits_only(s)) {
-
-        errno = 0;
-        candidate_input = strtol(s, (char **)NULL, 10);
-
-        if ( ( errno == ERANGE ) || ( errno == EINVAL ) ) {
-            fprintf(stderr,"  WARN : Miller-Rabin reps not understood\n");
-            perror("     ");
-defaults:
-            fprintf(stderr,"       : we assume %i loops.\n", DEFAULT_MR_LOOP);
-            return DEFAULT_MR_LOOP;
-        }
-
-        if ( ( candidate_input < 15 ) || ( candidate_input > 50 ) ) {
-            fprintf(stderr,"  WARN : out of reasonable range Miller-Rabin reps\n");
-            goto defaults;
-        } else {
-            return (int)candidate_input;
-        }
-
-    } else {
-        fprintf(stderr,"  WARN : no Miller-Rabin loop limit entered\n");
-        goto defaults;
-    }
-
 }
 
 int
@@ -260,6 +217,11 @@ main( int argc, char **argv )
     mr_reps = DEFAULT_MR_LOOP;
 
     if (argc>2) {
+        /* a few trivial experiments suggest that the number of loops
+         * in the Miller-Rabin probabilistic test is of no concern.
+         * Leave the number at 25 which is DEFAULT_MR_LOOP.
+         * Again .. good luck.
+         */
         errno = 0;
         err_status = sscanf(argv[2],"%" PRIu8, &candidate_int);
         if ( err_status == 0 ) {
@@ -350,7 +312,7 @@ main( int argc, char **argv )
     /* can the input number be understood? */
     if (mpz_set_str(start, input_num, 10) != 0) {
         fprintf(stderr, "whoa .. that number does not grok\n");
-        /* be polite and clean up and then fuk off */
+        /* be polite and clean up */
         mpz_clear(start);
         mpz_clear(cand);
         mpz_clear(cand_plus2);
@@ -362,7 +324,7 @@ main( int argc, char **argv )
         if ( mpz_even_p(cand) ) {
             fprintf(stderr, "\n bork even number ... lets add 1\n\n");
             mpz_add_ui(cand, cand, 1);
-            print_mpz(cand);
+            mpz_out_str(stdout, 10, cand);
             printf(" <-- how about an odd number?\n\n");
         }
     }
@@ -374,14 +336,14 @@ main( int argc, char **argv )
               mr_reps);
     printf("     : stop after %i prime pairs are found.\n\n", TWIN_LIMIT);
 
+    err_clock = clock_gettime(clock_flag, &tn_0);
 hundred:
     hundred = 0;
 
     do {
-        err_clock = clock_gettime(clock_flag, &tn_0);
         r_cand = mpz_probab_prime_p(cand, mr_reps);
         /* so that is a guess and we get 1 if the number
-         * is likely prime. No promise. We get 2 is the
+         * is likely prime. No promise. We get 2 if the
          * thing is really prime! We get 0 otherwise.
          */
         if (r_cand > 0) {
@@ -390,11 +352,10 @@ hundred:
             /* same deal ... is that p+2 prime smelling? */
             r_cand2 = mpz_probab_prime_p(cand_plus2, mr_reps);
             if (r_cand2 > 0) {
-                err_clock = clock_gettime(clock_flag, &tn_1);
-                /* cool ... just output the basics */
+                /* found a twin prime */
                 fputc('\n', stdout);
                 if ( (r_cand == 2) && (r_cand2 == 2) ) {
-                    /* holy balls .. these are really prime! */
+                    /* these are really primes */
                     twin_count += 1;
                     fputs("P ", stdout);
                 } else {
@@ -407,13 +368,8 @@ hundred:
                     mpz_set (first, cand);
                 }
 
-                print_mpz(cand);
+                mpz_out_str(stdout, 10, cand);
                 /* fputc('\n', stdout); */
-
-                tdiff( &delta_time, tn_0, tn_1);
-                /* we do not need another newline here due to the
-                 * one fputc() above in this loop */
-                printf(" dt = %-+20.10g", delta_time.delta);
 
                 /* terrible flag name. really we just loop until
                  * we get a hundred twin primes */
@@ -431,10 +387,21 @@ hundred:
     mpz_add_ui(cand, cand, 4);
 
     if ( ( twin_count + possible_twin_count ) < TWIN_LIMIT ) {
+
+        err_clock = clock_gettime(clock_flag, &tn_1);
+        tdiff( &delta_time, tn_0, tn_1);
+        /* we do not need another newline here due to the
+         * one fputc() above in this loop */
+        printf(" dt = %-+20.10g", delta_time.delta);
+
+        err_clock = clock_gettime(clock_flag, &tn_0);
         goto hundred;
     }
 
     err_clock = clock_gettime(clock_flag, &tn_end);
+    tdiff( &delta_time, tn_0, tn_end);
+    printf(" dt = %-+20.10g", delta_time.delta);
+
     tdiff( &delta_time, tn_begin, tn_end);
     printf("\n\nTotal time DT = %-+20.10g\n", delta_time.delta);
 
@@ -452,7 +419,7 @@ hundred:
     mpz_sub (range, last, first);
 
     printf("Range = ");
-    print_mpz(range);
+    mpz_out_str(stdout, 10, range);
     fputc('\n', stdout);
 
     mpz_clear(start);
