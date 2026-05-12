@@ -1,3 +1,81 @@
+
+Somewhere way back in the 1990's it was clear to
+me that the computation of a delta time between
+to timespec data elements required a bit of thinking.
+The data is NOT floating point. The data elements
+are integers and thus we can not blindly convert
+to floating point and hope for the best. We must
+form a logic table of conditions and then compute
+the time delta for each case. See the long comments
+in the tdiff.c code. 
+
+The code is ISO9899:1990 clean. Sure C99 works.
+
+The test care output should look like : 
+
+Case ( 1.1 ) tn_0 =        108    925000000
+             tn_1 =        102    655000000
+   expected delta = -6.27
+            delta =         -6    270000000
+             fp64 = -6.27               
+ 
+Case ( 1.2 ) tn_0 =        277    186000000
+             tn_1 =        192    186000000
+   expected delta = -85.0
+            delta =        -85            0
+             fp64 = -85                 
+ 
+Case ( 1.3 ) tn_0 =        126    587000000
+             tn_1 =        104    816000000
+   expected delta = -21.771
+            delta =        -21    771000000
+ 
+             fp64 = -21.771             
+ 
+Case ( 2.1 ) tn_0 = 1718602045    843710014
+             tn_1 = 1718602045    714047011
+   expected delta = -0.129663003
+            delta =          0    -129663003
+ 
+             fp64 = -0.129663003        
+ 
+Case ( 2.2 ) tn_0 = 1718668074    456789001
+             tn_1 = 1718668074    456789001
+   expected delta = 0.0
+            delta =          0            0
+ 
+             fp64 = +0                  
+ 
+Case ( 2.3 ) tn_0 = 1718604178    149045751
+             tn_1 = 1718604178    457419106
+   expected delta = 0.308373355
+            delta =          0    308373355
+ 
+             fp64 = +0.308373355        
+ 
+Case ( 3.1 ) tn_0 =      54387    390145701
+             tn_1 =      68712    127084199
+   expected delta = 14324.736938498
+            delta =      14324    736938498
+ 
+             fp64 = +14324.73694        
+ 
+Case ( 3.2 ) tn_0 = 1718604178    123456789
+             tn_1 = 1718604192    123456789
+   expected delta = 14.0
+            delta =         14            0
+ 
+             fp64 = +14                 
+ 
+Case ( 3.3 ) tn_0 = 1718604178     47684173
+             tn_1 = 1718607011     94571341
+   expected delta = 2833.046887168
+            delta =       2833     46887168
+ 
+             fp64 = +2833.046887        
+
+--------- READ THE ABOVE CAREFULLY ----------
+
 Wed Aug 14 21:46:01 GMT 2019
 
 we play around with the leap year problem and 
@@ -5,6 +83,7 @@ determine what are valid dates and also how
 to set a locale inside software.
 
 Fri Aug 16 23:49:03 GMT 2019
+
 We covered UTF-8 options and then built three
 code chunks to check for valid dates and also 
 another to print out the locale aware date in

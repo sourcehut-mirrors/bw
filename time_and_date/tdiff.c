@@ -75,7 +75,7 @@ int tdiff( tdiff_type *dt,
      *
      * This seems trivial if the data was actually floating point.
      *
-     *               It is not floating point.
+     *       -------> THIS IS NOT FLOATING POINT <-------
      *
      * A logic table needs to exist wherein we look at the seconds
      * and the nanosec time components separately as well as the
@@ -92,6 +92,15 @@ int tdiff( tdiff_type *dt,
      * see condition (2) most of the time. Very short time delta data
      * is common in modern computing systems where a full second has
      * not transpired between two events.
+     *
+     * NOTE : A negative time delta is possible on some systems
+     *        where the local hardware clock may slew backwards
+     *        due to some adjustment via NTP or systems admin
+     *        human adjustment. It is not uncommon for a system
+     *        with a quastionable Real Time Clock ( RTC ) battery
+     *        to have failed. One may even boot a Raspberry Pi5
+     *        without a RTC battery and the system time will be
+     *        set to 00:00HRs GMT on 1 Jan 1970.
      * 
      * Within each of the above three situations we have the same sort
      * of problem looking at the nanosecs : 
@@ -132,6 +141,7 @@ int tdiff( tdiff_type *dt,
      *                  result.sec  = end.tv_sec    - start.tv_sec
      *                  result.nsec = 0
      *
+     *
      *         (1.3)   start.tv_nsec   <    end.tv_nsec
      *
      *              example :  126.587       104.816
@@ -164,7 +174,12 @@ int tdiff( tdiff_type *dt,
      *                  result.nsec = -1 * ( end.tv_nsec 
      *                                     - start_nsec
      *                                     - 1000000000 )
+     *                              = -1 * (  816000000
+     *                                     -  587000000
+     *                                     - 1000000000 )
+     *                              = 771000000
      *
+     *              Final result is -21.771
      *
      *
      *     (2)   start tv_sec    =   end   tv_sec
@@ -197,6 +212,7 @@ int tdiff( tdiff_type *dt,
      *         (2.2)   start.tv_nsec   =    end.tv_nsec
      *
      *              trivial : return  0 and 0 in the struct
+     *
      *
      *         (2.3)   start.tv_nsec   <    end.tv_nsec
      *
@@ -260,54 +276,72 @@ int tdiff( tdiff_type *dt,
     struct timespec temp;
     double fp64 = 0.0;
 
+    /* (1) as explained above */
     if ( start_time.tv_sec > end_time.tv_sec ) {
 
+        /* (1.1) */
         if ( start_time.tv_nsec > end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = -1 * ( end_time.tv_nsec - start_time.tv_nsec );
+
             fp64 = (double)temp.tv_sec 
                         - ( (double)temp.tv_nsec / 1000000000.0 );
         }
 
+        /* (1.2) */
         if ( start_time.tv_nsec == end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = 0;
+
             fp64 = (double)temp.tv_sec;
         }
 
+        /* (1.3) */
         if ( start_time.tv_nsec < end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec + 1;
             temp.tv_nsec = -1 * ( end_time.tv_nsec
                                 - start_time.tv_nsec
                                 - 1000000000 );
+
             fp64 = (double)temp.tv_sec
                         - ( (double)temp.tv_nsec / 1000000000.0 );
         }
 
     }
 
+    /* (2) as explained above */
     if ( start_time.tv_sec == end_time.tv_sec ) {
         temp.tv_sec = 0;
         temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+
         fp64 = ( (double)temp.tv_nsec / 1000000000.0 );
     } 
 
+    /* (3) as explained above */
     if ( start_time.tv_sec < end_time.tv_sec ) {
+        /* (3.1) */
         if ( start_time.tv_nsec > end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec - 1;
             temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec
                               + 1000000000;
+
             fp64 = (double)temp.tv_sec
                         + ( (double)temp.tv_nsec / 1000000000.0 );
         }
+
+        /* (3.2) */
         if ( start_time.tv_nsec == end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = 0;
+
             fp64 = (double)temp.tv_sec;
         }
+
+        /* (3.3) */
         if ( start_time.tv_nsec < end_time.tv_nsec ) {
             temp.tv_sec = end_time.tv_sec - start_time.tv_sec;
             temp.tv_nsec = end_time.tv_nsec - start_time.tv_nsec;
+
             fp64 = (double)temp.tv_sec
                         + ( (double)temp.tv_nsec / 1000000000.0 );
         }
