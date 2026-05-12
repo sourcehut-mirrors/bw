@@ -1,0 +1,17 @@
+
+CC?= /usr/bin/gcc
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-g -O0 -march=armv8.2-a -mtune=cortex-a76 -mabi=lp64 \
+	-mno-low-precision-recip-sqrt \
+	-mno-low-precision-sqrt \
+	-mno-low-precision-div \
+	-fno-fast-math \
+	-fno-builtin -Wl,-rpath=/opt/bw/lib,-enable-new-dtags
+
+LIBS=	-lgmp -lm
+
+include pair_common.mk
+
