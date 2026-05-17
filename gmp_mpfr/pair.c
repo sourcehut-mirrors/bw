@@ -104,30 +104,34 @@
 #include "tdiff.h"
 
 int sysinfo(int verbose);
-static int is_digits_only(const char *s);
+static int digits_only(const char *s);
 static int miller_rabin_reps(const char *s);
 
-/* check if the user string is just decimal digits */
-static int is_digits_only(const char *s)
+/* check if the user input string is just decimal digits
+ * and return the count of digits if all is well, otherwise
+ * return a zero. */
+static int digits_only(const char *string_of_digits)
 {
+    /* we need to look at this one char at a time */
     unsigned char c;
+
     /* only you can stop the abuse of "i" */
-    size_t j;
+    int j;
 
     /* check for dumb bork */
-    if (s == NULL) {
+    if (string_of_digits == NULL) {
         return 0;
     }
 
     /* check for a NUL string which is a string ya know? */
-    if (s[0] == '\0') {
+    if (string_of_digits[0] == '\0') {
         return 0;
     }
 
     /* walk the string and if anything is borked ... then bork */
-    for (j = 0; s[j] != '\0'; ++j) {
+    for (j = 0; string_of_digits[j] != '\0'; ++j) {
 
-        c = (unsigned char)s[j];
+        c = (unsigned char)string_of_digits[j];
 
         /* use 0x30 to 0x39 as ascii values */
         if ( (c < 0x30) || (c > 0x39) ) {
@@ -135,14 +139,15 @@ static int is_digits_only(const char *s)
             return 0;
         }
     }
-    return 1;
+    /* we should have the count of valid decimal digits */
+    return j;
 }
 
 int
 main( int argc, char **argv )
 {
-    /* a char pointer to the input number */
-    char *input_num;
+    /* we need a few char buffers */
+    char *input_num, *tmp;
 
     /* a starting number and then two candidates */
     mpz_t start, cand, cand_plus2;
@@ -168,6 +173,7 @@ main( int argc, char **argv )
      * with more than 4000 digits. Good luck.
      */
     int page_count, err_status, err_clock, candidate_int;
+    int num_of_digits;
     size_t str_chars;
 
     /* to measure time delta */
@@ -205,15 +211,20 @@ main( int argc, char **argv )
     }
 
     strncpy( input_num, argv[1], str_chars);
-
-    if (!is_digits_only(input_num)) {
-        fprintf(stderr, "FAIL : decimal only please\n");
+    num_of_digits = digits_only(input_num);
+    if ( num_of_digits == 0 ) {
+        fprintf(stderr, "\nFAIL : decimal digits only please\n");
         return EXIT_FAILURE;
     }
 
     sysinfo(VERBOSE);
 
-    /* Miller-Rabin loops or repetitions and good luck */
+    /* Miller-Rabin loops or repetitions and good luck because a
+     * little testing shows this affects nothing much. Nothing
+     * changes if we choose a higher number of reps. No idea why
+     * and the explanation in the libgmp maillist was really nice
+     * and clearup up not much.
+     */
     mr_reps = DEFAULT_MR_LOOP;
 
     if (argc>2) {
@@ -255,21 +266,15 @@ main( int argc, char **argv )
         }
     }
 
-    printf("     : GMP library version : %d.%d.%d\n",
-            __GNU_MP_VERSION,
-            __GNU_MP_VERSION_MINOR,
-            __GNU_MP_VERSION_PATCHLEVEL );
-
-
- 
     /* The LLVM/Clang compiler can be a real whiner about
      * things declared and not defined. Thus this is a way
-     * to tell the compiler to shut up. */
+     * to tell the LLVM/Clang compiler to shut up. */
     tn_0.tv_sec     = 0; tn_0.tv_nsec     = 0;
     tn_1.tv_sec     = 0; tn_1.tv_nsec     = 0;
     tn_begin.tv_sec = 0; tn_begin.tv_nsec = 0;
     tn_end.tv_sec   = 0; tn_end.tv_nsec   = 0;
  
+    /* determine what sort of clock we can use. if any */
     errno = 0;
     clock_flag = CLOCK_MONOTONIC;
     err_clock = clock_gettime(clock_flag, &tn_begin);
@@ -322,17 +327,43 @@ main( int argc, char **argv )
         /* If the user is a moron and provides an even number then
          * tazer them gently and then add 1 to the dumb input */
         if ( mpz_even_p(cand) ) {
-            fprintf(stderr, "\n bork even number ... lets add 1\n\n");
+            fprintf(stderr, "\nBORK : even number? we shall add 1\n");
+            fprintf(stderr, "     : prime numbers are the idea\n");
             mpz_add_ui(cand, cand, 1);
             mpz_out_str(stdout, 10, cand);
-            printf(" <-- how about an odd number?\n\n");
         }
+        /* how many decimal digits is that input number? */
+        tmp = calloc( PAGE_SIZE, sizeof(unsigned char));
+        if ( tmp == NULL ) {
+            /* possible ENOMEM? */
+            if ( errno == ENOMEM ) {
+                fprintf(stderr,"FAIL : calloc ENOMEM at %s:%d\n",
+                        __FILE__, __LINE__ );
+            } else {
+                fprintf(stderr,"FAIL : calloc fails at %s:%d\n",
+                        __FILE__, __LINE__ );
+            }
+            perror("FAIL ");
+            /* bail out ! */
+            free(input_num);
+            return EXIT_FAILURE;
+        }
+        /*
+        j = gmp_snprintf (char *buf, size_t size, const char *fmt, …);
+        */
     }
 
     twin_count = 0;
     possible_twin_count = 0;
 
-    printf("\nINFO : mpz_probab_prime_p() and Miller-Rabin loops %i\n",
+    printf("\nINFO : given a %i digit number\n", num_of_digits);
+
+    printf("     : GMP library version : %d.%d.%d\n",
+            __GNU_MP_VERSION,
+            __GNU_MP_VERSION_MINOR,
+            __GNU_MP_VERSION_PATCHLEVEL );
+
+    printf("     : mpz_probab_prime_p() and Miller-Rabin loops %i\n",
               mr_reps);
     printf("     : stop after %i prime pairs are found.\n\n", TWIN_LIMIT);
 
