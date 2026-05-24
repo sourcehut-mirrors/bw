@@ -165,7 +165,7 @@ main( int argc, char **argv )
 
     /* check of the user is a moron and also we are
      * going into the gates of hell with large numbers */
-    int hundred;
+    int progress, hundred;
 
     /* I will want pages of memory to represent the input
      * number as well as other large numbers later. However
@@ -368,6 +368,9 @@ main( int argc, char **argv )
     printf("     : stop after %i prime pairs are found.\n\n", TWIN_LIMIT);
 
     err_clock = clock_gettime(clock_flag, &tn_0);
+
+    /* some sort of progress */
+    progress = 0;
 hundred:
     hundred = 0;
 
@@ -384,7 +387,10 @@ hundred:
             r_cand2 = mpz_probab_prime_p(cand_plus2, mr_reps);
             if (r_cand2 > 0) {
                 /* found a twin prime */
+                progress += 1;
+
                 fputc('\n', stdout);
+                printf("%03i",progress);
                 if ( (r_cand == 2) && (r_cand2 == 2) ) {
                     /* these are really primes */
                     twin_count += 1;
