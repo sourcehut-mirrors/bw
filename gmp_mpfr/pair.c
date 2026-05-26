@@ -180,6 +180,7 @@ main( int argc, char **argv )
     clockid_t clock_flag;
     struct timespec tn_0, tn_1, tn_begin, tn_end;
     tdiff_type delta_time;
+    double sum_of_dt = 0.0;
 
     if (argc < 2) {
         fprintf(stderr, "INFO : %s start_number\n", argv[0]);
@@ -431,6 +432,8 @@ hundred:
          * one fputc() above in this loop */
         printf(" dt = %-+20.10g", delta_time.delta);
 
+        sum_of_dt += delta_time.delta;
+
         err_clock = clock_gettime(clock_flag, &tn_0);
         goto hundred;
     }
@@ -441,13 +444,16 @@ hundred:
 
     tdiff( &delta_time, tn_begin, tn_end);
     printf("\n\nTotal time DT = %-+20.10g\n", delta_time.delta);
+    printf("Sum of the dt = %-+20.10g\n", sum_of_dt);
+    printf("         diff = %-+20.10g\n", delta_time.delta - sum_of_dt);
+    printf("All other tests and non-prime pairs required \"diff\"\n");
+
 
     if ( twin_count ) {
         fprintf(stdout,"Possible prime pairs = %i\n", possible_twin_count);
         fprintf(stdout," Certain prime pairs = %i\n\n", twin_count);
     } else {
         fprintf(stdout,"None of the above are certain to be primes.\n");
-        fprintf(stdout,"Good luck.\n\n");
     }
 
     /* snag the last prime candidate to compute the range */
@@ -458,6 +464,10 @@ hundred:
     printf("Range = ");
     mpz_out_str(stdout, 10, range);
     fputc('\n', stdout);
+
+    /* TODO : compute the density of prime pairs given the magnitude
+     *        of the starting number.
+     */
 
     mpz_clear(start);
     mpz_clear(cand);
