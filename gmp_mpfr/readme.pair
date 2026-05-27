@@ -1,4 +1,24 @@
 
+On Linux AMD64 with optimized libs in $HOME/local/lib 
+
+
+
+    CFLAGS='-O3 -march=native -malign-double -m128bit-long-double -mstackrealign -mpreferred-stack-boundary=8 -Wl,-rpath=$HOME/local/lib,-enable-new-dtags'
+    export CFLAGS 
+
+
+ $CC -std=iso9899:1999 $CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -I$HOME/local/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+
+ $CC -std=iso9899:1999 $CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -I$HOME/local/include -c -o endian.o ../sysinfo/endian.c
+
+ $CC -std=iso9899:1990 $CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=500 -I../time_and_date  -c -o tdiff.o ../time_and_date/tdiff.c
+
+ $CC -std=iso9899:1999 $CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -I$HOME/local/include -I../time_and_date -c -o pair.o pair.c
+
+ $CC -std=iso9899:1999 $CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600 -L$HOME/local/lib -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lm 
+
+-------------------------------------------------------------------
+
 set CPPFLAGS thus :
 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
 
