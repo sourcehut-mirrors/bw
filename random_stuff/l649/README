@@ -1,4 +1,30 @@
 
+W A R N I N G :  this is really old and I do not recall the argument
+    that inspired me to write this. someone somewhere once upon a
+    time spilled beer and waved their hands and claimed they had a
+    "system" to win the Lotto649. Yeah .. that was said by someone.
+
+    My guess is somewhere around Solaris 8 days in 2004? Maybe?
+
+------------------------------------------------------------------
+
+To save a lot of hardship just generate ALL the possible tickets
+for a Lotto 649 moron tax : 
+
+oberon$ 
+oberon$ $CC -std=iso9899:1999 -pedantic $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -o lot649 lot649.c
+oberon$ 
+
+oberon$ tail +53 loser_649.txt | wc -l 
+13983819
+
+----------------------
+
+oberon$ /usr/bin/time -p /usr/bin/nice -n +18 ./lot649 \
+> 6 49 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 > loser_649.txt  2>&1  
+oberon$ 
+
+
 Example of picking six numbers from ten provided :
 
 ./lot649 6 10 3 5 7 16 17 19 21 27 42 47 

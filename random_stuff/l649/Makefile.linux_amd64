@@ -1,0 +1,25 @@
+
+CC?=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -g -O0 \
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=600
+
+LDIR=/usr/local/lib
+IDIR=/usr/local/include
+
+SRCS = lot649.c
+OBJS = lot649.o
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+lot649: $(OBJS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(CPPFLAGS) -L$(LDIR) $(LIBS)
+
+clean:
+	rm -f $(OBJS) lot649
+
