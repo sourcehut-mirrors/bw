@@ -1,15 +1,16 @@
 
-$ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
+neptune $ 
+neptune $ p0 ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
 -------------------------------------------------------------------
                  system name = SunOS
                    node name = neptune
                      release = 5.11
-                     version = 11.4.42.111.0
+                     version = 11.4.90.212.0
                      machine = sun4v
                    page size = 8192
-               system memory = 135559905280
-                             = 132382720 kB
-                             = 129280 MB about 126 GB
+               system memory = 272998858752
+                             = 266600448 kB
+                             = 260352 MB about 254 GB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 100
@@ -27,7 +28,7 @@ $ ./xmand 256 128 -1.225891113281250 -0.177673339843750 2
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
 -------------------------------------------------------------------
-INFO : baseline tdelta =            135 nsec
+INFO : baseline tdelta =            120 nsec
 INFO : magnify accepted as long long int
 
     mand_bail = 256
@@ -47,19 +48,19 @@ pthread_limit = 2
 --------------------------------------------
 pixel_real_w = +3.05175781250000000000000000e-05
 pixel_imag_h = +3.05175781250000000000000000e-05
-raw  [ 612  , 716  ]
-DBUG : sample space [ 601   , 320    ]
-     : vbox  [ 009 , 005 ]
-     : win_r = +1.74804687500000000000000000e-01
-     : win_j = -3.74023437500000000000000000e-01
+raw  [ 760  , 464  ]
+DBUG : sample space [ 749   , 572    ]
+     : vbox  [ 011 , 008 ]
+     : win_r = +4.63867187500000000000000000e-01
+     : win_j = +1.18164062500000000000000000e-01
      : after translation
      : r_trn   = -1.22589111328125000000000000e+00
      : j_trn   = -1.77673339843750000000000000e-01
-     : x_prime = -1.22315979003906250000000000e+00
-     : y_prime = -1.83517456054687500000000000e-01
+     : x_prime = -1.21864318847656250000000000e+00
+     : y_prime = -1.75827026367187500000000000e-01
      : bailout = 256               
      : magnify = 1.280000000000e+02
-[mand] =     2968716915 nsec   2.968717     sec
+[mand] =     3087853310 nsec   3.087853     sec
 
 
 raw data values -------------------------------------------------------
@@ -85,12 +86,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = -1.62063598632812500000000000e-01
      :       mand_height =       256
 --------------------------- full plot done -----------------------------
-click at 611 714 
-raw  [ 1389 , 890  ]
+click at 759 462 
+raw  [ 1406 , 891  ]
 INFO : dumper_flag = 1
-click at 1388 888 
-raw  [ 1389 , 890  ]
-INFO : file /var/tmp/dclarke/20250927014821 dump begins.
+click at 1405 889 
+raw  [ 1406 , 891  ]
+INFO : file /var/tmp/dclarke/20260626170831 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -109,18 +110,25 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20250927014821 closed.
+INFO : file /var/tmp/dclarke/20260626170831 closed.
 INFO : dumper_flag = 0
-click at 1388 888 
-raw  [ 851  , 740  ]
+click at 1405 889 
+raw  [ 741  , 532  ]
 right click
-click at 850 738 
-raw  [ 851  , 740  ]
+click at 740 530 
+raw  [ 741  , 532  ]
+right click
+click at 740 530 
+raw  [ 741  , 532  ]
 right click
 
 
 
-$ openssl dgst -sha256 -r /var/tmp/dclarke/20250927014821
-a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20250927014821
-$ 
 
+real 10.09
+user 3.19
+sys 0.04
+neptune $ 
+neptune $ openssl dgst -sha256 -r /var/tmp/dclarke/20260626170831
+a0b4c0cff70700600f0ae433993c8abcfc40b9fec093943ab4642e5e620e97da */var/tmp/dclarke/20260626170831
+neptune $ 

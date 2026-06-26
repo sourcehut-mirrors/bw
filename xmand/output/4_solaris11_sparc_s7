@@ -1,16 +1,15 @@
 
-
-$ ./xmand 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
+neptune $ p0 ./xmand 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
 -------------------------------------------------------------------
                  system name = SunOS
                    node name = neptune
                      release = 5.11
-                     version = 11.4.42.111.0
+                     version = 11.4.90.212.0
                      machine = sun4v
                    page size = 8192
-               system memory = 135559905280
-                             = 132382720 kB
-                             = 129280 MB about 126 GB
+               system memory = 272998858752
+                             = 266600448 kB
+                             = 260352 MB about 254 GB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 100
@@ -28,7 +27,7 @@ $ ./xmand 131072 2147483648 -0.166949745003876159899 1.04085236255377822090 16
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
 -------------------------------------------------------------------
-INFO : baseline tdelta =            105 nsec
+INFO : baseline tdelta =            120 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -52,21 +51,21 @@ pthread_limit = 16
 --------------------------------------------
 pixel_real_w = +1.81898940354585647583007812e-12
 pixel_imag_h = +1.81898940354585647583007812e-12
-raw  [ 1386 , 864  ]
-click at 1385 862 
-raw  [ 740  , 592  ]
-DBUG : sample space [ 729   , 444    ]
-     : vbox  [ 011 , 006 ]
-     : win_r = +4.24804687500000000000000000e-01
-     : win_j = -1.31835937500000000000000000e-01
+raw  [ 1407 , 864  ]
+click at 1406 862 
+raw  [ 592  , 516  ]
+DBUG : sample space [ 581   , 520    ]
+     : vbox  [ 009 , 008 ]
+     : win_r = +1.35742187500000000000000000e-01
+     : win_j = +1.66015625000000000000000000e-02
      : after translation
      : r_trn   = -1.66949745003876159898936749e-01
      : j_trn   = +1.04085236255377822089940310e+00
-     : x_prime = -1.66949744608245964627712965e-01
-     : y_prime = +1.04085236243099643616005778e+00
+     : x_prime = -1.66949744877456396352499723e-01
+     : y_prime = +1.04085236256923963082954288e+00
      : bailout = 131072            
      : magnify = 2.147483648000e+09
-[mand] =  1573184332395 nsec   1573.184332  sec
+[mand] =  1573123838560 nsec   1573.123839  sec
 
 
 raw data values -------------------------------------------------------
@@ -92,12 +91,14 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +1.04085236348419130081310868e+00
      :       mand_height =      4539
 --------------------------- full plot done -----------------------------
-click at 739 590 
-raw  [ 1395 , 896  ]
+click at 591 514 
+raw  [ 1653 , 56   ]
+click at 1652 54 
+raw  [ 1393 , 889  ]
 INFO : dumper_flag = 1
-click at 1394 894 
-raw  [ 1395 , 896  ]
-INFO : file /var/tmp/dclarke/20250927032523 dump begins.
+click at 1392 887 
+raw  [ 1393 , 889  ]
+INFO : file /var/tmp/dclarke/20260626165205 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -116,18 +117,22 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20250927032523 closed.
+INFO : file /var/tmp/dclarke/20260626165205 closed.
 INFO : dumper_flag = 0
-click at 1394 894 
-raw  [ 775  , 786  ]
+click at 1392 887 
+raw  [ 842  , 731  ]
 right click
-click at 774 784 
-raw  [ 775  , 786  ]
+click at 841 729 
+raw  [ 842  , 731  ]
 right click
 
 
 
-$ openssl dgst -sha256 -r /var/tmp/dclarke/20250927032523
-b6a3fa574df86047ef5b21b69b20853118f962fe48f4231f38b5cd3093986c0b */var/tmp/dclarke/20250927032523
-$ 
+
+real 1581.58
+user 1573.03
+sys 0.13
+neptune $ openssl dgst -sha256 -r /var/tmp/dclarke/20260626165205 
+b6a3fa574df86047ef5b21b69b20853118f962fe48f4231f38b5cd3093986c0b */var/tmp/dclarke/20260626165205
+neptune $ 
 

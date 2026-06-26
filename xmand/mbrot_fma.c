@@ -65,7 +65,6 @@ uint32_t mbrot_fma( double c_r, double c_i, uint32_t bail_out )
         temp0 = -1.0 * zi * zi;
         tmp_r = fma( zr, zr, temp0);
 
-
         /* tmp_i = ( zr * zi ) + ( zr * zi ); */
         temp1 = zr * zi;
         tmp_i = fma( zr, zi, temp1);
@@ -75,7 +74,7 @@ uint32_t mbrot_fma( double c_r, double c_i, uint32_t bail_out )
 
         /* mag = zr * zr + zi * zi; */
         temp0 = zi * zi;
-        mag = fma ( zr, zr, temp0);
+        mag = fma( zr, zr, temp0);
 
         height += 1;
     }
