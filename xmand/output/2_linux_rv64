@@ -1,16 +1,16 @@
 
-p550$ 
-p550$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
+sedna$ 
+sedna$ /usr/bin/time -p ./xmand 32768 274877906944 -0.0157887752805699992098 +1.02061921088799989477 4
 -------------------------------------------------------------------
                  system name = Linux
-                   node name = ubuntu
-                     release = 6.6.21-9-premier
-                     version = #1 SMP PREEMPT_DYNAMIC Sat Nov  9 00:21:16 UTC 2024
+                   node name = sedna
+                     release = 6.12.33-1-premier
+                     version = #6 SMP PREEMPT_DYNAMIC Thu Nov 27 07:15:04 UTC 2025
                      machine = riscv64
                    page size = 4096
-               system memory = 33687834624
-                             = 32898276 kB
-                             = 32127 MB
+               system memory = 33619783680
+                             = 32831820 kB
+                             = 32062 MB
                  avail pages = unknown
                 avail memory = unknown
          clock ticks per sec = 100
@@ -21,14 +21,14 @@ p550$ ./xmand 32768 274877906944 -0.0157887752805699992098 +1.020619210887999894
           _POSIX_OPEN_MAX    = 20
           _POSIX_PATH_MAX    = 256
           _POSIX_TZNAME_MAX  = 6
-                      endian = little endian
+                      endian = little
        sizeof(unsigned long) = 8
                 sizeof(long) = 8
                  sizeof(int) = 4
                sizeof(void*) = 8
            fp rounding mode is FE_TONEAREST
 -------------------------------------------------------------------
-INFO : baseline tdelta =              0 nsec
+INFO : baseline tdelta =           1000 nsec
 INFO : magnify accepted as long long int
 INFO : FP Exception raised is FE_INEXACT FE_INEXACT
 real : Perfectly safe to ignore FE_INEXACT
@@ -52,21 +52,21 @@ pthread_limit = 4
 --------------------------------------------
 pixel_real_w = +1.42108547152020037174224854e-14
 pixel_imag_h = +1.42108547152020037174224854e-14
-raw  [ 1391 , 856  ]
-click at 1390 854 
-raw  [ 652  , 619  ]
-DBUG : sample space [ 641   , 417    ]
-     : vbox  [ 010 , 006 ]
-     : win_r = +2.52929687500000000000000000e-01
-     : win_j = -1.84570312500000000000000000e-01
+raw  [ 1381 , 858  ]
+click at 1380 856 
+raw  [ 780  , 667  ]
+DBUG : sample space [ 769   , 369    ]
+     : vbox  [ 012 , 005 ]
+     : win_r = +5.02929687500000000000000000e-01
+     : win_j = -2.78320312500000000000000000e-01
      : after translation
      : r_trn   = -1.57887752805699992098009687e-02
      : j_trn   = +1.02061921088799989476569863e+00
-     : x_prime = -1.57887752787296935241823093e-02
-     : y_prime = +1.02061921088665696899511204e+00
+     : x_prime = -1.57887752769107041206364528e-02
+     : y_prime = +1.02061921088597484796878234e+00
      : bailout = 32768             
      : magnify = 2.748779069440e+11
-[mand] =   225320941318 nsec   225.320941   sec
+[mand] =   225763359756 nsec   225.763360   sec
 
 
 raw data values -------------------------------------------------------
@@ -92,12 +92,12 @@ raw data values -------------------------------------------------------
      : j[15][15][63][63] = +1.02061921089526874695252445e+00
      :       mand_height =      2065
 --------------------------- full plot done -----------------------------
-click at 651 617 
-raw  [ 1397 , 890  ]
+click at 779 665 
+raw  [ 1396 , 889  ]
 INFO : dumper_flag = 1
-click at 1396 888 
-raw  [ 1397 , 890  ]
-INFO : file /var/tmp/dclarke/20250207041455 dump begins.
+click at 1395 887 
+raw  [ 1396 , 889  ]
+INFO : file /var/tmp/dclarke/20260628231411 dump begins.
      :  4 byte uint32_t num_elements num_written = 1
      : num_elements =  1048576
      :  4 byte uint32_t mand_bail    num_written = 1
@@ -116,30 +116,22 @@ DBUG :  8 byte double real_translate num_written = 1
      : VBOX_SAMPLE_REAL =       64
      :  4 byte uint32_t VBOX_SAMPLE_IMAG num_written = 1
      : VBOX_SAMPLE_IMAG =       64
-INFO : file /var/tmp/dclarke/20250207041455 closed.
+INFO : file /var/tmp/dclarke/20260628231411 closed.
 INFO : dumper_flag = 0
-click at 1396 888 
-raw  [ 790  , 692  ]
+click at 1395 887 
+raw  [ 789  , 598  ]
 right click
-click at 789 690 
-raw  [ 790  , 692  ]
+click at 788 596 
+raw  [ 789  , 598  ]
 right click
 
 
 
-p550$ 
-p550$ od -Ax -t x1 -v -N 128 /var/tmp/dclarke/20250207041455
-000000 00 00 10 00 00 80 00 00 00 00 00 00 00 00 50 42
-000010 e3 50 e5 c5 ee 2a 90 bf be ee 46 cf 74 54 f0 3f
-000020 10 00 00 00 10 00 00 00 40 00 00 00 40 00 00 00
-000030 e3 48 05 c6 ee 2a 90 bf de 6e 46 cf 74 54 f0 3f
-000040 ba 07 00 00 e3 38 05 c6 ee 2a 90 bf de 6e 46 cf
-000050 74 54 f0 3f bc 07 00 00 e3 28 05 c6 ee 2a 90 bf
-000060 de 6e 46 cf 74 54 f0 3f c1 07 00 00 e3 18 05 c6
-000070 ee 2a 90 bf de 6e 46 cf 74 54 f0 3f c1 07 00 00
-000080
-p550$ 
-p550$ openssl dgst -sha256 -r /var/tmp/dclarke/20250207041455
-41ea986da30ff13a269adcbec16af97c3f5ca7945bebe2ec496d9d534f471aca */var/tmp/dclarke/20250207041455
-p550$ 
+real 256.72
+user 225.34
+sys 0.30
+sedna$ 
+sedna$ openssl dgst -sha256 -r /var/tmp/dclarke/20260628231411
+41ea986da30ff13a269adcbec16af97c3f5ca7945bebe2ec496d9d534f471aca */var/tmp/dclarke/20260628231411
+sedna$ 
 

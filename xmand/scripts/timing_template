@@ -1,4 +1,19 @@
 #!/bin/sh
+
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+export PATH
+LC_ALL=en_US.UTF-8
+export LC_ALL
+
+TMPDIR=/var/tmp/`( id | sed -e 's/[^(]*(//' -e 's/).*//' )`
+export TMPDIR
+
+CHMOD=`( command -v chmod )`
+MKDIR=`( command -v mkdir )`
+
+${MKDIR} -m 0750 $TMPDIR > /dev/null 2>&1
+${CHMOD} 0750 $TMPDIR
+
 grep 'nsec' output/X* | cut -f2 -d\:  | grep -v 'INFO' | grep -v 'vbox' | cut -f2 -d\=  | sort -n | awk 'BEGIN{print"#!/bin/sh"}{print "/usr/bin/printf \047" $1 "    \047\ngrep \047" $1 "\047 output/X* | cut -f1 -d\: "}' > $TMPDIR/wat.sh; chmod 0755 $TMPDIR/wat.sh
 $TMPDIR/wat.sh | sed -e 's/output\/X_//' | awk '{ printf("%16s    %s\n", $1, $2)}'
 rm $TMPDIR/wat.sh

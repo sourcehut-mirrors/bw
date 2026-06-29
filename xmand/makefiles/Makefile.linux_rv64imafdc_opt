@@ -1,9 +1,10 @@
-CC=/usr/bin/gcc
 
-CFLAGS = -std=iso9899:1999 -O3 -march=rv64imafdc -mabi=lp64d
+CFLAGS= -std=iso9899:1999 -O3 -march=rv64imafdc -mabi=lp64d \
+-mfdiv -mdiv -mpreferred-stack-boundary=4 -mriscv-attribute \
+-malign-data=xlen -mlittle-endian
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
 
 LIBS = -lX11 -lrt -lm
 
 include common.mk
+
