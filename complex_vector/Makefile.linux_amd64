@@ -10,7 +10,8 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-mstackrealign -mpreferred-stack-boundary=8 -mno-mmx \
 	-I$(IDIR)
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS?= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=600
 
 DEPS = v.h
 
