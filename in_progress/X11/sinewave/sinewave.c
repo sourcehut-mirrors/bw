@@ -549,12 +549,16 @@ static void swap_buffers(void)
  
 static void present_front(void)
 {
+    int status = 0;
+
     /* again check if the calling routine is a moron */
     if ( !buf_front ) {
         return;
     }
 
     /* https://www.x.org/releases/X11R7.6/doc/man/man3/XPutImage.3.xhtml
+     *
+     * https://xorg.freedesktop.org/archive/X11R7.6/doc/man/man3/XPutImage.3.xhtml
      *
      * int XPutImage(Display *display, Drawable d, GC gc,
      *               XImage *image,
@@ -563,16 +567,23 @@ static void present_front(void)
      *               unsigned int width, unsigned int height);
      *
      * what the heck does this return ? a status integer?
+     *
      *     XPutImage can generate BadDrawable, BadGC,
      *                   BadMatch, and BadValue errors.
      *
+     *                   are those return int values?
+     *
      * good luck.
      */
-    XPutImage(dsp, win, gc,
+    status = XPutImage(dsp, win, gc,
               buf_front,
               0, 0,
               0, 0,
               buf_front->width, buf_front->height);
+
+    if ( status != 0 ) {
+        fprintf(stderr,"WARN : in present_front() we get status = %i\n", status);
+    }
 
     XFlush(dsp);
 

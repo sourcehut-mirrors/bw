@@ -1,7 +1,7 @@
 
 CC?= /usr/bin/gcc
 
-CFLAGS= -std=iso9899:1999 -m64 -O0 -g \
+CFLAGS?= -std=iso9899:1999 -m64 -O0 -g \
         -pedantic -pedantic-errors \
         -march=k8 -mtune=k8 -mieee-fp -mhard-float -mpc80 \
         -fno-fast-math -malign-double \
