@@ -5,6 +5,9 @@ unset AR
 unset AS
 unset CC
 unset CXX
+unset CXXFLAGS
+unset CFLAGS
+unset CPPFLAGS
 unset ELFEDIT
 unset LD
 unset NM
@@ -16,20 +19,24 @@ unset SIZE
 unset STRINGS
 unset STRIP
 
-if [ -d /usr/local/cuda-11.8 ]; then
-    CUDA_HOME=/usr/local/cuda-11.8
+if [ -d /usr/local/cuda-12.9 ]; then
+    CUDA_HOME=/usr/local/cuda-12.9
     export CUDA_HOME
-    PATH=/usr/local/cuda-11.8/bin:/opt/bw/gcc10/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin
+    PATH=/usr/local/cuda-12.9/bin:/sbin:/bin:/usr/sbin:/usr/bin
     export PATH
 fi
 
-NVCC=`(command -v nvcc)` ; export NVCC
+NVCC=/usr/local/cuda-12.9/bin/nvcc
+export NVCC
+
 if [ ! -x ${NVCC} ]; then
     /usr/bin/printf "FAIL : the NVidia compiler not found\n"
     exit 42
 fi
 
-NVPROF=`( command -v nvprof )`; export NVPROF
+NVPROF=/usr/local/cuda-12.9/bin/nvprof
+export NVPROF
+
 if [ ! -x ${NVPROF} ]; then
     /usr/bin/printf "FAIL : We need the NVidia profiler nvprof\n"
     exit 42
@@ -42,16 +49,13 @@ rm -f vaddf vaddf.o > /dev/null 2>&1
 # -Wno-deprecated-gpu-targets --ftz=false --prec-div=true
 # --prec-sqrt=true -fmad=false -c -o vaddf.o vaddf.cu 
 
-CXX=`(command -v g++-11 )`; export CXX
-if [ ! -x ${CXX} ]; then
-    /usr/bin/printf "FAIL : You need GCC ver 11.x for this\n"
-    exit 42
-fi
+CXX=/usr/bin/x86_64-linux-gnu-g++-12
+export CXX
+
 
 /usr/bin/printf "\n\n------- attempt to compile vaddf.cu\n"
 
 ${NVCC} -x cu -ccbin ${CXX}  -I../include -m64 \
--gencode arch=compute_50,code=sm_50 \
 -gencode arch=compute_60,code=sm_60 \
 --ftz=false --prec-div=true --prec-sqrt=true \
 -c -o vaddf.o vaddf.cu
@@ -62,7 +66,6 @@ if [ ! -f vaddf.o ]; then
 fi
 
 ${NVCC} -ccbin ${CXX}  -m64 \
--gencode arch=compute_50,code=sm_50 \
 -gencode arch=compute_60,code=sm_60 \
 --ftz=false --prec-div=true --prec-sqrt=true \
 -o vaddf vaddf.o -lgomp

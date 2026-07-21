@@ -18,16 +18,13 @@
 #include <helper_cuda.h>
 #include <cuda_profiler_api.h>
 #include <omp.h>
+#include "tdiff.h"
 
 #include "dat.h"
 
 #define VERBOSE 1
 #define SYSINFO_FAIL 127
 int sysinfo(int verbose);
-
-uint64_t timediff( struct timespec start_time,
-                   struct timespec end_time );
-
 
 /**
  * CUDA Kernel Device code
@@ -62,6 +59,7 @@ int main(int argc, char *argv[])
     struct timespec t_start, t_end, t0, t1;
     cudaEvent_t cuda_start, cuda_stop;
     uint64_t tdelta_nsec;
+    tdiff_type delta_time;
 
     /* we shall use this CUDA device error status over and over */
     cudaError_t cuda_err = cudaSuccess;
@@ -77,7 +75,7 @@ int main(int argc, char *argv[])
         fprintf(stderr,"\nWARN : system info may be incomplete.\n\n");    
     }
 
-    /* Get the CLOCK_REALTIME time in a timespec struct */
+    /* TODO : verify the platform clock flag type */
     if ( clock_gettime( CLOCK_REALTIME, &t_start ) == -1 ) {
         /* We could not get the clock. Bail out. */
         fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
@@ -320,9 +318,11 @@ int main(int argc, char *argv[])
         h_B[i] = drand48();
     }
     clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
-    printf("     : random data loaded %" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+
+
+    /* right fukkin here ... stop this old clock trash */
+    tdiff( &delta_time, t0, t1);
+    printf("     : random data loaded %-+20.10g\n\n", delta_time.delta);
 
     /* Allocate the device input vectors */
     float *d_A = NULL;
@@ -342,9 +342,9 @@ int main(int argc, char *argv[])
      * GPU and that would tell us how much memory is still available
      */
     clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff(t1, t0);
-    printf("     : Wallclock cudaMalloc(A) %10" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+
+    tdiff( &delta_time, t1, t0);
+    printf("     : Wallclock cudaMalloc(A) %-+20.10g\n", delta_time.delta);
 
     float *d_B = NULL;
     if ( managed_mem == 0 ) {
@@ -360,9 +360,9 @@ int main(int argc, char *argv[])
     }
 
     clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
-    printf("     : Wallclock cudaMalloc(B) %10" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+
+    tdiff( &delta_time, t0, t1);
+    printf("     : Wallclock cudaMalloc(B) %-+20.10g\n", delta_time.delta);
 
 
     float *d_C = NULL;
@@ -379,10 +379,8 @@ int main(int argc, char *argv[])
     }
 
     clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff( t1, t0);
-    printf("     : Wallclock cudaMalloc(C) %10" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
-
+    tdiff( &delta_time, t1, t0);
+    printf("     : Wallclock cudaMalloc(C) %-+20.10g\n", delta_time.delta);
 
     /* Copy the host input vectors h_A and h_B in host memory
      * to the device input vectors in device memory */
@@ -393,11 +391,10 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("     : Copy of vector A from host to device done.\n");
-    clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
-    printf("     : Wallclock cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
+    clock_gettime( CLOCK_REALTIME, &t1 );
+    tdiff( &delta_time, t0, t1);
+    printf("     : Wallclock cudaMemcpy() %-+20.10g\n", delta_time.delta);
 
     if (cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice) != cudaSuccess) {
         cuda_err = cudaGetLastError();
@@ -406,11 +403,10 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("     : Copy of vector B from host to device done.\n");
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff( t1, t0);
-    printf("     : Wallclock cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
 
+    clock_gettime( CLOCK_REALTIME, &t0 );
+    tdiff( &delta_time, t1, t0);
+    printf("     : Wallclock cudaMemcpy() %-+20.10g\n", delta_time.delta);
 
     /* Launch the default stream CUDA Kernel */
     int threadsPerBlock = THREADS_PER_BLOCK;
@@ -448,10 +444,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("     : vectorAdd done.\n");
+
+
     clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
-    printf("     : Wallclock kernel launch %" PRIu64 " nsecs  %9.7g secs\n",
-                            tdelta_nsec, (float)tdelta_nsec/1.0e9);
+    tdiff( &delta_time, t0, t1);
+    printf("     : Wallclock kernel launch %-+20.10g\n", delta_time.delta);
 
 
     cuda_err = cudaEventRecord(cuda_stop, 0);
@@ -490,6 +487,7 @@ int main(int argc, char *argv[])
 
     /* Copy the device result vector in device memory to the host
      * result vector in host memory */
+
     clock_gettime( CLOCK_REALTIME, &t1 );
     cuda_err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
     if (cuda_err != cudaSuccess) {
@@ -499,10 +497,9 @@ int main(int argc, char *argv[])
     }
     printf("     : Copy result vector C from device to host done.\n");
     clock_gettime( CLOCK_REALTIME, &t0 );
-    tdelta_nsec = timediff( t1, t0 );
-    printf("     : cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
-                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+    tdiff( &delta_time, t1, t0);
 
+    printf("     : cudaMemcpy() %-+20.10g\n", delta_time.delta);
 
     /* test that result vector is correct within epsilon error */
     for (int i = 0; i < numElements; ++i) {
@@ -514,9 +511,10 @@ int main(int argc, char *argv[])
 
     printf("     : A + B correct within error 2^(-21) epsilon\n");
     clock_gettime( CLOCK_REALTIME, &t1 );
-    tdelta_nsec = timediff( t0, t1);
-    printf("     : result check done %" PRIu64 " nsecs  %9.7g secs\n",
-                          tdelta_nsec, (float)tdelta_nsec/1.0e9);
+
+    tdiff( &delta_time, t0, t1);
+
+    printf("     : result check done %-+20.10g\n", delta_time.delta);
 
 
     /* Free device global memory */
@@ -577,9 +575,9 @@ int main(int argc, char *argv[])
     cudaProfilerStop();
 
     clock_gettime( CLOCK_REALTIME, &t_end );
-    tdelta_nsec = timediff( t_start, t_end);
-    printf("DONE : total time %" PRIu64 " nsecs  %9.7g secs\n",
-            tdelta_nsec, (float)tdelta_nsec/1.0e9);
+    tdiff( &delta_time, t_start, t_end);
+
+    printf("DONE : total time %-+20.10g\n",delta_time.delta);
 
     return exit_status;
 

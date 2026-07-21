@@ -39,3 +39,29 @@ INFO : dev number 0: name = "Quadro GP100"
 
      and the GPU is not supported.
 
+
+------------------- most recent 13.3.x ---------------
+
+titan$ 
+titan$ CUDA_HOME=/usr/local/cuda-13.3
+titan$ export CUDA_HOME
+titan$ 
+titan$ NVCC=/usr/local/cuda-13.3/bin/nvcc
+titan$ export NVCC
+titan$ 
+titan$ $NVCC --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2026 NVIDIA Corporation
+Built on Tue_Jun_09_02:43:40_PM_PDT_2026
+Cuda compilation tools, release 13.3, V13.3.73
+Build cuda_13.3.r13.3/compiler.38244171_0
+titan$ 
+titan$ PATH=/usr/local/cuda-13.3/bin:/usr/local/bin:/usr/local/sbin:/opt/bw/bin:/opt/bw/sbin:/sbin:/bin:/usr/sbin:/usr/bin
+titan$ export PATH
+titan$ hash -r 
+titan$ TERM=xterm
+titan$ export TERM 
+titan$ 
+titan$ 
+
+
