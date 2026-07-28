@@ -164,7 +164,10 @@ static int buf_h = 0;
  
 /* request a buffer with a width and height and we get
  * back a pointer. If bork bork bork then return NULL.
- * and also who the heck knows what errno does in X11? */
+ * and also who the heck knows what errno does in X11?
+ *
+ * Update : I have been told that errno does nothing.
+ */
 static XImage *create_image(int width_request, int height_request)
 {
     /* recall that this is really just uint32_t */
@@ -353,6 +356,8 @@ static void image_set_pixel(XImage *img, int x, int y, pixel_t color)
 {
     /* is the pointer something valid? */
     if ( !img ) {
+        /* I needed this during initial tests because
+         * things would go wrong. oops */
         return;
     }
  
@@ -542,6 +547,7 @@ static void draw_sine(double phase)
 /* does what it says */
 static void swap_buffers(void)
 {
+    /* NOTE : these are globals at the moment */
     XImage *tmp = buf_front;
     buf_front = buf_back;
     buf_back = tmp;
@@ -616,6 +622,7 @@ static void utc_timestamp(char *buf, size_t bufsz)
      * Otherwise, (time_t)-1 is returned and errno is set to indicate
      * the error.
      *
+     * TODO : actually try to check for a bogus situation
      */
     time_utc = time(NULL);
 
@@ -1264,6 +1271,8 @@ int main(int argc, char **argv)
     frame_interval = 1.0 / FRAMES_PER_SEC;
  
     /**************************************************
+     * TODO : fix this with proper clock code
+     *
      * this is crap for now. far better code in the
      * time_and_date directory where I check if the
      * clock exists and then deal with it
@@ -1413,6 +1422,7 @@ int main(int argc, char **argv)
         /* THIS IS CRAP and may give bizarre delta_time
          * there is code that actually works in the time_and_date
          * directory and this is just a hack for now.
+         *
          * TODO : negative time may happen? */
         delta_time = ( now.tv_sec - last_plot_time.tv_sec )
                    + ( ( now.tv_nsec - last_plot_time.tv_nsec ) * TIME_NANOSEC );
@@ -1429,6 +1439,7 @@ int main(int argc, char **argv)
             remainder.tv_nsec = (long)((wait_time - remainder.tv_sec) * 1e9);
             nanosleep(&remainder, NULL);
             clock_gettime(CLOCK_MONOTONIC, &now);
+            /* TODO replace this crap with proper diff time code */
             delta_time = ( now.tv_sec - last_plot_time.tv_sec )
                        + ( ( now.tv_nsec - last_plot_time.tv_nsec ) * TIME_NANOSEC );
         }
