@@ -6,114 +6,66 @@ version of the internal PTX code base to build into the output
 binary blob.
 
 see https://developer.nvidia.com/cuda-gpus
+also https://developer.nvidia.com/cuda/gpus/legacy
 
-Where I need 3.5 and 5.0 and also 6.0
+For normal humans without $MILLIONS$ to blow on bullshit
+hardware you will likely need compute_60 as a minimum
+in the year 2026. Good fucking luck. The drop in type
+replacement for the legacy GP100 seems to be the A100.
 
-$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 \
--gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_60,code=sm_60 \
--Wno-deprecated-gpu-targets \
--lnppi_static -lculibos -c -o dev_info.o dev_info.cpp
+At this time ( July 2026 ) the 40G memory A100 is $5000.
 
-$ nvcc -ccbin /usr/bin/g++-10 -I../include -m64 \
--gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_50,code=sm_50 \
--gencode arch=compute_60,code=sm_60 \
--Wno-deprecated-gpu-targets -o dev_info dev_info.o 
+Be sure to use a g++ compiler that CUDA does not barf all over.
+
+This means GCC 12.x or maybe 13.x and good luck with 14.x ver.
+
+$ echo $PATH
+/usr/local/cuda-12.9/bin:/usr/local/bin:/usr/local/sbin:/opt/bw/bin:/opt/bw/sbin:/bin:/sbin:/usr/bin:/usr/sbin:/opt/schily/bin
 $ 
 
+$ nvcc -x cu -ccbin /usr/bin/g++-12 -I../include \
+-I/usr/local/cuda-12.9/include \
+-gencode arch=compute_60,code=sm_60 \
+-Wno-deprecated-gpu-targets \
+-lnppi_static -lculibos -c -o dev_info.o dev_info.cu
 
-------------------------------------------------------
+$ nvcc -ccbin /usr/bin/g++-12 -I../include \
+-gencode arch=compute_60,code=sm_60 \
+-Wno-deprecated-gpu-targets -o dev_info dev_info.o 
 
-It is difficult to navigate the CUDA docs to find out
-what really exists in the device props struct. There are
-conflicting pages. The key issue is managed memory and
-perhaps the data exists ... or not .. as a trivial integer
-flag.
+-----------------------------------------------------------
+With CUDA 12.9, V12.9.86 this may look like legacy behavior
+for reasons unknown :
 
-See https://docs.nvidia.com/cuda/archive/11.8.0/cuda-runtime-api/structcudaDeviceProp.html#structcudaDeviceProp
+t# /usr/local/cuda-12.9/bin/nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Tue_May_27_02:21:03_PDT_2025
+Cuda compilation tools, release 12.9, V12.9.86
+Build cuda_12.9.r12.9/compiler.36037853_0
+t# 
 
-Public Variables
+t# nvidia-smi -pm 1                
+Enabled Legacy persistence mode for GPU 00000000:02:00.0.
+Enabled Legacy persistence mode for GPU 00000000:81:00.0.
+All done.
+t# nvidia-smi --gpu-reset
+GPU Reset couldn't run because GPU 00000000:02:00.0 is the primary GPU.
+t# 
 
-int  ECCEnabled
-int  accessPolicyMaxWindowSize
-int  asyncEngineCount
-int  canMapHostMemory
-int  canUseHostPointerForRegisteredMem
-int  clockRate
-int  computeMode
-int  computePreemptionSupported
-int  concurrentKernels
-int  concurrentManagedAccess
-int  cooperativeLaunch
-int  cooperativeMultiDeviceLaunch
-int  deviceOverlap
-int  directManagedMemAccessFromHost
-int  globalL1CacheSupported
-int  hostNativeAtomicSupported
-int  integrated
-int  isMultiGpuBoard
-int  kernelExecTimeoutEnabled
-int  l2CacheSize
-int  localL1CacheSupported
-char  luid[8]
-unsigned int  luidDeviceNodeMask
-int  major
-int  managedMemory
-int  maxBlocksPerMultiProcessor
-int  maxGridSize[3]
-int  maxSurface1D
-int  maxSurface1DLayered[2]
-int  maxSurface2D[2]
-int  maxSurface2DLayered[3]
-int  maxSurface3D[3]
-int  maxSurfaceCubemap
-int  maxSurfaceCubemapLayered[2]
-int  maxTexture1D
-int  maxTexture1DLayered[2]
-int  maxTexture1DLinear
-int  maxTexture1DMipmap
-int  maxTexture2D[2]
-int  maxTexture2DGather[2]
-int  maxTexture2DLayered[3]
-int  maxTexture2DLinear[3]
-int  maxTexture2DMipmap[2]
-int  maxTexture3D[3]
-int  maxTexture3DAlt[3]
-int  maxTextureCubemap
-int  maxTextureCubemapLayered[2]
-int  maxThreadsDim[3]
-int  maxThreadsPerBlock
-int  maxThreadsPerMultiProcessor
-size_t  memPitch
-int  memoryBusWidth
-int  memoryClockRate
-int  minor
-int  multiGpuBoardGroupID
-int  multiProcessorCount
-char  name[256]
-int  pageableMemoryAccess
-int  pageableMemoryAccessUsesHostPageTables
-int  pciBusID
-int  pciDeviceID
-int  pciDomainID
-int  persistingL2CacheMaxSize
-int  regsPerBlock
-int  regsPerMultiprocessor
-size_t  reservedSharedMemPerBlock
-size_t  sharedMemPerBlock
-size_t  sharedMemPerBlockOptin
-size_t  sharedMemPerMultiprocessor
-int  singleToDoublePrecisionPerfRatio
-int  streamPrioritiesSupported
-size_t  surfaceAlignment
-int  tccDriver
-size_t  textureAlignment
-size_t  texturePitchAlignment
-size_t  totalConstMem
-size_t  totalGlobalMem
-int  unifiedAddressing
-cudaUUID_t  uuid
-int  warpSize 
+
+In the past we may see :
+
+# nvidia-smi --gpu-reset
+GPU 00000000:01:00.0 was successfully reset.
+All done.
+
+-----------------------------------------------------------
+NOTE : There may be a manual pages package installed
+
+$ man cudaGetDeviceProperties
+Device Management(3)                Doxygen               Device Management(3)
+
+good luck
+
 

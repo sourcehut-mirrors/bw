@@ -1,0 +1,34 @@
+
+this may or may not fly 
+
+$ $NVCC -x cu -ccbin $CXX -I../include -I../../sysinfo -I../../time_and_date \
+> -I/usr/local/cuda-12.9/include -I/usr/local/cuda-12.9/targets/x86_64-linux/include \
+> -Wno-deprecated-gpu-targets -gencode arch=compute_60,code=sm_60 \
+> --ftz=false --prec-div=true --prec-sqrt=true -c -o vaddf.o vaddf.cu
+
+
+----------------------
+
+
+titan$ 
+titan$ uname -a 
+Linux titan 6.12.98-genunix #1 SMP Tue Jul 28 22:20:10 GMT 2026 x86_64 GNU/Linux
+titan$ $NVCC --version 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Tue_May_27_02:21:03_PDT_2025
+Cuda compilation tools, release 12.9, V12.9.86
+Build cuda_12.9.r12.9/compiler.36037853_0
+titan$ 
+titan$ echo $CXX 
+/usr/bin/x86_64-linux-gnu-g++-12
+titan$ 
+titan$ $NVCC -x cu -ccbin $CXX  \
+> -I ../include \
+> -I /usr/local/cuda-12.9/include \
+> -I /usr/local/cuda-12.9/targets/x86_64-linux/include \
+> -Wno-deprecated-gpu-targets \
+> -gencode arch=compute_60,code=sm_60 \
+> --ftz=false --prec-div=true --prec-sqrt=true \
+> -c -o vaddf.o vaddf.cu
+

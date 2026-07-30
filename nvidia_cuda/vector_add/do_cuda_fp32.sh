@@ -81,7 +81,7 @@ export LANG
 LC_TIME=C
 export LC_TIME
 
-rm -f dev_info dev_info.o > /dev/null 2>&1
+rm -f vaddf vaddf.o sysinfo.o endian.o tdiff.o > /dev/null 2>&1
 
 CUDA_HOME=/usr/local/cuda-12.9
 export CUDA_HOME
@@ -126,36 +126,78 @@ if [ ! -d /usr/local/cuda-12.9/include ]; then
     return 42
 fi
 
-# options removed are
-#    -allow-unsupported-compiler
+
+cp -p ../../time_and_date/tdiff.c ./tdiff.cu
+cp -p ../../sysinfo/sysinfo.c     ./sysinfo.cu
+cp -p ../../sysinfo/endian.c      ./endian.cu
+
+
+# the old old K620 *may* work at compute level 5.0
 ${NVCC} -x cu -ccbin ${CXX} \
 -I ../include -I /usr/local/cuda-12.9/include \
--I /usr/local/cuda-12.9/targets/x86_64-linux/include \
+-I/usr/local/cuda-12.9/targets/x86_64-linux/include \
+-I../../time_and_date \
 -Wno-deprecated-gpu-targets \
 -gencode arch=compute_60,code=sm_60 \
---ftz=false --prec-div=true --prec-sqrt=true \
--c -o dev_info.o dev_info.cu
+--ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+-c -o tdiff.o tdiff.cu
 
-
-if [ ! -f dev_info.o ]; then
-    /usr/bin/printf "\nFAIL : the object file dev_info.o does not exist\n"
-    exit 42
-fi
-
-# As seen above option removed
-#     -Wno-deprecated-gpu-targets
-${NVCC} -ccbin ${CXX} -allow-unsupported-compiler \
--Wno-deprecated-gpu-targets \
--gencode arch=compute_60,code=sm_60 \
--o dev_info dev_info.o
-
-if [ ! -x dev_info ]; then
-    /usr/bin/printf "\nFAIL : the file dev_info was not linked\n"
-    exit 42
+if [ -f tdiff.o ]; then
+    /usr/bin/printf "INFO : tdiff.o done\n"
 fi
 
 
-#NVPROF=`( command -v nvprof )`; export NVPROF
-#
-#${NVPROF} ./dev_info
-#
+${NVCC} -x cu -ccbin ${CXX} \
+-I ../include -I /usr/local/cuda-12.9/include \
+-I/usr/local/cuda-12.9/targets/x86_64-linux/include \
+-I../../sysinfo \
+-Wno-deprecated-gpu-targets \
+-gencode arch=compute_60,code=sm_60 \
+--ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+-c -o endian.o endian.cu
+
+if [ -f endian.o ]; then
+    /usr/bin/printf "INFO : endian.o done\n"
+fi
+
+# NOTE: declared but never used vars can be noisey
+#       use -diag-suppress 177
+${NVCC} -x cu -ccbin ${CXX} \
+-I ../include -I /usr/local/cuda-12.9/include \
+-I/usr/local/cuda-12.9/targets/x86_64-linux/include \
+-I../../sysinfo \
+-diag-suppress 177 \
+-Wno-deprecated-gpu-targets \
+-gencode arch=compute_60,code=sm_60 \
+--ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+-c -o sysinfo.o sysinfo.cu
+
+if [ -f sysinfo.o ]; then
+    /usr/bin/printf "INFO : sysinfo.o done\n"
+fi
+
+${NVCC} -x cu -ccbin ${CXX} \
+-I ../include -I /usr/local/cuda-12.9/include \
+-I/usr/local/cuda-12.9/targets/x86_64-linux/include \
+-I../../sysinfo -I../../time_and_date \
+-diag-suppress 177 \
+-Wno-deprecated-gpu-targets \
+-gencode arch=compute_60,code=sm_60 \
+--ftz=false --prec-div=true --prec-sqrt=true --fmad=true \
+-c -o vaddf.o vaddf.cu
+
+if [ -f vaddf.o ]; then
+    /usr/bin/printf "INFO : vaddf.o done\n"
+fi
+
+${NVCC} -ccbin ${CXX} \
+-Wno-deprecated-gpu-targets \
+-gencode arch=compute_60,code=sm_60 \
+-o vaddf vaddf.o endian.o tdiff.o sysinfo.o -lgomp
+
+if [ -x vaddf ]; then
+    /usr/bin/printf "INFO : vaddf ready to run. Maybe. Good luck.\n"
+fi
+
+rm -f sysinfo.cu endian.cu tdiff.cu *.o
+

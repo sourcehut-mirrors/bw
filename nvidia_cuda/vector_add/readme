@@ -1,4 +1,28 @@
 
+This has been fun
+
+titan$ 
+titan$ rm *.o
+titan$ 
+titan$ $NVCC -ccbin $CXX -I../include -I../../sysinfo -I/usr/local/cuda-12.9/include -I/usr/local/cuda-12.9/targets/x86_64-linux/include -Wno-deprecated-gpu-targets -gencode arch=compute_60,code=sm_60 --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o sysinfo.o ../../sysinfo/sysinfo.c
+titan$ $NVCC -ccbin $CXX -I../include -I../../sysinfo -I/usr/local/cuda-12.9/include -I/usr/local/cuda-12.9/targets/x86_64-linux/include -Wno-deprecated-gpu-targets -gencode arch=compute_60,code=sm_60 --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o endian.o ../../sysinfo/endian.c
+titan$ 
+titan$ $NVCC -ccbin $CXX -I../include -I../../time_and_date -I/usr/local/cuda-12.9/include -I/usr/local/cuda-12.9/targets/x86_64-linux/include -Wno-deprecated-gpu-targets -gencode arch=compute_60,code=sm_60 --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o tdiff.o ../../time_and_date/tdiff.c
+titan$ 
+titan$ $NVCC -x cu -ccbin $CXX -I../include -I../../sysinfo -I../../time_and_date -I/usr/local/cuda-12.9/include -I/usr/local/cuda-12.9/targets/x86_64-linux/include -Wno-deprecated-gpu-targets -gencode arch=compute_60,code=sm_60 --ftz=false --prec-div=true --prec-sqrt=true --fmad=true -c -o vaddf.o vaddf.cu 
+vaddf.cu(61): warning #177-D: variable "tn_end" was declared but never referenced
+      struct timespec tn_begin, tn_0, tn_1, tn_end;
+                                            ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+
+
+--------------------------
+
+
+
 
 $ nvcc -ccbin /usr/bin/g++-10 -g -I../include -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -c -o vaddd.o vaddd.cu
 $ nvcc -ccbin /usr/bin/g++-10 -g -m64 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_60,code=sm_60 -Wno-deprecated-gpu-targets --ftz=false --prec-div=true --prec-sqrt=true -o vaddd vaddd.o -lgomp

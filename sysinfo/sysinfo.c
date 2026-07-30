@@ -64,8 +64,10 @@
  *
  * With OpenBSD there seems to be major issues with _XOPEN_SOURCE
  * being defined. Perhaps C99 is the issue? Perhaps magic?
+ *
+ * Also NVidia CUDA Compiler is a bizarre experience!
  */
-#if ( defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600) ) || defined(__OpenBSD__)
+#if ( defined(_XOPEN_SOURCE) && (_XOPEN_SOURCE - 0 >= 600) ) || defined(__OpenBSD__) || defined(__NVCC__)
 #include <fenv.h>
 #endif
 

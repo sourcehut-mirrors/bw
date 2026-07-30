@@ -18,13 +18,14 @@
 #include <helper_cuda.h>
 #include <cuda_profiler_api.h>
 #include <omp.h>
-#include "tdiff.h"
 
 #include "dat.h"
 
+#include "sysinfo.h"
+#include "tdiff.h"
+
 #define VERBOSE 1
 #define SYSINFO_FAIL 127
-int sysinfo(int verbose);
 
 /**
  * CUDA Kernel Device code
@@ -56,10 +57,11 @@ int main(int argc, char *argv[])
     /* epsilon of 2^(-21) may work well.  */
     float epsilon = powf(2.0, -21.0); 
 
-    struct timespec t_start, t_end, t0, t1;
-    cudaEvent_t cuda_start, cuda_stop;
-    uint64_t tdelta_nsec;
+    int err_clock;
+    struct timespec tn_begin, tn_0, tn_1, tn_end;
     tdiff_type delta_time;
+
+    cudaEvent_t cuda_start, cuda_stop;
 
     /* we shall use this CUDA device error status over and over */
     cudaError_t cuda_err = cudaSuccess;
@@ -70,24 +72,52 @@ int main(int argc, char *argv[])
     int num_gpus = 0;
     int user_select = 0;
 
+    /* We may or may not have CLOCK_MONOTONIC implemented and thus
+     * we test for what does exist and set a clockid_t type. */
+    clockid_t clock_flag;
+
     setlocale(LC_ALL, "C");
     if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
         fprintf(stderr,"\nWARN : system info may be incomplete.\n\n");    
     }
 
-    /* TODO : verify the platform clock flag type */
-    if ( clock_gettime( CLOCK_REALTIME, &t_start ) == -1 ) {
-        /* We could not get the clock. Bail out. */
-        fprintf(stderr,"ERROR : could not attain CLOCK_REALTIME\n");
-        return EXIT_FAILURE;
-    } else {
-        /* call srand48() with the sub-second time data */
-        srand48( (long) t_start.tv_nsec );
+    errno = 0;
+    clock_flag = CLOCK_MONOTONIC;
+    err_clock = clock_gettime(clock_flag, &tn_begin);
+    if ( err_clock != 0 ) {
+        fprintf(stderr,"FAIL : ");
+        if ( errno == ENOSYS ) {
+            fprintf(stderr,"clock_gettime() not supported\n");
+            return EXIT_FAILURE;
+        }
+
+        if ( errno == EINVAL ) {
+            fprintf(stderr,"CLOCK_MONOTONIC not known\n");
+            errno = 0;
+            clock_flag = CLOCK_REALTIME;
+            err_clock = clock_gettime(clock_flag, &tn_begin);
+
+            if ( err_clock != 0 ) {
+                if ( errno == EINVAL ) {
+                    /* Not very likely to ever happen as CLOCK_REALTIME
+                     * shall always be implemented if the clock_gettime()
+                     * function exists. */
+                    fprintf(stderr,"FAIL : CLOCK_REALTIME not supported\n");
+                    fprintf(stderr,"     : your system is bork bork bork\n");
+                    return EXIT_FAILURE;
+                }
+                fprintf(stderr,"FAIL : bizarre error. good luck.\n");
+                return EXIT_FAILURE;
+            }
+        }
     }
 
+    /* call srand48() with the sub-second time data */
+    srand48( (long) tn_begin.tv_nsec );
+
     /* ensure we also have a time t0 */
-    t0.tv_sec = t_start.tv_sec;
-    t0.tv_nsec = t_start.tv_nsec;
+    tn_0.tv_sec = tn_begin.tv_sec;
+    tn_0.tv_nsec = tn_begin.tv_nsec;
 
     float cuda_milliseconds = 0.0;
 
@@ -98,11 +128,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-
     /* display CPU and GPU configuration */
     printf("INFO : number of host CPUs:\t%d\n", omp_get_num_procs());
     printf("     : number of CUDA devices:\t%d\n", num_gpus);
-
 
     /* check if there is a numerical parameter on the CLI */
     errno = 0;
@@ -129,7 +157,13 @@ int main(int argc, char *argv[])
 
     /* we need a device that can handle three arrays with some 
      * minimal overhead. Say 5% just for giggles. That can be
-     * stupid large on a big NVidia Quadro */
+     * stupid large on a big NVidia Quadro
+     *
+     * Note : the 16G GP100 can handle
+     *
+     *   Vector addition of 1407217820 float FP32 elements
+     *
+     */
     uint64_t memory_fit_size = 3 * size;
 
     printf("     : we need %" PRIu64 " bytes of memory on a GPU\n",
@@ -188,7 +222,9 @@ int main(int argc, char *argv[])
         /* select a GPU with enough memory */
         if ( ( device_id < 0 ) && ( *(gpu_memory+j) > memory_fit_size ) ) {
             /* TODO we may want a bit more logic to select the device
-             * with just enough memory but no more than that */
+             * with just enough memory but no more than that
+             *
+             * However that may be more work than required. */
             device_id = j;
             printf("     :    %d: %s is to be selected\n",
                       device_id, (dprop+device_id)->name);
@@ -196,15 +232,17 @@ int main(int argc, char *argv[])
     }
 
     /* this is sort of stupid when there is only one GPU */
-    printf("     : min memory unit is %i: %s with %" PRIu64 " bytes\n",
+    if ( num_gpus > 1 ) {
+        printf("     : min memory unit is %i: %s with %" PRIu64 " bytes\n",
                           gpu_unit_min_number,
                           (dprop+gpu_unit_min_number)->name,
                           gpu_min_memory);
 
-    printf("     : max memory unit is %i: %s with %" PRIu64 " bytes\n",
+        printf("     : max memory unit is %i: %s with %" PRIu64 " bytes\n",
                           gpu_unit_max_number,
                           (dprop+gpu_unit_max_number)->name,
                           gpu_max_memory);
+    }
 
     /* provide the opportunity for the user to force select a device id */
     errno = 0;
@@ -229,7 +267,7 @@ int main(int argc, char *argv[])
         device_id = user_select;
     }
 
-    /* the user my bork this up and we are not to blame damn it */
+    /* TODO : protect the userfrom being a fuck up */
     cuda_err = cudaSetDevice(device_id);
     
     if (cuda_err != cudaSuccess) {
@@ -309,21 +347,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* Init input vectors with random data in the domain 0 upwards
-     * to less than 1. Math people say this is a uniform distribution
-     * within [0, 1) where we never see a value of 1 exactly. */
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    for (int i = 0; i < numElements; ++i) {
-        h_A[i] = drand48();
-        h_B[i] = drand48();
-    }
-    clock_gettime( CLOCK_REALTIME, &t1 );
-
-
-    /* right fukkin here ... stop this old clock trash */
-    tdiff( &delta_time, t0, t1);
-    printf("     : random data loaded %-+20.10g\n\n", delta_time.delta);
-
     /* Allocate the device input vectors */
     float *d_A = NULL;
     if ( managed_mem == 0 ) {
@@ -340,11 +363,22 @@ int main(int argc, char *argv[])
 
     /* TODO it would be nice to know the memory utilization in the
      * GPU and that would tell us how much memory is still available
-     */
-    clock_gettime( CLOCK_REALTIME, &t0 );
+     *
+     *
+     * Init input vectors with random data in the domain 0 upwards
+     * to less than 1. Math people say this is a uniform distribution
+     * within [0, 1) where we never see a value of 1 exactly. */
+    err_clock = clock_gettime(clock_flag, &tn_0);
+    for (int i = 0; i < numElements; ++i) {
+        h_A[i] = drand48();
+        h_B[i] = drand48();
+    }
+    err_clock = clock_gettime(clock_flag, &tn_1);
+    err_clock = tdiff( &delta_time, tn_0, tn_1);
 
-    tdiff( &delta_time, t1, t0);
-    printf("     : Wallclock cudaMalloc(A) %-+20.10g\n", delta_time.delta);
+    printf("     : random data loaded %10ld.%09ld secs\n\n",
+                             delta_time.sec, delta_time.nsec);
+
 
     float *d_B = NULL;
     if ( managed_mem == 0 ) {
@@ -359,10 +393,12 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    clock_gettime( CLOCK_REALTIME, &t1 );
-
-    tdiff( &delta_time, t0, t1);
-    printf("     : Wallclock cudaMalloc(B) %-+20.10g\n", delta_time.delta);
+/*
+    clock_gettime( clock_flag, &t1 );
+    tdelta_nsec = timediff( t0, t1);
+    printf("     : Wallclock cudaMalloc(B) %10" PRIu64 " nsecs  %9.7g secs\n",
+                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+*/
 
 
     float *d_C = NULL;
@@ -378,12 +414,17 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    tdiff( &delta_time, t1, t0);
-    printf("     : Wallclock cudaMalloc(C) %-+20.10g\n", delta_time.delta);
+/*
+    clock_gettime( clock_flag, &t0 );
+    tdelta_nsec = timediff( t1, t0);
+    printf("     : Wallclock cudaMalloc(C) %10" PRIu64 " nsecs  %9.7g secs\n",
+                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+*/
+
 
     /* Copy the host input vectors h_A and h_B in host memory
      * to the device input vectors in device memory */
+    err_clock = clock_gettime(clock_flag, &tn_0);
     if (cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice) != cudaSuccess) {
         cuda_err = cudaGetLastError();
         fprintf(stderr, "FAIL : CUDA failed to copy vector A from host to device\n");
@@ -391,10 +432,13 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("     : Copy of vector A from host to device done.\n");
+    err_clock = clock_gettime(clock_flag, &tn_1);
+    err_clock = tdiff( &delta_time, tn_0, tn_1);
 
-    clock_gettime( CLOCK_REALTIME, &t1 );
-    tdiff( &delta_time, t0, t1);
-    printf("     : Wallclock cudaMemcpy() %-+20.10g\n", delta_time.delta);
+    printf("     :                    %10ld.%09ld secs\n\n",
+                             delta_time.sec, delta_time.nsec);
+
+
 
     if (cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice) != cudaSuccess) {
         cuda_err = cudaGetLastError();
@@ -404,9 +448,7 @@ int main(int argc, char *argv[])
     }
     printf("     : Copy of vector B from host to device done.\n");
 
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    tdiff( &delta_time, t1, t0);
-    printf("     : Wallclock cudaMemcpy() %-+20.10g\n", delta_time.delta);
+
 
     /* Launch the default stream CUDA Kernel */
     int threadsPerBlock = THREADS_PER_BLOCK;
@@ -445,10 +487,12 @@ int main(int argc, char *argv[])
     }
     printf("     : vectorAdd done.\n");
 
-
-    clock_gettime( CLOCK_REALTIME, &t1 );
-    tdiff( &delta_time, t0, t1);
-    printf("     : Wallclock kernel launch %-+20.10g\n", delta_time.delta);
+/*
+    clock_gettime( clock_flag, &t1 );
+    tdelta_nsec = timediff( t0, t1);
+    printf("     : Wallclock kernel launch %" PRIu64 " nsecs  %9.7g secs\n",
+                            tdelta_nsec, (float)tdelta_nsec/1.0e9);
+*/
 
 
     cuda_err = cudaEventRecord(cuda_stop, 0);
@@ -488,7 +532,7 @@ int main(int argc, char *argv[])
     /* Copy the device result vector in device memory to the host
      * result vector in host memory */
 
-    clock_gettime( CLOCK_REALTIME, &t1 );
+/*    clock_gettime( clock_flag, &t1 ); */
     cuda_err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
     if (cuda_err != cudaSuccess) {
         fprintf(stderr, "FAIL : CUDA failed to copy result vector C from device to host\n");
@@ -496,10 +540,14 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     printf("     : Copy result vector C from device to host done.\n");
-    clock_gettime( CLOCK_REALTIME, &t0 );
-    tdiff( &delta_time, t1, t0);
 
-    printf("     : cudaMemcpy() %-+20.10g\n", delta_time.delta);
+/*
+    clock_gettime( clock_flag, &t0 );
+    tdelta_nsec = timediff( t1, t0 );
+    printf("     : cudaMemcpy() %" PRIu64 " nsecs  %9.7g secs\n",
+                               tdelta_nsec, (float)tdelta_nsec/1.0e9);
+*/
+
 
     /* test that result vector is correct within epsilon error */
     for (int i = 0; i < numElements; ++i) {
@@ -510,11 +558,13 @@ int main(int argc, char *argv[])
     }
 
     printf("     : A + B correct within error 2^(-21) epsilon\n");
-    clock_gettime( CLOCK_REALTIME, &t1 );
 
-    tdiff( &delta_time, t0, t1);
-
-    printf("     : result check done %-+20.10g\n", delta_time.delta);
+/*
+    clock_gettime( clock_flag, &t1 );
+    tdelta_nsec = timediff( t0, t1);
+    printf("     : result check done %" PRIu64 " nsecs  %9.7g secs\n",
+                          tdelta_nsec, (float)tdelta_nsec/1.0e9);
+*/
 
 
     /* Free device global memory */
@@ -574,10 +624,12 @@ int main(int argc, char *argv[])
 
     cudaProfilerStop();
 
-    clock_gettime( CLOCK_REALTIME, &t_end );
-    tdiff( &delta_time, t_start, t_end);
-
-    printf("DONE : total time %-+20.10g\n",delta_time.delta);
+/*
+    clock_gettime( clock_flag, &t_end );
+    tdelta_nsec = timediff( t_start, t_end);
+    printf("DONE : total time %" PRIu64 " nsecs  %9.7g secs\n",
+            tdelta_nsec, (float)tdelta_nsec/1.0e9);
+*/
 
     return exit_status;
 
