@@ -107,10 +107,6 @@ else
     fi
 fi
 
-/usr/bin/printf "\nINFO : found a C++ compiler at "
-echo $CXX
-/usr/bin/printf "\n"
-
 if [ -x /usr/local/cuda-12.9/bin/nvcc ]; then
     NVCC=/usr/local/cuda-12.9/bin/nvcc
     export NVCC
