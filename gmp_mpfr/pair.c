@@ -4,11 +4,12 @@
  *
  * Compile as clean ISO9899:1999 clean as you can. Be sure
  * to set _XOPEN_SOURCE=600 on most sane systems. Works on
- * FreeBSD 16.0-CURRENT on AMD64 Xeon boxen.
+ * FreeBSD 16.0-CURRENT on AMD64 Xeon boxen. Also seems to
+ * work on everything else. Not a 1997 DEC Alpha. Nope.
  *
  * No promise the results are correct.
- *  The mpz_probab_prime_p is a guess. Probably correct.
- *  No promise. Good luck.
+ * The mpz_probab_prime_p is a guess. Probably correct.
+ * No promise. Good luck.
  *
  * See https://gmplib.org/manual/Number-Theoretic-Functions
  *
@@ -31,7 +32,8 @@
  *    * * * NOTE : read that twice as needed. * * * 
  *
  *
- * Test with a big prime p-1
+ * Test with a big prime p-1 where the even numbered input will
+ * be corrected and then the code continues.
  *
  * ./pair 8077404293306336334458524721317491771057862034946702867674746686995494278134865509068057634482068480493150002
  *
@@ -167,6 +169,10 @@ main( int argc, char **argv )
      * going into the gates of hell with large numbers */
     int progress, hundred;
 
+    /* if the user puts anything as a third parameter on the
+     * CLI input then we show little dots at primes are found */
+    int dot_me = 0;
+
     /* I will want pages of memory to represent the input
      * number as well as other large numbers later. However
      * it is unlikely that one would ever get into numbers
@@ -186,6 +192,8 @@ main( int argc, char **argv )
         fprintf(stderr, "INFO : %s start_number\n", argv[0]);
         fprintf(stderr, "     : optional to add Miller-Rabin loops.\n");
         fprintf(stderr, "     : %s start_number loop_number\n", argv[0]);
+        fprintf(stderr, "WAT? : for extra fun add a single digit 1 after\n");
+        fprintf(stderr, "     : the Miller-Rabin loop number. pretty dots.\n");
         return EXIT_FAILURE;
     }
 
@@ -265,6 +273,12 @@ main( int argc, char **argv )
                 mr_reps = candidate_int;
             }
         }
+    }
+
+    if (argc>3) {
+        fprintf(stderr,"INFO : little dots will reveal prime progress\n");
+        dot_me = 1;
+        fprintf(stderr,"     : each dot *may* be a prime number we skip\n");
     }
 
     /* The LLVM/Clang compiler can be a real whiner about
@@ -382,6 +396,9 @@ hundred:
          * thing is really prime! We get 0 otherwise.
          */
         if (r_cand > 0) {
+            if ( dot_me ) {
+                fputc('.', stdout);
+            }
             /* okay .. workable guess. Now add 2 */
             mpz_add_ui(cand_plus2, cand, 2);
             /* same deal ... is that p+2 prime smelling? */
@@ -431,6 +448,9 @@ hundred:
         /* we do not need another newline here due to the
          * one fputc() above in this loop */
         printf(" dt = %-+20.10g", delta_time.delta);
+        if (dot_me) {
+            fputc('\n',stdout);
+        }
 
         sum_of_dt += delta_time.delta;
 
