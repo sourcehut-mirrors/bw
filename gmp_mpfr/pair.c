@@ -398,6 +398,7 @@ hundred:
         if (r_cand > 0) {
             if ( dot_me ) {
                 fputc('.', stdout);
+                fflush(stdout);
             }
             /* okay .. workable guess. Now add 2 */
             mpz_add_ui(cand_plus2, cand, 2);

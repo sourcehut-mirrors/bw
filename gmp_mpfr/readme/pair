@@ -206,3 +206,19 @@ hydra$
 hydra$ $CC $CFLAGS $CPPFLAGS -L /opt/bw/lib -Wl,-rpath=/opt/bw/lib,-enable-new-dtags -o pair pair.o sysinfo.o endian.o -lgmp -lm
 hydra$ 
 
+
+------------ 3 Aug 2026
+dirty compile with whatever CFLAGS you have 
+
+
+
+$CC $CFLAGS $CPPFLAGS -I../sysinfo -I/home/dclarke/local/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+
+$CC $CFLAGS $CPPFLAGS -I../sysinfo -I/home/dclarke/local/include -c -o endian.o ../sysinfo/endian.c
+
+$CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o tdiff.o ../time_and_date/tdiff.c
+
+$CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o pair.o pair.c
+
+$CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lmpfr
+
