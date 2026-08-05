@@ -222,3 +222,59 @@ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o pai
 
 $CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lmpfr
 
+
+---------- the Raspberry Pi5 seems to be quite slow ----------
+
+hermes$ 
+hermes$ /usr/bin/time -p /usr/bin/nice -n +18 ./pair 162423286788146716567924936442165620691146846284945520874247370727650259051968748229143020544882224927215899556172967099633723367811400961617534952903422782595343253641971863565082089493502505428304640800793255327047413169827891901803402833005508059 32 1
+-------------------------------------------------------------------
+                 system name = Linux
+                   node name = hermes
+                     release = 6.12.67-v8-16k+
+                     version = #1938 SMP PREEMPT Fri Jan 23 16:07:39 GMT 2026
+                     machine = aarch64
+                   page size = 16384
+               system memory = 8442429440
+                             = 8244560 kB
+                             = 8051 MB
+                 avail pages = unknown
+                avail memory = unknown
+         clock ticks per sec = 100
+             threads support = 0
+               POSIX Version = 200809
+          _POSIX_CHILD_MAX   = 25
+          _POSIX_NGROUPS_MAX = 8
+          _POSIX_OPEN_MAX    = 20
+          _POSIX_PATH_MAX    = 256
+          _POSIX_TZNAME_MAX  = 6
+                      endian = little
+       sizeof(unsigned long) = 8
+                sizeof(long) = 8
+                 sizeof(int) = 4
+               sizeof(void*) = 8
+           fp rounding mode is FE_TONEAREST
+-------------------------------------------------------------------
+WARN : Miller-Rabin reps invalid
+     : we shall assume 25 and proceed.
+INFO : little dots will reveal prime progress
+     : each dot *may* be a prime number we skip
+
+INFO : given a 249 digit number
+     : GMP library version : 6.3.0
+     : mpz_probab_prime_p() and Miller-Rabin loops 25
+     : stop after 100 prime pairs are found.
+
+etc etc
+
+100p 162423286788146716567924936442165620691146846284945520874247370727650259051968748229143020544882224927215899556172967099633723367811400961617534952903422782595343253641971863565082089493502505428304640800793255327047413169827891901803402833028996451 dt = +31.94238702        
+
+Total time DT = +1417.575303        
+Sum of the dt = +1385.632164        
+         diff = +31.94313838        
+All other tests and non-prime pairs required "diff"
+None of the above are certain to be primes.
+Range = 23488394
+real 1417.57
+user 1417.31
+sys 0.10
+
