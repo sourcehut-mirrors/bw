@@ -1,4 +1,28 @@
 
+Gentoo Linux on a Raspberry Pi5 will need link stage with -lm thus :
+
+$ echo $CC
+/usr/bin/gcc
+$ echo $CFLAGS
+-std=iso9899:1999 -O3 -march=armv8.2-a -mcpu=cortex-a76+crc+crypto -mtune=cortex-a76 -mabi=lp64 -Wl,-rpath=/home/dclarke/local/lib,-enable-new-dtags
+$ echo $CPPFLAGS
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+
+$ $CC $CFLAGS $CPPFLAGS -I../sysinfo -I/home/dclarke/local/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+
+$ $CC $CFLAGS $CPPFLAGS -I../sysinfo -I/home/dclarke/local/include -c -o endian.o ../sysinfo/endian.c
+
+$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o tdiff.o ../time_and_date/tdiff.c
+
+$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o pair.o pair.c
+
+
+$ $CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lmpfr -lm
+
+
+-----------------
+
+
 On Linux AMD64 with optimized libs in $HOME/local/lib 
 
 
