@@ -20,6 +20,41 @@ $ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o p
 $ $CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lmpfr -lm
 
 
+
+ ---------------------------
+
+    Ubuntu on RISC-V SiFive P550 will bite you on the ass if you are
+    not careful. It has serious emotional problems with  -mpreferred-stack-boundary
+    wherein the whole OS seems to need  -mpreferred-stack-boundary=4
+
+
+sedna$ 
+sedna$ uname -a 
+Linux sedna 6.12.33-1-premier #6 SMP PREEMPT_DYNAMIC Thu Nov 27 07:15:04 UTC 2025 riscv64 riscv64 riscv64 GNU/Linux
+sedna$ 
+sedna$ echo $CC
+/usr/bin/gcc
+sedna$ 
+sedna$ echo $CFLAGS 
+-std=iso9899:1999 -O3 -march=rv64imafdc -mabi=lp64d -mpreferred-stack-boundary=4 -Wl,-rpath=/home/dclarke/local/lib,-enable-new-dtags
+sedna$ 
+sedna$ echo $CPPFLAGS 
+-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600
+sedna$ 
+sedna$ $CC $CFLAGS $CPPFLAGS -I../sysinfo -I/home/dclarke/local/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+sedna$ 
+sedna$ $CC $CFLAGS $CPPFLAGS -I../sysinfo -I/home/dclarke/local/include -c -o endian.o ../sysinfo/endian.c
+sedna$ 
+sedna$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o tdiff.o ../time_and_date/tdiff.c
+sedna$ 
+sedna$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I/home/dclarke/local/include -c -o pair.o pair.c
+sedna$ 
+sedna$ $CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib \
+> -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lm
+sedna$ 
+
+-----------------------------------------------------------
+
 -----------------
 
 
@@ -106,6 +141,8 @@ sys 0.02
 
 
 ---------------------------------------------------
+
+On a baseline AMD64 machine with no optimizations at all ...
 
 
 
