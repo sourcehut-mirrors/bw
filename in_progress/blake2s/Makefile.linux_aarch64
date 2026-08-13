@@ -1,0 +1,15 @@
+
+CC=/usr/bin/gcc
+
+CFLAGS= -std=iso9899:1990 -pedantic -pedantic-errors -g -O0 \
+	-march=armv8.2-a -mtune=cortex-a76 -mabi=lp64 \
+	-mno-low-precision-recip-sqrt \
+	-mno-low-precision-sqrt \
+	-mno-low-precision-div \
+	-fno-fast-math -fno-builtin
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+	-D_XOPEN_SOURCE=500
+
+include common.mk
+
