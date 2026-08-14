@@ -1,6 +1,6 @@
 
 /* this should not be needed but here we are in December 2025
- * wherein LLVM/Clang on FreeBSD 15.0-RELEASE is a bitch
+ * wherein LLVM/Clang on FreeBSD 15.0-RELEASE gets a hissy fit
  */
 
 #include <stdint.h>
