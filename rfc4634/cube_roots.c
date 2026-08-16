@@ -106,10 +106,6 @@
 #include <locale.h>
 #include <math.h>
 
-#define VERBOSE 1
-
-int sysinfo(int verbose);
-
 int main(int argc, char *argv[]) 
 {
 
@@ -170,7 +166,6 @@ int main(int argc, char *argv[])
              "1F83D9ABFB41BD6B", "5BE0CD19137E2179" };
 
     setlocale ( LC_ALL, "POSIX" );
-    sysinfo(VERBOSE);
 
     /* Why the 64-bit double precision data type fails.
      * -----------------------------------------------------------------
