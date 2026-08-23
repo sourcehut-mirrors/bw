@@ -1,17 +1,17 @@
 
-CC=/usr/bin/cc
+CC?=	/usr/bin/cc
 
-CFLAGS= -I$(IDIR) -std=iso9899:1999 -m64 -g -O0 -fno-builtin -march=k8 \
+CFLAGS?=	-std=iso9899:1999 -m64 -g -O0 -fno-builtin -march=k8 \
 	-mtune=k8 -mieee-fp -mhard-float -mpc80 -fno-fast-math \
 	-mno-fancy-math-387 -malign-double -m128bit-long-double \
-	-mlong-double-80 -mstackrealign -mpreferred-stack-boundary=8 -mno-mmx
+	-mstackrealign -mpreferred-stack-boundary=8
 
-CPPFLAGS= -D_POSIX_PTHREAD_SEMANTICS -D_LARGEFILE64_SOURCE \
+CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
 	-D_XOPEN_SOURCE=600
 
 LIBS = -lm
 
-SRCS = cube_roots.c ../sysinfo/sysinfo.c
+SRCS = cube_roots.c
 OBJS = $(SRCS:.c=.o)
 
 %.o: %.c $(DEPS)
