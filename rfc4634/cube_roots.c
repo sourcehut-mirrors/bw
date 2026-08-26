@@ -98,8 +98,6 @@
 
 #if ! defined (__VMS)
 #include <stdint.h>
-#else
-#include <inttypes.h>
 #endif
 
 #include <stdlib.h>
