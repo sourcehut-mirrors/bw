@@ -33,7 +33,7 @@ int main( int argc, char **argv )
     printf ("compute u[ 2] = %+-42.38Le\n", u[2] );
 
     for ( j=3; j<48; j++ ) {
-        u[j] = 111.0 - 1130.0 / u[j-1] + 3000.0 / ( u[j-2] * u[j-1] );
+        u[j] = 111.0L - 1130.0L / u[j-1] + 3000.0L / ( u[j-2] * u[j-1] );
         printf ("        u[%2i] = %+-42.38Le\n", j, u[j] );
     }
 
