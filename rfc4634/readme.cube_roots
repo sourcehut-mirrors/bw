@@ -1,4 +1,5 @@
-The fractional part of the cube root of 2 is : 428a2f98d728ae22
+
+The fractional part of the cube root of 2 is : 428A2F98D728AE22
 
 The decimal value for the cube root is 1.25992104989487316476721060727823
 
@@ -8,44 +9,89 @@ operation :
 
 alpha $ echo '0.25992104989487316476721060727823 16* pq' | dc 
 4.15873679831797063627536971645168
+^
+  ^-------------+
+                |
+                v-- fractional stuff from above
 alpha $ echo '0.15873679831797063627536971645168 16* pq' | dc 
 2.53978877308753018040591546322688
+^
+  ^-------------+
+                |
+                v-- fractional stuff from above
 alpha $ echo '0.53978877308753018040591546322688 16* pq' | dc 
 8.63662036940048288649464741163008
+
 alpha $ echo '0.63662036940048288649464741163008 16* pq' | dc 
 10.18592591040772618391435858608128
+^
+|
++---> this is hex digit A
+
 alpha $ echo '0.18592591040772618391435858608128 16* pq' | dc 
 2.97481456652361894262973737730048
+
 alpha $ echo '0.97481456652361894262973737730048 16* pq' | dc 
 15.59703306437790308207579803680768
+^
+|
++---> hex digit F
+
 alpha $ echo '0.59703306437790308207579803680768 16* pq' | dc 
 9.55252903004644931321276858892288
+
 alpha $ echo '0.55252903004644931321276858892288 16* pq' | dc 
 8.84046448074318901140429742276608
+
 alpha $ echo '0.84046448074318901140429742276608 16* pq' | dc
 13.44743169189102418246875876425728
+^
+|
++---> hex digit D
+
 alpha $ echo '0.44743169189102418246875876425728 16* pq' | dc
 7.15890707025638691950014022811648
+
 alpha $ echo '0.15890707025638691950014022811648 16* pq' | dc
 2.54251312410219071200224364986368
+
 alpha $ echo '0.54251312410219071200224364986368 16* pq' | dc
 8.68020998563505139203589839781888
+
 alpha $ echo '0.68020998563505139203589839781888 16* pq' | dc
 10.88335977016082227257437436510208
+
 alpha $ echo '0.88335977016082227257437436510208 16* pq' | dc
 14.13375632257315636118998984163328
+
 alpha $ echo '0.13375632257315636118998984163328 16* pq' | dc
 2.14010116117050177903983746613248
+
 alpha $ echo '0.14010116117050177903983746613248 16* pq' | dc
 2.24161857872802846463739945811968
 
+
 The above sequence is 4  2  8 10  2 15  9  8 13  7  2  8 10 14  2  2
-       the hex result 4  2  8  a  2  f  9  8  d  7  2  8  a  e  2  2
+       the hex result 4  2  8  A  2  F  9  8  D  7  2  8  A  E  2  2
 
+Thus the fractional part of the cube root of 2 is 0x428A2F98D728AE22
 
-However this may result in a rounding error on the last digit in
-the 16 hex digits. An example of a rounding error would be seen
-in the cube root of 3 :
+--------------------------------------------------------------------
+   * * *   R o u n d i n g    E r r o r   * * *
+
+We may see a rounding error on the last digit in the 16 hex digits.
+An example of a rounding error would be seen in the cube root of 3.
+
+First question is the cube root of 3 which is e^(ln(3)/3) :
+
+hydra$ bc -lq
+scale=48
+e(l(3)/3)
+1.442249570307408382321638310780109588391869253498
+
+Then we take the fractional part and begin :
+
+                    442249570307408382321638310780109588391869253498
 
 phobos$ echo '40k 0.44224957030740838232873296531622 16* pq' | dc 
 7.07599312491853411725972744505952

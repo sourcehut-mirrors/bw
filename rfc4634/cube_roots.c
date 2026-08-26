@@ -1,9 +1,7 @@
+
 /*
  * cube_roots.c  demonstrate that x86/AMD64 hardware can not compute
  *               the RFC-4634 section 5.2 reference data.
- *
- * See section 5.2 Functions and Constants Used at :
- * https://datatracker.ietf.org/doc/html/rfc4634#section-5.2
  *
  * SHA-384 and SHA-512 use the same sequence of eighty constant 64-bit
  * words, K0, K1, ... K79.  These words represent the first sixty-four
@@ -33,7 +31,6 @@
  * 4cc5d4becb3e42b6 597f299cfc657e2a 5fcb6fab3ad6faec 6c44198c4a475817
  *
  * Also see Section 6.3 SHA-384 and SHA-512 Initialization
- * https://datatracker.ietf.org/doc/html/rfc4634#section-6.3
  *
  * For SHA-512, the initial hash value, H(0), consists of the following
  * eight 64-bit words, in hex.  These words were obtained by taking the
@@ -49,7 +46,8 @@
  *      H(0)6 = 1f83d9abfb41bd6b
  *      H(0)7 = 5be0cd19137e2179
  *
- * This is a hack attempt to generate those from floating point data.
+ * ------------------------------------------------------------------
+ * This is an attempt to generate those from floating point data.
  * ------------------------------------------------------------------
  * Copyright (c) 2019 Dennis Clarke
  *
@@ -86,12 +84,15 @@
  *    functionality described in The _POSIX_C_SOURCE Feature Test
  *    Macro and in addition to enable the XSI extension.
  *
+ * X/Open Version 5 / SUSv2 POSIX 1995 may be enforced with the
+ * feature test macro _XOPEN_SOURCE defined as the value 500 before
+ * the inclusion of any header.
+ *
  *********************************************************************/
 
 #if ! defined (_XOPEN_SOURCE)
 #define _XOPEN_SOURCE 600
 #endif
-
 
 #include <stdio.h>
 
@@ -106,7 +107,8 @@
 #include <locale.h>
 #include <math.h>
 
-int main(int argc, char *argv[]) 
+int
+main( void ) 
 {
 
     double frac, cuberoot = 0.0;
@@ -116,8 +118,6 @@ int main(int argc, char *argv[])
 
     int j = 0;
     int k = 0;
-    char *hex_char = calloc(32,sizeof(unsigned char));
-    char *buf = calloc(32,sizeof(unsigned char));
 
     /* prime numbers to use */
     int p[80] = {   2,   3,   5,   7,  11,  13,  17,  19,  23,  29,
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 
     /* This is our reference list of hex prime fractions as described
      * for the cube roots.  See the comments above. */
-    char **cube_root_hex = (char *[]) {
+    char *cube_root_hex[] = {
              "428A2F98D728AE22", "7137449123EF65CD", "B5C0FBCFEC4D3B2F",
              "E9B5DBA58189DBBC", "3956C25BF348B538", "59F111F1B605D019",
              "923F82A4AF194F9B", "AB1C5ED5DA6D8118", "D807AA98A3030242",
@@ -160,10 +160,14 @@ int main(int argc, char *argv[])
              "431D67C49C100D4C", "4CC5D4BECB3E42B6", "597F299CFC657E2A",
              "5FCB6FAB3AD6FAEC", "6C44198C4A475817" };
 
-    char **square_root_hex = (char *[]) {
+    char *square_root_hex[] = {
              "6A09E667F3BCC908", "BB67AE8584CAA73B", "3C6EF372FE94F82B",
              "A54FF53A5F1D36F1", "510E527FADE682D1", "9B05688C2B3E6C1F",
              "1F83D9ABFB41BD6B", "5BE0CD19137E2179" };
+
+    char *hex_char = calloc(32,sizeof(unsigned char));
+    char *buf = calloc(32,sizeof(unsigned char));
+    /* TODO : verify those pointers are not NULL */
 
     setlocale ( LC_ALL, "POSIX" );
 
@@ -201,6 +205,7 @@ int main(int argc, char *argv[])
         printf ("  %3i    %-28.20e    %s    ", p[j], squareroot, square_root_hex[j]);
         frac = ( squareroot - trunc(squareroot) ) * 16.0;
         for ( k=0; k<16; k++ ) {
+            /* be sure to use uppercase hex */
             snprintf(hex_char, 2, "%1X", (int)frac);
             printf ("%s", hex_char);
             strncat(buf, hex_char, 1);
@@ -212,11 +217,12 @@ int main(int argc, char *argv[])
         printf ("\n");
         buf[0] = '\0';
     }
+
     printf ("-------------------------------------------------------------------------\n");
     printf ("    p    64-bit cube root                Reference Hex       Computed Hex\n");
     printf ("-------------------------------------------------------------------------\n");
     for ( j=0; j<8; j++ ) {
-        /* For the sake of fun and no other good reason lets use logarithms */
+        /* again we use logarithms */
         cuberoot = exp(log((double)p[j])/3.0);
         printf ("  %3i    %-28.20e    %s    ", p[j], cuberoot, cube_root_hex[j]);
         frac = ( cuberoot - trunc(cuberoot) ) * 16.0;
@@ -239,16 +245,20 @@ int main(int argc, char *argv[])
      * if we get 80 bits from that trash. Use gdb to confirm
      * that a large chunk of the long double data type is just
      * empty zero bits that mean nothing and provide nothing.
+     *
      * In general, most implementations on x86 hardware will 
      * use a full 16 bytes of memory for a long double but you
      * only get 10 bytes used. Six bytes are just wasted.
+     *
      * To be as clear as possible the 80-bit x86 "extended"
      * precision data type is not in the IEEE-754 standard at
      * all. We just can not expect to get 64 data bits out
      * of memory on x86 style hardware.
      *
      * Note that IBM POWER, RISC-V, arm64 and even the old
-     * DEC Alpha can provide a working implementation.
+     * DEC Alpha can provide a working implementation. This
+     * has been tested and verified with a DEC AlphaStation
+     * and the EV5 21164 Alpha processor running OpenVMS 8.4.
      *
      * We have reasonable data to represent the square root
      * of 2 as : 
@@ -298,8 +308,6 @@ int main(int argc, char *argv[])
      *
      *        implied bit53 and data =  1 0xbdd3413b26456
      *
-     *  1 
-     *
      */
     printf ("Note that x86/AMD64 hardware has no such implementation.\n");
     printf ("------------------- long double type? -------------\n");
@@ -310,6 +318,7 @@ int main(int argc, char *argv[])
         printf ("  %3i    %-40.32Le    %s    ", p[j], squareroot_ld, square_root_hex[j]);
         frac_ld = ( squareroot_ld - truncl(squareroot_ld) ) * 16.0L;
         for ( k=0; k<16; k++ ) {
+            /* again be sure to use uppercase */
             snprintf(hex_char, 2, "%1X", (int)frac_ld);
             printf ("%s", hex_char);
             strncat(buf, hex_char, 1);
