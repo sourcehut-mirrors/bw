@@ -58,7 +58,7 @@
  *********************************************************************/
 
 #if ! defined (_XOPEN_SOURCE)
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
 #endif
 
 /* get system architecture data someday
@@ -72,6 +72,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 #include "blake2s.h"
@@ -82,10 +83,8 @@ main ( int argc, char **argv )
 
     /* we may add more strings into the array later */
     static const char *foo[] = { "foo", NULL };
-    size_t outlen = OUTPUT_LEN;
     unsigned char hash_out[OUTPUT_LEN];
 
-    blake2s_ctx ctx;
     int error_status = 0;
 
     /* a trivial loop var */
