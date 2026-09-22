@@ -1,4 +1,28 @@
 
+A change to GlibC can wreck havok :
+
+$ 
+$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../sysinfo -I/home/dclarke/local/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../sysinfo -I/home/dclarke/local/include -c -o endian.o ../sysinfo/endian.c
+$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../time_and_date -I/home/dclarke/local/include -c -o tdiff.o ../time_and_date/tdiff.c
+$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../time_and_date -I/home/dclarke/local/include -c -o pair.o pair.c
+$ 
+$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lmpfr -lm
+/opt/bw/bin/ld: /home/dclarke/local/lib/libgmp.so: undefined reference to `__isoc23_strtol@GLIBC_2.38'
+collect2: error: ld returned 1 exit status
+
+
+            E A S Y  T O  F I X
+
+oberon$ 
+oberon$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../sysinfo -I/home/dclarke/local/include -c -o sysinfo.o ../sysinfo/sysinfo.c
+oberon$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../sysinfo -I/home/dclarke/local/include -c -o endian.o ../sysinfo/endian.c
+oberon$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../time_and_date -I/home/dclarke/local/include -c -o tdiff.o ../time_and_date/tdiff.c
+oberon$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -I../time_and_date -I/home/dclarke/local/include -c -o pair.o pair.c
+oberon$ $CC -std=iso9899:1999 $CFLAGS $CPPFLAGS -D_XOPEN_SOURCE=600 -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib -o pair pair.o tdiff.o endian.o sysinfo.o -lgmp -lmpfr -lm
+
+*****************************************************
+
 Gentoo Linux on a Raspberry Pi5 will need link stage with -lm thus :
 
 $ echo $CC

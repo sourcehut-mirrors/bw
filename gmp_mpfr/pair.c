@@ -342,8 +342,7 @@ main( int argc, char **argv )
         /* If the user is a moron and provides an even number then
          * tazer them gently and then add 1 to the dumb input */
         if ( mpz_even_p(cand) ) {
-            fprintf(stderr, "\nBORK : even number? we shall add 1\n");
-            fprintf(stderr, "     : prime numbers are the idea\n");
+            fprintf(stderr, "\nWARN : even number? we shall add 1\n");
             mpz_add_ui(cand, cand, 1);
             mpz_out_str(stdout, 10, cand);
         }
@@ -363,9 +362,9 @@ main( int argc, char **argv )
             free(input_num);
             return EXIT_FAILURE;
         }
-        /*
+        /****************** useful to know ***************************
         j = gmp_snprintf (char *buf, size_t size, const char *fmt, …);
-        */
+        *************************************************************/
     }
 
     twin_count = 0;
@@ -426,6 +425,10 @@ hundred:
 
                 mpz_out_str(stdout, 10, cand);
                 /* fputc('\n', stdout); */
+
+                /* TODO : note that int fflush(stdout) may set errno
+                 * and return a non-zero value. See write(2). */
+                fflush(stdout);
 
                 /* terrible flag name. really we just loop until
                  * we get a hundred twin primes */
