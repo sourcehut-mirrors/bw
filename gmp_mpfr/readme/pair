@@ -212,8 +212,22 @@ eris$
 
        NOTE: FreeBSD may want something special 
 
-         $CC $CFLAGS $CPPFLAGS -L/opt/bw/lib -Wl,-rpath=/opt/bw/lib,-enable-new-dtags -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lm
-
+hydra$ which cc
+/usr/bin/cc
+hydra$ CC=/usr/bin/cc
+hydra$ export CC
+hydra$ CFLAGS='-std=iso9899:1999 -m64 -O3 -fno-color-diagnostics -Wno-reserved-id-macro -Wno-missing-prototypes -Wno-padded -Wno-disabled-macro-expansion -Wno-sign-conversion -Wno-reserved-identifier -Wno-extra-semi-stmt -Wno-unsafe-buffer-usage'
+hydra$ export CFLAGS
+hydra$ CPPFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_XOPEN_SOURCE=600'
+hydra$ export CPPFLAGS
+hydra$ 
+hydra$ $CC $CFLAGS $CPPFLAGS -c -o endian.o ../sysinfo/endian.c
+hydra$ $CC $CFLAGS $CPPFLAGS -c -o sysinfo.o ../sysinfo/sysinfo.c
+hydra$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
+hydra$ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I$HOME/local/include -c -o pair.o pair.c
+hydra$ $CC $CFLAGS $CPPFLAGS -Wl,-rpath=/home/dclarke/local/lib,-enable-new-dtags \
+> -L/home/dclarke/local/lib -o pair pair.o sysinfo.o endian.o tdiff.o -lgmp -lmpfr -lm
+hydra$ 
 
 
 The shell on Solaris just barfs are a really large string. So this hack :

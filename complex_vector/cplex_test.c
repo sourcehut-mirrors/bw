@@ -53,7 +53,8 @@
 
 static int endian( void );
 
-int main (int argc, char **argv)
+int
+main ( void )
 {
 
     cplex_type op1, op2, op3, opr, opr2[3], quad_res[4];
@@ -68,7 +69,8 @@ int main (int argc, char **argv)
     vec_type plane_u, plane_v, plane_u_norm, plane_v_norm;
     vec_type lp_intercept_param;
 
-    int j, k, real_root_count;
+    int j, real_root_count;
+    size_t k;
 
     op1.i = 1.0; op1.r = 0.0;
     op2.i = 1.0; op2.r = 0.0;
@@ -208,12 +210,12 @@ int main (int argc, char **argv)
     printf("\ndbug : op1.r is at address %p\n", &op1.r);
     if ( endian() ) {
         for ( k=0; k < sizeof(double); k++ ) {
-            printf("%02x ", ((uint8_t*)&op1.r)[k] );
+            printf("%02x ", ((unsigned char*)&op1.r)[k] );
         }
         printf("\n" );
     } else {
-        for ( k = sizeof(double) - 1 ; k>(-1); k-- ){
-            printf("%02x ", ((uint8_t*)&op1.r)[k] );
+        for ( j = sizeof(double) - 1 ; j>(-1); j-- ){
+            printf("%02x ", ((unsigned char*)&op1.r)[j] );
         }
     }
     printf("\n" );
@@ -1597,7 +1599,7 @@ static int endian( void )
      * string like 0xFEEDBEEFBADCAFFE
      *                    ffffffff7ffff2d0         */
     int eflag = 1; /* in mem 0x00000001 big endian */
-    eflag = (*(uint8_t*)&eflag == 1) ? 0 : 1;
+    eflag = (*(unsigned char*)&eflag == 1) ? 0 : 1;
     /* fprintf ( stderr, "DBG : eflag = %i\n", eflag ); */
     return ( eflag );
 }

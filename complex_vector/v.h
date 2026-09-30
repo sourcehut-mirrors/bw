@@ -13,7 +13,10 @@
 #define _XOPEN_SOURCE 600
 
 #include <stdlib.h>
+
+#if ! defined (__VMS)
 #include <stdint.h>
+#endif
 
 /* Calls to math operations should return a status
  * and if something truely horrible happens we should
@@ -53,7 +56,7 @@ typedef struct vec {
  * and alpha data as well as luminosity. For now we will just go
  * with a luminosity between zero and one packed into a 32-bit int */
 typedef struct pix_e {
-    uint32_t lum;    /* 32bit luminosity */
+    unsigned int lum;    /* 32bit luminosity */
 } pix_e_type;
 
 /* a pixel is actually a set of samples in a 3x3 grid */

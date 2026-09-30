@@ -1,5 +1,5 @@
 CFLAGS=	-std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
-	-Weverything -Wno-reserved-id-macro \
+	-Weverything -Wno-reserved-id-macro -Wno-unsafe-buffer-usage \
 	-fno-fast-math -fno-builtin
 
 include fbsd_common.mk
