@@ -1,0 +1,13 @@
+
+the makefiles are borked.
+good luck
+
+
+try :
+
+     $CC $CFLAGS -I../../time_and_date $CPPFLAGS -c -o tdiff.o ../../time_and_date/tdiff.c
+
+     $CC $CFLAGS -I../../time_and_date $CPPFLAGS -c -o thrash.o thrash.c 
+
+     $CC $CFLAGS $CPPFLAGS -o thrash thrash.o tdiff.o
+

@@ -138,7 +138,7 @@ main(int argc, char **argv)
     FILE *out_file;
     FILE *log_file;
     unsigned char *buffer;
-    unsigned char *locale_buf;
+    char *locale_buf;
 
     char dir_name[16];
     char file_name[32];
@@ -202,11 +202,16 @@ main(int argc, char **argv)
         }
     }
 
-    /* TODO : we do not have a log file yet */
+    /* TODO : we do not have a log file yet and this is borked
+     *        because we need CLOCK_REALTIME to get the date 
+     *
+     *          bork bork bork
+     *
     fprintf(stdout, "INFO : start time %ld.%09ld\n", 
-                                tn_begin.sec, 
-                                tn_begin.nsec);
+                                tn_begin.tv_sec, 
+                                tn_begin.tv_nsec);
     fflush(stdout);
+    */
 
     /* Mersenne Twister init with the time nanosec as seed */
     init_genrand((unsigned long)tn_begin.tv_nsec);
@@ -279,9 +284,10 @@ main(int argc, char **argv)
                              "%c%d%d", letter, dir_a, dir_b);
                 }
                 
-                if (mkdir(dir_name, 0777) != 0 && errno != EEXIST) {
+                if ( ( mkdir(dir_name, 0777) != 0 )
+                        && ( errno != EEXIST ) ) {
                     /* are we out of disk space? */
-                    fprintf(stderr,"FAIL : mkdir fails\n",
+                    fprintf(stderr,"FAIL : mkdir fails\n");
                     perror("FAIL ");
                     free(buffer);
                     fclose(log_file);
