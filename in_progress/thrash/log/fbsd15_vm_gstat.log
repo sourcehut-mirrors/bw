@@ -1,0 +1,109 @@
+
+styx# 
+styx# date -u ; gstat -B -f vtbd0p3 -I 5s
+Fri Oct  2 15:24:52 UTC 2026
+dT: 0.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0      0      0      0  0.000      0      0  0.000    0.0  vtbd0p3
+dT: 5.002s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0      0      0      0  0.000      0      0  0.000    0.0  vtbd0p3
+dT: 5.002s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0     13      0      0  0.000     12    467  0.191    0.9  vtbd0p3
+dT: 5.009s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0      0      0      0  0.000      0      0  0.000    0.0  vtbd0p3
+dT: 5.003s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    1    164      0      0  0.000    164  57446    3.4   28.6  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2     89      0      0  0.000     89  54546    9.8  103.8  vtbd0p3
+dT: 5.011s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    1     76      0      0  0.000     76  43430    6.9   26.7  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2     99      0      0  0.000     99  92326   14.9  172.0  vtbd0p3
+dT: 5.002s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2     65      0      0  0.000     65  59843   30.5   99.4  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2     64      0      0  0.000     64  46981   15.4   98.8  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2    154      0      0  0.000    154 149693   12.8  100.1  vtbd0p3
+dT: 5.002s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    3     66      0      0  0.000     66  59819   32.6   99.6  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    4     74      0      0  0.000     74  57200   21.3   99.5  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2    214      0      0  0.000    214 210031    9.8   99.6  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    4     29      0      0  0.000     29  26755   85.1   99.5  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    6     42      0      0  0.000     42  40232  126.2  100.8  vtbd0p3
+dT: 5.002s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    1     58      0      0  0.000     58  37995   57.8   52.8  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    7    174      0      0  0.000    174 151775   38.8  145.9  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    8     73      0      0  0.000     73  67891  100.8  100.0  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    9    103      0      0  0.000    103  77737   88.1  100.0  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+   10    172      0      0  0.000    172  99104   55.0  100.0  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    1    128      0      0  0.000    128  63518   32.0   44.9  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    8    175      0      0  0.000    174 147394   20.2  154.1  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    8    155      0      0  0.000    155 140469   50.3   99.8  vtbd0p3
+dT: 5.000s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    7     66      0      0  0.000     66  60237  116.8  100.1  vtbd0p3
+dT: 5.003s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    4     77      0      0  0.000     77  73130   73.7  100.0  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    3     59      0      0  0.000     59  54942   61.2   99.9  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2     73      0      0  0.000     73  70506   27.6  100.0  vtbd0p3
+dT: 5.002s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    2     50      0      0  0.000     49  34033   24.2   99.6  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    1    125      0      0  0.000    125 121244   15.9  100.1  vtbd0p3
+dT: 5.001s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    1     74      0      0  0.000     74  54576   24.7   91.9  vtbd0p3
+dT: 5.003s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0      1      0      0  0.000      1      6   21.5   63.5  vtbd0p3
+dT: 5.008s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0     14      0      0  0.000     14    466  0.926    4.3  vtbd0p3
+dT: 5.006s  w: 5.000s  filter: vtbd0p3
+ L(q)  ops/s    r/s   kBps   ms/r    w/s   kBps   ms/w   %busy Name
+    0      0      0      0  0.000      0      0  0.000    0.0  vtbd0p3
+
+end of test
+
