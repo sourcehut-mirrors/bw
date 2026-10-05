@@ -1,4 +1,20 @@
 
+To compile and ling we need :
+
+    endian.o  fgruenberger.o  sysinfo.o  tdiff.o
+
+
+ $CC $CFLAGS $CPPFLAGS -I../time_and_date -I../sysinfo -c -o fgruenberger.o fgruenberger.c
+
+ $CC $CFLAGS $CPPFLAGS -I../time_and_date -c -o tdiff.o ../time_and_date/tdiff.c
+
+ $CC $CFLAGS $CPPFLAGS -I../sysinfo -c -o sysinfo.o ../sysinfo/sysinfo.c
+
+ $CC $CFLAGS $CPPFLAGS -I../sysinfo -c -o endian.o ../sysinfo/endian.c
+
+ $CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib,-enable-new-dtags -o fgruenberger fgruenberger.o tdiff.o sysinfo.o endian.o -lcrypto -lgmp -lm
+
+
 The number of digits in each interation is thus : 
 
 triton$ for n in $(seq 1 28); do echo " 2 $n 2 +^  2 $n 1 -^  1 -- pq " | dc; done

@@ -1,5 +1,5 @@
 
-/*
+/* TODO : implement the blake2s256 calls at line 297
  * fgruenberger.c    An implementation of the Fred Gruenberger
  *                   loop as presented in 1984 :
  *
@@ -64,7 +64,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <openssl/evp.h>
+#include "blake2s.h"
 
 #include "gmp.h"
 #include "tdiff.h"
@@ -165,54 +165,26 @@ main ( int argc, char **argv )
         NULL
     };
 
-    /* We need a pile of stuff for the OpenSSL message digest calls */
-    EVP_MD_CTX *mdctx;
-    const EVP_MD *md;
-    unsigned char md_value[EVP_MAX_MD_SIZE];
-    unsigned int k, md_len;
-
-    /* slightly out of order but may as well process OpenSSL
-     * situation now */
-    if ( argc > 2 ) {
-        md = EVP_get_digestbyname(argv[2]);
-        if (md == NULL) {
-            fprintf(stderr,"FAIL : unknown message digest %s\n", argv[2]);
-            fprintf(stderr,"     : see line %i\n", __LINE__);
-            return EXIT_FAILURE;
-        }
-        /* the user supplied hash algorithm either works or
-         * blows up with an error message 
-         * printf("INFO : user suggests \"%s\"\n",argv[2]);
-         */
-    } else {
-        /* It may be more efficient to use BLAKE2s256 */
-        md = EVP_get_digestbyname("SHA256");
-        if (md == NULL) {
-            fprintf(stderr,"FAIL : EVP_get_digestbyname(\"SHA256\")\n");
-            return EXIT_FAILURE;
-        }
-    }
-
-    mdctx = EVP_MD_CTX_new();
-    if (mdctx == NULL) {
-        fprintf(stderr,"FAIL : EVP_MD_CTX_new()\n");
-        fprintf(stderr,"     : see line %i\n", __LINE__);
-        return EXIT_FAILURE;
-    }
+    /* We need a few things for BLAKE2s hash */
+    blake2s_ctx *ctx;
+    /* this will likely fail in a flash given we are using
+     * millions of digits */
+    uint8_t in[1024], md[32], key[32];
 
     /* The LLVM/Clang compiler can be a real whiner about
      * things declared and not defined. Thus this is a way
      * to tell the compiler to shut up. */
-    tn_0.tv_sec = 0;
-    tn_0.tv_nsec = 0;
-    tn_1.tv_sec = 0;
-    tn_1.tv_nsec = 0;
-    tn_begin.tv_sec = 0;
-    tn_begin.tv_nsec = 0;
-    tn_end.tv_sec = 0;
-    tn_end.tv_nsec = 0;
+    tn_0.tv_sec = 0;     tn_0.tv_nsec = 0;
+    tn_1.tv_sec = 0;     tn_1.tv_nsec = 0;
+    tn_begin.tv_sec = 0; tn_begin.tv_nsec = 0;
+    tn_end.tv_sec = 0;   tn_end.tv_nsec = 0;
 
-    /* B E W A R E  :  Linux has a sysinfo() call */
+    /* deal with the BLAKE2s code now */
+    if (blake2s_init(&ctx, 32, NULL, 0)) {
+        fprintf(stderr,"FAIL : blake2s_init() fail\n");
+        return EXIT_FAILURE;
+    }
+
     if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
         fprintf(stderr,"WARN : we may not have valid system info.\n");
     }
@@ -245,10 +217,11 @@ main ( int argc, char **argv )
                      * shall always be implemented if the clock_gettime()
                      * function exists. */
                     fprintf(stderr,"FAIL : CLOCK_REALTIME not supported\n");
-                    fprintf(stderr,"     : your system is bork bork bork\n");
+                    fprintf(stderr,"     : system is an IBM MVS unit?\n");
                     return EXIT_FAILURE;
                 }
-                fprintf(stderr,"FAIL : bizarre error. good luck.\n");
+                fprintf(stderr,"FAIL : bizarre clock error.\n");
+                fprintf(stderr,"     : good luck.\n");
                 return EXIT_FAILURE;
             }
         }
@@ -312,36 +285,17 @@ main ( int argc, char **argv )
         num_bytes = strlen(gmp_out_buf);
         /* printf("INFO : mpz_get_str() returns %li bytes\n", (int)num_bytes); */
 
-        /* This is where OpenSSL can be used to get a SHA256
-         * hash of the data in gmp_out_buf. We will only output
-         * up to 72 chars of the decimal data. */
+        /* BLAKE2s256 hash of the data in gmp_out_buf */
         strncpy(prn_buf, gmp_out_buf, 72);
         printf("  1    : %s\n", prn_buf);
+
         /* slide in a dirty nul char at byte 0 */
         prn_buf[0]='\0';
 
         err_clock = clock_gettime(clock_flag, &tn_0);
 
-        if (!EVP_DigestInit_ex2(mdctx, md, NULL)) {
-            fprintf(stderr,"FAIL : EVP_DigestInit_ex2()\n");
-            fprintf(stderr,"     : see line %i\n", __LINE__);
-            EVP_MD_CTX_free(mdctx);
-            return EXIT_FAILURE;
-        }
+        /* k .. now to just use the blake2s calls */
 
-        if (!EVP_DigestUpdate(mdctx, gmp_out_buf, num_bytes)) {
-            fprintf(stderr,"FAIL : EVP_DigestUpdate()\n");
-            fprintf(stderr,"     : see line %i\n", __LINE__);
-            EVP_MD_CTX_free(mdctx);
-            return EXIT_FAILURE;
-        }
-
-        if (!EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
-            fprintf(stderr,"FAIL : EVP_DigestFinal_ex()\n");
-            fprintf(stderr,"     : see line %i\n", __LINE__);
-            EVP_MD_CTX_free(mdctx);
-            return EXIT_FAILURE;
-        }
 
         err_clock = clock_gettime(clock_flag, &tn_1);
         err_clock = tdiff( &delta_time, tn_0, tn_1);
