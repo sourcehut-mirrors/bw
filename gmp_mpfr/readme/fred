@@ -1,5 +1,5 @@
 
-To compile and ling we need :
+To compile and link we need :
 
     endian.o  fgruenberger.o  sysinfo.o  tdiff.o
 
