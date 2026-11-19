@@ -1,0 +1,14 @@
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors -m64 -g -O0 \
+	-fno-fast-math -fno-builtin -fno-unsafe-math-optimizations \
+	-fno-color-diagnostics -Wl,-rpath=/usr/local/lib,-enable-new-dtags \
+	-Weverything -Wno-unsafe-buffer-usage -Wno-reserved-identifier \
+	-Wno-documentation
+
+LIBS= -lxcb -lm -lpthread
+
+LDIR= /usr/local/lib
+IDIR= /usr/local/include
+
+include common.mk
+
