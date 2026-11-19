@@ -1,0 +1,23 @@
+
+CC = /usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
+	-mpowerpc64 -mno-altivec -msecure-plt -mno-vsx \
+	-mno-quad-memory -mno-float128 -mhard-float \
+	-mno-float128-hardware -mno-avoid-indexed-addresses \
+	-mno-isel -mno-crypto -mno-htm -mno-quad-memory-atomic \
+	-mno-multiple -mupdate -mno-avoid-indexed-addresses \
+	-mregnames -mno-recip -fno-unsafe-math-optimizations \
+	-fno-fast-math -mfull-toc -mno-fp-in-toc -mno-sum-in-toc \
+	-ffp-contract=off \
+   	-Wl,-rpath=/usr/local/lib/powerpc64-linux-gnu,--enable-new-dtags
+
+CPPFLAGS= -D_TS_ERRNO -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
+
+IDIR=/usr/include -I/usr/include/X11
+LDIR=/usr/lib64 -L/usr/lib64
+LIBS=-lxcb -lrt -lm -lpthread
+
+include common.mk
+
