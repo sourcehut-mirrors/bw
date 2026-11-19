@@ -19,19 +19,5 @@ IDIR=/usr/pkg/include -I/usr/X11R7/include
 LDIR=/usr/pkg/lib -L/usr/X11R7/lib
 LIBS=-lxcb -lrt -lm -lpthread
 
-SRCS = xcb_intro.c
-
-OBJS = xcb_intro.o
-
-.PHONY: all
-all: xcb_intro
-
-.c.o:
-	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
-
-xcb_intro: $(OBJS)
-	$(CC) -o $@ ${OBJS} $(CFLAGS) -L$(LDIR) $(CPPFLAGS) $(LIBS)
-
-clean:
-	rm -f $(OBJS) xcb_intro
+include common.mk
 
