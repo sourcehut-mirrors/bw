@@ -1,72 +1,121 @@
 
+/*
+ * xcb_intro.c  this is the lowest and most trivial X11 stuff
+ *
+ * ------------------------------------------------------------------
+ * Copyright (c) 2019 Dennis Clarke
+ *
+ *    Permission is hereby granted, free of charge, to any person
+ *    obtaining a copy of this software and associated documentation
+ *    files (the "Software"), to deal in the Software without
+ *    restriction, including without limitation the rights to use,
+ *    copy, modify, merge, publish, distribute, sublicense, and/or
+ *    sell copies of the Software, and to permit persons to whom the
+ *    Software is furnished to do so, subject to the following
+ *    conditions:
+ *
+ *    The above copyright notice and this permission notice shall be
+ *    included in all copies or substantial portions of the Software.
+ *
+ *        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ *        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ *        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ *        OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ *        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ *        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ------------------------------------------------------------------
+ */
 
+/*********************************************************************
+ * The Open Group Base Specifications Issue 6
+ * IEEE Std 1003.1, 2004 Edition
+ *
+ *    An XSI-conforming application should ensure that the feature
+ *    test macro _XOPEN_SOURCE is defined with the value 600 before
+ *    inclusion of any header. This is needed to enable the
+ *    functionality described in The _POSIX_C_SOURCE Feature Test
+ *    Macro and in addition to enable the XSI extension.
+ *
+ *********************************************************************/
+
+/* hack this away on the OpenBSD world for now 
+#if ! defined (_XOPEN_SOURCE)
+#define _XOPEN_SOURCE 600
+#endif
+*/
+
+#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <xcb/xcb.h>
-#include <xcb/xcb_util.h>
-#include <xcb/xcb_icccm.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
-
-    int screen_num;
+    int j, screen_num = 0;
     xcb_connection_t *xcb_conn = xcb_connect(NULL, &screen_num);
 
-    if(xcb_connection_has_error(xcb_conn))
-    {
-        fprintf(stderr,"Failed to connect!\n");
+    if (xcb_connection_has_error(xcb_conn)) {
+        fprintf(stderr, "FAIL : Failed X11 connect\n");
         return EXIT_FAILURE;
     }
-    else
-    {
-        printf("Received preferred screen:%d\n",screen_num);
-    }
 
-    /*
-    //Longwinded way to do this
+    printf("INFO : preferred screen: %d\n", screen_num);
+
     const xcb_setup_t *setup = xcb_get_setup(xcb_conn);
     xcb_screen_iterator_t screen_it = xcb_setup_roots_iterator(setup);
-    xcb_screen_t *screen = screen_it.data;
-    */
 
-    xcb_screen_t *screen = xcb_aux_get_screen(xcb_conn,screen_num);
+    /* only you can stop the abuse of i as an iterator */
+    for (j = 0; j < screen_num; j++) {
+        xcb_screen_next(&screen_it);
+    }
+
+    xcb_screen_t *screen = screen_it.data;
 
     xcb_window_t win = xcb_generate_id(xcb_conn);
 
-    xcb_create_window(xcb_conn,screen->root_depth,win,screen->root,
-                      20,20,600,600,0,XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                      screen->root_visual, XCB_CW_BACK_PIXEL,
-                      &(int[]){0});
+    uint32_t mask_vals[] = { 0 };
 
-    char *title = "xcb intro";
-    int title_len=strlen(title);
+    xcb_create_window(xcb_conn,
+                      screen->root_depth,
+                      win,
+                      screen->root,
+                      20, 20, 600, 600, 0,
+                      XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                      screen->root_visual,
+                      XCB_CW_BACK_PIXEL,
+                      mask_vals);
 
-    /*
-      //Longwinded way
-      xcb_change_property(xcb_conn, XCB_PROP_MODE_REPLACE, win,
-      XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
-      title_len,title);
-    */
+    const char *title = "xcb intro";
+    uint32_t title_len = (uint32_t)strlen(title);
 
-    xcb_icccm_set_wm_name(xcb_conn,win,XCB_ATOM_STRING, 8, title_len, title);
+    xcb_change_property(xcb_conn,
+                        XCB_PROP_MODE_REPLACE,
+                        win,
+                        XCB_ATOM_WM_NAME,
+                        XCB_ATOM_STRING,
+                        8,
+                        title_len,
+                        title);
 
-    xcb_map_window(xcb_conn,win); 
-    
-    if(!xcb_flush(xcb_conn))
-    {
-        fprintf(stderr, "Could not flush\n");
+    xcb_map_window(xcb_conn, win);
+
+    if (xcb_flush(xcb_conn) <= 0) {
+        fprintf(stderr, "WARN : Could not xcb_flush(xcb_conn)\n");
     }
-    
-    while(1)
-    {
 
+    xcb_generic_event_t *ev;
+    while ((ev = xcb_wait_for_event(xcb_conn)) != NULL) {
+        free(ev);
     }
-    
+
     xcb_disconnect(xcb_conn);
-    printf("All is well, disconnecting!\n");
-    return 0;
+    printf("INFO : works fine and disconnecting\n");
+
+    return EXIT_SUCCESS;
+
 }
- 
 

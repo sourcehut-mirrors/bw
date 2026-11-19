@@ -1,0 +1,37 @@
+
+CC= /usr/bin/gcc
+
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
+	-m64 -g -O0 -fno-builtin -fno-fast-math -mhard-float \
+	-mno-app-regs -mflat -msoft-quad-float \
+	-mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=ultrasparc -mtune=ultrasparc \
+	-mno-vis -mno-vis2 -mno-vis3 -mno-vis4 -mno-vis4b \
+	-mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc \
+	-mmemory-model=tso -fPIC \
+	-Wl,-rpath=/usr/pkg/lib \
+	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
+
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
+
+IDIR=/usr/pkg/include -I/usr/X11R7/include
+LDIR=/usr/pkg/lib -L/usr/X11R7/lib
+LIBS=-lxcb -lrt -lm -lpthread
+
+SRCS = xcb_intro.c
+
+OBJS = xcb_intro.o
+
+.PHONY: all
+all: xcb_intro
+
+.c.o:
+	$(CC) -c -o $@ $< $(CFLAGS) -I$(IDIR) $(CPPFLAGS)
+
+xcb_intro: $(OBJS)
+	$(CC) -o $@ ${OBJS} $(CFLAGS) -L$(LDIR) $(CPPFLAGS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) xcb_intro
+

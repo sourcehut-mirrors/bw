@@ -1,25 +1,27 @@
 
-CC?=/usr/bin/cc
+CC= /usr/bin/gcc
+
+
 
 CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
-	-m64 -O0 -g \
-	-mhard-float \
-	-mno-app-regs -mflat -mhard-quad-float \
-	-mno-unaligned-doubles \
-	-mcpu=ultrasparc -mtune=ultrasparc -mno-vis -mno-cbcond \
-	-mcmodel=medany \
-	-mmemory-model=tso \
-	-fPIC -Wl,-rpath=/usr/pkg/lib
+	-m64 -g -O0 -fno-builtin -fno-fast-math -mhard-float \
+	-mno-app-regs -mflat -msoft-quad-float \
+	-mno-unaligned-doubles -mno-faster-structs \
+	-mcpu=ultrasparc -mtune=ultrasparc \
+	-mno-vis -mno-vis2 -mno-vis3 -mno-vis4 -mno-vis4b \
+	-mno-cbcond -mno-fmaf -mno-fsmuld -mno-popc -mno-subxc \
+	-mmemory-model=tso -fPIC
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
+	-D_FILE_OFFSET_BITS=64
 
 IDIR=/usr/pkg/include
 LDIR=/usr/pkg/lib
 LIBS=-lrt -lm
 
-SRCS = report.c sysinfo.c
+SRCS = report.c sysinfo.c endian.c
 
-OBJS = report.o sysinfo.o
+OBJS = report.o sysinfo.o endian.o
 
 .PHONY: all
 all: report
