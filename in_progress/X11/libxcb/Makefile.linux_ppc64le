@@ -1,0 +1,17 @@
+
+CC?=/opt/gcc-16.2.0/bin/gcc
+
+CFLAGS= -g -m64 -std=iso9899:1999 -pedantic -fno-builtin -O0 \
+	-mcpu=power9 -mno-isel -mno-crypto -mno-htm -mno-quad-memory-atomic \
+	-mfloat128-hardware -mfull-toc -mno-multiple -mupdate \
+	-mno-avoid-indexed-addresses -mno-toc -mregnames -mno-recip \
+	-fno-unsafe-math-optimizations -fno-fast-math
+
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+IDIR=/usr/include -I/usr/include/X11
+LDIR=/usr/lib64 -L/usr/lib64
+LIBS=-lxcb -lrt -lm -lpthread
+
+include common.mk
+
