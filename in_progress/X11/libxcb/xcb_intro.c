@@ -57,9 +57,12 @@ int main(void)
 {
     int j, screen_num = 0;
     const xcb_setup_t *setup = NULL;
+    const char *title;
     xcb_screen_iterator_t screen_it;
     xcb_screen_t *screen = NULL;
     xcb_window_t win;
+    xcb_generic_event_t *ev;
+    uint32_t title_len;
     uint32_t mask_vals[] = { 0 };
 
     xcb_connection_t *xcb_conn = xcb_connect(NULL, &screen_num);
@@ -93,8 +96,8 @@ int main(void)
                       XCB_CW_BACK_PIXEL,
                       mask_vals);
 
-    const char *title = "xcb intro";
-    uint32_t title_len = (uint32_t)strlen(title);
+    title = "xcb intro";
+    title_len = (uint32_t)strlen(title);
 
     xcb_change_property(xcb_conn,
                         XCB_PROP_MODE_REPLACE,
@@ -111,7 +114,6 @@ int main(void)
         fprintf(stderr, "WARN : Could not xcb_flush(xcb_conn)\n");
     }
 
-    xcb_generic_event_t *ev;
     while ((ev = xcb_wait_for_event(xcb_conn)) != NULL) {
         free(ev);
     }
