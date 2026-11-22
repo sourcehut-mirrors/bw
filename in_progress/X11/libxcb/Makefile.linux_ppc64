@@ -12,8 +12,7 @@ CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
 	-ffp-contract=off \
    	-Wl,-rpath=/usr/local/lib/powerpc64-linux-gnu,--enable-new-dtags
 
-CPPFLAGS= -D_TS_ERRNO -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
-	-D_FILE_OFFSET_BITS=64
+CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 
 IDIR=/usr/include -I/usr/include/X11
 LDIR=/usr/lib64 -L/usr/lib64

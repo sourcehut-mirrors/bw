@@ -12,8 +12,7 @@ CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-Wl,-rpath=/usr/pkg/lib \
 	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
 
-CPPFLAGS= -D_XOPEN_SOURCE=600 -D_LARGEFILE64_SOURCE \
-	-D_FILE_OFFSET_BITS=64
+CPPFLAGS= -D_XOPEN_SOURCE=600
 
 IDIR=/usr/pkg/include -I/usr/X11R7/include
 LDIR=/usr/pkg/lib -L/usr/X11R7/lib
