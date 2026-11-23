@@ -8,7 +8,8 @@ CFLAGS= -g -O0 -mcpu=21164 -mgas -mexplicit-relocs \
 	-mtrap-precision=i -mieee-with-inexact \
 	-mieee-conformant
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
 
 LDIR= /usr/X11R6/lib
 IDIR= /usr/X11R6/include

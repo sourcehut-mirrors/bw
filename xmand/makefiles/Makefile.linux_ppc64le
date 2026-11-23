@@ -1,9 +1,12 @@
 
-CC?=/opt/gcc-12.2.0/bin/gcc
+CC?=/opt/gcc-16.2.0/bin/gcc
 
 CFLAGS = -std=iso9899:1999 -pedantic -pedantic-errors \
 	-g -O0 -mcpu=power9 -fno-builtin -m64 \
 	-fno-unsafe-math-optimizations
+
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
 
 include common.mk
 

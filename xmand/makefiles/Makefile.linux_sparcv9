@@ -7,7 +7,8 @@ CFLAGS= -std=iso9899:1999 -m64 -g -O0 -pedantic -pedantic-errors \
 	-mcpu=niagara7 -mtune=niagara7 -mno-vis -mno-cbcond \
 	-mno-fmaf -mno-fsmuld -mno-popc -mno-subxc
 
-CPPFLAGS= -D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
 
 IDIR=/usr/include -I/usr/include/X11
 LDIR=/usr/lib64 -L/usr/lib64

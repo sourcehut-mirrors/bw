@@ -1,6 +1,5 @@
 
-CC = /usr/bin/gcc
-
+CC= /usr/bin/gcc
 
 CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
 	-mpowerpc64 -mno-altivec -msecure-plt -mno-vsx \
@@ -11,6 +10,9 @@ CFLAGS= -std=iso9899:1999 -g -O0 -m64 -fno-builtin -mcpu=970 \
 	-mregnames -mno-recip -fno-unsafe-math-optimizations \
 	-fno-fast-math -mfull-toc -mno-fp-in-toc -mno-sum-in-toc \
 	-ffp-contract=off -Wl,-rpath=/opt/bw/lib,--enable-new-dtags
+
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
 
 include common.mk
 

@@ -8,5 +8,8 @@ CFLAGS=		-std=iso9899:1999 -pedantic -pedantic-errors \
 		-fno-unsafe-math-optimizations -Weverything \
 		-Wno-unsafe-buffer-usage -Wno-reserved-identifier
 
+CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
 include common.mk
 

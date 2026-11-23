@@ -7,4 +7,7 @@ CFLAGS=		-std=iso9899:1999 -pedantic -g -O0 -fno-builtin -m64 \
 		-mno-recip -fno-unsafe-math-optimizations -pedantic-errors \
 		-fno-color-diagnostics -Wall
 
+CPPFLAGS?=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
 include common.mk

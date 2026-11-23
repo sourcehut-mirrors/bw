@@ -4,3 +4,4 @@ CFLAGS= -std=iso9899:1999 -m64 -O3 \
 	-mno-avx -mno-avx2 -mno-sse4.1
 
 include common.mk
+

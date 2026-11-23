@@ -1,3 +1,4 @@
+
 CC?=/usr/bin/gcc
 
 CFLAGS= -std=iso9899:2017 -m64 -O3 -ffp-contract=off -mno-fma

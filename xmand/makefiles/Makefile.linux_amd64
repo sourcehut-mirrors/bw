@@ -1,7 +1,7 @@
 
 CC?=/usr/bin/gcc
 
-CFLAGS?= -std=iso9899:1999 -pedantic -pedantic-errors \
+CFLAGS= -std=iso9899:1999 -pedantic -pedantic-errors \
 	-g -O0 -m64 -fno-builtin -fno-fast-math \
 	-ffp-contract=off -fno-unsafe-math-optimizations \
    	-malign-double \

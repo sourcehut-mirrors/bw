@@ -10,6 +10,9 @@ CFLAGS= -std=iso9899:1999 -m64 -g -O0 -fno-builtin \
 	-fPIC -Wl,-rpath=/usr/pkg/lib \
 	-Wl,-rpath=/usr/X11R7/lib -Wl,-pie
 
+CPPFLAGS=	-D_LARGEFILE64_SOURCE -D_XOPEN_SOURCE=600 \
+	-D_FILE_OFFSET_BITS=64
+
 IDIR=/usr/pkg/include -I/usr/X11R7/include
 LDIR=/usr/pkg/lib -L/usr/X11R7/lib
 LIBS=-lX11 -lrt -lm -lpthread
