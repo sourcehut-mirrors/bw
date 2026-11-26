@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
 {
 
     int k = 0;
-    int candidate_int, iteration_limit, inex = 0;
+    int iteration_limit, inex = 0;
+    long candidate_long = 0;
     int debug = 1;
     size_t mpfr_precision_size = 0;
     mpfr_prec_t actual_prec, effective_prec, prec = 64;
@@ -82,52 +83,66 @@ int main(int argc, char *argv[])
     }
 
     /* note that we have prec = 64 initialized above */
+
+    /* silly info */
+    fprintf(stderr,"\n\nINFO : sizeof(long) = %lu\n\n", sizeof(long));
+
     errno = 0;
-    candidate_int = (int)strtol(argv[1], (char **)NULL, 10);
+    candidate_long = (int)strtol(argv[1], (char **)NULL, 10);
     if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
         fprintf(stderr,"FAIL : bit precision not understood\n");
         perror("     ");
         return EXIT_FAILURE;
     }
-    if ( ( candidate_int < 64 ) || ( candidate_int > 1048576 ) ){
+    /* NOTE about binary bits needed to represent a decimal
+     * number.
+     *
+     * titan$ bc -lq
+     * l(2)/l(10)
+     * .30102999566398119521
+     *
+     *    conduct your self accordingly!
+     *
+     */
+    if ( ( candidate_long < 64 ) || ( candidate_long > 30102999 ) ){
         fprintf(stderr,"WARN : bit precision is unreasonable\n");
         fprintf(stderr,"     : we shall assume 64 and proceed.\n");
         prec = 64;
     } else {
-        printf("INFO : bit precision will be %i\n", candidate_int);
-        prec = candidate_int;
+        printf("INFO : bit precision will be %li\n", candidate_long);
+        prec = candidate_long;
     }
     printf("INFO : request is %li bits of precision.\n\n", (long)prec );
     /* set the default mpfr precision */
     mpfr_set_default_prec(prec);
     /* verify that the default precision is as requested */
     actual_prec = mpfr_get_default_prec();
-    printf("INFO : the actual_prec is %lu\n", (long)actual_prec );
+    printf("INFO : the actual_prec is %li\n", (long)actual_prec );
     if ( (long)prec != (long)actual_prec ) {
         fprintf(stderr,"FAIL : the precision request failed\n");
         return EXIT_FAILURE;
     }
 
     /* note that we can get a lot of goodness from the Chudnovsky
-     * algorithm in only 4 iterations */
-    iteration_limit = 4;
+     * algorithm in only 8 iterations */
+    iteration_limit = 8;
 
     /* check if the user specified the number of iterations */
     if ( argc > 2 ) {
         errno = 0;
-        candidate_int = (int)strtol(argv[2], (char **)NULL, 10);
+        candidate_long = (int)strtol(argv[2], (char **)NULL, 10);
         if ( ( errno == ERANGE ) || ( errno == EINVAL ) ){
             fprintf(stderr,"FAIL : iteration not understood\n");
             perror("     ");
             return EXIT_FAILURE;
         }
-        if ( ( candidate_int < 4 ) || ( candidate_int > 64 ) ){
+        if ( ( candidate_long < 8 ) || ( candidate_long > 512 ) ){
             fprintf(stderr,"WARN : iteration may be unreasonable\n");
             fprintf(stderr,"     : we shall assume 4 and proceed.\n");
-            iteration_limit = 4;
+            iteration_limit = 8;
         } else {
-            printf("INFO : iterations will be %i\n", candidate_int);
-            iteration_limit = candidate_int;
+            printf("INFO : iterations will be %li\n", candidate_long);
+            iteration_limit = candidate_long;
         }
     }
 

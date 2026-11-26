@@ -75,6 +75,10 @@ main ( int argc, char **argv )
 {
 
     int j, loop_limit, err_clock;
+
+    int blake2s256 = 0;
+    char hex_digest[EVP_MAX_MD_SIZE * 2 + 1];
+
     size_t num_bytes;
     long candidate_input;
     struct timespec tn_begin, tn_0, tn_1, tn_end;
@@ -104,36 +108,13 @@ main ( int argc, char **argv )
      * we test for what does exist and set a clockid_t type. */
     clockid_t clock_flag;
 
+    /* If the user provides the blake2s256 hash algorithm choice then
+     * we can verify easily.
+     *
+     * TODO : provide the SHA256 hash results also.
+     */
     char *blake2s256_list[] =
     {
-        "d721f975054ef5b2b66564fe11a793d994959a90d001996285d447f73593d723",
-        "121d37b2a386c3c0674d9f71077c3d4e2d7535aa1c2eb70d68f2779ba3ecf748",
-        "80f6cd9a88eef7fcdaadb4d77260d8ea695261352c53c7117d73339bd5a36d93",
-        "0d6cc1c570ec02d1499382f89487bad668c5ee34715600a44c3715e40128ae99",
-        "9129fcd1cbd4b898946e01ac07798e4a73f39b214138addf8a590a7bbe47e17a",
-        "7fa8df5a708f9ce1838888e83801dd6e8efd1b40a14d4287cbb6f20358310095",
-        "c993954d0e2daa01a55db1d4fcf107f0148d7dce497e8ffba2860b0ae683374a",
-        "ffe6d900cd5137ed8cd5a6bb4243cfa60c15600064c6ffff9507eafa9e357286",
-        "46f9b79b8d0a484ca66761534db77467396ee65340a548e27e0f2a772ebeb3de",
-        "027ff7a7df128bbcb7db859604f03e5c940892c80eb891c32926211671493921",
-        "252809f4647c53c31376f08c9ddcae714462190cdb30c32f5bfeaaca58b7b9ff",
-        "0ae71c8de846ebb839613bbd291ae80a5336d6139c5a28035a4393a9e83cea62",
-        "44c75f565b89ec6d5508d924f159f2e1d0ce7dcb9ea66337e49b81f0665a49e4",
-        "6d7cec2262726aef7232c0b94e523a02f5e3f0f9cabf7935f6427d9a1e5e2a83",
-        "5db553268a1ff8f17e3d4a0af4be24157c96eb3d8825bd22a298b1a186908953",
-        "9216ef27881d347506ab2941062c6f834038dd91b88d51c798b34bfd93d23265",
-        "fd3e6ff00435515c26b4d6cf3c13dc5d37aaf00fb6a4718df4cbfb8b15434ebe",
-        "a7a176fea36e7c37d401ba00d330fe8b9e637433684751032e4a30e2752615c6",
-        "2425c1fc57dd8cdceea0420664ab0afcae926ef64a880f142b31a73e86781cc2",
-        "aec7c3a6086c6c932efefdf4a5bc51d8eb0dbbe880db5391320a0eda0a4c701a",
-        "7563d31226f02371bc769c4aa82cf87d51fedf3bef7495676733a8b0ffd673df",
-        "53d20601eb1c1d2f578b6b39d6f90f0d1b585f7bb3d1c0d5d269ca9a90a66d1d",
-        "99c511224abbdcac4f136d936768a00521b667d194797988a7e1f89334872753",
-        "00e5685656d296b2a1403086c3c03f8ef75b3e49f5dacc4853dfcf91f44ad879",
-        "85c0feaf3a2b14bbe96e23fadea3c85e0d6c9e9d63c0ba672bd9bab05bda4d86",
-        "6f8d38f9609c60405216ecc5e805a6b6b4f3447b08c4acda5b013ff42bf17e32",
-        "fd839dcbf568db0ab2087b4a9e2127d23475f318b5d996753609634abd49075f",
-        "e6a75c2942ab8d301141ad45041a67799d1ff0ebe88d56482618f07af3825758",
         "d721f975054ef5b2b66564fe11a793d994959a90d001996285d447f73593d723",
         "121d37b2a386c3c0674d9f71077c3d4e2d7535aa1c2eb70d68f2779ba3ecf748",
         "80f6cd9a88eef7fcdaadb4d77260d8ea695261352c53c7117d73339bd5a36d93",
@@ -172,13 +153,20 @@ main ( int argc, char **argv )
     unsigned int k, md_len;
 
     /* slightly out of order but may as well process OpenSSL
-     * situation now */
+     * situation now.
+     *
+     * 26 Nov 2026 : may as well check if the user did provide
+     *               the blake2s256 algorithm choice
+     */
     if ( argc > 2 ) {
         md = EVP_get_digestbyname(argv[2]);
         if (md == NULL) {
             fprintf(stderr,"FAIL : unknown message digest %s\n", argv[2]);
             fprintf(stderr,"     : see line %i\n", __LINE__);
             return EXIT_FAILURE;
+        }
+        if (strcasecmp(argv[2], "blake2s256") == 0) {
+            blake2s256 = 1;
         }
         /* the user supplied hash algorithm either works or
          * blows up with an error message 
@@ -212,7 +200,10 @@ main ( int argc, char **argv )
     tn_end.tv_sec = 0;
     tn_end.tv_nsec = 0;
 
-    /* B E W A R E  :  Linux has a sysinfo() call */
+    /* B E W A R E  :  Linux has a sysinfo() call
+     *
+     *  TODO :     How to deal with that crap ?
+     */
     if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
         fprintf(stderr,"WARN : we may not have valid system info.\n");
     }
@@ -313,8 +304,9 @@ main ( int argc, char **argv )
         /* printf("INFO : mpz_get_str() returns %li bytes\n", (int)num_bytes); */
 
         /* This is where OpenSSL can be used to get a SHA256
-         * hash of the data in gmp_out_buf. We will only output
-         * up to 72 chars of the decimal data. */
+         * hash or whatever the user asked for.
+         *
+         * We will only output up to 72 chars of the data. */
         strncpy(prn_buf, gmp_out_buf, 72);
         printf("  1    : %s\n", prn_buf);
         /* slide in a dirty nul char at byte 0 */
@@ -470,7 +462,7 @@ main ( int argc, char **argv )
 
     EVP_MD_CTX_free(mdctx);
 
-    EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 
 }
 

@@ -1,0 +1,17 @@
+
+$ $CC $CFLAGS $CPPFLAGS -I/home/dclarke/local/include -I../../time_and_date -I../../sysinfo -c -o mpfr_kam_test.o mpfr_kam_test.c
+$ $CC $CFLAGS $CPPFLAGS -I/home/dclarke/local/include -I../../time_and_date -I../../sysinfo -c -o sysinfo.o ../../sysinfo/sysinfo.c
+$ $CC $CFLAGS $CPPFLAGS -I/home/dclarke/local/include -I../../time_and_date -I../../sysinfo -c -o endian.o ../../sysinfo/endian.c 
+$ $CC $CFLAGS $CPPFLAGS -I/home/dclarke/local/include -I../../time_and_date -I../../sysinfo -c -o tdiff.o ../../time_and_date/tdiff.c
+$ $CC $CFLAGS $CPPFLAGS -I/home/dclarke/local/include -I../../time_and_date -I../../sysinfo -c -o gmp_mpfr_ver.o ../../gmp_mpfr/gmp_mpfr_ver.c
+$ 
+$ $CC $CFLAGS $CPPFLAGS -L/home/dclarke/local/lib -Wl,-rpath=/home/dclarke/local/lib,--enable-new-dtags -o mpfr_kam_test mpfr_kam_test.o sysinfo.o endian.o tdiff.o gmp_mpfr_ver.o -lgmp -lmpfr
+$ 
+$ ldd mpfr_kam_test
+mpfr_kam_test:
+        libgmp.so.10 => /home/dclarke/local/lib/libgmp.so.10 (0x1b0c14b37000)
+        libmpfr.so.6 => /home/dclarke/local/lib/libmpfr.so.6 (0x1b0c15564000)
+        libc.so.7 => /lib/libc.so.7 (0x1b0c15c24000)
+        libsys.so.7 => /lib/libsys.so.7 (0x1b0c14390000)
+        [vdso] (0x1b0c137b1000)
+$ 

@@ -1,0 +1,19 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -O3 -march=broadwell -mtune=broadwell \
+	-fomit-frame-pointer
+
+LD_RUN_PATH= /home/dclarke/local/lib
+
+LDFLAGS= -Wl,-rpath,/home/dclarke/local/lib,--enable-new-dtags
+
+LIBS=	-lgmp -lmpfr -lcrypto -lm
+
+LDIR= /home/dclarke/local/lib
+IDIR= /home/dclarke/local/include
+ITIME= ../time_and_date
+SYSINFO= ../sysinfo
+
+include fg_common.mk
+

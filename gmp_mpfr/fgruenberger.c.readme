@@ -1,0 +1,25 @@
+
+
+Need to fix that up and check that the hask is in fact
+a match to the stuff baked in.
+
+char hex_digest[EVP_MAX_MD_SIZE * 2 + 1];
+for (k = 0; k < md_len; k++) {
+    sprintf(&hex_digest[k * 2], "%02x", md_value[k]);
+}
+hex_digest[md_len * 2] = '\0';
+
+if (verify_blake2s && (iter_idx < 28)) {
+    if (strcmp(hex_digest, blake2s256_list[iter_idx]) != 0) {
+        fprintf(stderr, "FAIL : BLAKE2s256 mismatch at loop %d!\n", iter_idx + 1);
+        fprintf(stderr, "     : expected %s\n", blake2s256_list[iter_idx]);
+        fprintf(stderr, "     : computed %s\n", hex_digest);
+        return EXIT_FAILURE;
+    }
+    printf("  HASH : %s  [VERIFIED]\n", hex_digest);
+} else {
+    printf("  HASH : %s\n", hex_digest);
+}
+
+Something like that.
+
