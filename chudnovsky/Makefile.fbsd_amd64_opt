@@ -1,0 +1,19 @@
+
+CC=/usr/bin/cc
+
+CFLAGS= -std=iso9899:1999 -O3 -march=broadwell -mtune=broadwell \
+	-fomit-frame-pointer
+
+CPPFLAGS= -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 \
+		-D_XOPEN_SOURCE=600
+
+LD_RUN_PATH= /home/dclarke/local/lib
+
+LDFLAGS= -Wl,-rpath,/home/dclarke/local/lib,--enable-new-dtags
+
+LDIR= /home/dclarke/local/lib
+IDIR= /home/dclarke/local/include
+LIBS= -lgmp -lmpfr
+
+include common.mk
+
