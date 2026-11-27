@@ -61,6 +61,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(__sun) || defined(__sun__) || defined(__SVR4)
+#include <strings.h>
+#endif
+
 #include <time.h>
 #include <unistd.h>
 
@@ -207,6 +212,7 @@ main ( int argc, char **argv )
     if ( sysinfo(VERBOSE) == SYSINFO_FAIL ) {
         fprintf(stderr,"WARN : we may not have valid system info.\n");
     }
+
 
     printf("GMP  library: %d.%d.%d\n",
             __GNU_MP_VERSION,

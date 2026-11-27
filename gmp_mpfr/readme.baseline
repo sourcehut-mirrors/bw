@@ -1,0 +1,30 @@
+
+n$ echo $LD_RUN_PATH
+/export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/lib
+n$ 
+n$ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/endian.o ../sysinfo/endian.c
+n$ $CC $CFLAGS $CPPFLAGS -c -o ../sysinfo/sysinfo.o ../sysinfo/sysinfo.c
+n$ $CC $CFLAGS $CPPFLAGS -c -o ../time_and_date/tdiff.o ../time_and_date/tdiff.c
+n$ $CC $CFLAGS $CPPFLAGS -I/export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/include \
+> -c -o gmp_mpfr_ver.o gmp_mpfr_ver.c
+
+n$ $CC $CFLAGS $CPPFLAGS -I/export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/include \
+> -I../sysinfo -I../time_and_date -I/usr/openssl/3/include -c -o fgruenberger.o fgruenberger.c
+n$ 
+n$ $CC $CFLAGS $CPPFLAGS \
+> -L/export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/lib \
+> -R/export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/lib \
+> -L/usr/openssl/3/lib/64 -R/usr/openssl/3/lib/64 \
+> -o fgruenberger_001 fgruenberger.o ../sysinfo/sysinfo.o ../sysinfo/endian.o ../time_and_date/tdiff.o -lgmp -lcrypto -lm
+n$ 
+
+n$ gobjdump -p fgruenberger_001 | grep -E 'NEED|NAME|PATH'
+  NEEDED               libgmp.so.10
+  NEEDED               libcrypto.so.3
+  NEEDED               libm.so.2
+  NEEDED               libc.so.1
+  RUNPATH              /export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/lib:/usr/openssl/3/lib/64
+  RPATH                /export/home/dclarke/s7_lab/target/gcc/sparc_s7_baseline.001/lib:/usr/openssl/3/lib/64
+  VERNEED              0x0000000100001120
+  VERNEEDNUM           0x0000000000000003
+n$ 
